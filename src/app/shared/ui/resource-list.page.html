@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/bands" /></ion-buttons>
+    <ion-title>{{ config.plural }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['new']" aria-label="Crea">
+        <ion-icon slot="icon-only" name="add" />
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+  @if (loading) {
+    <ion-list>
+      @for (item of [1,2,3]; track item) {
+        <ion-item>
+          <ion-label>
+            <ion-skeleton-text [animated]="true" style="width: 55%" />
+            <ion-skeleton-text [animated]="true" style="width: 35%" />
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  } @else if (error) {
+    <div class="state">
+      <ion-icon name="alert-circle" />
+      <ion-text color="danger">{{ error }}</ion-text>
+      <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+    </div>
+  } @else if (!items.length) {
+    <div class="state">
+      <ion-icon name="musical-notes" />
+      <ion-text>Nessun{{ config.singular === 'brano' ? ' brano' : 'a ' + config.singular }} presente.</ion-text>
+      <ion-button [routerLink]="['new']">Crea {{ config.singular }}</ion-button>
+    </div>
+  } @else {
+    <ion-list inset>
+      @for (item of items; track item) {
+        <ion-item button detail [routerLink]="[item.id]">
+          <ion-label>
+            <h2>{{ title(item) }}</h2>
+            <p>{{ subtitle(item) }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

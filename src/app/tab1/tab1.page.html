@@ -1,0 +1,20 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      GigSaw
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">Esci</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+    <ion-title size="large">GigSaw</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <app-explore-container name="Apri una band per gestire brani, prove, registrazioni e concerti."></app-explore-container>
+</ion-content>

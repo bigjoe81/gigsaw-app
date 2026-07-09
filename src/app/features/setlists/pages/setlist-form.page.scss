@@ -1,0 +1,136 @@
+.metric-card,
+.summary-pill,
+.empty-state,
+.advanced-panel {
+  border-radius: 16px;
+  background: var(--ion-color-light);
+}
+
+.metric-card {
+  display: grid;
+  gap: 0.35rem;
+  height: 100%;
+}
+
+.metric-card ion-note {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.metric-card strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.song-panel,
+.catalog-item,
+.empty-state {
+  border: 1px solid var(--ion-color-light-shade);
+  border-radius: 16px;
+}
+
+.song-panel {
+  overflow: hidden;
+  background: var(--ion-color-light);
+  margin-bottom: 1rem;
+}
+
+.song-panel-header {
+  border-bottom: 1px solid var(--ion-color-light-shade);
+  background: rgba(var(--ion-color-light-rgb), 0.65);
+}
+
+.song-panel-main {
+  min-width: 0;
+}
+
+.reorder-title-item h2,
+.catalog-item h2,
+.empty-state strong {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.song-meta-list {
+  background: transparent;
+  padding: 0;
+}
+
+.song-panel-members {
+  border-top: 1px solid var(--ion-color-light-shade);
+}
+
+.song-panel-members ion-note {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.form-item-plain {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.drop-zone {
+  border: 1px solid transparent;
+  border-radius: 20px;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.drop-zone-active {
+  border-color: var(--ion-color-primary);
+  background: color-mix(in srgb, var(--ion-color-primary) 6%, white);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ion-color-primary) 18%, transparent);
+  transform: translateY(-2px);
+}
+
+.catalog-note {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.catalog-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.chip-row {
+  row-gap: 0.5rem;
+}
+
+.reorder-title-item {
+  min-height: auto;
+}
+
+.catalog-item {
+  background: white;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.catalog-item:not(.catalog-item-selected):hover {
+  background: var(--ion-color-light);
+}
+
+.catalog-item-selected {
+  opacity: 0.7;
+}
+
+ion-chip {
+  white-space: nowrap;
+}
+
+ion-note + ion-note,
+ion-item + ion-note {
+  display: block;
+  margin-top: 0.25rem;
+}

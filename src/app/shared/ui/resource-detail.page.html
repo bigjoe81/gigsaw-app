@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../"/></ion-buttons>
+    <ion-title>{{ config.singular }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['edit']">Modifica</ion-button>
+      <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @if(loading){
+    <ion-card>
+      <ion-card-content>
+        <ion-skeleton-text [animated]="true" style="width:70%"/>
+        <ion-skeleton-text [animated]="true" style="width:90%"/>
+      </ion-card-content>
+    </ion-card>
+  } @else if(item){
+    <ion-list inset>
+      @for (field of config.fields; track field) {
+        <ion-item>
+          <ion-label>
+            <p>{{field.label}}</p>
+            <h2>{{ display(field.key) || '—' }}</h2>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <ion-note class="ion-padding">Record non trovato.</ion-note>
+  }
+</ion-content>

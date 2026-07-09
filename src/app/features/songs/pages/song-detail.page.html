@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>Brano</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['edit']">Modifica</ion-button>
+      <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @if (loading) {
+    <ion-card><ion-card-content><ion-skeleton-text [animated]="true" style="width:70%" /><ion-skeleton-text [animated]="true" style="width:90%" /></ion-card-content></ion-card>
+  } @else if (!song) {
+    <ion-note class="ion-padding">Brano non trovato.</ion-note>
+  } @else {
+    <ion-list inset>
+      <ion-item><ion-label><p>Titolo</p><h2>{{ song.title }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Album</p><h2>{{ song.album || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Eseguito da</p><h2>{{ song.performedBy || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Musica di</p><h2>{{ song.musicBy || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Testo di</p><h2>{{ song.lyricsBy || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Tonalità</p><h2>{{ song.key || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>BPM</p><h2>{{ song.bpm || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Durata</p><h2>{{ formatSeconds(song.duration) }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Stato</p><h2>{{ song.status || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Gruppo linkato</p><h2>{{ song.linkGroup || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Tag</p><h2>{{ formatTags(song.tags) }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Note</p><h2>{{ song.notes || '—' }}</h2></ion-label></ion-item>
+    </ion-list>
+
+    @if (linkedSongs.length) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Brani collegati</ion-card-title></ion-card-header>
+        <ion-card-content>
+          <ion-list inset>
+            @for (linkedSong of linkedSongs; track linkedSong.id) {
+              <ion-item button detail [routerLink]="['/bands', route.snapshot.paramMap.get('bandId'), 'songs', linkedSong.id]">
+                <ion-label>
+                  <h2>{{ linkedSong.title }}</h2>
+                  <p>{{ linkedSubtitle(linkedSong) }}</p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+</ion-content>

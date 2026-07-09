@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Seleziona band</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="logout()">Esci</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="ion-margin">
+    <ion-card-content class="ion-padding">
+      <ion-note color="medium">Workspace</ion-note>
+      <h1>Seleziona la band con cui lavorare</h1>
+      <p>
+        Dopo la selezione entri nelle sezioni Repertorio, Prove e Concerti.
+      </p>
+      <ion-button expand="block" routerLink="/bands/new">
+        <ion-icon slot="start" name="add" />
+        Crea band
+      </ion-button>
+      <ion-button expand="block" fill="outline" (click)="promptJoinBand()">
+        Entra in una band
+      </ion-button>
+      <ion-button expand="block" fill="clear" (click)="load()">
+        <ion-icon slot="start" name="refresh" />
+        Aggiorna elenco
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  @if (loading) {
+    <ion-card class="ion-margin">
+      <ion-card-content class="ion-padding ion-text-center">
+        <ion-spinner name="crescent" />
+        <p><ion-text>Caricamento band...</ion-text></p>
+      </ion-card-content>
+    </ion-card>
+  } @else if (error) {
+    <ion-card class="ion-margin">
+      <ion-card-content class="ion-padding ion-text-center">
+        <ion-note color="danger">{{ error }}</ion-note>
+        <ion-button class="ion-margin-top" fill="outline" (click)="load()">Riprova</ion-button>
+      </ion-card-content>
+    </ion-card>
+  } @else if (!bands.length) {
+    <ion-card class="ion-margin">
+      <ion-card-content class="ion-padding ion-text-center">
+        <ion-icon name="musical-notes" color="medium" style="font-size: 42px;"></ion-icon>
+        <h2>Nessuna band disponibile</h2>
+        <p>Crea la prima band per iniziare a gestire repertorio, prove e concerti.</p>
+        <ion-button expand="block" routerLink="/bands/new">Crea la tua prima band</ion-button>
+      </ion-card-content>
+    </ion-card>
+  } @else {
+    <ion-list inset class="ion-margin-bottom">
+      @for (band of bands; track band) {
+        <ion-item button detail="false" (click)="selectBand(band)">
+          <ion-label>
+            <h2>{{ band.name }}</h2>
+            <p>{{ formatGenres(band) }}</p>
+            @if (band.joinCode && band.currentUserRole === 'ADMIN') {
+              <p>Codice band: {{ band.joinCode }}</p>
+            }
+          </ion-label>
+          <ion-icon slot="end" name="chevron-forward" color="medium" />
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

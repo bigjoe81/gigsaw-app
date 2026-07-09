@@ -1,0 +1,126 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>Setlist</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openPdf()" [disabled]="pdfLoading">
+        @if (pdfLoading) { <ion-spinner name="crescent" /> } @else { PDF }
+      </ion-button>
+      <ion-button (click)="sharePdf()" [disabled]="pdfLoading">Condividi</ion-button>
+      <ion-button [routerLink]="['edit']">Modifica</ion-button>
+      <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @if (loading) {
+    <ion-card class="m-4">
+      <ion-card-content>
+        <ion-skeleton-text [animated]="true" style="width: 70%" />
+        <ion-skeleton-text [animated]="true" style="width: 90%" />
+      </ion-card-content>
+    </ion-card>
+  } @else if (!setlist) {
+    <ion-note class="block p-4">Setlist non trovata.</ion-note>
+  } @else {
+    <div class="grid gap-4 p-4">
+      <ion-list inset>
+        <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Titolo</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.title }}</h2></ion-label></ion-item>
+        <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Data</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.date || '—' }}</h2></ion-label></ion-item>
+        <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Gig</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.gigId || '—' }}</h2></ion-label></ion-item>
+        <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Venue</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.venueId || '—' }}</h2></ion-label></ion-item>
+        <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Note</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.notes || '—' }}</h2></ion-label></ion-item>
+      </ion-list>
+
+      @if (setlist.songs?.length) {
+        <ion-card>
+          <ion-card-header><ion-card-title>Brani</ion-card-title></ion-card-header>
+          <ion-card-content>
+            @if (openingSongs().length) {
+              <ion-list inset>
+                <ion-item lines="full"><ion-label><h2 class="m-0 text-base font-bold">Opening</h2></ion-label></ion-item>
+                @for (song of openingSongs(); track song.id; let index = $index) {
+                  <ion-item><ion-label><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</ion-label></ion-item>
+                }
+              </ion-list>
+            }
+
+            @if (mainSongs().length) {
+              <ion-list inset>
+                <ion-item lines="full"><ion-label><h2 class="m-0 text-base font-bold">Scaletta</h2></ion-label></ion-item>
+                @for (song of mainSongs(); track song.id; let index = $index) {
+                  <ion-item>
+                    <ion-label>
+                      <h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2>
+                      <p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>
+                      @if (songNotes(song).length) {
+                        @for (note of songNotes(song); track note) {
+                          <p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>
+                        }
+                      }
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            }
+
+            @if (closingSongs().length) {
+              <ion-list inset>
+                <ion-item lines="full"><ion-label><h2 class="m-0 text-base font-bold">Closing</h2></ion-label></ion-item>
+                @for (song of closingSongs(); track song.id; let index = $index) {
+                  <ion-item><ion-label><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</ion-label></ion-item>
+                }
+              </ion-list>
+            }
+
+            @if (encoreSongs().length) {
+              <ion-list inset>
+                <ion-item lines="full"><ion-label><h2 class="m-0 text-base font-bold">Encore</h2></ion-label></ion-item>
+                @for (song of encoreSongs(); track song.id; let index = $index) {
+                  <ion-item><ion-label><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</ion-label></ion-item>
+                }
+              </ion-list>
+            }
+          </ion-card-content>
+        </ion-card>
+      }
+
+      @if (setlist.sets?.length) {
+        <ion-card>
+          <ion-card-header><ion-card-title>Divisione set</ion-card-title></ion-card-header>
+          <ion-card-content>
+            <ion-list inset>
+              @for (set of setlist.sets; track set.index) {
+                <ion-item>
+                  <ion-label>
+                    <h2 class="m-0 text-base font-bold">Set {{ set.index }}</h2>
+                    <p class="m-0 mt-1 text-[0.92rem] leading-6">{{ set.songIds.length }} brani · {{ formatSeconds(set.durationSeconds) }}</p>
+                    @if (set.targetDurationSeconds) {
+                      <p class="m-0 mt-1 text-[0.92rem] leading-6">Target: {{ formatSeconds(set.targetDurationSeconds) }}</p>
+                    }
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      @if (setlist.generation) {
+        <ion-card>
+          <ion-card-header><ion-card-title>Generazione</ion-card-title></ion-card-header>
+          <ion-card-content>
+            <ion-list inset>
+              <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Durata brani</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedDurationSeconds) }}</h2></ion-label></ion-item>
+              <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Pausa totale</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedBreakDurationSeconds) }}</h2></ion-label></ion-item>
+              <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Show completo</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedFullShowDurationSeconds) }}</h2></ion-label></ion-item>
+              <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Target show</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.totalShowDurationSeconds) }}</h2></ion-label></ion-item>
+              <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Diff. venue</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatRatio(setlist.generation.venueDifferenceRatio) }}</h2></ion-label></ion-item>
+              <ion-item><ion-label><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Diff. ultima setlist</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatRatio(setlist.generation.chronologicalDifferenceRatio) }}</h2></ion-label></ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      }
+    </div>
+  }
+</ion-content>
