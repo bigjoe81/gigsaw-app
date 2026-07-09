@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>Gruppi linkati</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="apply()" [disabled]="saving || !selectedIds.length">
+        @if (saving) { <ion-spinner name="crescent" /> } @else { Applica }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="form" class="ion-padding">
+    <ion-item>
+      <ion-label position="stacked">Gruppo linkato</ion-label>
+      <ion-input formControlName="linkGroup" placeholder="es. intro-medley" />
+    </ion-item>
+    @if (existingLinkGroups.length) {
+      <div class="chips">
+        @for (group of existingLinkGroups; track group) {
+          <ion-chip (click)="applyLinkGroup(group)" [outline]="form.controls.linkGroup.value !== group">{{ group }}</ion-chip>
+        }
+      </div>
+    }
+    <div class="actions">
+      <ion-button fill="outline" (click)="apply()">Assegna ai selezionati</ion-button>
+      <ion-button color="warning" fill="outline" (click)="clear()" [disabled]="saving || !selectedIds.length">Rimuovi gruppo</ion-button>
+    </div>
+  </form>
+
+  <ion-list inset>
+    @for (song of songs; track song.id) {
+      <ion-item>
+        <ion-checkbox slot="start" [checked]="selectedIds.includes(song.id)" (ionChange)="toggleSong(song.id)" />
+        <ion-label>
+          <h2>{{ song.title }}</h2>
+          <p>{{ subtitle(song) }}</p>
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+
+  @if (error) {
+    <ion-note class="ion-padding" color="danger">{{ error }}</ion-note>
+  }
+</ion-content>

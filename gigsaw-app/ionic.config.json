@@ -1,0 +1,7 @@
+{
+  "name": "gigsaw-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

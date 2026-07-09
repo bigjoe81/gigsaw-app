@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/bands" /></ion-buttons>
+    <ion-title>Setlist</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['templates']">Template</ion-button>
+      <ion-button [routerLink]="['new']"><ion-icon slot="icon-only" name="add" /></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+
+  @if (loading) {
+    <ion-list class="p-4">
+      @for (item of [1, 2, 3]; track item) {
+        <ion-item class="rounded-2xl">
+          <ion-label>
+            <ion-skeleton-text [animated]="true" style="width: 55%" />
+            <ion-skeleton-text [animated]="true" style="width: 35%" />
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  } @else if (error) {
+    <div class="flex min-h-[55vh] flex-col items-center justify-center gap-4 p-6 text-center">
+      <ion-icon name="alert-circle" class="text-[44px] text-[var(--ion-color-medium)]" />
+      <ion-text color="danger">{{ error }}</ion-text>
+      <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+    </div>
+  } @else if (!setlists.length) {
+    <div class="flex min-h-[55vh] flex-col items-center justify-center gap-4 p-6 text-center">
+      <ion-icon name="musical-notes" class="text-[44px] text-[var(--ion-color-medium)]" />
+      <ion-text>Nessuna setlist presente.</ion-text>
+      <ion-button [routerLink]="['new']">Crea setlist</ion-button>
+    </div>
+  } @else {
+    <div class="p-4">
+      <ion-list inset>
+        @for (setlist of setlists; track setlist.id) {
+          <ion-item button detail [routerLink]="[setlist.id]" class="rounded-2xl">
+            <ion-label>
+              <h2 class="m-0 text-base font-bold">{{ setlist.title }}</h2>
+              <p class="m-0 mt-1 text-[0.92rem] leading-6">{{ subtitle(setlist) }}</p>
+            </ion-label>
+            <ion-button fill="clear" size="small" slot="end" (click)="downloadPdf(setlist, $event)">Scarica</ion-button>
+            <ion-button fill="clear" size="small" slot="end" (click)="sharePdf(setlist, $event)">Condividi</ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    </div>
+  }
+</ion-content>

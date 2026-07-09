@@ -1,0 +1,33 @@
+<ion-content class="ion-padding login-content" [fullscreen]="true">
+  <div class="login-shell">
+    <div class="login-brand">
+      <picture>
+        <source srcset="assets/logo-hor-dark.png" media="(prefers-color-scheme: dark)" />
+        <img src="assets/logo-hor.png" alt="GigSaw logo" />
+      </picture>
+      <ion-note class="login-brand-note">La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong></ion-note>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="login()">
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input type="email" placeholder="es. mario.rossi@gmail.com" autocomplete="email" formControlName="email"/>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Password</ion-label>
+        <ion-input type="password" autocomplete="current-password" formControlName="password"/>
+      </ion-item>
+      @if (error) {
+        <ion-note color="danger">{{ error }}</ion-note>
+      }
+      <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="loading">@if (loading) {
+        <ion-spinner name="crescent"/>
+      } @else {
+        Accedi
+      }</ion-button>
+    </form>
+    <ion-button expand="block" fill="outline" class="ion-margin-top" (click)="loginWithGoogle()">Continua con Google
+    </ion-button>
+    <ion-button expand="block" fill="clear" routerLink="/register">Crea account</ion-button>
+    <ion-button expand="block" fill="clear" routerLink="/forgot-password">Hai dimenticato la password?</ion-button>
+  </div>
+</ion-content>

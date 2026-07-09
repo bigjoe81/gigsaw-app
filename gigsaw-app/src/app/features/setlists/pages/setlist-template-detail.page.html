@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>Template</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['edit']">Modifica</ion-button>
+      <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @if (loading) {
+    <ion-card><ion-card-content><ion-skeleton-text [animated]="true" style="width:70%" /><ion-skeleton-text [animated]="true" style="width:90%" /></ion-card-content></ion-card>
+  } @else if (!template) {
+    <ion-note class="ion-padding">Template non trovato.</ion-note>
+  } @else {
+    <ion-list inset>
+      <ion-item><ion-label><p>Nome</p><h2>{{ template.name }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Descrizione</p><h2>{{ template.description || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Target brani</p><h2>{{ template.targetSongCount || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Tag brani</p><h2>{{ template.songTags?.join(', ') || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Durata show</p><h2>{{ formatSeconds(template.totalShowDurationSeconds) }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Set</p><h2>{{ template.setCount || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Target set</p><h2>{{ template.setTargets?.join(', ') || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Pausa</p><h2>{{ formatSeconds(template.breakDurationSeconds) }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Opening IDs</p><h2>{{ template.openingSongIds?.join(', ') || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Closing IDs</p><h2>{{ template.closingSongIds?.join(', ') || '—' }}</h2></ion-label></ion-item>
+      <ion-item><ion-label><p>Encore IDs</p><h2>{{ template.encoreSongIds?.join(', ') || '—' }}</h2></ion-label></ion-item>
+    </ion-list>
+  }
+</ion-content>

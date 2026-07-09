@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>Template setlist</ion-title>
+    <ion-buttons slot="end"><ion-button [routerLink]="['new']"><ion-icon slot="icon-only" name="add" /></ion-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+  @if (loading) {
+    <ion-list>
+      @for (item of [1,2,3]; track item) {
+        <ion-item><ion-label><ion-skeleton-text [animated]="true" style="width:55%" /><ion-skeleton-text [animated]="true" style="width:35%" /></ion-label></ion-item>
+      }
+    </ion-list>
+  } @else if (error) {
+    <div class="state"><ion-icon name="alert-circle" /><ion-text color="danger">{{ error }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
+  } @else if (!templates.length) {
+    <div class="state"><ion-icon name="library" /><ion-text>Nessun template presente.</ion-text><ion-button [routerLink]="['new']">Crea template</ion-button></div>
+  } @else {
+    <ion-list inset>
+      @for (template of templates; track template.id) {
+        <ion-item button detail [routerLink]="[template.id]">
+          <ion-label>
+            <h2>{{ template.name }}</h2>
+            <p>{{ subtitle(template) }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

@@ -1,0 +1,647 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>{{ editing ? 'Modifica setlist' : 'Nuova setlist' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="goToTemplates()">Gestisci template</ion-button>
+      <ion-button (click)="openGenerationModal()" [disabled]="generating">Apri Magic Set</ion-button>
+      <ion-button (click)="save()" [disabled]="saving || generating">
+        @if (saving) { <ion-spinner name="crescent" /> } @else { Salva }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="ion-padding">
+      <ion-card>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" sizeMd="6" sizeXl="3">
+                <div class="metric-card ion-padding">
+                  <ion-note color="medium">Brani selezionati</ion-note>
+                  <strong>{{ selectedSongs.length }}</strong>
+                </div>
+              </ion-col>
+              <ion-col size="12" sizeMd="6" sizeXl="3">
+                <div class="metric-card ion-padding">
+                  <ion-note color="medium">Durata attuale</ion-note>
+                  <strong>{{ formatSeconds(selectedDurationSeconds) }}</strong>
+                </div>
+              </ion-col>
+              <ion-col size="12" sizeMd="6" sizeXl="3">
+                <div class="metric-card ion-padding">
+                  <ion-note color="medium">Note membri</ion-note>
+                  <strong>{{ memberNotesCount }}</strong>
+                </div>
+              </ion-col>
+              <ion-col size="12" sizeMd="6" sizeXl="3">
+                <div class="metric-card ion-padding">
+                  <ion-note color="medium">Gig collegato</ion-note>
+                  <strong>{{ selectedGigLabel || 'Nessuno' }}</strong>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Dettagli setlist</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list inset>
+            <ion-item>
+              <ion-label position="stacked">Titolo *</ion-label>
+              <ion-input formControlName="title" />
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Data</ion-label>
+              <ion-datetime-button datetime="setlist-date" />
+            </ion-item>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime
+                  id="setlist-date"
+                  presentation="date"
+                  locale="it-IT"
+                  [value]="form.controls.date.value"
+                  (ionChange)="onDateChange($event)"
+                />
+              </ng-template>
+            </ion-modal>
+            <ion-item>
+              <ion-label position="stacked">Gig</ion-label>
+              <ion-select formControlName="gigId" interface="action-sheet" placeholder="Seleziona un gig">
+                <ion-select-option [value]="null">Nessun gig</ion-select-option>
+                @for (gig of gigs; track gig.id) {
+                  <ion-select-option [value]="gig.id">{{ gigLabel(gig) }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Note generali</ion-label>
+              <ion-textarea autoGrow formControlName="notes" placeholder="Indicazioni per il live, appunti organizzativi, richiami..." />
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-grid>
+        <ion-row>
+          @if (preview) {
+          <ion-col>
+              <ion-card>
+                <ion-card-header>
+                  <ion-card-title>Ultima proposta Magic Set</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col size="12" sizeMd="4">
+                        <div class="metric-card ion-padding">
+                          <ion-note color="medium">Brani</ion-note>
+                          <strong>{{ preview.songs?.length || 0 }}</strong>
+                        </div>
+                      </ion-col>
+                      <ion-col size="12" sizeMd="4">
+                        <div class="metric-card ion-padding">
+                          <ion-note color="medium">Durata</ion-note>
+                          <strong>{{ formatSeconds(preview.generation?.generatedDurationSeconds) }}</strong>
+                        </div>
+                      </ion-col>
+                      <ion-col size="12" sizeMd="4">
+                        <div class="metric-card ion-padding">
+                          <ion-note color="medium">Set</ion-note>
+                          <strong>{{ preview.sets?.length || 0 }}</strong>
+                        </div>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                  <ion-list inset>
+                    @for (song of preview.songs || []; track song.id; let index = $index) {
+                      <ion-item>
+                        <ion-label>
+                          <h2>{{ index + 1 }}. {{ song.title }}</h2>
+                          <p>{{ songMeta(song) }}</p>
+                        </ion-label>
+                      </ion-item>
+                    }
+                  </ion-list>
+                  <ion-grid class="ion-no-padding ion-margin-top">
+                    <ion-row class="ion-align-items-center ion-justify-content-start ion-flex-wrap">
+                      <ion-col size="12" sizeSm="auto">
+                        <ion-button (click)="applyPreview()">Usa anteprima</ion-button>
+                      </ion-col>
+                      <ion-col size="12" sizeSm="auto">
+                        <ion-button fill="clear" (click)="openGenerationModal()">Rigenera</ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-card-content>
+              </ion-card>
+          </ion-col>
+          }
+
+          <ion-col size="12">
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12" sizeLg="6">
+                  <div
+                    class="drop-zone"
+                    [class.drop-zone-active]="catalogDropActive"
+                    (dragenter)="onCatalogDropZoneEnter($event)"
+                    (dragover)="onCatalogDropZoneOver($event)"
+                    (dragleave)="onCatalogDropZoneLeave()"
+                    (drop)="onCatalogDropZoneDrop($event)"
+                  >
+                    <ion-card>
+                      <ion-card-header>
+                        <ion-card-title>Catalogo brani</ion-card-title>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <ion-item lines="none" class="form-item-plain">
+                          <ion-label position="stacked">Cerca brano</ion-label>
+                          <ion-input
+                            [value]="songSearch"
+                            placeholder="Titolo, tonalità, bpm..."
+                            (ionInput)="songSearch = eventValue($event)"
+                          />
+                        </ion-item>
+                        <ion-item lines="none" class="form-item-plain">
+                          <ion-label>Mostra solo non selezionati</ion-label>
+                          <ion-toggle [checked]="showOnlyAvailableSongs" (ionChange)="showOnlyAvailableSongs = !!$any($event).detail?.checked" />
+                        </ion-item>
+
+                        <ion-note color="medium" class="catalog-note">
+                          {{ catalogSongs.length - selectedCatalogSongs.length }} disponibili, {{ selectedCatalogSongs.length }} già in scaletta, su {{ songs.length }} brani.
+                        </ion-note>
+
+                        <div class="catalog-list ion-margin-top">
+                          @for (song of catalogSongs; track song.id) {
+                            <div
+                              class="catalog-item ion-padding"
+                              [class.catalog-item-selected]="isSelected(song)"
+                              [draggable]="!isSelected(song)"
+                              (dragstart)="onCatalogDragStart(song)"
+                              (dragend)="onCatalogDragEnd()"
+                              (click)="!isSelected(song) && toggleSong(song)"
+                            >
+                              <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-align-items-start ion-justify-content-between ion-flex-wrap">
+                                  <ion-col size="12" sizeMd="7">
+                                    <h2 class="ion-no-margin">{{ song.title }}</h2>
+                                    @if (song.performedBy || song.album) {
+                                      <ion-text color="medium">
+                                        <p class="ion-no-margin ion-margin-top">{{ catalogSubtitle(song) }}</p>
+                                      </ion-text>
+                                    }
+                                  </ion-col>
+                                  <ion-col size="12" sizeMd="5">
+                                    <ion-grid class="ion-no-padding">
+                                      <ion-row class="ion-justify-content-start ion-flex-wrap chip-row">
+                                        @if (isSelected(song)) {
+                                          <ion-col size="auto">
+                                            <ion-chip color="success">In scaletta</ion-chip>
+                                          </ion-col>
+                                        }
+                                        @if (song.key) {
+                                          <ion-col size="auto">
+                                            <ion-chip outline="true">{{ song.key }}</ion-chip>
+                                          </ion-col>
+                                        }
+                                        @if (song.bpm) {
+                                          <ion-col size="auto">
+                                            <ion-chip outline="true">{{ song.bpm }} bpm</ion-chip>
+                                          </ion-col>
+                                        }
+                                        @if (song.duration) {
+                                          <ion-col size="auto">
+                                            <ion-chip outline="true">{{ formatSeconds(song.duration) }}</ion-chip>
+                                          </ion-col>
+                                        }
+                                      </ion-row>
+                                    </ion-grid>
+                                  </ion-col>
+                                </ion-row>
+                              </ion-grid>
+                            </div>
+                          } @empty {
+                            <div class="empty-state ion-padding">
+                              <strong>Nessun brano trovato</strong>
+                              <ion-text color="medium">
+                                <p class="ion-no-margin ion-margin-top">Prova a cambiare ricerca o disattivare il filtro sui non selezionati.</p>
+                              </ion-text>
+                            </div>
+                          }
+                        </div>
+                      </ion-card-content>
+                    </ion-card>
+                  </div>
+                </ion-col>
+                <ion-col size="12" sizeLg="6">
+                  <div
+                    class="drop-zone"
+                    [class.drop-zone-active]="selectedDropActive"
+                    (dragenter)="onSelectedDropZoneEnter($event)"
+                    (dragover)="onSelectedDropZoneOver($event)"
+                    (dragleave)="onSelectedDropZoneLeave()"
+                    (drop)="onSelectedDropZoneDrop($event)"
+                  >
+                    <ion-card>
+                      <ion-card-header>
+                        <ion-card-title>Brani in scaletta</ion-card-title>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <ion-grid>
+                          <ion-row>
+                            <ion-col size="12" sizeMd="4">
+                              <div class="summary-pill ion-padding-horizontal ion-padding-vertical">{{ selectedSongs.length }} brani</div>
+                            </ion-col>
+                            <ion-col size="12" sizeMd="4">
+                              <div class="summary-pill ion-padding-horizontal ion-padding-vertical">{{ formatSeconds(selectedDurationSeconds) }}</div>
+                            </ion-col>
+                            <ion-col size="12" sizeMd="4">
+                              <div class="summary-pill ion-padding-horizontal ion-padding-vertical">{{ setlistNotesCount }} note scaletta</div>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
+
+                        @if (!selectedSongs.length) {
+                          <div class="empty-state ion-padding ion-margin-top">
+                            <strong>Nessun brano selezionato</strong>
+                            <ion-text color="medium">
+                              <p class="ion-no-margin ion-margin-top">Trascina i brani dal catalogo qui dentro. Poi potrai riordinare e aggiungere note.</p>
+                            </ion-text>
+                          </div>
+                        } @else {
+                          <div class="ion-margin-top">
+                            <ion-list inset>
+                              <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($event)">
+                                @for (song of selectedSongs; track song.id; let index = $index) {
+                                  <div
+                                    class="song-panel"
+                                    draggable="true"
+                                    (dragstart)="onSelectedDragStart(song)"
+                                    (dragend)="onSelectedDragEnd()"
+                                  >
+                                    <div class="song-panel-header ion-padding">
+                                      <ion-grid class="ion-no-padding">
+                                        <ion-row class="ion-align-items-start ion-justify-content-between ion-flex-wrap">
+                                          <ion-col size="12" sizeMd="7">
+                                            <div class="song-panel-main">
+                                              <ion-item lines="none" class="form-item-plain reorder-title-item">
+                                                <ion-reorder slot="start" />
+                                                <ion-label>
+                                                  <h2 class="ion-no-margin">{{ index + 1 }}. {{ song.title }}</h2>
+                                                </ion-label>
+                                              </ion-item>
+                                              @if (song.performedBy || song.album || song.notes) {
+                                                <ion-list lines="none" class="ion-no-padding ion-margin-top song-meta-list">
+                                                  @if (song.performedBy) {
+                                                    <ion-item lines="none" class="form-item-plain">
+                                                      <ion-text color="medium"><p class="ion-no-margin">{{ song.performedBy }}</p></ion-text>
+                                                    </ion-item>
+                                                  }
+                                                  @if (song.album) {
+                                                    <ion-item lines="none" class="form-item-plain">
+                                                      <ion-text color="medium"><p class="ion-no-margin">Album: {{ song.album }}</p></ion-text>
+                                                    </ion-item>
+                                                  }
+                                                  @if (song.notes) {
+                                                    <ion-item lines="none" class="form-item-plain">
+                                                      <ion-text color="medium"><p class="ion-no-margin">Note brano: {{ song.notes }}</p></ion-text>
+                                                    </ion-item>
+                                                  }
+                                                </ion-list>
+                                              }
+                                            </div>
+                                          </ion-col>
+                                          <ion-col size="12" sizeMd="5">
+                                            <ion-grid class="ion-no-padding">
+                                              <ion-row class="ion-justify-content-start ion-flex-wrap chip-row">
+                                                @if (song.key) {
+                                                  <ion-col size="auto">
+                                                    <ion-chip outline="true">{{ song.key }}</ion-chip>
+                                                  </ion-col>
+                                                }
+                                                @if (song.bpm) {
+                                                  <ion-col size="auto">
+                                                    <ion-chip outline="true">{{ song.bpm }} bpm</ion-chip>
+                                                  </ion-col>
+                                                }
+                                                @if (song.duration) {
+                                                  <ion-col size="auto">
+                                                    <ion-chip outline="true">{{ formatSeconds(song.duration) }}</ion-chip>
+                                                  </ion-col>
+                                                }
+                                                @if (song.linkGroup) {
+                                                  <ion-col size="auto">
+                                                    <ion-chip color="warning">Link {{ song.linkGroup }}</ion-chip>
+                                                  </ion-col>
+                                                }
+                                              </ion-row>
+                                            </ion-grid>
+                                          </ion-col>
+                                        </ion-row>
+                                      </ion-grid>
+                                      <div class="ion-margin-top">
+                                        <ion-button fill="clear" color="danger" size="small" (click)="removeSong(song)">Rimuovi</ion-button>
+                                      </div>
+                                    </div>
+
+                                    <div class="ion-padding">
+                                      <ion-item lines="none" class="form-item-plain">
+                                        <ion-label position="stacked">Note in scaletta</ion-label>
+                                        <ion-textarea
+                                          autoGrow
+                                          [value]="songEntryNotes(song.id)"
+                                          (ionInput)="updateSongNotes(song.id, eventValue($event))"
+                                          placeholder="Cue, attacchi, finale, dinamiche..."
+                                        />
+                                      </ion-item>
+                                    </div>
+
+                                    @if (bandMembers.length) {
+                                      <div class="song-panel-members ion-padding">
+                                        <ion-note color="medium">Note per membro</ion-note>
+                                        <ion-grid>
+                                          <ion-row>
+                                            @for (member of bandMembers; track member.id) {
+                                              <ion-col size="12" sizeMd="6">
+                                                <ion-item lines="none" class="form-item-plain">
+                                                  <ion-label position="stacked">{{ member.name }}</ion-label>
+                                                  <ion-input
+                                                    [value]="memberNoteValue(song.id, member.id)"
+                                                    (ionInput)="updateMemberNote(song.id, member.id, eventValue($event))"
+                                                    placeholder="Nota per questo membro"
+                                                  />
+                                                </ion-item>
+                                              </ion-col>
+                                            }
+                                          </ion-row>
+                                        </ion-grid>
+                                      </div>
+                                    }
+                                  </div>
+                                }
+                              </ion-reorder-group>
+                            </ion-list>
+                          </div>
+                        }
+                      </ion-card-content>
+                    </ion-card>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    @if (error) {
+      <ion-note class="ion-padding" color="danger">{{ error }}</ion-note>
+    }
+
+    <ion-button class="ion-margin" type="submit" expand="block" [disabled]="saving || generating">Salva setlist</ion-button>
+  </form>
+</ion-content>
+
+<ion-modal [isOpen]="showGenerationModal" (didDismiss)="closeGenerationModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Magic Set</ion-title>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" (click)="closeGenerationModal()">Chiudi</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="ion-padding">
+        <section class="modal-section">
+          <ion-grid class="ion-no-padding ion-margin-bottom">
+            <ion-row class="ion-align-items-start ion-justify-content-between ion-flex-wrap">
+              <ion-col size="12" sizeLg="4">
+                <h3 class="ion-no-margin">Preset rapidi</h3>
+              </ion-col>
+              <ion-col size="12" sizeLg="8">
+                <ion-text color="medium">
+                  <p class="ion-no-margin">Parti da uno scenario tipico e poi rifinisci solo quello che ti serve.</p>
+                </ion-text>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" sizeMd="6" sizeXl="3"><ion-button expand="block" fill="outline" (click)="applyMagicSetPreset('short')">Serata corta</ion-button></ion-col>
+              <ion-col size="12" sizeMd="6" sizeXl="3"><ion-button expand="block" fill="outline" (click)="applyMagicSetPreset('standard')">Live standard</ion-button></ion-col>
+              <ion-col size="12" sizeMd="6" sizeXl="3"><ion-button expand="block" fill="outline" (click)="applyMagicSetPreset('wedding')">Matrimonio</ion-button></ion-col>
+              <ion-col size="12" sizeMd="6" sizeXl="3"><ion-button expand="block" fill="outline" (click)="applyMagicSetPreset('pub3')">Pub 3 set</ion-button></ion-col>
+            </ion-row>
+          </ion-grid>
+        </section>
+
+        <section class="modal-section">
+          <h3>Obiettivi dello show</h3>
+          <ion-text color="medium"><p class="ion-no-margin">Definisci taglia e preset di partenza per la scaletta.</p></ion-text>
+          <ion-list inset>
+            <ion-item>
+              <ion-label position="stacked">Template di partenza</ion-label>
+              <ion-select formControlName="templateId" interface="action-sheet" placeholder="Nessun template" (ionChange)="onTemplateChange()">
+                <ion-select-option [value]="null">Nessun template</ion-select-option>
+                @for (template of templates; track template.id) {
+                  <ion-select-option [value]="template.id">{{ template.name }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            <ion-note color="medium">Carica valori preimpostati per velocizzare la compilazione.</ion-note>
+            <ion-item>
+              <ion-label position="stacked">Numero indicativo di brani</ion-label>
+              <ion-input type="number" formControlName="targetSongCount" />
+            </ion-item>
+            <ion-note color="medium">Quanti brani vuoi avere in scaletta, in modo indicativo.</ion-note>
+            <ion-item>
+              <ion-label position="stacked">Tag brani da includere</ion-label>
+              <ion-input
+                formControlName="songTagsText"
+                placeholder="marchettone, dance"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+              />
+            </ion-item>
+            <ion-note color="medium">Se valorizzato, Magic Set usera solo brani che hanno almeno uno dei tag indicati.</ion-note>
+            @if (availableSongTags.length) {
+              <ion-grid class="ion-no-padding ion-margin-top">
+                <ion-row class="ion-flex-wrap chip-row">
+                  @for (tag of availableSongTags; track tag) {
+                    <ion-col size="auto">
+                      <ion-chip [outline]="!hasSongTag(tag)" (click)="applySongTag(tag)">{{ tag }}</ion-chip>
+                    </ion-col>
+                  }
+                </ion-row>
+              </ion-grid>
+            }
+            <ion-item>
+              <ion-label position="stacked">Durata totale desiderata dello show (ore:minuti)</ion-label>
+              <ion-input
+                formControlName="totalShowDurationText"
+                placeholder="2:30"
+                inputmode="numeric"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                enterkeyhint="next"
+                (ionBlur)="normalizeTotalShowDuration()"
+              />
+            </ion-item>
+            <ion-note color="medium">Esempio: 1:45 per 1 ora e 45 minuti.</ion-note>
+            @if (showTotalShowDurationError()) {
+              <ion-note color="danger">Usa il formato hh:mm, per esempio 1:45 o 2:30.</ion-note>
+            }
+          </ion-list>
+        </section>
+
+        <section class="modal-section">
+          <h3>Struttura dei set</h3>
+          <ion-text color="medium"><p class="ion-no-margin">Configura blocchi, target di durata e pause.</p></ion-text>
+          <ion-list inset>
+            <ion-item>
+              <ion-label position="stacked">Numero di set desiderati</ion-label>
+              <ion-input type="number" formControlName="setCount" />
+            </ion-item>
+            <ion-note color="medium">Usalo se vuoi dividere il live in più blocchi.</ion-note>
+            <ion-item>
+              <ion-label position="stacked">Durata desiderata di ogni set (ore:minuti, separati da virgola)</ion-label>
+              <ion-input
+                formControlName="setTargetsText"
+                placeholder="0:45, 0:50"
+                inputmode="numeric"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                enterkeyhint="next"
+                (ionBlur)="normalizeSetTargets()"
+              />
+            </ion-item>
+            <ion-note color="medium">Esempio: 0:45, 0:50, 1:00 per set di 45, 50 e 60 minuti.</ion-note>
+            @if (showSetTargetsError()) {
+              <ion-note color="danger">Usa valori hh:mm separati da virgola, per esempio 0:45, 0:50, 1:00.</ion-note>
+            }
+            <ion-item>
+              <ion-label position="stacked">Pausa tra i set (minuti:secondi)</ion-label>
+              <ion-input
+                formControlName="breakDurationText"
+                placeholder="15:00"
+                inputmode="numeric"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                enterkeyhint="done"
+                (ionBlur)="normalizeBreakDuration()"
+              />
+            </ion-item>
+            <ion-note color="medium">Esempio: 10:30 per dieci minuti e trenta secondi.</ion-note>
+            @if (showBreakDurationError()) {
+              <ion-note color="danger">Usa il formato mm:ss, per esempio 15:00 o 10:30.</ion-note>
+            }
+          </ion-list>
+        </section>
+
+        <section class="modal-section">
+          <ion-grid class="ion-no-padding">
+            <ion-row class="ion-align-items-start ion-justify-content-between ion-flex-wrap">
+              <ion-col size="12" sizeLg="8">
+                <h3 class="ion-no-margin">Parametri avanzati</h3>
+                <ion-text color="medium"><p class="ion-no-margin ion-margin-top">Apri questa sezione solo se vuoi controllare i vincoli del motore.</p></ion-text>
+              </ion-col>
+              <ion-col size="12" sizeLg="4">
+                <ion-button fill="clear" (click)="showAdvancedMagicSet = !showAdvancedMagicSet">
+                  {{ showAdvancedMagicSet ? 'Nascondi' : 'Mostra' }}
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+          @if (showAdvancedMagicSet) {
+            <div class="advanced-panel ion-padding ion-margin-top">
+              <ion-list inset>
+                <ion-item>
+                  <ion-label position="stacked">Novità minima rispetto alla scaletta precedente (0-1)</ion-label>
+                  <ion-input type="number" formControlName="minDifferenceRatio" />
+                </ion-item>
+                <ion-note color="medium">0 = puoi ripetere quasi tutto, 1 = prova a cambiare il più possibile.</ion-note>
+                <ion-item>
+                  <ion-label position="stacked">Soglia BPM per considerare un brano lento</ion-label>
+                  <ion-input type="number" formControlName="slowSongBpmThreshold" />
+                </ion-item>
+                <ion-note color="medium">Sotto questa soglia il brano viene trattato come lento nella selezione automatica.</ion-note>
+                <ion-item>
+                  <ion-label>Evita due brani consecutivi nella stessa tonalità</ion-label>
+                  <ion-toggle formControlName="avoidAdjacentSameKey" />
+                </ion-item>
+                <ion-note color="medium">Riduce le transizioni troppo simili tra un brano e il successivo.</ion-note>
+                <ion-item>
+                  <ion-label>Evita due brani lenti consecutivi</ion-label>
+                  <ion-toggle formControlName="avoidAdjacentSlowSongs" />
+                </ion-item>
+                <ion-note color="medium">Tiene il ritmo della scaletta più dinamico.</ion-note>
+                <ion-item>
+                  <ion-label position="stacked">Massimo numero di brani lenti consecutivi</ion-label>
+                  <ion-input type="number" formControlName="maxConsecutiveSlowSongs" />
+                </ion-item>
+                <ion-note color="medium">Usato insieme al flag sopra per limitare i blocchi troppo lenti.</ion-note>
+              </ion-list>
+            </div>
+          }
+        </section>
+
+        <section class="modal-section">
+          <ion-grid class="ion-no-padding ion-margin-bottom">
+            <ion-row class="ion-align-items-start ion-justify-content-between ion-flex-wrap">
+              <ion-col size="12" sizeLg="4">
+                <h3 class="ion-no-margin">Riepilogo finale</h3>
+              </ion-col>
+              <ion-col size="12" sizeLg="8">
+                <ion-text color="medium"><p class="ion-no-margin">Controlla il profilo della proposta prima di lanciarla nella form.</p></ion-text>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <ion-grid>
+            <ion-row>
+              @for (item of magicSetSummary; track item.label) {
+                <ion-col size="12" sizeMd="6" sizeXl="4">
+                  <div class="metric-card ion-padding">
+                    <ion-note color="medium">{{ item.label }}</ion-note>
+                    <strong>{{ item.value }}</strong>
+                  </div>
+                </ion-col>
+              }
+            </ion-row>
+          </ion-grid>
+        </section>
+
+        <ion-grid class="ion-no-padding">
+          <ion-row class="ion-align-items-center ion-justify-content-start ion-flex-wrap">
+            <ion-col size="12" sizeSm="auto">
+              <ion-button (click)="generate(false, true)" [disabled]="generating">
+                @if (generating) { <ion-spinner name="crescent" /> } @else { Genera nella form }
+              </ion-button>
+            </ion-col>
+            @if (!editing) {
+              <ion-col size="12" sizeSm="auto">
+                <ion-button fill="outline" (click)="generate(true)" [disabled]="generating">Genera e salva</ion-button>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

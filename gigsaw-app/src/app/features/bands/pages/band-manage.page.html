@@ -1,0 +1,508 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Band</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading) {
+    <ion-card>
+      <ion-card-content>
+        <ion-skeleton-text [animated]="true" style="width: 55%" />
+        <ion-skeleton-text [animated]="true" style="width: 90%" />
+      </ion-card-content>
+    </ion-card>
+  } @else if (!band) {
+    <ion-note class="ion-padding" color="danger">{{ error || 'Band non trovata.' }}</ion-note>
+  } @else {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ band.name }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-note color="medium">Ruolo attuale: {{ roleLabel(band.currentUserRole) }}</ion-note>
+        @if (band.genres?.length) {
+          <ion-note class="ion-margin-top" color="medium">Generi: {{ genreLabel(band) }}</ion-note>
+        }
+      </ion-card-content>
+    </ion-card>
+
+    @if (isAdmin) {
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Profilo band</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+            @if (band.logo) {
+              <img [src]="band.logo" alt="Logo band" class="profile-logo" />
+            }
+
+            <ion-item>
+              <ion-label position="stacked">Nome band</ion-label>
+              <ion-input formControlName="name" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Logo</ion-label>
+              <input type="file" accept="image/*" (change)="onLogoSelected($event)" />
+            </ion-item>
+            @if (selectedLogoFile) {
+              <ion-note class="ion-padding-horizontal ion-padding-top" color="medium">{{ selectedLogoFile.name }}</ion-note>
+            }
+
+            <ion-item>
+              <ion-label position="stacked">Generi</ion-label>
+              <ion-select formControlName="genres" interface="popover" multiple="true">
+                @for (genre of availableGenres; track genre.id) {
+                  <ion-select-option [value]="genre.id">{{ genre.name }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Bio breve</ion-label>
+              <ion-input formControlName="bioShort" maxlength="500" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Bio completa</ion-label>
+              <ion-textarea formControlName="bio" autoGrow="true" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Città</ion-label>
+              <ion-input formControlName="city" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Paese</ion-label>
+              <ion-input formControlName="country" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Email contatto</ion-label>
+              <ion-input type="email" formControlName="email" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Telefono</ion-label>
+              <ion-input formControlName="phone" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Sito web</ion-label>
+              <ion-input type="url" formControlName="website" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Instagram</ion-label>
+              <ion-input type="url" formControlName="instagramUrl" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Facebook</ion-label>
+              <ion-input type="url" formControlName="facebookUrl" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">YouTube</ion-label>
+              <ion-input type="url" formControlName="youtubeUrl" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Spotify</ion-label>
+              <ion-input type="url" formControlName="spotifyUrl" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">TikTok</ion-label>
+              <ion-input type="url" formControlName="tiktokUrl" />
+            </ion-item>
+
+            @if (profileError) {
+              <ion-note class="ion-padding-top" color="danger">{{ profileError }}</ion-note>
+            }
+
+            <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="savingProfile">
+              @if (savingProfile) { <ion-spinner name="crescent" /> } @else { Salva profilo band }
+            </ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Media</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="action-row">
+            <ion-button size="small" (click)="exportMediaPack()">
+              <ion-icon slot="start" name="download-outline" />
+              Esporta ZIP
+            </ion-button>
+            <ion-button size="small" fill="outline" (click)="shareMediaPack()">
+              <ion-icon slot="start" name="share-outline" />
+              Condividi ZIP
+            </ion-button>
+          </div>
+          <ion-item>
+            <ion-label position="stacked">Foto promo</ion-label>
+            <input type="file" accept="image/*" multiple (change)="onPressPhotosSelected($event)" />
+          </ion-item>
+          @if (selectedPressPhotos.length) {
+            <ion-note class="ion-padding-horizontal ion-padding-top" color="medium">
+              {{ selectedPressPhotos.length }} file selezionati
+            </ion-note>
+            <ion-button class="ion-margin-top" expand="block" fill="outline" (click)="uploadPressPhotos()" [disabled]="uploadingPressPhotos">
+              @if (uploadingPressPhotos) {
+                <ion-spinner name="crescent" />
+              } @else {
+                <ion-icon slot="start" name="cloud-upload" />
+                Carica foto promo
+              }
+            </ion-button>
+          }
+
+          @if (band.pressPhotos?.length) {
+            <div class="press-photo-grid">
+              @for (photo of band.pressPhotos; track photo.id) {
+                <div class="press-photo-card">
+                  <img [src]="photo.previewUrl || photo.url" [alt]="photo.fileName || 'Foto promo'" class="press-photo-thumb" />
+                  <ion-button size="small" color="danger" fill="clear" (click)="removePressPhoto(photo)">
+                    <ion-icon slot="start" name="trash-outline" />
+                    Rimuovi
+                  </ion-button>
+                </div>
+              }
+            </div>
+          } @else {
+            <ion-note color="medium">Nessuna foto promo caricata.</ion-note>
+          }
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Press kit</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-note color="medium">
+            Il press kit PDF esporta profilo band, lineup, generi e contatti. Le foto promo restano scaricabili a parte nella sezione Media.
+          </ion-note>
+          <div class="action-row">
+            <ion-button size="small" (click)="exportPressKit()">
+              <ion-icon slot="start" name="download-outline" />
+              Esporta PDF
+            </ion-button>
+            <ion-button size="small" fill="outline" (click)="sharePressKit()">
+              <ion-icon slot="start" name="share-outline" />
+              Condividi
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Tecnica</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form [formGroup]="techForm" (ngSubmit)="saveTech()">
+            <ion-item>
+              <ion-label position="stacked">Note fonico</ion-label>
+              <ion-textarea formControlName="soundEngineerNotes" autoGrow="true" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Stage plot note</ion-label>
+              <ion-textarea formControlName="stagePlotNotes" autoGrow="true" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Monitor mix note</ion-label>
+              <ion-textarea formControlName="monitorMixNotes" autoGrow="true" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Backline note</ion-label>
+              <ion-textarea formControlName="backlineNotes" autoGrow="true" />
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Hospitality note</ion-label>
+              <ion-textarea formControlName="hospitalityNotes" autoGrow="true" />
+            </ion-item>
+
+            <div class="action-row">
+              @for (preset of techPresets; track preset.id) {
+                <ion-button size="small" fill="outline" type="button" (click)="applyTechPreset(preset.id)">
+                  {{ preset.label }}
+                </ion-button>
+              }
+            </div>
+
+            <ion-note color="medium">I preset sovrascrivono temporaneamente stage plot e lista canali finché non salvi la scheda tecnica.</ion-note>
+
+            <div class="action-row">
+              @for (preset of inputChannelPresets; track preset.id) {
+                <ion-button size="small" fill="outline" type="button" (click)="applyInputChannelPreset(preset.id)">
+                  {{ preset.label }}
+                </ion-button>
+              }
+            </div>
+
+            <ion-note color="medium">I preset canali aggiornano solo la input list e, se previsto, le note monitor/backline.</ion-note>
+
+            <div class="action-row">
+              @for (preset of drumMergePresets; track preset.id) {
+                <ion-button size="small" fill="outline" type="button" (click)="mergeDrumMikingPreset(preset.id)">
+                  {{ preset.label }}
+                </ion-button>
+              }
+            </div>
+
+            <ion-note color="medium">I preset drum merge aggiungono solo i canali batteria mancanti e rinumerano la lista.</ion-note>
+
+            <div class="action-row">
+              @for (preset of stagePlotPresets; track preset.id) {
+                <ion-button size="small" fill="outline" type="button" (click)="applyStagePlotPreset(preset.id)">
+                  {{ preset.label }}
+                </ion-button>
+              }
+            </div>
+
+            <ion-note color="medium">I preset stage plot aggiornano solo la disposizione sul palco e le note relative.</ion-note>
+
+            <div class="action-row">
+              <ion-button size="small" fill="outline" type="button" (click)="addInputChannel()">
+                <ion-icon slot="start" name="add-circle-outline" />
+                Aggiungi canale
+              </ion-button>
+              <ion-button size="small" fill="outline" type="button" (click)="addStagePlotItem()">
+                <ion-icon slot="start" name="add-circle-outline" />
+                Aggiungi posizione palco
+              </ion-button>
+              <ion-button size="small" type="button" (click)="exportTechRider()">
+                <ion-icon slot="start" name="download-outline" />
+                Esporta PDF
+              </ion-button>
+              <ion-button size="small" fill="outline" type="button" (click)="shareTechRider()">
+                <ion-icon slot="start" name="share-outline" />
+                Condividi
+              </ion-button>
+            </div>
+
+            <div formArrayName="inputChannels">
+              <ion-reorder-group [disabled]="false" (ionItemReorder)="reorderInputChannels($event)">
+                @for (channel of inputChannels.controls; track $index) {
+                  <div class="channel-row" [formGroupName]="$index">
+                    <ion-item lines="none">
+                      <ion-reorder slot="start"></ion-reorder>
+                      <ion-label>Canale mixer {{ $index + 1 }}</ion-label>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-label position="stacked">Canale</ion-label>
+                      <ion-input type="number" formControlName="channel" />
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-label position="stacked">Nome</ion-label>
+                      <ion-input formControlName="name" />
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-label position="stacked">Sorgente</ion-label>
+                      <ion-input formControlName="source" placeholder="Mic, DI, Wireless..." />
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-label position="stacked">Note</ion-label>
+                      <ion-textarea formControlName="notes" autoGrow="true" />
+                    </ion-item>
+
+                    <ion-button size="small" color="danger" fill="clear" type="button" (click)="removeInputChannel($index)">
+                      <ion-icon slot="start" name="remove-circle-outline" />
+                      Rimuovi canale
+                    </ion-button>
+                  </div>
+                }
+              </ion-reorder-group>
+            </div>
+
+            <div formArrayName="stagePlotLayout" class="stage-plot-grid">
+              @if (stagePlotLayout.controls.length) {
+                <div class="stage-preview-shell">
+                  <div class="stage-preview-meta">
+                    <span>Snap grid 5%</span>
+                    <span>Drag diretto sul palco</span>
+                    <span>Not to scale</span>
+                  </div>
+                  <div class="stage-preview">
+                    <div class="stage-frame-label top">Upstage</div>
+                    <div class="stage-frame-label left">Stage Left</div>
+                    <div class="stage-frame-label right">Stage Right</div>
+                    @for (item of stagePlotLayout.controls; track $index) {
+                      <div
+                        class="stage-plot-item"
+                        [attr.data-kind]="stagePlotKind(item.get('instrument')?.value || item.get('label')?.value)"
+                        [style.left.%]="item.get('x')?.value"
+                        [style.top.%]="item.get('y')?.value"
+                        (pointerdown)="startStagePlotDrag($index, $event)"
+                      >
+                        <div class="stage-plot-icon">{{ stagePlotIcon(item.get('instrument')?.value || item.get('label')?.value) }}</div>
+                        <div class="stage-plot-badge">{{ stagePlotBadge(item.get('instrument')?.value || item.get('label')?.value) }}</div>
+                        <div class="stage-plot-name">{{ item.get('label')?.value || 'Posizione' }}</div>
+                        @if (item.get('instrument')?.value) {
+                          <div class="stage-plot-role">{{ item.get('instrument')?.value }}</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                  <div class="stage-grid-note">Le coordinate vengono arrotondate automaticamente alla griglia tecnica.</div>
+                </div>
+              }
+
+              @for (item of stagePlotLayout.controls; track $index) {
+                <div class="channel-row" [formGroupName]="$index">
+                  <ion-item>
+                    <ion-label position="stacked">Label palco</ion-label>
+                    <ion-input formControlName="label" />
+                  </ion-item>
+
+                  <ion-item>
+                    <ion-label position="stacked">Strumento / ruolo</ion-label>
+                    <ion-input formControlName="instrument" />
+                  </ion-item>
+
+                  <ion-item>
+                    <ion-label position="stacked">Posizione X (%)</ion-label>
+                    <ion-input type="number" formControlName="x" />
+                  </ion-item>
+
+                  <ion-item>
+                    <ion-label position="stacked">Posizione Y (%)</ion-label>
+                    <ion-input type="number" formControlName="y" />
+                  </ion-item>
+
+                  <ion-button size="small" color="danger" fill="clear" type="button" (click)="removeStagePlotItem($index)">
+                    <ion-icon slot="start" name="remove-circle-outline" />
+                    Rimuovi posizione
+                  </ion-button>
+                </div>
+              }
+            </div>
+
+            @if (techError) {
+              <ion-note color="danger">{{ techError }}</ion-note>
+            }
+
+            <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="savingTech">
+              @if (savingTech) { <ion-spinner name="crescent" /> } @else { Salva scheda tecnica }
+            </ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Codice band</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label>
+              <p>Codice da condividere</p>
+              <h2>{{ band.joinCode || '—' }}</h2>
+            </ion-label>
+          </ion-item>
+          <div class="action-row">
+            <ion-button size="small" (click)="copyJoinCode()" [disabled]="!band.joinCode">Copia</ion-button>
+            <ion-button size="small" fill="outline" (click)="shareJoinCode()" [disabled]="!band.joinCode">Condividi</ion-button>
+          </div>
+          <ion-note color="medium">Chi riceve il codice può usare “Entra in una band” dalla schermata iniziale.</ion-note>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Invita persona</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form [formGroup]="inviteForm" (ngSubmit)="invite()">
+            <ion-item>
+              <ion-label position="stacked">Nome</ion-label>
+              <ion-input formControlName="name" />
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Email</ion-label>
+              <ion-input type="email" formControlName="email" />
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Ruolo</ion-label>
+              <ion-select formControlName="role" interface="popover">
+                <ion-select-option value="BAND_MEMBER">Membro band</ion-select-option>
+                <ion-select-option value="ADMIN">Admin</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="inviting">
+              @if (inviting) { <ion-spinner name="crescent" /> } @else { Invia invito }
+            </ion-button>
+          </form>
+          @if (inviteError) {
+            <ion-note class="ion-margin-top" color="danger">{{ inviteError }}</ion-note>
+          }
+        </ion-card-content>
+      </ion-card>
+
+      @if (band.invitations?.length) {
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Inviti pendenti</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list inset>
+              @for (invitation of band.invitations; track invitation.id) {
+                <ion-item>
+                  <ion-label>
+                    <h2>{{ invitation.name }}</h2>
+                    <p>{{ invitation.email }} · {{ roleLabel(invitation.role) }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      }
+    }
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Membri</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list inset>
+          @for (member of band.members ?? []; track member.id) {
+            <ion-item>
+              <ion-label>
+                <h2>{{ member.name }}</h2>
+                <p>{{ roleLabel(member.role) }} · {{ member.status || 'ACTIVE' }}</p>
+              </ion-label>
+              @if (isAdmin && canEditRole(member)) {
+                <ion-select
+                  slot="end"
+                  interface="popover"
+                  [value]="member.role || 'BAND_MEMBER'"
+                  (ionChange)="changeRole(member, $event)"
+                >
+                  <ion-select-option value="BAND_MEMBER">Membro band</ion-select-option>
+                  <ion-select-option value="ADMIN">Admin</ion-select-option>
+                </ion-select>
+              }
+            </ion-item>
+          }
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>
