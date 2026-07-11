@@ -8,12 +8,13 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { AuthService } from './app/core/auth/auth.service';
+import { xsrfInterceptor } from './app/core/interceptors/xsrf.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([xsrfInterceptor, authInterceptor])),
     provideAppInitializer(() => inject(AuthService).restoreSession()),
     provideRouter(routes, withPreloading(PreloadAllModules)),
   ],
