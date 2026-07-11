@@ -11,8 +11,12 @@ export const xsrfInterceptor: HttpInterceptorFn = (req, next) => {
     ?.split('=')[1];
   const isApiRequest = req.url.startsWith(environment.apiUrl);
 
-  if (!isApiRequest || !xsrfToken) {
+  if (!isApiRequest) {
     return next(req);
+  }
+
+  if (!xsrfToken) {
+    return next(req.clone({ withCredentials: true }));
   }
 
   return next(

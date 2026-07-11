@@ -132,7 +132,10 @@ export class AuthService {
   }
 
   private ensureCsrfCookie(): Observable<unknown> {
-    return this.http.get(SANCTUM_CSRF_COOKIE_URL, { responseType: 'text' });
+    return this.http.get(SANCTUM_CSRF_COOKIE_URL, {
+      responseType: 'text',
+      withCredentials: true,
+    });
   }
 
   private setUser(user: User): void {
