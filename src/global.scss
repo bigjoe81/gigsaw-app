@@ -39,6 +39,47 @@
 /* Tailwind for utility classes only. Avoid preflight so Ionic keeps its base layout styles. */
 @import 'tailwindcss/theme.css';
 @import 'tailwindcss/utilities.css';
+@plugin "daisyui" {
+  themes: false;
+}
+@plugin "daisyui/theme" {
+  name: "gigsaw";
+  default: true;
+  prefersdark: true;
+  color-scheme: light dark;
+
+  --color-base-100: var(--ion-card-background);
+  --color-base-200: var(--ion-background-color);
+  --color-base-300: var(--ion-color-light);
+  --color-base-content: var(--ion-text-color);
+
+  --color-primary: var(--ion-color-primary);
+  --color-primary-content: var(--ion-color-primary-contrast);
+  --color-secondary: var(--ion-color-secondary);
+  --color-secondary-content: var(--ion-color-secondary-contrast);
+  --color-accent: var(--ion-color-tertiary);
+  --color-accent-content: var(--ion-color-tertiary-contrast);
+
+  --color-neutral: var(--ion-color-dark);
+  --color-neutral-content: var(--ion-color-dark-contrast);
+  --color-info: var(--ion-color-secondary);
+  --color-info-content: var(--ion-color-secondary-contrast);
+  --color-success: var(--ion-color-success);
+  --color-success-content: var(--ion-color-success-contrast);
+  --color-warning: var(--ion-color-warning);
+  --color-warning-content: var(--ion-color-warning-contrast);
+  --color-error: var(--ion-color-danger);
+  --color-error-content: var(--ion-color-danger-contrast);
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
 
 @layer components {
   ion-card {

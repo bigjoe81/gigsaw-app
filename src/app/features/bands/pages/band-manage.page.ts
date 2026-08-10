@@ -15,6 +15,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonMenuButton,
   IonNote,
   IonIcon,
   IonReorder,
@@ -45,6 +46,7 @@ import { BandTechRiderService } from '../services/band-tech-rider.service';
   imports: [
     ReactiveFormsModule,
     IonButton,
+    IonButtons,
     IonCard,
     IonCardContent,
     IonCardHeader,
@@ -56,6 +58,7 @@ import { BandTechRiderService } from '../services/band-tech-rider.service';
     IonIcon,
     IonLabel,
     IonList,
+    IonMenuButton,
     IonNote,
     IonSelect,
     IonSelectOption,

@@ -1,18 +1,59 @@
-import { Component } from '@angular/core';
-
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
+import { DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent } from '../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSpinner, IonTitle, IonToolbar],
+  imports: [RouterLink, DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent, IonContent, IonHeader, IonTitle, IonToolbar],
   templateUrl: './register.page.html',
 })
 export class RegisterPage {
-  readonly form = this.fb.group({ name: ['', [Validators.required]], email: ['', [Validators.required, Validators.email]], password: ['', [Validators.required, Validators.minLength(8)]], password_confirmation: ['', Validators.required] });
+  readonly name = signal('');
+  readonly email = signal('');
+  readonly touched = signal(false);
+  readonly nameValid = computed(() => this.name().trim().length > 0);
+  readonly emailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim()));
   loading = false; error = '';
-  constructor(private readonly fb: FormBuilder, private readonly auth: AuthService, private readonly router: Router, private readonly route: ActivatedRoute) {}
-  register(): void { if (this.form.invalid || this.loading) { this.form.markAllAsTouched(); return; } this.loading = true; this.error = ''; this.auth.register(this.form.getRawValue() as {name:string;email:string;password:string;password_confirmation:string}).subscribe({ next: () => void this.router.navigateByUrl(this.route.snapshot.queryParamMap.get('returnUrl') || '/bands'), error: (error: {error?: {message?: string}}) => { this.error = error.error?.message || 'Registrazione non riuscita.'; this.loading = false; } }); }
+
+  constructor(private readonly auth: AuthService, private readonly router: Router, private readonly route: ActivatedRoute) {}
+
+  updateName(name: string): void {
+    this.name.set(name);
+  }
+
+  updateEmail(email: string): void {
+    this.email.set(email);
+  }
+
+  requestOtp(): void {
+    this.touched.set(true);
+
+    if (!this.nameValid() || !this.emailValid() || this.loading) {
+      return;
+    }
+
+    const name = this.name().trim();
+    const email = this.email().trim();
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/bands';
+    this.loading = true;
+    this.error = '';
+    this.auth.requestOtp({ name, email, purpose: 'register' }).subscribe({
+      next: ({ challenge }) => void this.router.navigate(['/verify-otp'], {
+        queryParams: {
+          challengeId: challenge.challengeId,
+          name,
+          email: challenge.email,
+          purpose: challenge.intent,
+          returnUrl,
+        },
+      }),
+      error: (error: {error?: {message?: string}}) => {
+        this.error = error.error?.message || 'Invio codice non riuscito.';
+        this.loading = false;
+      },
+    });
+  }
+  submit(): void { this.requestOtp(); }
 }

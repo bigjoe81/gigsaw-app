@@ -4,7 +4,7 @@ import { map, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Band, BandMember, BandPressKit, BandPressPhoto, CreateBandRequest, PendingBandInvitation, UpdateBandRequest } from '../models/band.models';
 
-type ApiEnvelope<T> = T | { data: T };
+type ApiEnvelope<T> = T | { data: T } | { data: { data: T } };
 const API_BASE_URL = `${environment.apiUrl}${environment.apiPath}`;
 
 @Injectable({ providedIn: 'root' })
@@ -96,9 +96,15 @@ export class BandService {
   }
 
   private unwrap<T>(response: ApiEnvelope<T>): T {
-    return typeof response === 'object' && response !== null && 'data' in response
-      ? response.data
-      : response;
+    if (typeof response !== 'object' || response === null || !('data' in response)) {
+      return response;
+    }
+
+    const data = response.data;
+
+    return typeof data === 'object' && data !== null && 'data' in data
+      ? data.data
+      : data;
   }
 
   private normalizeBand(band: any): Band {
@@ -129,6 +135,7 @@ export class BandService {
       inputChannels: band.inputChannels ?? band.input_channels ?? [],
       stagePlotLayout: band.stagePlotLayout ?? band.stage_plot_layout ?? [],
       genres: band.genres ?? [],
+      membersCount: band.membersCount ?? band.members_count ?? null,
       pressPhotos: this.normalizePressPhotos(band.pressPhotos ?? band.press_photos ?? []),
       members: (band.members ?? []).map((member: any): BandMember => ({
         id: member.id,

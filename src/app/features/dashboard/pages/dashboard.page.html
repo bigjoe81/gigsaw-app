@@ -1,0 +1,157 @@
+<ion-header class="dashboard-shell">
+  <ion-toolbar>
+    <ion-menu-button slot="start" menu="band-menu" />
+
+    <nav class="breadcrumbs" aria-label="Percorso">
+      <ion-icon aria-hidden="true" name="home-outline" />
+      <span>/</span>
+      <strong>Dashboard</strong>
+    </nav>
+
+    <label class="search-box">
+      <ion-icon aria-hidden="true" name="search-outline" />
+      <input type="search" placeholder="Cerca brani, concerti, persone..." />
+    </label>
+
+    <div class="top-actions" slot="end">
+      <button class="icon-button" type="button" aria-label="Notifiche">
+        <ion-icon aria-hidden="true" name="notifications-outline" />
+        <span></span>
+      </button>
+      <div class="user-avatar" aria-label="Giorgio">G</div>
+      <ion-button [routerLink]="[bandBaseUrl, 'repertorio', 'new']">
+        <ion-icon slot="start" name="add-outline" />
+        Nuovo
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="dashboard-content">
+  <main class="dashboard">
+    <section class="hero">
+      <h1>Buon pomeriggio, Giorgio</h1>
+      <p>Ecco cosa succede nella tua band.</p>
+    </section>
+
+    <section class="stats-grid" aria-label="Statistiche principali">
+      @for (card of cards; track card.label) {
+        <article class="stat-card">
+          <div class="stat-icon">
+            <ion-icon aria-hidden="true" [name]="card.icon" />
+          </div>
+          <div class="stat-copy">
+            <span>{{ card.label }}</span>
+            <strong>{{ card.value }}</strong>
+            @if (card.note) {
+              <small [class.success]="card.noteTone === 'success'">{{ card.note }}</small>
+            }
+            @if (card.progress) {
+              <div class="progress" aria-label="Completamento press kit">
+                <span [style.width.%]="card.progress"></span>
+              </div>
+            }
+          </div>
+        </article>
+      }
+    </section>
+
+    <div class="dashboard-grid">
+      <section class="panel schedule-panel">
+        <header>
+          <h2>Prossimi impegni</h2>
+        </header>
+        <div class="event-list">
+          @for (event of events; track event.title) {
+            <article class="event-row" [class]="'event-row ' + event.tone">
+              <time>
+                <span>{{ event.badgeTop }}</span>
+                <strong>{{ event.badgeMain }}</strong>
+                <span>{{ event.badgeBottom }}</span>
+              </time>
+              <span class="timeline-dot"></span>
+              <div class="event-main">
+                <h3>{{ event.title }}</h3>
+                <p>{{ event.meta }}</p>
+                @if (event.location) {
+                  <small><ion-icon aria-hidden="true" name="location-outline" />{{ event.location }}</small>
+                }
+              </div>
+              <div class="member-stack" aria-label="Partecipanti">
+                <span>G</span>
+                <span>I</span>
+                <span>R</span>
+              </div>
+              <a class="outline-action" [routerLink]="[bandBaseUrl]">{{ event.action }}</a>
+            </article>
+          }
+        </div>
+        <a class="panel-link" [routerLink]="[bandBaseUrl, 'prove']">Vedi tutti gli impegni</a>
+      </section>
+
+      <section class="panel quick-panel">
+        <header>
+          <h2>Azioni rapide</h2>
+        </header>
+        <div class="quick-grid">
+          @for (action of quickActions; track action.label) {
+            <a class="quick-action" [routerLink]="[bandBaseUrl, action.link]">
+              <ion-icon aria-hidden="true" [name]="action.icon" />
+              <span>{{ action.label }}</span>
+            </a>
+          }
+        </div>
+      </section>
+
+      <section class="panel activity-panel">
+        <header>
+          <h2>Attività recente</h2>
+        </header>
+        <div class="activity-list">
+          @for (activity of activities; track activity.time) {
+            <article>
+              @if (activity.avatar === 'check') {
+                <span class="activity-avatar complete"><ion-icon aria-hidden="true" name="checkmark-circle" /></span>
+              } @else {
+                <span class="activity-avatar">{{ activity.avatar }}</span>
+              }
+              <p>
+                @if (activity.actor) {
+                  <strong>{{ activity.actor }}</strong>
+                }
+                {{ activity.text }}
+                @if (activity.target) {
+                  <a [routerLink]="[bandBaseUrl, 'repertorio']">{{ activity.target }}</a>
+                }
+              </p>
+              <time>{{ activity.time }}</time>
+            </article>
+          }
+        </div>
+        <a class="panel-link" [routerLink]="[bandBaseUrl]">Vedi tutte le attività</a>
+      </section>
+
+      <section class="panel repertoire-panel">
+        <header>
+          <h2>Repertorio</h2>
+        </header>
+        <div class="repertoire-body">
+          <div class="donut" aria-label="Stato repertorio"></div>
+          <div class="legend">
+            @for (item of repertoire; track item.label) {
+              <div>
+                <span [class]="item.color"></span>
+                <p>{{ item.label }}</p>
+                <strong>{{ item.value }}</strong>
+              </div>
+            }
+            <footer>
+              <p>Totale brani</p>
+              <strong>42</strong>
+            </footer>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</ion-content>

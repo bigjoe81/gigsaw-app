@@ -1,4 +1,27 @@
 <ion-header><ion-toolbar><ion-title>Crea account</ion-title></ion-toolbar></ion-header>
-<ion-content class="ion-padding"><form [formGroup]="form" (ngSubmit)="register()"><ion-item><ion-label position="stacked">Nome</ion-label><ion-input formControlName="name" /></ion-item><ion-item><ion-label position="stacked">Email</ion-label><ion-input type="email" autocomplete="email" formControlName="email" /></ion-item><ion-item><ion-label position="stacked">Password</ion-label><ion-input type="password" autocomplete="new-password" formControlName="password" /></ion-item><ion-item><ion-label position="stacked">Conferma password</ion-label><ion-input type="password" autocomplete="new-password" formControlName="password_confirmation" /></ion-item>@if (error) {
-<ion-note color="danger">{{ error }}</ion-note>
-}<ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="loading">@if(loading){<ion-spinner name="crescent"/>}@else{Registrati}</ion-button></form><ion-button expand="block" fill="clear" routerLink="/login">Hai già un account? Accedi</ion-button></ion-content>
+<ion-content class="ion-padding">
+  <form (submit)="submit(); $event.preventDefault()">
+    <label class="block">
+      <span class="mb-2 block text-sm font-bold">Nome</span>
+      <app-daisy-input name="name" autocomplete="name" [value]="name()" (valueChange)="updateName($event)" />
+    </label>
+    @if (touched() && !nameValid()) {
+      <app-daisy-message tone="error" messageClass="mt-2">Inserisci il nome.</app-daisy-message>
+    }
+
+    <label class="mt-4 block">
+      <span class="mb-2 block text-sm font-bold">Email</span>
+      <app-daisy-input type="email" name="email" autocomplete="email" [value]="email()" (valueChange)="updateEmail($event)" />
+    </label>
+    @if (touched() && !emailValid()) {
+      <app-daisy-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-daisy-message>
+    }
+
+    @if (error) {
+      <app-daisy-message tone="error" messageClass="mt-2">{{ error }}</app-daisy-message>
+    }
+
+    <app-daisy-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Invia codice OTP</app-daisy-button>
+  </form>
+  <a class="btn btn-ghost mt-2 w-full" routerLink="/login">Hai gia un account? Accedi</a>
+</ion-content>

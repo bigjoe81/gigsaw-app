@@ -8,8 +8,10 @@ export const xsrfInterceptor: HttpInterceptorFn = (req, next) => {
   const xsrfToken = document.cookie
     .split('; ')
     .find(cookie => cookie.startsWith('XSRF-TOKEN='))
-    ?.split('=')[1];
-  const isApiRequest = req.url.startsWith(environment.apiUrl);
+    ?.slice('XSRF-TOKEN='.length);
+  const isApiRequest = environment.apiUrl
+    ? req.url.startsWith(environment.apiUrl)
+    : req.url.startsWith(environment.apiPath) || req.url.startsWith('/sanctum/');
 
   if (!isApiRequest) {
     return next(req);

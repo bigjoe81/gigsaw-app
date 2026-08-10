@@ -5,29 +5,29 @@
         <source srcset="assets/logo-hor-dark.png" media="(prefers-color-scheme: dark)" />
         <img src="assets/logo-hor.png" alt="GigSaw logo" />
       </picture>
-      <ion-note class="login-brand-note">La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong></ion-note>
+      <p class="login-brand-note">La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong></p>
     </div>
-    <form [formGroup]="form" (ngSubmit)="login()">
-      <ion-item>
-        <ion-label position="stacked">Email</ion-label>
-        <ion-input type="email" placeholder="es. mario.rossi@gmail.com" autocomplete="email" formControlName="email"/>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Password</ion-label>
-        <ion-input type="password" autocomplete="current-password" formControlName="password"/>
-      </ion-item>
-      @if (error) {
-        <ion-note color="danger">{{ error }}</ion-note>
+    <form (submit)="submit(); $event.preventDefault()">
+      <label class="block">
+        <span class="mb-2 block text-sm font-bold">Email</span>
+        <app-daisy-input
+          type="email"
+          name="email"
+          placeholder="es. mario.rossi@gmail.com"
+          autocomplete="email"
+          [value]="email()"
+          (valueChange)="updateEmail($event)"
+        />
+      </label>
+      @if (touched() && !emailValid()) {
+        <app-daisy-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-daisy-message>
       }
-      <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="loading">@if (loading) {
-        <ion-spinner name="crescent"/>
-      } @else {
-        Accedi
-      }</ion-button>
+      @if (error) {
+        <app-daisy-message tone="error" messageClass="mt-2">{{ error }}</app-daisy-message>
+      }
+      <app-daisy-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Invia codice OTP</app-daisy-button>
     </form>
-    <ion-button expand="block" fill="outline" class="ion-margin-top" (click)="loginWithGoogle()">Continua con Google
-    </ion-button>
-    <ion-button expand="block" fill="clear" routerLink="/register">Crea account</ion-button>
-    <ion-button expand="block" fill="clear" routerLink="/forgot-password">Hai dimenticato la password?</ion-button>
+    <app-daisy-button buttonClass="mt-3 w-full" tone="outline" type="button" (click)="loginWithGoogle()">Continua con Google</app-daisy-button>
+    <a class="btn btn-ghost mt-2 w-full" routerLink="/register">Crea account</a>
   </div>
 </ion-content>

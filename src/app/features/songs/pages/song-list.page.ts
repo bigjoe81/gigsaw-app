@@ -2,7 +2,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
-  IonBackButton,
   IonButton,
   IonButtons,
   IonContent,
@@ -11,6 +10,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonMenuButton,
   IonRefresher,
   IonRefresherContent,
   IonSkeletonText,
@@ -27,7 +27,6 @@ import { SongService } from '../services/song.service';
   standalone: true,
   imports: [
     RouterLink,
-    IonBackButton,
     IonButton,
     IonButtons,
     IonContent,
@@ -36,6 +35,7 @@ import { SongService } from '../services/song.service';
     IonItem,
     IonLabel,
     IonList,
+    IonMenuButton,
     IonRefresher,
     IonRefresherContent,
     IonSkeletonText,

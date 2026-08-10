@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, catchError, finalize, map, of, switchMap, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, finalize, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ForgotPasswordRequest, LoginRequest, LoginResponse, RegisterRequest, ResetPasswordRequest, User } from './auth.models';
+import { ForgotPasswordRequest, LoginResponse, RequestOtpRequest, RequestOtpResponse, ResendOtpRequest, ResetPasswordRequest, User, VerifyOtpRequest } from './auth.models';
 
 const TOKEN_KEY = 'gigsaw.auth-token';
 const REFRESH_TOKEN_KEY = 'gigsaw.refresh-token';
@@ -17,7 +17,7 @@ export class AuthService {
   private readonly userSubject = new BehaviorSubject<User | null>(null);
   readonly currentUser$ = this.userSubject.asObservable();
   readonly currentUser = signal<User | null>(null);
-  private restoring = false;
+  private restoreSessionRequest?: Observable<User | null>;
 
   constructor(private readonly http: HttpClient, private readonly router: Router) {}
 
@@ -33,21 +33,36 @@ export class AuthService {
     return this.currentUser() !== null;
   }
 
-  login(credentials: LoginRequest): Observable<User> {
+  requestOtp(payload: RequestOtpRequest): Observable<RequestOtpResponse> {
+    const endpoint = payload.purpose === 'register' ? 'register' : 'login';
+    const body = payload.purpose === 'register'
+      ? { name: payload.name, email: payload.email }
+      : { email: payload.email };
+
     return this.ensureCsrfCookie().pipe(
-      switchMap(() => this.http.post<LoginResponse | null>(`${API_BASE_URL}/login`, credentials)),
+      switchMap(() => this.http.post<RequestOtpResponse>(`${API_BASE_URL}/${endpoint}`, body)),
+    );
+  }
+
+  verifyOtp(payload: VerifyOtpRequest): Observable<User> {
+    return this.ensureCsrfCookie().pipe(
+      switchMap(() => this.http.post<LoginResponse | null>(`${API_BASE_URL}/verify-otp`, {
+        challenge_id: payload.challengeId,
+        intent: payload.purpose,
+        code: payload.code,
+      })),
       tap((response) => this.storeTokens(response)),
       switchMap((response) => response?.user ? of(response.user) : this.fetchUser()),
       tap((user) => this.setUser(user)),
     );
   }
 
-  register(payload: RegisterRequest): Observable<User> {
+  resendOtp(payload: ResendOtpRequest): Observable<RequestOtpResponse> {
     return this.ensureCsrfCookie().pipe(
-      switchMap(() => this.http.post<LoginResponse>(`${API_BASE_URL}/register`, payload)),
-      tap((response) => this.storeTokens(response)),
-      switchMap((response) => response.user ? of(response.user) : this.fetchUser()),
-      tap((user) => this.setUser(user)),
+      switchMap(() => this.http.post<RequestOtpResponse>(`${API_BASE_URL}/resend-otp`, {
+        challenge_id: payload.challengeId,
+        intent: payload.purpose,
+      })),
     );
   }
 
@@ -64,16 +79,19 @@ export class AuthService {
   }
 
   restoreSession(): Observable<User | null> {
-    if (this.restoring) return this.currentUser$;
-    this.restoring = true;
-    return this.fetchUser().pipe(
+    if (this.restoreSessionRequest) return this.restoreSessionRequest;
+
+    this.restoreSessionRequest = this.fetchUser().pipe(
       tap((user) => this.setUser(user)),
       catchError(() => {
         this.clearSession();
         return of(null);
       }),
-      finalize(() => { this.restoring = false; }),
+      finalize(() => { this.restoreSessionRequest = undefined; }),
+      shareReplay({ bufferSize: 1, refCount: false }),
     );
+
+    return this.restoreSessionRequest;
   }
 
   logout(navigate = true): Observable<void> {

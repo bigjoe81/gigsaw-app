@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { BandLayoutPage } from './layouts/band-layout.page';
 
 export const routes: Routes = [
   {
@@ -11,12 +12,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register.page').then((m) => m.RegisterPage),
   },
   {
-    path: 'forgot-password',
-    loadComponent: () => import('./features/auth/forgot-password.page').then((m) => m.ForgotPasswordPage),
-  },
-  {
-    path: 'reset-password',
-    loadComponent: () => import('./features/auth/reset-password.page').then((m) => m.ResetPasswordPage),
+    path: 'verify-otp',
+    loadComponent: () => import('./features/auth/verify-otp.page').then((m) => m.VerifyOtpPage),
   },
   {
     path: 'bands',
@@ -39,7 +36,44 @@ export const routes: Routes = [
   {
     path: 'band/:bandId',
     canActivate: [authGuard],
-    loadChildren: () => import('./tabs/tabs.routes').then((m) => m.routes),
+    component: BandLayoutPage,
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/pages/dashboard.page').then((m) => m.DashboardPage),
+      },
+      {
+        path: 'repertorio',
+        loadChildren: () =>
+          import('./features/songs/songs.routes').then((m) => m.SONG_ROUTES),
+      },
+      {
+        path: 'prove',
+        loadChildren: () =>
+          import('./features/rehearsal-sessions/rehearsal-sessions.routes').then((m) => m.REHEARSAL_SESSION_ROUTES),
+      },
+      {
+        path: 'concerti',
+        loadChildren: () =>
+          import('./features/gigs/gigs.routes').then((m) => m.GIG_ROUTES),
+      },
+      {
+        path: 'scalette',
+        loadChildren: () =>
+          import('./features/setlists/setlists.routes').then((m) => m.SETLIST_ROUTES),
+      },
+      {
+        path: 'band',
+        loadComponent: () =>
+          import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage),
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+    ],
   },
   { path: '', redirectTo: '/bands', pathMatch: 'full' },
   { path: '**', redirectTo: '/bands' },

@@ -2,7 +2,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
-  IonBackButton,
   IonButton,
   IonButtons,
   IonContent,
@@ -11,6 +10,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonMenuButton,
   IonRefresher,
   IonRefresherContent,
   IonSkeletonText,
@@ -29,7 +29,6 @@ import { SetlistService } from '../services/setlist.service';
   standalone: true,
   imports: [
     RouterLink,
-    IonBackButton,
     IonButton,
     IonButtons,
     IonContent,
@@ -38,6 +37,7 @@ import { SetlistService } from '../services/setlist.service';
     IonItem,
     IonLabel,
     IonList,
+    IonMenuButton,
     IonRefresher,
     IonRefresherContent,
     IonSkeletonText,

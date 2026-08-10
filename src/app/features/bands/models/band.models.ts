@@ -96,6 +96,7 @@ export interface Band {
   stagePlotLayout?: BandStagePlotItem[];
   genres?: BandGenre[];
   members?: BandMember[];
+  membersCount?: number | null;
   invitations?: PendingBandInvitation[];
   pressPhotos?: BandPressPhoto[];
 }

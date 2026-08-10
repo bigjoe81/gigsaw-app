@@ -1,0 +1,42 @@
+<ion-content class="ion-padding otp-content" [fullscreen]="true">
+  <div class="otp-shell">
+    <div class="otp-brand">
+      <picture>
+        <source srcset="assets/logo-hor-dark.png" media="(prefers-color-scheme: dark)" />
+        <img src="assets/logo-hor.png" alt="GigSaw logo" />
+      </picture>
+      <p class="otp-brand-note">Inserisci il codice inviato a<br /><strong>{{ email || 'la tua email' }}</strong></p>
+    </div>
+
+    <form (submit)="verify(); $event.preventDefault()">
+      <label class="block">
+        <span class="mb-2 block text-sm font-bold">Codice OTP</span>
+        <app-daisy-otp-input
+          [value]="code()"
+          [disabled]="loading"
+          (valueChange)="updateCode($event)"
+          (complete)="verify()"
+        />
+      </label>
+    @if (touched() && !codeValid()) {
+      <app-daisy-message tone="error" messageClass="mt-2">Inserisci il codice a 6 cifre.</app-daisy-message>
+    }
+
+    @if (success) {
+      <app-daisy-message tone="success" messageClass="mt-2">{{ success }}</app-daisy-message>
+    }
+    @if (isExpiredCodeError()) {
+      <app-daisy-alert tone="warning" alertClass="mt-3">
+        Il codice è scaduto. Richiedi un nuovo codice OTP per continuare.
+      </app-daisy-alert>
+    } @else if (error()) {
+      <app-daisy-message tone="error" messageClass="mt-2">{{ error() }}</app-daisy-message>
+    }
+
+      <app-daisy-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Verifica e continua</app-daisy-button>
+    </form>
+
+    <app-daisy-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending || !challengeId" [loading]="resending">Invia un nuovo codice</app-daisy-button>
+    <a class="btn btn-ghost mt-2 w-full" [routerLink]="purpose === 'register' ? '/register' : '/login'">Torna indietro</a>
+  </div>
+</ion-content>
