@@ -109,7 +109,10 @@ export class SetlistFormPage implements OnInit {
     slowSongBpmThreshold: this.fb.control<number | null>(null),
     avoidAdjacentSameKey: this.fb.nonNullable.control(true),
     avoidAdjacentSlowSongs: this.fb.nonNullable.control(true),
+    avoidAdjacentFastSongs: this.fb.nonNullable.control(true),
     maxConsecutiveSlowSongs: this.fb.control<number | null>(null),
+    maxConsecutiveFastSongs: this.fb.control<number | null>(null),
+    includeEncore: this.fb.nonNullable.control(false),
   });
 
   songs: Song[] = [];
@@ -132,6 +135,9 @@ export class SetlistFormPage implements OnInit {
   private id?: number;
   private bandId?: number;
   private selectedSongEntries: SetlistSongEntryPayload[] = [];
+  openingSongIds: number[] = [];
+  closingSongIds: number[] = [];
+  encoreSongIds: number[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
@@ -212,6 +218,9 @@ export class SetlistFormPage implements OnInit {
       { label: 'Set', value: this.form.controls.setCount.value ? String(this.form.controls.setCount.value) : '1' },
       { label: 'Target set', value: this.form.controls.setTargetsText.value.trim() || 'Distribuzione automatica' },
       { label: 'Pausa', value: this.form.controls.breakDurationText.value.trim() || 'Nessuna' },
+      { label: 'Apertura', value: this.segmentLabel(this.openingSongIds) || 'Automatica' },
+      { label: 'Finale', value: this.segmentLabel(this.closingSongIds) || 'Automatico' },
+      { label: 'Bis', value: this.form.controls.includeEncore.value ? (this.segmentLabel(this.encoreSongIds) || 'Automatico') : 'No' },
       { label: 'Tag brani', value: this.form.controls.songTagsText.value.trim() || 'Tutti' },
     ];
   }
@@ -260,6 +269,9 @@ export class SetlistFormPage implements OnInit {
 
   patchSetlist(setlist: Setlist): void {
     this.selectedSongEntries = this.mapSetlistEntries(setlist);
+    this.openingSongIds = [...(setlist.generation?.openingSongIds ?? [])];
+    this.closingSongIds = [...(setlist.generation?.closingSongIds ?? [])];
+    this.encoreSongIds = [...(setlist.generation?.encoreSongIds ?? [])];
     this.form.patchValue({
       title: setlist.title,
       date: setlist.date ?? '',
@@ -274,7 +286,10 @@ export class SetlistFormPage implements OnInit {
       slowSongBpmThreshold: setlist.generation?.slowSongBpmThreshold ?? null,
       avoidAdjacentSameKey: setlist.generation?.avoidAdjacentSameKey ?? true,
       avoidAdjacentSlowSongs: setlist.generation?.avoidAdjacentSlowSongs ?? true,
+      avoidAdjacentFastSongs: setlist.generation?.avoidAdjacentFastSongs ?? true,
       maxConsecutiveSlowSongs: setlist.generation?.maxConsecutiveSlowSongs ?? null,
+      maxConsecutiveFastSongs: setlist.generation?.maxConsecutiveFastSongs ?? null,
+      includeEncore: !!setlist.generation?.encoreSongIds?.length,
     });
   }
 
@@ -282,6 +297,10 @@ export class SetlistFormPage implements OnInit {
     const templateId = this.form.controls.templateId.value;
     const template = this.templates.find((item) => item.id === templateId);
     if (!template) return;
+
+    this.openingSongIds = [...(template.openingSongIds ?? [])];
+    this.closingSongIds = [...(template.closingSongIds ?? [])];
+    this.encoreSongIds = [...(template.encoreSongIds ?? [])];
 
     this.form.patchValue({
       targetSongCount: template.targetSongCount ?? null,
@@ -294,7 +313,10 @@ export class SetlistFormPage implements OnInit {
       slowSongBpmThreshold: template.slowSongBpmThreshold ?? null,
       avoidAdjacentSameKey: template.avoidAdjacentSameKey ?? true,
       avoidAdjacentSlowSongs: template.avoidAdjacentSlowSongs ?? true,
+      avoidAdjacentFastSongs: template.avoidAdjacentFastSongs ?? true,
       maxConsecutiveSlowSongs: template.maxConsecutiveSlowSongs ?? null,
+      maxConsecutiveFastSongs: template.maxConsecutiveFastSongs ?? null,
+      includeEncore: !!template.encoreSongIds?.length,
     });
   }
 
@@ -321,7 +343,9 @@ export class SetlistFormPage implements OnInit {
         slowSongBpmThreshold: 95,
         avoidAdjacentSameKey: true,
         avoidAdjacentSlowSongs: true,
+        avoidAdjacentFastSongs: true,
         maxConsecutiveSlowSongs: 1,
+        maxConsecutiveFastSongs: 3,
       });
       return;
     }
@@ -338,7 +362,9 @@ export class SetlistFormPage implements OnInit {
         slowSongBpmThreshold: 95,
         avoidAdjacentSameKey: true,
         avoidAdjacentSlowSongs: true,
+        avoidAdjacentFastSongs: true,
         maxConsecutiveSlowSongs: 1,
+        maxConsecutiveFastSongs: 3,
       });
       return;
     }
@@ -355,7 +381,9 @@ export class SetlistFormPage implements OnInit {
         slowSongBpmThreshold: 100,
         avoidAdjacentSameKey: true,
         avoidAdjacentSlowSongs: true,
+        avoidAdjacentFastSongs: true,
         maxConsecutiveSlowSongs: 1,
+        maxConsecutiveFastSongs: 4,
       });
       return;
     }
@@ -371,7 +399,9 @@ export class SetlistFormPage implements OnInit {
       slowSongBpmThreshold: 95,
       avoidAdjacentSameKey: true,
       avoidAdjacentSlowSongs: true,
+      avoidAdjacentFastSongs: true,
       maxConsecutiveSlowSongs: 1,
+      maxConsecutiveFastSongs: 3,
     });
   }
 
@@ -434,11 +464,16 @@ export class SetlistFormPage implements OnInit {
       setTargets: this.parseSetTargets(),
       breakDurationSeconds: this.parseMinuteSecondToSeconds(this.form.controls.breakDurationText.value),
       songTags: this.parseTagList(this.form.controls.songTagsText.value),
+      openingSongIds: this.expandLinkedSongIds(this.openingSongIds),
+      closingSongIds: this.expandLinkedSongIds(this.closingSongIds),
+      encoreSongIds: this.form.controls.includeEncore.value ? this.expandLinkedSongIds(this.encoreSongIds) : [],
       minDifferenceRatio: this.form.controls.minDifferenceRatio.value,
       slowSongBpmThreshold: this.form.controls.slowSongBpmThreshold.value,
       avoidAdjacentSameKey: this.form.controls.avoidAdjacentSameKey.value,
       avoidAdjacentSlowSongs: this.form.controls.avoidAdjacentSlowSongs.value,
+      avoidAdjacentFastSongs: this.form.controls.avoidAdjacentFastSongs.value,
       maxConsecutiveSlowSongs: this.form.controls.maxConsecutiveSlowSongs.value,
+      maxConsecutiveFastSongs: this.form.controls.maxConsecutiveFastSongs.value,
       save,
     };
 
@@ -704,6 +739,29 @@ export class SetlistFormPage implements OnInit {
   songBlock(song: Song): Song[] {
     if (!song.linkGroup) return [song];
     return this.songs.filter((item) => item.linkGroup === song.linkGroup);
+  }
+
+  setSegmentSongs(segment: 'opening' | 'closing' | 'encore', value: number | number[] | null | undefined): void {
+    const ids = Array.isArray(value) ? value.map(Number) : value == null ? [] : [Number(value)];
+    const expanded = this.expandLinkedSongIds(ids);
+    if (segment === 'opening') this.openingSongIds = expanded;
+    if (segment === 'closing') this.closingSongIds = expanded;
+    if (segment === 'encore') this.encoreSongIds = expanded;
+  }
+
+  segmentLabel(ids: number[]): string {
+    return ids
+      .map((id) => this.songs.find((song) => song.id === id)?.title)
+      .filter((title): title is string => !!title)
+      .join(' + ');
+  }
+
+  private expandLinkedSongIds(ids: number[]): number[] {
+    const expanded = ids.reduce<number[]>((allIds, id) => {
+      const song = this.songs.find((item) => item.id === id);
+      return song ? allIds.concat(this.songBlock(song).map((item) => item.id)) : allIds;
+    }, []);
+    return Array.from(new Set(expanded));
   }
 
   songMeta(song: Song): string {

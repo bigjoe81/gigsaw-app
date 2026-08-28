@@ -448,6 +448,93 @@
         </section>
 
         <section class="modal-section">
+          <h3>Momenti chiave</h3>
+          <ion-text color="medium"><p class="ion-no-margin">Blocca apertura, chiusura e bis. Se scegli un brano linkato, l'intero medley viene mantenuto unito e nello stesso ordine.</p></ion-text>
+          <ion-list inset>
+            <ion-item>
+              <ion-label position="stacked">Brano iniziale</ion-label>
+              <ion-select
+                interface="action-sheet"
+                placeholder="Lascia scegliere a Magic Set"
+                [value]="openingSongIds[0] || null"
+                (ionChange)="setSegmentSongs('opening', $any($event).detail.value)"
+              >
+                <ion-select-option [value]="null">Automatico</ion-select-option>
+                @for (song of songs; track song.id) {
+                  <ion-select-option [value]="song.id">{{ song.title }}{{ song.linkGroup ? ' · medley ' + song.linkGroup : '' }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Brano finale</ion-label>
+              <ion-select
+                interface="action-sheet"
+                placeholder="Lascia scegliere a Magic Set"
+                [value]="closingSongIds[0] || null"
+                (ionChange)="setSegmentSongs('closing', $any($event).detail.value)"
+              >
+                <ion-select-option [value]="null">Automatico</ion-select-option>
+                @for (song of songs; track song.id) {
+                  <ion-select-option [value]="song.id">{{ song.title }}{{ song.linkGroup ? ' · medley ' + song.linkGroup : '' }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Bis / “We want more”</h2>
+                <p>Prepara una coda separata da usare solo se il pubblico la chiede.</p>
+              </ion-label>
+              <ion-toggle formControlName="includeEncore" />
+            </ion-item>
+            @if (form.controls.includeEncore.value) {
+              <ion-item>
+                <ion-label position="stacked">Brani del bis</ion-label>
+                <ion-select
+                  multiple="true"
+                  interface="alert"
+                  placeholder="Selezione automatica"
+                  [value]="encoreSongIds"
+                  (ionChange)="setSegmentSongs('encore', $any($event).detail.value)"
+                >
+                  @for (song of songs; track song.id) {
+                    <ion-select-option [value]="song.id">{{ song.title }}{{ song.linkGroup ? ' · medley ' + song.linkGroup : '' }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+              <ion-note color="medium">Puoi selezionare più brani. I brani appartenenti allo stesso medley vengono aggiunti insieme.</ion-note>
+            }
+          </ion-list>
+        </section>
+
+        <section class="modal-section flow-section">
+          <h3>Flusso ed energia</h3>
+          <ion-text color="medium"><p class="ion-no-margin">Evita blocchi monotoni e crea transizioni più efficaci durante lo show.</p></ion-text>
+          <ion-list inset>
+            <ion-item>
+              <ion-label>
+                <h2>Alterna i brani lenti</h2>
+                <p>Non mette due brani lenti uno accanto all'altro.</p>
+              </ion-label>
+              <ion-toggle formControlName="avoidAdjacentSlowSongs" />
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Spezza i blocchi tutti veloci</h2>
+                <p>Evita una sequenza troppo lunga di brani ad alta energia.</p>
+              </ion-label>
+              <ion-toggle formControlName="avoidAdjacentFastSongs" />
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Varia la tonalità</h2>
+                <p>Non affianca brani nella stessa tonalità quando possibile.</p>
+              </ion-label>
+              <ion-toggle formControlName="avoidAdjacentSameKey" />
+            </ion-item>
+          </ion-list>
+        </section>
+
+        <section class="modal-section">
           <h3>Obiettivi dello show</h3>
           <ion-text color="medium"><p class="ion-no-margin">Definisci taglia e preset di partenza per la scaletta.</p></ion-text>
           <ion-list inset>
@@ -583,20 +670,15 @@
                 </ion-item>
                 <ion-note color="medium">Sotto questa soglia il brano viene trattato come lento nella selezione automatica.</ion-note>
                 <ion-item>
-                  <ion-label>Evita due brani consecutivi nella stessa tonalità</ion-label>
-                  <ion-toggle formControlName="avoidAdjacentSameKey" />
-                </ion-item>
-                <ion-note color="medium">Riduce le transizioni troppo simili tra un brano e il successivo.</ion-note>
-                <ion-item>
-                  <ion-label>Evita due brani lenti consecutivi</ion-label>
-                  <ion-toggle formControlName="avoidAdjacentSlowSongs" />
-                </ion-item>
-                <ion-note color="medium">Tiene il ritmo della scaletta più dinamico.</ion-note>
-                <ion-item>
                   <ion-label position="stacked">Massimo numero di brani lenti consecutivi</ion-label>
                   <ion-input type="number" formControlName="maxConsecutiveSlowSongs" />
                 </ion-item>
                 <ion-note color="medium">Usato insieme al flag sopra per limitare i blocchi troppo lenti.</ion-note>
+                <ion-item>
+                  <ion-label position="stacked">Massimo numero di brani veloci consecutivi</ion-label>
+                  <ion-input type="number" formControlName="maxConsecutiveFastSongs" />
+                </ion-item>
+                <ion-note color="medium">Inserisce un cambio di respiro dopo questo numero di brani veloci.</ion-note>
               </ion-list>
             </div>
           }
