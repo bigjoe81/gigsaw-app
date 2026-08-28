@@ -1,0 +1,18 @@
+<ion-header><ion-toolbar><ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons><ion-title>Locandine</ion-title><ion-buttons slot="end"><ion-button routerLink="new"><ion-icon slot="start" name="add" />Nuovo</ion-button></ion-buttons></ion-toolbar></ion-header>
+<ion-content>
+  <main class="mx-auto max-w-6xl p-4 md:p-8">
+    <div class="mb-6"><h1 class="text-2xl font-bold">Template della band</h1><p class="text-base-content/65">Crea layout riutilizzabili ed esporta locandine pronte per i social.</p></div>
+    @if (!templates.length) {
+      <section class="hero min-h-[55vh] rounded-box border border-base-300 bg-base-100"><div class="hero-content text-center"><div><ion-icon name="color-palette-outline" class="text-6xl text-primary" /><h2 class="mt-3 text-xl font-bold">Nessun template</h2><p class="mb-5 text-base-content/60">Inizia scegliendo un formato e caricando lo sfondo.</p><ion-button routerLink="new">Crea il primo template</ion-button></div></div></section>
+    } @else {
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @for (template of templates; track template.id) {
+          <a class="card border border-base-300 bg-base-100 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg" [routerLink]="[template.id, 'edit']">
+            <figure class="aspect-video bg-neutral" [style.background-image]="template.document.backgroundDataUrl ? 'url(' + template.document.backgroundDataUrl + ')' : ''" style="background-size:cover;background-position:center"></figure>
+            <div class="card-body p-5"><h2 class="card-title">{{ template.name }}</h2><p>{{ template.document.format.label }} · {{ template.document.fields.length }} campi</p><div class="card-actions items-center justify-between"><span class="text-xs opacity-60">{{ template.updatedAt | date:'short' }}</span><button class="btn btn-ghost btn-sm text-error" type="button" (click)="remove(template, $event)"><ion-icon name="trash-outline" /> Elimina</button></div></div>
+          </a>
+        }
+      </div>
+    }
+  </main>
+</ion-content>

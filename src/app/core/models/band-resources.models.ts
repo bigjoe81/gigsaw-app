@@ -109,7 +109,9 @@ export interface SetlistGeneration {
   slowSongBpmThreshold?: number | null;
   avoidAdjacentSameKey?: boolean;
   avoidAdjacentSlowSongs?: boolean;
+  avoidAdjacentFastSongs?: boolean;
   maxConsecutiveSlowSongs?: number | null;
+  maxConsecutiveFastSongs?: number | null;
   songTags?: string[];
   lastVenueSetlistId?: number | null;
   lastChronologicalSetlistId?: number | null;
