@@ -23,7 +23,9 @@ export interface SetlistTemplate {
   slowSongBpmThreshold?: number | null;
   avoidAdjacentSameKey?: boolean;
   avoidAdjacentSlowSongs?: boolean;
+  avoidAdjacentFastSongs?: boolean;
   maxConsecutiveSlowSongs?: number | null;
+  maxConsecutiveFastSongs?: number | null;
   songTags?: string[];
 }
 
@@ -55,7 +57,9 @@ export interface SetlistGeneratePayload {
   slowSongBpmThreshold?: number | null;
   avoidAdjacentSameKey?: boolean;
   avoidAdjacentSlowSongs?: boolean;
+  avoidAdjacentFastSongs?: boolean;
   maxConsecutiveSlowSongs?: number | null;
+  maxConsecutiveFastSongs?: number | null;
   songTags?: string[];
   save?: boolean;
 }
