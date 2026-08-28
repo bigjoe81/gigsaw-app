@@ -64,6 +64,11 @@ export const routes: Routes = [
           import('./features/setlists/setlists.routes').then((m) => m.SETLIST_ROUTES),
       },
       {
+        path: 'locandine',
+        loadChildren: () =>
+          import('./features/poster-templates/poster-templates.routes').then((m) => m.POSTER_TEMPLATE_ROUTES),
+      },
+      {
         path: 'band',
         loadComponent: () =>
           import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage),
