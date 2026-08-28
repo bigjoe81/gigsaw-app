@@ -1,0 +1,33 @@
+<ion-header><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons><ion-title>Editor locandina</ion-title><ion-buttons slot="end"><ion-button (click)="save()">Salva</ion-button></ion-buttons></ion-toolbar></ion-header>
+<ion-content>
+  <main class="editor-layout p-3 md:p-5">
+    <aside class="space-y-4">
+      <section class="card border border-base-300 bg-base-100"><div class="card-body gap-4 p-4">
+        <label class="form-control"><span class="label-text mb-1 font-semibold">Nome template</span><input class="input input-bordered w-full" [(ngModel)]="name" /></label>
+        <label class="form-control"><span class="label-text mb-1 font-semibold">Formato</span><select class="select select-bordered w-full" [ngModel]="document.format.id" (ngModelChange)="changeFormat($event)">@for (format of formats; track format.id) {<option [value]="format.id">{{ format.label }} · {{ format.width }}×{{ format.height }}</option>}</select></label>
+        <label class="form-control"><span class="label-text mb-1 font-semibold">Sfondo PNG o JPG</span><input type="file" class="file-input file-input-bordered w-full" accept="image/png,image/jpeg" (change)="uploadBackground($event)" /></label>
+      </div></section>
+      <section class="card border border-base-300 bg-base-100"><div class="card-body p-4"><h2 class="card-title text-base">Campi dinamici</h2><div class="flex flex-wrap gap-2">@for (preset of presets; track preset.key) {<button type="button" class="btn btn-sm" [class.btn-primary]="!hasField(preset.key)" [disabled]="hasField(preset.key)" (click)="addField(preset.key)">+ {{ preset.label }}</button>}</div></div></section>
+    </aside>
+
+    <section class="flex min-h-[460px] items-center justify-center overflow-hidden rounded-box bg-base-300 p-3 md:p-6">
+      <app-poster-canvas [document]="document" [selectedId]="selectedId" (selectedIdChange)="selectedId = $event" />
+    </section>
+
+    <aside class="space-y-4">
+      <section class="card border border-base-300 bg-base-100"><div class="card-body p-4">
+        <h2 class="card-title text-base">Stile campo</h2>
+        @if (selected) {
+          <label class="form-control"><span class="label-text">Valore di esempio</span><input class="input input-bordered input-sm" [(ngModel)]="selected.sampleValue" (ngModelChange)="updateSelected()" /></label>
+          <label class="form-control"><span class="label-text">Font</span><select class="select select-bordered select-sm" [(ngModel)]="selected.fontFamily" (ngModelChange)="updateSelected()">@for (font of fonts; track font) {<option>{{ font }}</option>}</select></label>
+          <div class="grid grid-cols-2 gap-2"><label><span class="label-text block">Dimensione</span><input type="number" min="16" max="220" class="input input-bordered input-sm w-full" [(ngModel)]="selected.fontSize" (ngModelChange)="updateSelected()" /></label><label><span class="label-text block">Colore</span><input type="color" class="input input-bordered input-sm w-full p-1" [(ngModel)]="selected.color" (ngModelChange)="updateSelected()" /></label></div>
+          <label class="form-control"><span class="label-text">Allineamento</span><select class="select select-bordered select-sm" [(ngModel)]="selected.textAlign" (ngModelChange)="updateSelected()"><option value="left">Sinistra</option><option value="center">Centro</option><option value="right">Destra</option></select></label>
+          <label class="label cursor-pointer justify-start gap-3"><input type="checkbox" class="toggle toggle-primary" [(ngModel)]="selected.uppercase" (ngModelChange)="updateSelected()" /><span class="label-text">Maiuscolo</span></label>
+          <button type="button" class="btn btn-error btn-outline btn-sm" (click)="removeSelected()">Rimuovi campo</button>
+        } @else {<p class="text-sm opacity-60">Aggiungi o seleziona un campo sulla locandina. Trascinalo per spostarlo; usa il quadratino arancione per ridimensionarlo.</p>}
+      </div></section>
+      <button type="button" class="btn btn-primary w-full" (click)="exportPng()">Esporta PNG {{ document.format.width }}×{{ document.format.height }}</button>
+      <details class="collapse collapse-arrow border border-base-300 bg-base-100"><summary class="collapse-title text-sm font-semibold">Anteprima JSON</summary><pre class="collapse-content max-h-64 overflow-auto text-xs">{{ document | json }}</pre></details>
+    </aside>
+  </main>
+</ion-content>
