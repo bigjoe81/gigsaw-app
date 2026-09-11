@@ -1,6 +1,6 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   IonBackButton,
   IonButton,
@@ -26,15 +26,15 @@ import {
   settingsOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../../../core/services/band-context.service';
-import { BandGenre } from '../models/band.models';
+import { Band, BandGenre } from '../models/band.models';
 import { BandService } from '../services/band.service';
 import { GenreService } from '../services/genre.service';
 
 @Component({
+  selector: 'app-band-create',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     IonBackButton,
     IonButton,
     IonButtons,
@@ -71,6 +71,10 @@ export class BandCreatePage implements OnDestroy {
   selectedLogoFile: File | null = null;
   logoPreviewUrl = '';
   logoError = '';
+
+  @Input() embedded = false;
+  @Output() cancelled = new EventEmitter<void>();
+  @Output() created = new EventEmitter<Band>();
 
   constructor() {
     addIcons({
@@ -158,6 +162,19 @@ export class BandCreatePage implements OnDestroy {
     this.logoError = '';
   }
 
+  cancel(): void {
+    if (this.saving) {
+      return;
+    }
+
+    if (this.embedded) {
+      this.cancelled.emit();
+      return;
+    }
+
+    void this.router.navigateByUrl('/bands');
+  }
+
   save(): void {
     if (this.form.invalid || this.saving) {
       this.form.markAllAsTouched();
@@ -176,6 +193,10 @@ export class BandCreatePage implements OnDestroy {
     }).subscribe({
       next: (band) => {
         this.bandContext.setCurrentBand(band.id);
+        if (this.embedded) {
+          this.created.emit(band);
+          return;
+        }
         void this.router.navigateByUrl(`/band/${band.id}/band`);
       },
       error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
