@@ -1,3 +1,4 @@
+@if (!embedded) {
 <ion-header class="create-header">
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -6,9 +7,10 @@
     <ion-title>Nuova band</ion-title>
   </ion-toolbar>
 </ion-header>
+}
 
 <ion-content class="create-content">
-  <main class="create-shell">
+  <main class="create-shell" [class.embedded]="embedded">
     <aside class="intro-panel" aria-labelledby="create-band-title">
       <picture>
         <source srcset="assets/logo-hor-dark.png" media="(prefers-color-scheme: dark)" />
@@ -195,7 +197,7 @@
         }
 
         <footer class="form-actions">
-          <ion-button type="button" fill="clear" color="medium" routerLink="/bands" [disabled]="saving">
+          <ion-button type="button" fill="clear" color="medium" (click)="cancel()" [disabled]="saving">
             Annulla
           </ion-button>
           <ion-button class="submit-button" type="submit" [disabled]="saving">
