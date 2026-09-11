@@ -1,41 +1,162 @@
-
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonBackButton,
   IonButton,
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonInput,
-  IonItem,
-  IonLabel,
-  IonNote,
   IonSpinner,
+  IonTextarea,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  arrowBackOutline,
+  checkmark,
+  close,
+  cloudUploadOutline,
+  imageOutline,
+  musicalNotesOutline,
+  peopleOutline,
+  settingsOutline,
+} from 'ionicons/icons';
 import { BandContextService } from '../../../core/services/band-context.service';
+import { BandGenre } from '../models/band.models';
 import { BandService } from '../services/band.service';
+import { GenreService } from '../services/genre.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSpinner, IonTitle, IonToolbar],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    IonBackButton,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonInput,
+    IonSpinner,
+    IonTextarea,
+    IonTitle,
+    IonToolbar,
+  ],
   templateUrl: './band-create.page.html',
+  styleUrls: ['./band-create.page.scss'],
 })
-export class BandCreatePage {
+export class BandCreatePage implements OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly bandService = inject(BandService);
+  private readonly genreService = inject(GenreService);
   private readonly bandContext = inject(BandContextService);
   private readonly router = inject(Router);
 
   readonly form = this.fb.group({
-    name: ['', Validators.required],
+    name: ['', [Validators.required, Validators.maxLength(120)]],
+    genres: [[] as number[]],
+    bioShort: ['', Validators.maxLength(500)],
   });
 
   saving = false;
   error = '';
+  genresLoading = true;
+  genresError = '';
+  availableGenres: BandGenre[] = [];
+  selectedLogoFile: File | null = null;
+  logoPreviewUrl = '';
+  logoError = '';
+
+  constructor() {
+    addIcons({
+      arrowBackOutline,
+      checkmark,
+      close,
+      cloudUploadOutline,
+      imageOutline,
+      musicalNotesOutline,
+      peopleOutline,
+      settingsOutline,
+    });
+    this.loadGenres();
+  }
+
+  get nameControl() {
+    return this.form.controls.name;
+  }
+
+  get bioLength(): number {
+    return this.form.controls.bioShort.value?.length ?? 0;
+  }
+
+  loadGenres(): void {
+    this.genresLoading = true;
+    this.genresError = '';
+
+    this.genreService.list().subscribe({
+      next: (genres) => {
+        this.availableGenres = genres.filter((genre) => Number.isInteger(genre.id) && Boolean(genre.name));
+        this.genresLoading = false;
+      },
+      error: () => {
+        this.genresError = 'Non riesco a caricare i generi. Puoi comunque creare la band.';
+        this.genresLoading = false;
+      },
+    });
+  }
+
+  toggleGenre(genreId: number | undefined): void {
+    if (!Number.isInteger(genreId)) {
+      return;
+    }
+
+    const id = genreId as number;
+    const selected = this.form.controls.genres.value ?? [];
+    this.form.controls.genres.setValue(
+      selected.includes(id) ? selected.filter((selectedId) => selectedId !== id) : [...selected, id],
+    );
+    this.form.controls.genres.markAsDirty();
+  }
+
+  isGenreSelected(genreId: number | undefined): boolean {
+    return Number.isInteger(genreId) && (this.form.controls.genres.value ?? []).includes(genreId as number);
+  }
+
+  onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    input.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      this.logoError = 'Usa un file JPG, PNG o WebP.';
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      this.logoError = 'Il logo supera 2 MB. Scegli un file più leggero.';
+      return;
+    }
+
+    this.clearLogoPreview();
+    this.selectedLogoFile = file;
+    this.logoPreviewUrl = URL.createObjectURL(file);
+    this.logoError = '';
+  }
+
+  removeLogo(): void {
+    this.clearLogoPreview();
+    this.selectedLogoFile = null;
+    this.logoError = '';
+  }
 
   save(): void {
     if (this.form.invalid || this.saving) {
@@ -45,16 +166,36 @@ export class BandCreatePage {
 
     this.saving = true;
     this.error = '';
+    const values = this.form.getRawValue();
 
-    this.bandService.create({ name: this.form.getRawValue().name ?? '' }).subscribe({
+    this.bandService.create({
+      name: values.name?.trim() ?? '',
+      genres: values.genres ?? [],
+      bioShort: values.bioShort?.trim() || null,
+      logo: this.selectedLogoFile,
+    }).subscribe({
       next: (band) => {
         this.bandContext.setCurrentBand(band.id);
-        void this.router.navigateByUrl(`/band/${band.id}/repertorio`);
+        void this.router.navigateByUrl(`/band/${band.id}/band`);
       },
-      error: (error: { error?: { message?: string } }) => {
-        this.error = error.error?.message || 'Creazione band non riuscita.';
+      error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
+        this.error = error.error?.errors?.['name']?.[0]
+          || error.error?.errors?.['logo']?.[0]
+          || error.error?.message
+          || 'Creazione band non riuscita. Riprova tra poco.';
         this.saving = false;
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.clearLogoPreview();
+  }
+
+  private clearLogoPreview(): void {
+    if (this.logoPreviewUrl) {
+      URL.revokeObjectURL(this.logoPreviewUrl);
+      this.logoPreviewUrl = '';
+    }
   }
 }

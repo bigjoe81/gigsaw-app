@@ -103,6 +103,9 @@ export interface Band {
 
 export interface CreateBandRequest {
   name: string;
+  genres?: number[];
+  logo?: File | null;
+  bioShort?: string | null;
 }
 
 export interface UpdateBandRequest {

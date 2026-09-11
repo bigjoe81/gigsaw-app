@@ -1,29 +1,213 @@
-<ion-header>
+<ion-header class="create-header">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/bands" />
+      <ion-back-button defaultHref="/bands" text="Band" icon="arrow-back-outline" />
     </ion-buttons>
     <ion-title>Nuova band</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <form [formGroup]="form" (ngSubmit)="save()">
-    <ion-item>
-      <ion-label position="stacked">Nome band</ion-label>
-      <ion-input formControlName="name" />
-    </ion-item>
+<ion-content class="create-content">
+  <main class="create-shell">
+    <aside class="intro-panel" aria-labelledby="create-band-title">
+      <picture>
+        <source srcset="assets/logo-hor-dark.png" media="(prefers-color-scheme: dark)" />
+        <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
+      </picture>
 
-    @if (error) {
-      <ion-note color="danger" class="ion-padding-horizontal ion-padding-top">{{ error }}</ion-note>
-    }
+      <div class="intro-copy">
+        <span class="eyebrow">Nuovo workspace</span>
+        <h1 id="create-band-title">Metti in moto la tua band.</h1>
+        <p>Crea lo spazio condiviso da cui gestire repertorio, prove, concerti e materiali della band.</p>
+      </div>
 
-    <ion-button expand="block" class="ion-margin-top" type="submit" [disabled]="saving">
-      @if (saving) {
-        <ion-spinner name="crescent" />
-      } @else {
-        Crea band
-      }
-    </ion-button>
-  </form>
+      <ol class="journey" aria-label="Passaggi di configurazione">
+        <li class="journey-step active">
+          <span class="step-icon"><ion-icon name="musical-notes-outline" aria-hidden="true" /></span>
+          <span><strong>Identità della band</strong><small>Le informazioni essenziali</small></span>
+        </li>
+        <li class="journey-step">
+          <span class="step-icon"><ion-icon name="settings-outline" aria-hidden="true" /></span>
+          <span><strong>Completa il profilo</strong><small>Contatti, press kit e scheda tecnica</small></span>
+        </li>
+        <li class="journey-step">
+          <span class="step-icon"><ion-icon name="people-outline" aria-hidden="true" /></span>
+          <span><strong>Invita i musicisti</strong><small>Ruoli e accessi si impostano dopo</small></span>
+        </li>
+      </ol>
+
+      <div class="owner-note">
+        <ion-icon name="checkmark" aria-hidden="true" />
+        <span>Diventerai automaticamente amministratore della band.</span>
+      </div>
+    </aside>
+
+    <section class="form-panel" aria-labelledby="form-title">
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+        <header class="form-heading">
+          <div>
+            <span class="mobile-eyebrow">Nuovo workspace</span>
+            <h2 id="form-title">Crea una nuova band</h2>
+            <p>Bastano pochi dati. Potrai completare tutto con calma nel profilo.</p>
+          </div>
+          <span class="required-badge">Solo il nome è obbligatorio</span>
+        </header>
+
+        <div class="form-section logo-section">
+          <div class="section-heading">
+            <div>
+              <label id="logo-label">Logo della band</label>
+              <p>Aiuta a riconoscere subito il workspace.</p>
+            </div>
+            <span class="optional-label">Facoltativo</span>
+          </div>
+
+          <div class="logo-row">
+            <div class="logo-preview" [class.has-image]="logoPreviewUrl">
+              @if (logoPreviewUrl) {
+                <img [src]="logoPreviewUrl" alt="Anteprima del logo selezionato" />
+                <button class="remove-logo" type="button" aria-label="Rimuovi logo" (click)="removeLogo()">
+                  <ion-icon name="close" aria-hidden="true" />
+                </button>
+              } @else {
+                <ion-icon name="image-outline" aria-hidden="true" />
+              }
+            </div>
+
+            <div class="logo-actions">
+              <label class="upload-button" for="band-logo">
+                <ion-icon name="cloud-upload-outline" aria-hidden="true" />
+                {{ logoPreviewUrl ? 'Sostituisci logo' : 'Carica un logo' }}
+              </label>
+              <input
+                id="band-logo"
+                class="visually-hidden"
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                aria-labelledby="logo-label"
+                (change)="onLogoSelected($event)"
+              />
+              <small>JPG, PNG o WebP · massimo 2 MB</small>
+              @if (selectedLogoFile) {
+                <span class="file-name">{{ selectedLogoFile.name }}</span>
+              }
+              @if (logoError) {
+                <span class="field-error" role="alert">{{ logoError }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-heading">
+            <div>
+              <label for="band-name">Nome della band <span aria-hidden="true">*</span></label>
+              <p>È il nome che vedranno tutti i membri.</p>
+            </div>
+          </div>
+
+          <ion-input
+            id="band-name"
+            class="text-control"
+            formControlName="name"
+            fill="outline"
+            placeholder="Es. Crossroads Blues Trio"
+            maxlength="120"
+            autocomplete="organization"
+            enterkeyhint="next"
+            [class.control-invalid]="nameControl.touched && nameControl.invalid"
+          />
+          <div class="field-meta">
+            <span>
+              @if (nameControl.touched && nameControl.hasError('required')) {
+                <span class="field-error" role="alert">Inserisci il nome della band.</span>
+              } @else if (nameControl.touched && nameControl.hasError('maxlength')) {
+                <span class="field-error" role="alert">Il nome può contenere al massimo 120 caratteri.</span>
+              }
+            </span>
+            <span>{{ nameControl.value?.length || 0 }}/120</span>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-heading">
+            <div>
+              <span class="field-label">Generi musicali</span>
+              <p>Selezionane uno o più per descrivere il progetto.</p>
+            </div>
+            <span class="optional-label">Facoltativo</span>
+          </div>
+
+          @if (genresLoading) {
+            <div class="genre-skeleton" aria-label="Caricamento generi">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          } @else if (availableGenres.length) {
+            <div class="genre-list" role="group" aria-label="Generi musicali">
+              @for (genre of availableGenres; track genre.id) {
+                <button
+                  class="genre-chip"
+                  type="button"
+                  [class.selected]="isGenreSelected(genre.id)"
+                  [attr.aria-pressed]="isGenreSelected(genre.id)"
+                  (click)="toggleGenre(genre.id)"
+                >
+                  @if (isGenreSelected(genre.id)) {
+                    <ion-icon name="checkmark" aria-hidden="true" />
+                  }
+                  {{ genre.name }}
+                </button>
+              }
+            </div>
+          }
+          @if (genresError) {
+            <div class="inline-notice" role="status">
+              <span>{{ genresError }}</span>
+              <button type="button" (click)="loadGenres()">Riprova</button>
+            </div>
+          }
+        </div>
+
+        <div class="form-section">
+          <div class="section-heading">
+            <div>
+              <label for="band-description">Breve descrizione</label>
+              <p>Una frase per presentare il progetto ai membri.</p>
+            </div>
+            <span class="optional-label">Facoltativo</span>
+          </div>
+
+          <ion-textarea
+            id="band-description"
+            class="text-control description-control"
+            formControlName="bioShort"
+            fill="outline"
+            placeholder="Es. Blues, rhythm & blues e rock ’n’ roll tra Chicago e New Orleans."
+            maxlength="500"
+            [autoGrow]="true"
+            [rows]="4"
+          />
+          <div class="field-meta align-end"><span>{{ bioLength }}/500</span></div>
+        </div>
+
+        @if (error) {
+          <div class="error-banner" role="alert">{{ error }}</div>
+        }
+
+        <footer class="form-actions">
+          <ion-button type="button" fill="clear" color="medium" routerLink="/bands" [disabled]="saving">
+            Annulla
+          </ion-button>
+          <ion-button class="submit-button" type="submit" [disabled]="saving">
+            @if (saving) {
+              <ion-spinner name="crescent" />
+              Creazione in corso…
+            } @else {
+              Crea workspace
+            }
+          </ion-button>
+        </footer>
+      </form>
+    </section>
+  </main>
 </ion-content>
