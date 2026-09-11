@@ -1,232 +1,67 @@
-<ion-split-pane when="xs" contentId="main">
-  <ion-menu contentId="band-selection-content" class="create-panel" side="end" type="overlay">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Crea una band</ion-title>
-        <ion-buttons slot="end">
-          <ion-button>
-            <ion-icon slot="icon-only" name="close" (click)="closeCreatePanel()"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding">
-      <form
-        class="relative flex min-h-full flex-col px-7 pt-12 text-[#071434] md:px-12 md:pt-[52px]"
-        (submit)="createBand(); $event.preventDefault()"
-      >
-        <button
-          class="absolute right-7 top-7 border-0 bg-transparent text-[#56647d]"
-          type="button"
-          aria-label="Chiudi"
-          (click)="closeCreatePanel()"
-        >
-          <ion-icon class="text-[30px]" aria-hidden="true" name="close"/>
-        </button>
+<ion-header class="selection-header">
+  <ion-toolbar><ion-title>Le tue band</ion-title></ion-toolbar>
+</ion-header>
 
-        <header>
-          <h2 class="m-0 text-[29px] font-[850] leading-tight tracking-normal">Crea una band</h2>
-          <p class="m-0 mt-2.5 text-lg leading-[1.35] text-[#4f5d79]">Bastano poche informazioni.<br/>Potrai completare
-            tutto dopo.</p>
-        </header>
+<ion-content class="selection-content">
+  <main class="selection-shell">
+    <header class="topbar">
+      <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
+      <button class="logout-button" type="button" aria-label="Esci" (click)="logout()">
+        <span class="avatar">GP</span><span class="user-name">Giorgio</span>
+        <ion-icon aria-hidden="true" name="log-out-outline" />
+      </button>
+    </header>
 
-        <app-daisy-steps
-          ariaLabel="Creazione band"
-          stepsClass="my-9 mb-[34px] w-full"
-          [steps]="createSteps"
-        />
+    <section class="page-heading">
+      <div>
+        <span class="eyebrow">Workspace</span>
+        <h1>Scegli la tua band</h1>
+        <p>Entra in uno spazio di lavoro oppure creane uno nuovo.</p>
+      </div>
+      <button class="create-button" type="button" (click)="openCreateModal()">
+        <ion-icon aria-hidden="true" name="add" /> Crea una band
+      </button>
+    </section>
 
-        <section>
-          <label class="mb-2.5 block text-base font-bold">Logo della band</label>
-          <div class="flex items-center gap-5 md:gap-8">
-            <div
-              class="grid size-[126px] place-items-center rounded-lg border-2 border-dashed border-[#a8b5c9] text-[#5a6880]">
-              <ion-icon class="text-[45px]" aria-hidden="true" name="image-outline"/>
-            </div>
-            <div>
-              <button
-                class="flex h-[54px] items-center gap-2.5 rounded-[7px] border border-[#d6dfed] bg-white px-[18px] text-base text-[#23324c]"
-                type="button"
-              >
-                <ion-icon class="text-[26px]" aria-hidden="true" name="cloud-upload-outline"/>
-                Carica immagine
-              </button>
-              <p class="text-[#4f5d79]">PNG o JPG, max 2MB</p>
-            </div>
-          </div>
-        </section>
-
-        <label class="mt-7 block">
-          <span class="mb-2.5 block text-base font-bold">Nome della band</span>
-          <app-daisy-input
-            controlClass="h-14 rounded-[7px] border-[#c7d2e2]"
-            [value]="createForm().name"
-            (valueChange)="updateCreateName($event)"
-          />
-          @if (createFormTouched() && !createFormValid()) {
-            <app-daisy-message tone="error" messageClass="mt-2">Inserisci il nome della band.</app-daisy-message>
-          }
-        </label>
-
-        <label class="mt-7 block">
-          <span class="mb-2.5 block text-base font-bold">Generi musicali</span>
-          <app-daisy-select
-            controlClass="min-h-28 rounded-[7px] border-[#c7d2e2]"
-            [multiple]="true"
-            [value]="createForm().genres"
-            (valueChange)="updateCreateGenres($event)"
-          >
-            <option value="Blues">Blues</option>
-            <option value="Rock'n'roll">Rock'n'roll</option>
-            <option value="Jazz">Jazz</option>
-            <option value="Funk">Funk</option>
-          </app-daisy-select>
-        </label>
-
-        <label class="mt-7 block">
-          <span class="mb-2.5 block text-base font-bold">Città</span>
-          <app-daisy-input
-            controlClass="h-14 rounded-[7px] border-[#c7d2e2]"
-            [value]="createForm().city"
-            (valueChange)="updateCreateCity($event)"
-          />
-        </label>
-
-        <label class="mt-[26px] flex items-center gap-3 text-[#465573]">
-          <app-daisy-checkbox
-            controlClass="size-[26px] rounded-[5px]"
-            [checked]="createForm().owner"
-            (checkedChange)="updateCreateOwner($event)"
-          />
-          <span>Sono il referente della band</span>
-        </label>
-
-        @if (createError) {
-          <app-daisy-message tone="error" messageClass="mt-4">{{ createError }}</app-daisy-message>
+    @if (loading()) {
+      <section class="state-panel" aria-live="polite">
+        <span class="loading loading-spinner loading-lg text-primary"></span><p>Caricamento band…</p>
+      </section>
+    } @else if (error()) {
+      <section class="state-panel">
+        <app-daisy-message tone="error">{{ error() }}</app-daisy-message>
+        <app-daisy-button tone="outline" type="button" (click)="load()">Riprova</app-daisy-button>
+      </section>
+    } @else {
+      <section class="band-grid" aria-label="Le tue band">
+        @for (band of bands(); track band.id; let first = $first) {
+          <button class="band-card" [class.featured]="first" type="button" (click)="selectBand(band)">
+            <span class="band-logo">
+              @if (band.logo) { <img [src]="band.logo" [alt]="band.name" /> }
+              @else { <ion-icon aria-hidden="true" name="musical-notes" /> }
+            </span>
+            <span class="band-info">
+              <strong>{{ band.name }}</strong><small>{{ formatGenres(band) }}</small>
+              <span class="band-meta">{{ band.membersCount || band.members?.length || 1 }} {{ (band.membersCount || band.members?.length || 1) === 1 ? 'membro' : 'membri' }}</span>
+            </span>
+            <span class="role-badge">{{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}</span>
+            <span class="open-label">Apri workspace <span aria-hidden="true">→</span></span>
+          </button>
         }
 
-        <footer
-          class="-mx-7 mt-[58px] grid grid-cols-[1fr_1.7fr] gap-3.5 border-t border-[#d6dfed] px-7 py-7 shadow-[0_-10px_30px_rgba(30,45,75,.06)] md:-mx-12 md:px-12">
-          <app-daisy-button buttonClass="h-[58px] rounded-md font-extrabold" tone="outline" type="button"
-                            (click)="closeCreatePanel()">Annulla
-          </app-daisy-button>
-          <app-daisy-button buttonClass="h-[58px] rounded-md font-extrabold" tone="primary" type="submit"
-                            [loading]="saving">Crea e continua
-          </app-daisy-button>
-        </footer>
-      </form>
-    </ion-content>
-  </ion-menu>
-  <div class="ion-page" id="band-selection-content">
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-menu-button></ion-menu-button>
-        </ion-buttons>
-        <ion-title>Menu</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding"> Tap the button in the toolbar to open the menu.</ion-content>
-  </div>
-
-  <!--
-  <ion-menu
-    contentId="band-selection-content"
-    menuId="create-band-panel"
-    side="end"
-    type="overlay"
-    class="create-panel"
-  >
-    <ion-content>
-
-    </ion-content>
-  </ion-menu>
-
-  <ion-content id="band-selection-content" class="selection-content">
-      <main class="relative min-h-full px-5 py-7 pb-[60px] text-[#071434] md:px-[46px] md:pb-[60px] md:pl-[188px] md:pt-[34px]">
-        <header class="flex items-center justify-between">
-          <div>
-            <img class="w-[76px] md:w-[92px]" src="assets/logo-vert-dark.png" alt="GigSaw" />
-          </div>
-          <div class="flex items-center gap-3.5">
-            <span class="grid size-[46px] place-items-center rounded-full bg-[#064fb8] font-extrabold text-white">GP</span>
-            <strong class="hidden md:block">Giorgio</strong>
-            <button class="border-0 bg-transparent text-[#56647d]" type="button" aria-label="Esci" (click)="logout()">
-              <ion-icon class="text-[30px]" aria-hidden="true" name="log-out-outline" />
-            </button>
-          </div>
-        </header>
-
-        <section class="mt-[50px]">
-          <h1 class="m-0 text-[34px] font-[850] leading-[1.1] tracking-normal md:text-[40px]">Scegli la tua band</h1>
-          <p class="m-0 mt-3 text-lg text-[#4f5d79]">Seleziona lo spazio di lavoro oppure creane uno nuovo.</p>
-        </section>
-
-        @if (loading()) {
-          <section class="grid min-h-[280px] place-items-center content-center gap-3.5">
-            <app-daisy-loading size="lg" loadingClass="text-primary" />
-            <p>Caricamento band...</p>
-          </section>
-        } @else if (error()) {
-          <section class="grid min-h-[280px] place-items-center content-center gap-3.5">
-            <app-daisy-message tone="error">{{ error() }}</app-daisy-message>
-            <app-daisy-button tone="outline" type="button" (click)="load()">Riprova</app-daisy-button>
-          </section>
-        } @else {
-          <section class="mt-12 grid grid-cols-1 gap-x-7 gap-y-[34px] md:grid-cols-[repeat(2,minmax(310px,380px))]">
-            @for (band of bands(); track band.id; let first = $first) {
-              <button
-                class="grid min-h-[300px] grid-cols-[116px_1fr] grid-rows-[1fr_70px] gap-x-[22px] rounded-[10px] bg-white px-[22px] pt-[34px] text-left shadow-[0_20px_50px_rgba(29,48,87,.06)] {{ first ? 'border-2 border-[#0964ff]' : 'border border-[#d6dfed]' }}"
-                type="button"
-                (click)="selectBand(band)"
-              >
-                <span class="grid size-28 place-items-center overflow-hidden rounded-[9px] bg-[#eef4ff] text-[#075bd8]">
-                  @if (band.logo) {
-                    <img class="size-full object-cover" [src]="band.logo" [alt]="band.name" />
-                  } @else {
-                    <ion-icon class="text-[42px]" aria-hidden="true" name="musical-notes" />
-                  }
-                </span>
-                <span class="relative min-w-0">
-                  <strong class="mt-2.5 block truncate text-xl">{{ band.name }}</strong>
-                  <small class="mt-3 block text-base text-[#4f5d79]">{{ formatGenres(band) }} · {{ band.membersCount || band.members?.length || 1 }} membri</small>
-                  <span class="mt-[18px] flex">
-                    <span class="-mr-1.5 grid size-[38px] place-items-center rounded-full border-2 border-white bg-[linear-gradient(135deg,#162f63,#d8a27e)] text-xs font-extrabold text-white">G</span>
-                    <span class="-mr-1.5 grid size-[38px] place-items-center rounded-full border-2 border-white bg-[linear-gradient(135deg,#162f63,#d8a27e)] text-xs font-extrabold text-white">I</span>
-                    <span class="-mr-1.5 grid size-[38px] place-items-center rounded-full border-2 border-white bg-[linear-gradient(135deg,#162f63,#d8a27e)] text-xs font-extrabold text-white">R</span>
-                    @if ((band.membersCount || band.members?.length || 0) > 3) {
-                      <span class="-mr-1.5 grid size-[38px] place-items-center rounded-full border-2 border-white bg-[#f3f7ff] text-xs font-extrabold text-[#52617b]">+{{ (band.membersCount || band.members?.length || 0) - 3 }}</span>
-                    }
-                  </span>
-                  <span class="absolute bottom-[-52px] right-[5px] rounded-full border border-[#0964ff] px-3 py-[5px] text-sm font-bold text-[#0964ff]">
-                    {{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}
-                  </span>
-                </span>
-                <span class="col-span-2 flex items-center gap-[9px] border-t border-[#d6dfed] text-[15px] text-[#4f5d79]">
-                  <ion-icon class="text-[21px]" aria-hidden="true" [name]="band.currentUserRole === 'ADMIN' ? 'calendar-outline' : 'time-outline'" />
-                  {{ band.currentUserRole === 'ADMIN' ? 'Prossimo live: 31 ott' : 'Ultima attività: ieri' }}
-                </span>
-              </button>
-            }
-
-            <button
-              class="grid min-h-[300px] grid-rows-[1fr_auto_1fr] place-items-center rounded-[10px] border-2 border-dashed border-[#d6dfed] bg-white text-center text-[#064fb8] shadow-[0_20px_50px_rgba(29,48,87,.06)]"
-              type="button"
-              (click)="openCreatePanel()"
-            >
-              <span class="row-[1/3] grid size-[92px] place-items-center self-end rounded-full bg-[#e7f1ff]">
-                <ion-icon class="text-[46px]" aria-hidden="true" name="add" />
-              </span>
-              <strong class="text-xl">Crea una nuova band</strong>
-            </button>
-          </section>
-        }
-
-        <button class="absolute bottom-7 left-[18px] flex items-center gap-3 border-0 bg-transparent text-base text-[#465573]" type="button">
-          <ion-icon class="text-[29px]" aria-hidden="true" name="help-circle-outline" />
-          Aiuto
+        <button class="new-band-card" type="button" (click)="openCreateModal()">
+          <span class="add-icon"><ion-icon aria-hidden="true" name="add" /></span>
+          <span><strong>Crea una nuova band</strong><small>Configura il workspace in pochi passaggi</small></span>
         </button>
-      </main>
-    </ion-content>
-  -->
-</ion-split-pane>
+      </section>
+    }
+
+    <button class="help-button" type="button"><ion-icon aria-hidden="true" name="help-circle-outline" /> Aiuto</button>
+  </main>
+</ion-content>
+
+<ion-modal class="create-band-modal" [isOpen]="createModalOpen()" [backdropDismiss]="true" (didDismiss)="closeCreateModal()">
+  <ng-template>
+    <app-band-create [embedded]="true" (cancelled)="closeCreateModal()" (created)="onBandCreated($event)" />
+  </ng-template>
+</ion-modal>
