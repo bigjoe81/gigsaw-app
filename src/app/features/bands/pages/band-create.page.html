@@ -114,7 +114,7 @@
             formControlName="name"
             fill="outline"
             placeholder="Es. Crossroads Blues Trio"
-            maxlength="120"
+            [maxlength]="120"
             autocomplete="organization"
             enterkeyhint="next"
             [class.control-invalid]="nameControl.touched && nameControl.invalid"
@@ -140,27 +140,62 @@
             <span class="optional-label">Facoltativo</span>
           </div>
 
-          @if (genresLoading) {
+          @if (genresLoading()) {
             <div class="genre-skeleton" aria-label="Caricamento generi">
               <span></span><span></span><span></span><span></span>
             </div>
-          } @else if (availableGenres.length) {
-            <div class="genre-list" role="group" aria-label="Generi musicali">
-              @for (genre of availableGenres; track genre.id) {
-                <button
-                  class="genre-chip"
-                  type="button"
-                  [class.selected]="isGenreSelected(genre.id)"
-                  [attr.aria-pressed]="isGenreSelected(genre.id)"
-                  (click)="toggleGenre(genre.id)"
-                >
-                  @if (isGenreSelected(genre.id)) {
-                    <ion-icon name="checkmark" aria-hidden="true" />
+          } @else if (availableGenres.length > 0) {
+            @if (selectedGenres.length > 0) {
+              <div class="selected-genres" role="group" aria-label="Generi selezionati">
+                <span class="selected-genres-label">Selezionati</span>
+                <div class="genre-list">
+                  @for (genre of selectedGenres; track genre.id) {
+                    <button
+                      class="genre-chip selected"
+                      type="button"
+                      [attr.aria-label]="'Rimuovi ' + genre.name"
+                      (click)="toggleGenre(genre.id)"
+                    >
+                      {{ genre.name }}
+                      <ion-icon name="close" aria-hidden="true" />
+                    </button>
                   }
-                  {{ genre.name }}
-                </button>
-              }
-            </div>
+                </div>
+              </div>
+            }
+
+            <ion-input
+              class="text-control genre-search"
+              formControlName="genreSearch"
+              type="search"
+              fill="outline"
+              placeholder="Cerca un genere musicale"
+              aria-label="Cerca tra i generi musicali"
+              [clearInput]="true"
+            />
+
+            @if (!canSearchGenres) {
+              <p class="genre-search-hint">Digita almeno 3 caratteri per cercare.</p>
+            } @else if (filteredGenres.length > 0) {
+              <div class="genre-list" role="group" aria-label="Generi musicali trovati">
+                @for (genre of filteredGenres; track genre.id) {
+                  <button
+                    class="genre-chip"
+                    type="button"
+                    [class.selected]="isGenreSelected(genre.id)"
+                    [attr.aria-pressed]="isGenreSelected(genre.id)"
+                    (click)="toggleGenre(genre.id)"
+                  >
+                    @if (isGenreSelected(genre.id)) {
+                      <ion-icon name="checkmark" aria-hidden="true" />
+                    }
+                    {{ genre.name }}
+                  </button>
+                }
+              </div>
+            } @else {
+              <p class="genre-search-hint" role="status">Nessun genere trovato.</p>
+            }
           }
           @if (genresError) {
             <div class="inline-notice" role="status">
@@ -185,7 +220,7 @@
             formControlName="bioShort"
             fill="outline"
             placeholder="Es. Blues, rhythm & blues e rock ’n’ roll tra Chicago e New Orleans."
-            maxlength="500"
+            [maxlength]="500"
             [autoGrow]="true"
             [rows]="4"
           />
@@ -197,11 +232,11 @@
         }
 
         <footer class="form-actions">
-          <ion-button type="button" fill="clear" color="medium" (click)="cancel()" [disabled]="saving">
+          <ion-button type="button" fill="clear" color="medium" (click)="cancel()" [disabled]="saving()">
             Annulla
           </ion-button>
-          <ion-button class="submit-button" type="submit" [disabled]="saving">
-            @if (saving) {
+          <ion-button class="submit-button" type="submit" [disabled]="saving()">
+            @if (saving()) {
               <ion-spinner name="crescent" />
               Creazione in corso…
             } @else {

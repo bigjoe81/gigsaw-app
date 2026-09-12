@@ -13,10 +13,9 @@
 
       <ion-list class="menu-nav" lines="none">
         @for (section of sections; track section.key) {
-          <ion-menu-toggle autoHide="false">
+          <ion-menu-toggle [autoHide]="false">
             <ion-item
-              button
-              detail="false"
+              [detail]="false"
               [routerLink]="sectionHref(section.key)"
               routerLinkActive="is-active"
               [routerLinkActiveOptions]="{ exact: false }"

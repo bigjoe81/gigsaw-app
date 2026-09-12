@@ -1,5 +1,5 @@
 
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   AlertController,
@@ -53,6 +53,7 @@ export class BandSelectionPage {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly createModalOpen = signal(false);
+  readonly createBandModal = viewChild<IonModal>('createBandModal');
 
   constructor() {
     addIcons({
@@ -148,10 +149,11 @@ export class BandSelectionPage {
     this.createModalOpen.set(false);
   }
 
-  onBandCreated(band: Band): void {
+  async onBandCreated(band: Band): Promise<void> {
     this.createModalOpen.set(false);
+    await this.createBandModal()?.dismiss(band, 'created');
     this.bandContext.setCurrentBand(band.id);
-    void this.router.navigateByUrl(`/band/${band.id}/band`);
+    await this.router.navigateByUrl(`/band/${band.id}/band`);
   }
 
   logout(): void {

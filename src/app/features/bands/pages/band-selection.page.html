@@ -60,7 +60,7 @@
   </main>
 </ion-content>
 
-<ion-modal class="create-band-modal" [isOpen]="createModalOpen()" [backdropDismiss]="true" (didDismiss)="closeCreateModal()">
+<ion-modal #createBandModal class="create-band-modal" [isOpen]="createModalOpen()" [backdropDismiss]="true" (didDismiss)="closeCreateModal()">
   <ng-template>
     <app-band-create [embedded]="true" (cancelled)="closeCreateModal()" (created)="onBandCreated($event)" />
   </ng-template>

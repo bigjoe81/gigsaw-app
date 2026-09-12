@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -51,6 +51,8 @@ import { GenreService } from '../services/genre.service';
   styleUrls: ['./band-create.page.scss'],
 })
 export class BandCreatePage implements OnDestroy {
+  private static readonly GENRE_SEARCH_MIN_LENGTH = 3;
+  private static readonly GENRE_RESULT_LIMIT = 40;
   private readonly fb = inject(FormBuilder);
   private readonly bandService = inject(BandService);
   private readonly genreService = inject(GenreService);
@@ -60,12 +62,13 @@ export class BandCreatePage implements OnDestroy {
   readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
     genres: [[] as number[]],
+    genreSearch: [''],
     bioShort: ['', Validators.maxLength(500)],
   });
 
-  saving = false;
+  readonly saving = signal(false);
   error = '';
-  genresLoading = true;
+  readonly genresLoading = signal(true);
   genresError = '';
   availableGenres: BandGenre[] = [];
   selectedLogoFile: File | null = null;
@@ -77,6 +80,7 @@ export class BandCreatePage implements OnDestroy {
   @Output() created = new EventEmitter<Band>();
 
   constructor() {
+    console.log('[BandCreatePage] Componente istanziato');
     addIcons({
       arrowBackOutline,
       checkmark,
@@ -98,18 +102,54 @@ export class BandCreatePage implements OnDestroy {
     return this.form.controls.bioShort.value?.length ?? 0;
   }
 
+  get genreSearchQuery(): string {
+    return this.normalizeGenreSearch(this.form.controls.genreSearch.value ?? '');
+  }
+
+  get canSearchGenres(): boolean {
+    return this.genreSearchQuery.length >= BandCreatePage.GENRE_SEARCH_MIN_LENGTH;
+  }
+
+  get selectedGenres(): BandGenre[] {
+    const genresById = new Map(this.availableGenres.map((genre) => [genre.id, genre]));
+    return (this.form.controls.genres.value ?? [])
+      .map((genreId) => genresById.get(genreId))
+      .filter((genre): genre is BandGenre => Boolean(genre));
+  }
+
+  get filteredGenres(): BandGenre[] {
+    if (!this.canSearchGenres) {
+      return [];
+    }
+
+    const query = this.genreSearchQuery;
+    const selectedIds = new Set(this.form.controls.genres.value ?? []);
+    return this.availableGenres
+      .filter((genre) => !selectedIds.has(genre.id as number))
+      .filter((genre) => this.normalizeGenreSearch(genre.name ?? '').includes(query))
+      .slice(0, BandCreatePage.GENRE_RESULT_LIMIT);
+  }
+
   loadGenres(): void {
-    this.genresLoading = true;
+    console.log('[BandCreatePage] Caricamento generi avviato');
+    this.genresLoading.set(true);
     this.genresError = '';
 
     this.genreService.list().subscribe({
       next: (genres) => {
+        console.log('[BandCreatePage] Risposta generi ricevuta', {
+          received: genres.length,
+        });
         this.availableGenres = genres.filter((genre) => Number.isInteger(genre.id) && Boolean(genre.name));
-        this.genresLoading = false;
+        console.log('[BandCreatePage] Generi validi caricati', {
+          available: this.availableGenres.length,
+        });
+        this.genresLoading.set(false);
       },
-      error: () => {
+      error: (error: unknown) => {
+        console.error('[BandCreatePage] Errore durante il caricamento dei generi', error);
         this.genresError = 'Non riesco a caricare i generi. Puoi comunque creare la band.';
-        this.genresLoading = false;
+        this.genresLoading.set(false);
       },
     });
   }
@@ -163,7 +203,7 @@ export class BandCreatePage implements OnDestroy {
   }
 
   cancel(): void {
-    if (this.saving) {
+    if (this.saving()) {
       return;
     }
 
@@ -176,12 +216,12 @@ export class BandCreatePage implements OnDestroy {
   }
 
   save(): void {
-    if (this.form.invalid || this.saving) {
+    if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.saving = true;
+    this.saving.set(true);
     this.error = '';
     const values = this.form.getRawValue();
 
@@ -194,6 +234,7 @@ export class BandCreatePage implements OnDestroy {
       next: (band) => {
         this.bandContext.setCurrentBand(band.id);
         if (this.embedded) {
+          this.saving.set(false);
           this.created.emit(band);
           return;
         }
@@ -204,7 +245,7 @@ export class BandCreatePage implements OnDestroy {
           || error.error?.errors?.['logo']?.[0]
           || error.error?.message
           || 'Creazione band non riuscita. Riprova tra poco.';
-        this.saving = false;
+        this.saving.set(false);
       },
     });
   }
@@ -218,5 +259,13 @@ export class BandCreatePage implements OnDestroy {
       URL.revokeObjectURL(this.logoPreviewUrl);
       this.logoPreviewUrl = '';
     }
+  }
+
+  private normalizeGenreSearch(value: string): string {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLocaleLowerCase('it');
   }
 }

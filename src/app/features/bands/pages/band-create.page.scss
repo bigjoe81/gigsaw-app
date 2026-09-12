@@ -1,4 +1,6 @@
 :host {
+  display: block;
+  height: 100%;
   --create-navy: #071434;
   --create-blue: #075bd8;
   --create-blue-soft: #eaf3ff;
@@ -361,6 +363,26 @@
 
 .genre-list,
 .genre-skeleton { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.selected-genres { margin-bottom: 16px; }
+
+.selected-genres-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--create-muted);
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.genre-search { width: min(100%, 440px); }
+
+.genre-search-hint {
+  margin: 8px 0 0;
+  color: var(--create-muted);
+  font-size: 0.76rem;
+}
+
+.genre-search + .genre-list { margin-top: 12px; }
 
 .genre-chip {
   display: inline-flex;
