@@ -17,6 +17,16 @@
   background: #fff;
 }
 
+.field-grid ion-input,
+.field-grid ion-textarea {
+  --padding-start: 14px;
+  --padding-end: 14px;
+}
+
+.field-grid ion-select {
+  padding-inline: 14px;
+}
+
 .field-grid ion-input.has-focus,
 .field-grid ion-select:focus-within,
 .field-grid ion-textarea.has-focus {
