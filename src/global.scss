@@ -34,7 +34,7 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import '@ionic/angular/css/palettes/dark.always.css';
 
 /* Tailwind for utility classes only. Avoid preflight so Ionic keeps its base layout styles. */
 @import 'tailwindcss/theme.css';
@@ -45,8 +45,8 @@
 @plugin "daisyui/theme" {
   name: "gigsaw";
   default: true;
-  prefersdark: true;
-  color-scheme: light dark;
+  prefersdark: false;
+  color-scheme: dark;
 
   --color-base-100: var(--ion-card-background);
   --color-base-200: var(--ion-background-color);

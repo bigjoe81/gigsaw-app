@@ -14,3 +14,21 @@ ion-menu-button{display:none}.breadcrumbs,.search-box,.top-actions{display:flex;
 .repertoire-body{display:grid;grid-template-columns:170px 1fr;align-items:center;gap:12px;min-height:195px}.donut{width:150px;aspect-ratio:1;justify-self:center;border-radius:50%;mask:radial-gradient(circle,transparent 0 42%,#000 43%)}.legend div,.legend footer{display:grid;grid-template-columns:14px 1fr 34px;align-items:center;gap:10px;min-height:40px}.legend span{width:12px;height:12px;border-radius:50%}.blue{background:var(--p)}.green{background:var(--g)}.amber{background:var(--a)}.legend footer{grid-template-columns:1fr 34px;margin-top:10px;padding-top:14px;border-top:1px solid var(--b);color:var(--m)}.legend strong{justify-self:end;color:var(--t)}
 @media(max-width:1100px){.stats-grid,.dashboard-grid{grid-template-columns:repeat(2,1fr)}.quick-panel{grid-column:auto}.event-row{grid-template-columns:82px 22px 1fr 80px}.member-stack{display:none}}
 @media(max-width:767px){.dashboard-shell ion-toolbar{--min-height:64px;--padding-start:8px;--padding-end:8px}ion-menu-button{display:block}.breadcrumbs,.search-box,.top-actions .icon-button,.top-actions .user-avatar{display:none}.dashboard{padding:24px 16px 36px}.stats-grid,.dashboard-grid,.quick-grid,.repertoire-body{grid-template-columns:1fr}.event-row{grid-template-columns:72px 1fr;gap:10px;padding:12px}.timeline-dot{display:none}.outline-action{grid-column:2}.activity-list article{grid-template-columns:40px 1fr}.activity-list time{grid-column:2;text-align:left}}
+
+/* Fixed GigSaw night theme. */
+:host { --b: #26364D; --t: #E5EDF7; --m: #94A3B8; --p: #6FAEFF; }
+.dashboard-shell ion-toolbar { --background: #0F172A; }
+.dashboard-content { --background: #0B1220; }
+.search-box,
+.stat-card,
+.panel { background: #111827; }
+.breadcrumbs ion-icon,
+.icon-button,
+.activity-list p { color: var(--t); }
+.stat-icon,
+.event-row time { background: #172B49; }
+.event-row.green time { color: #50D6A0; background: #102D27; }
+.event-row.amber time { color: #F5B942; background: #352A14; }
+.event-row time strong { color: var(--t); }
+.progress { background: #243244; }
+.member-stack span { border-color: #111827; }

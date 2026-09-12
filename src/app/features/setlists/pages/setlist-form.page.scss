@@ -86,7 +86,7 @@
 
 .drop-zone-active {
   border-color: var(--ion-color-primary);
-  background: color-mix(in srgb, var(--ion-color-primary) 6%, white);
+  background: color-mix(in srgb, var(--ion-color-primary) 6%, var(--ion-background-color));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ion-color-primary) 18%, transparent);
   transform: translateY(-2px);
 }
@@ -112,7 +112,7 @@
 }
 
 .catalog-item {
-  background: white;
+  background: var(--ion-card-background);
   cursor: pointer;
   transition: background 0.15s ease, opacity 0.15s ease;
 }

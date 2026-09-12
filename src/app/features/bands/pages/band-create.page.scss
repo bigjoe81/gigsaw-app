@@ -513,8 +513,8 @@
   .embedded .form-actions { margin: 0 -18px; padding: 16px 18px calc(16px + env(safe-area-inset-bottom)); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :host {
+/* Fixed GigSaw night theme. */
+:host {
     --create-navy: #e5edf7;
     --create-blue: #82b6ff;
     --create-blue-soft: #172b49;
@@ -535,4 +535,10 @@
   .error-banner { color: #ffbbc3; border-color: #6f3440; background: #351a21; }
   .form-actions { background: rgba(11, 18, 32, 0.96); }
   .embedded .form-actions { background: rgba(11, 18, 32, 0.96); }
+
+.text-control {
+  --background: #111827;
+  --border-color: #2B3B52;
+  --color: #E5EDF7;
+  --placeholder-color: #7F90A8;
 }

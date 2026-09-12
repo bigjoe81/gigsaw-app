@@ -51,11 +51,14 @@ ion-modal.create-band-modal::part(content) { overflow: hidden; }
   .help-button { left: 18px; }
   ion-modal.create-band-modal { --width: 100%; --height: 100%; --border-radius: 0; }
 }
-@media (prefers-color-scheme: dark) {
-  :host { --selection-navy: #e5edf7; --selection-blue: #82b6ff; --selection-border: #2b3b52; --selection-muted: #9aabc1; }
+
+/* Fixed GigSaw night theme. */
+:host { --selection-navy: #e5edf7; --selection-blue: #82b6ff; --selection-border: #2b3b52; --selection-muted: #9aabc1; }
   .selection-content { --background: #0b1220; }
   .brand-logo { content: url('/assets/logo-hor-dark.png'); }
   .band-card, .new-band-card { background: #111827; }
   .new-band-card:hover { background: #142034; }
   .band-logo, .role-badge, .add-icon { background: #172b49; }
-}
+
+.logout-button,
+.help-button { color: var(--selection-muted); }

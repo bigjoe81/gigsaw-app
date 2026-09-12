@@ -38,3 +38,26 @@
 .field-grid ion-textarea.ion-invalid.ion-touched {
   border-color: var(--ion-color-danger);
 }
+
+/* Fixed GigSaw night theme. */
+:host { --navy: #E5EDF7; --blue: #82B6FF; --muted: #9AABC1; }
+.song-header ion-toolbar { --background: #0F172A; --color: #E5EDF7; }
+.song-content.song-content { --background: #0B1220 !important; }
+.song-shell { background: #111827; box-shadow: 0 18px 55px rgba(0, 0, 0, .2); }
+.form-step h2,
+.field-grid label { color: #E5EDF7; }
+.field-grid ion-input,
+.field-grid ion-select,
+.field-grid ion-textarea {
+  --background: #0F172A;
+  --color: #E5EDF7;
+  --placeholder-color: #7F90A8;
+  border-color: #2B3B52;
+  background: #0F172A;
+}
+.metadata-card { color: #E5EDF7; border-color: #2B3B52; background: #0F172A; }
+.metadata-card:hover { border-color: #82B6FF; }
+.metadata-card img,
+.cover-placeholder { background: #172B49; }
+.provider { color: #6EE7B7; background: #12372F; }
+.inline-error { color: #FFBBC3; background: #351A21; }
