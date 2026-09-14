@@ -16,13 +16,14 @@
     <form class="w-full" (submit)="submit(); $event.preventDefault()">
       <label class="block">
         <span class="mb-2 block text-sm font-bold">Email</span>
-        <app-daisy-input
+        <ion-input
+          fill="outline"
           type="email"
           name="email"
           placeholder="es. mario.rossi@gmail.com"
           autocomplete="email"
           [value]="email()"
-          (valueChange)="updateEmail($event)"
+          (ionInput)="updateEmail($event.detail.value ?? '')"
         />
       </label>
       @if (touched() && !emailValid()) {

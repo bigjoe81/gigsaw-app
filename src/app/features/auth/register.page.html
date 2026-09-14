@@ -16,7 +16,13 @@
     <form class="w-full" (submit)="submit(); $event.preventDefault()">
       <label class="block">
         <span class="mb-2 block text-sm font-bold">Nome</span>
-        <app-daisy-input name="name" autocomplete="name" [value]="name()" (valueChange)="updateName($event)" />
+        <ion-input
+          fill="outline"
+          name="name"
+          autocomplete="name"
+          [value]="name()"
+          (ionInput)="updateName($event.detail.value ?? '')"
+        />
       </label>
       @if (touched() && !nameValid()) {
         <app-daisy-message tone="error" messageClass="mt-2">Inserisci il nome.</app-daisy-message>
@@ -24,7 +30,14 @@
 
       <label class="mt-4 block">
         <span class="mb-2 block text-sm font-bold">Email</span>
-        <app-daisy-input type="email" name="email" autocomplete="email" [value]="email()" (valueChange)="updateEmail($event)" />
+        <ion-input
+          fill="outline"
+          type="email"
+          name="email"
+          autocomplete="email"
+          [value]="email()"
+          (ionInput)="updateEmail($event.detail.value ?? '')"
+        />
       </label>
       @if (touched() && !emailValid()) {
         <app-daisy-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-daisy-message>
