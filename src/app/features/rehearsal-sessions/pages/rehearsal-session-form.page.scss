@@ -36,31 +36,10 @@
 }
 
 .rehearsal-steps {
-  display: grid;
-  gap: 18px;
+  display: block;
+  width: 100%;
   margin: 44px 0 0;
-  padding: 0;
-  list-style: none
 }
-
-.rehearsal-steps li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, .62)
-}
-
-.rehearsal-steps li > span {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, .38);
-  border-radius: 50%
-}
-
-.rehearsal-steps li.active { color: #fff }
-.rehearsal-steps li.active > span { border-color: #fff; background: rgba(255, 255, 255, .18) }
 
 .rehearsal-panel {
   padding: 58px clamp(28px, 5vw, 72px)
@@ -187,8 +166,7 @@ form {
   .rehearsal-intro p {
     display: none
   }
-  .rehearsal-steps { grid-template-columns: repeat(2, 1fr); margin-top: 20px }
-  .rehearsal-steps li { font-size: .8rem }
+  .rehearsal-steps { margin-top: 20px }
   .rehearsal-panel {
     padding: 32px 20px
   }

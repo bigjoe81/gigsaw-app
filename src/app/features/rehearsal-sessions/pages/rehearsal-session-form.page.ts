@@ -5,12 +5,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonIcon, IonInput, IonLabel, IonNote, IonPopover, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { RehearsalSession, Song } from '../../../core/models/band-resources.models';
+import { DaisyStepsComponent } from '../../../shared/ui/daisyui';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonIcon, IonInput, IonLabel, IonNote, IonPopover, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, RouterLink, DaisyStepsComponent, IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonIcon, IonInput, IonLabel, IonNote, IonPopover, IonSpinner, IonTextarea, IonTitle, IonToolbar],
   templateUrl: './rehearsal-session-form.page.html', styleUrls: ['./rehearsal-session-form.page.scss'],
 })
 export class RehearsalSessionFormPage implements OnInit {

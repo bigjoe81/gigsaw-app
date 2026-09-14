@@ -11,10 +11,15 @@
     <aside class="rehearsal-intro"><span class="eyebrow">Calendario</span>
       <h1>{{ editing ? 'Aggiorna la prova.' : 'Pianifica la tua prova.' }}</h1>
       <p>Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro.</p>
-      <ol class="rehearsal-steps">
-        <li [class.active]="step === 1"><span>1</span><strong>Dettagli</strong></li>
-        <li [class.active]="step === 2"><span>2</span><strong>Brani da provare</strong></li>
-      </ol>
+      <app-daisy-steps
+        class="rehearsal-steps"
+        [horizontal]="false"
+        [steps]="[
+          { label: 'Dettagli', active: step >= 1 },
+          { label: 'Brani da provare', active: step >= 2 }
+        ]"
+        ariaLabel="Avanzamento creazione prova"
+      />
     </aside>
     <section class="rehearsal-panel">
       @if (loading) {
