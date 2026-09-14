@@ -1,4 +1,4 @@
-:host { --selection-navy: #071434; --selection-blue: #075bd8; --selection-border: #d8e1ee; --selection-muted: #5f6d85; }
+:host { --selection-navy: var(--ion-color-brand-navy); --selection-blue: var(--ion-color-brand-blue); --selection-border: #d8e1ee; --selection-muted: #5f6d85; }
 .selection-header { display: none; }
 .selection-content { --background: #f4f7fb; }
 .selection-shell { position: relative; min-height: 100%; padding: clamp(28px, 4vw, 52px) clamp(24px, 7vw, 112px) 72px; color: var(--selection-navy); }
@@ -6,19 +6,19 @@
 .brand-logo { width: 122px; }
 .logout-button, .help-button { display: inline-flex; align-items: center; gap: 11px; border: 0; color: #465573; background: transparent; cursor: pointer; }
 .logout-button ion-icon { font-size: 1.45rem; }
-.avatar { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; color: #fff; background: var(--selection-blue); font-weight: 850; }
+.avatar { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; color: #fff; background: var(--ion-gradient-brand); font-weight: 850; }
 .user-name { font-weight: 750; }
 .page-heading { margin-top: clamp(52px, 8vh, 92px); }
 .eyebrow { color: var(--selection-blue); font-size: .75rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
 .page-heading h1 { margin: 9px 0 0; font-size: clamp(2.15rem, 4vw, 3.6rem); font-weight: 900; line-height: 1; letter-spacing: -.045em; }
 .page-heading p { margin: 14px 0 0; color: var(--selection-muted); font-size: 1.03rem; }
-.create-button { display: inline-flex; min-height: 50px; align-items: center; gap: 9px; padding: 0 20px; border: 0; border-radius: 12px; color: #fff; background: var(--selection-blue); box-shadow: 0 12px 24px rgba(7,91,216,.2); font-weight: 850; cursor: pointer; }
+.create-button { display: inline-flex; min-height: 50px; align-items: center; gap: 9px; padding: 0 20px; border: 0; border-radius: 12px; color: var(--ion-color-primary-contrast); background: var(--ion-color-primary); box-shadow: 0 12px 24px rgba(var(--ion-color-primary-rgb),.22); font-weight: 850; cursor: pointer; }
 .create-button ion-icon { font-size: 1.3rem; }
 .band-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 390px)); gap: 24px; margin-top: 48px; }
 .band-card, .new-band-card { min-height: 220px; border-radius: 16px; background: #fff; box-shadow: 0 18px 44px rgba(29,48,87,.07); cursor: pointer; transition: 150ms ease; }
 .band-card { position: relative; display: grid; grid-template-columns: 84px 1fr; gap: 20px; padding: 28px; border: 1px solid var(--selection-border); color: var(--selection-navy); text-align: left; }
-.band-card:hover { border-color: #8bb6f1; transform: translateY(-2px); }
-.band-card.featured { border: 2px solid var(--selection-blue); }
+.band-card:hover { border-color: var(--selection-blue); transform: translateY(-2px); }
+.band-card.featured { border: 2px solid var(--ion-color-primary); }
 .band-logo { display: grid; width: 84px; height: 84px; place-items: center; overflow: hidden; border-radius: 14px; color: var(--selection-blue); background: #eef4ff; font-size: 2.2rem; }
 .band-logo img { width: 100%; height: 100%; object-fit: cover; }
 .band-info { min-width: 0; padding-top: 4px; }
@@ -27,7 +27,7 @@
 .band-info small { margin-top: 9px; color: var(--selection-muted); font-size: .86rem; }
 .band-meta { margin-top: 14px; color: var(--selection-muted); font-size: .78rem; }
 .role-badge { position: absolute; top: 18px; right: 18px; padding: 5px 9px; border-radius: 999px; color: var(--selection-blue); background: #eaf3ff; font-size: .68rem; font-weight: 800; }
-.open-label { position: absolute; right: 28px; bottom: 23px; color: var(--selection-blue); font-size: .8rem; font-weight: 850; }
+.open-label { position: absolute; right: 28px; bottom: 23px; color: var(--ion-color-primary); font-size: .8rem; font-weight: 850; }
 .new-band-card { display: grid; place-items: center; align-content: center; gap: 16px; padding: 28px; border: 2px dashed #b9c6d9; color: var(--selection-blue); text-align: center; }
 .new-band-card:hover { border-color: var(--selection-blue); background: #fafdff; }
 .new-band-card strong, .new-band-card small { display: block; }
@@ -53,12 +53,12 @@ ion-modal.create-band-modal::part(content) { overflow: hidden; }
 }
 
 /* Fixed GigSaw night theme. */
-:host { --selection-navy: #e5edf7; --selection-blue: #82b6ff; --selection-border: #2b3b52; --selection-muted: #9aabc1; }
-  .selection-content { --background: #0b1220; }
+:host { --selection-navy: var(--gigsaw-text); --selection-blue: var(--ion-color-brand-blue); --selection-border: var(--gigsaw-border); --selection-muted: var(--gigsaw-muted); }
+  .selection-content { --background: var(--ion-background-color); }
   .brand-logo { content: url('/assets/logo-hor-dark.png'); }
-  .band-card, .new-band-card { background: #111827; }
-  .new-band-card:hover { background: #142034; }
-  .band-logo, .role-badge, .add-icon { background: #172b49; }
+  .band-card, .new-band-card { background: var(--ion-card-background); }
+  .new-band-card:hover { background: color-mix(in srgb, var(--ion-color-brand-blue) 8%, var(--ion-card-background)); }
+  .band-logo, .role-badge, .add-icon { background: color-mix(in srgb, var(--ion-color-brand-blue) 12%, var(--ion-card-background)); }
 
 .logout-button,
 .help-button { color: var(--selection-muted); }

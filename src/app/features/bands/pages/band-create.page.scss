@@ -2,7 +2,7 @@
   display: block;
   height: 100%;
   --create-navy: #071434;
-  --create-blue: #075bd8;
+  --create-blue: var(--ion-color-brand-blue);
   --create-blue-soft: #eaf3ff;
   --create-yellow: #f5b942;
   --create-border: #d8e1ee;
@@ -29,10 +29,7 @@
   padding: clamp(36px, 5vw, 72px);
   overflow: hidden;
   color: #fff;
-  background:
-    radial-gradient(circle at 12% 8%, rgba(111, 174, 255, 0.38), transparent 28%),
-    radial-gradient(circle at 105% 92%, rgba(245, 185, 66, 0.2), transparent 32%),
-    linear-gradient(145deg, #071434 0%, #0b2d68 55%, #075bd8 150%);
+  background: var(--ion-gradient-brand);
 }
 
 .intro-panel::after {
@@ -400,7 +397,7 @@
   transition: 140ms ease;
 }
 
-.genre-chip:hover { border-color: #8bb6f1; }
+.genre-chip:hover { border-color: var(--create-blue); }
 
 .genre-chip.selected {
   border-color: var(--create-blue);
@@ -516,7 +513,7 @@
 /* Fixed GigSaw night theme. */
 :host {
     --create-navy: #e5edf7;
-    --create-blue: #82b6ff;
+    --create-blue: var(--ion-color-brand-blue);
     --create-blue-soft: #172b49;
     --create-border: #2b3b52;
     --create-muted: #9aabc1;

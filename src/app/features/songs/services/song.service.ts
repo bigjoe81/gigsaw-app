@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, throwError, timeout } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Song } from '../../../core/models/band-resources.models';
 import { BandScopedCrudService } from '../../../core/services/band-scoped-crud.service';
@@ -17,14 +17,23 @@ export class SongService extends BandScopedCrudService<Song> {
   searchMetadata(title: string, artist?: string): Observable<SongMetadataCandidate[]> {
     let params = new HttpParams().set('title', title.trim());
     if (artist?.trim()) params = params.set('artist', artist.trim());
+    const normalize = (response: ApiEnvelope<Record<string, unknown>[]>) => {
+      const payload = this.unwrapMetadata(response);
+      if (!Array.isArray(payload)) throw new Error('Formato della ricerca metadati non valido.');
+      return payload.map((item) => this.normalizeMetadata(item) as unknown as SongMetadataCandidate);
+    };
+    const fallback = this.http.get<ApiEnvelope<Record<string, unknown>[]>>(`${API_BASE_URL}/songs/metadata-lookup`, { params }).pipe(map(normalize));
     return this.http.get<ApiEnvelope<Record<string, unknown>[]>>(`${API_BASE_URL}/song-metadata/search`, { params }).pipe(
-      map((response) => this.unwrapMetadata(response).map((item) => this.normalizeMetadata(item) as unknown as SongMetadataCandidate)),
+      map(normalize),
+      catchError((error: { status?: number }) => error.status === 404 ? fallback : throwError(() => error)),
+      timeout(20000),
     );
   }
 
   metadataDetail(recordingMbid: string): Observable<SongMetadataDetail> {
     return this.http.get<ApiEnvelope<Record<string, unknown>>>(`${API_BASE_URL}/song-metadata/musicbrainz/${recordingMbid}`).pipe(
       map((response) => this.normalizeMetadata(this.unwrapMetadata(response)) as unknown as SongMetadataDetail),
+      timeout(20000),
     );
   }
 

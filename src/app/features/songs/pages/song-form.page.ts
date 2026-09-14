@@ -7,12 +7,13 @@ import { addIcons } from 'ionicons';
 import { arrowBackOutline, checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline } from 'ionicons/icons';
 import { finalize, forkJoin, of } from 'rxjs';
 import { Song, SongStatus } from '../../../core/models/band-resources.models';
+import { DaisyStepsComponent } from '../../../shared/ui/daisyui';
 import { SongService } from '../services/song.service';
 import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, DaisyStepsComponent, IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar],
   templateUrl: './song-form.page.html',
   styleUrls: ['./song-form.page.scss'],
   styles: [`
@@ -113,7 +114,12 @@ export class SongFormPage implements OnInit {
         this.metadataResults.set(results);
         if (!results.length) this.magicError.set('Nessun risultato trovato. Puoi continuare manualmente.');
       },
-      error: (error: { error?: { message?: string } }) => this.magicError.set(error.error?.message || 'Ricerca metadati non disponibile.'),
+      error: (error: { error?: { message?: string }; message?: string; status?: number }) => {
+        const fallback = error.status === 0
+          ? 'Backend non raggiungibile. Controlla che l’API sia avviata.'
+          : 'Ricerca metadati non disponibile. Puoi continuare manualmente.';
+        this.magicError.set(error.error?.message || error.message || fallback);
+      },
     });
   }
 

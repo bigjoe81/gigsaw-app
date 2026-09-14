@@ -1,41 +1,67 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>Brano</ion-title>
-    <ion-buttons slot="end">
-      <ion-button [routerLink]="['edit']">Modifica</ion-button>
-      <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
+    <ion-buttons slot="start">
+      @if (isModal) {
+        <ion-button aria-label="Chiudi dettagli" (click)="close()"><ion-icon name="close" /></ion-button>
+      } @else {
+        <ion-back-button defaultHref="../" />
+      }
     </ion-buttons>
+    <ion-title>Dettagli brano</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  @if (loading) {
+  @if (loading()) {
     <ion-card><ion-card-content><ion-skeleton-text [animated]="true" style="width:70%" /><ion-skeleton-text [animated]="true" style="width:90%" /></ion-card-content></ion-card>
-  } @else if (!song) {
-    <ion-note class="ion-padding">Brano non trovato.</ion-note>
+  } @else if (!song()) {
+    <ion-note class="ion-padding">{{ loadError() || 'Brano non trovato.' }}</ion-note>
   } @else {
-    <ion-list inset>
-      <ion-item><ion-label><p>Titolo</p><h2>{{ song.title }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Album</p><h2>{{ song.album || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Eseguito da</p><h2>{{ song.performedBy || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Musica di</p><h2>{{ song.musicBy || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Testo di</p><h2>{{ song.lyricsBy || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Tonalità</p><h2>{{ song.key || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>BPM</p><h2>{{ song.bpm || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Durata</p><h2>{{ formatSeconds(song.duration) }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Stato</p><h2>{{ song.status || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Gruppo linkato</p><h2>{{ song.linkGroup || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Tag</p><h2>{{ formatTags(song.tags) }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Note</p><h2>{{ song.notes || '—' }}</h2></ion-label></ion-item>
-    </ion-list>
+    <article class="song-sheet">
+      <header class="song-hero">
+        <span class="song-art"><ion-icon name="musical-notes-outline" /></span>
+        <div class="song-identity">
+          <span class="eyebrow">{{ statusLabel(song()!.status) }}</span>
+          <h1>{{ song()!.title }}</h1>
+          <p>{{ song()!.performedBy || 'Artista non specificato' }}</p>
+          @if (song()!.album) { <small>{{ song()!.album }}</small> }
+        </div>
+      </header>
 
-    @if (linkedSongs.length) {
+      @if (song()!.key || song()!.bpm || song()!.duration) {
+        <div class="musical-data">
+          @if (song()!.key) { <span><small>Tonalità</small><strong>{{ song()!.key }}</strong></span> }
+          @if (song()!.bpm) { <span><small>Tempo</small><strong>{{ song()!.bpm }} BPM</strong></span> }
+          @if (song()!.duration) { <span><small>Durata</small><strong>{{ formatSeconds(song()!.duration) }}</strong></span> }
+        </div>
+      }
+
+      @if (song()!.musicBy || song()!.lyricsBy) {
+        <section class="detail-section"><h2>Crediti</h2><div class="credit-grid">
+          @if (song()!.musicBy) { <p><span>Musica</span><strong>{{ song()!.musicBy }}</strong></p> }
+          @if (song()!.lyricsBy) { <p><span>Testo</span><strong>{{ song()!.lyricsBy }}</strong></p> }
+        </div></section>
+      }
+
+      @if (song()!.linkGroup || song()!.tags?.length) {
+        <section class="detail-section"><h2>Organizzazione</h2><div class="tags">
+          @if (song()!.linkGroup) { <span class="tag link-group">{{ song()!.linkGroup }}</span> }
+          @for (tag of song()!.tags ?? []; track tag) { <span class="tag">{{ tag }}</span> }
+        </div></section>
+      }
+
+      @if (song()!.notes) {
+        <section class="detail-section notes"><h2>Note</h2><p>{{ song()!.notes }}</p></section>
+      }
+
+    </article>
+
+    @if (linkedSongs().length) {
       <ion-card>
         <ion-card-header><ion-card-title>Brani collegati</ion-card-title></ion-card-header>
         <ion-card-content>
-          <ion-list inset>
-            @for (linkedSong of linkedSongs; track linkedSong.id) {
-              <ion-item button detail [routerLink]="['/bands', route.snapshot.paramMap.get('bandId'), 'songs', linkedSong.id]">
+          <ion-list [inset]="true">
+            @for (linkedSong of linkedSongs(); track linkedSong.id) {
+              <ion-item [detail]="true" [routerLink]="['..', linkedSong.id]">
                 <ion-label>
                   <h2>{{ linkedSong.title }}</h2>
                   <p>{{ linkedSubtitle(linkedSong) }}</p>
@@ -48,3 +74,13 @@
     }
   }
 </ion-content>
+@if (song()) {
+  <ion-footer class="detail-footer">
+    <ion-toolbar>
+      <div class="detail-actions">
+        <ion-button fill="outline" color="danger" (click)="confirmDelete()">Elimina</ion-button>
+        <ion-button (click)="edit()">Modifica</ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-footer>
+}

@@ -1,12 +1,145 @@
-<ion-header class="song-header"><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="../" icon="arrow-back-outline" text="Repertorio" /></ion-buttons><ion-title>{{ editing ? 'Modifica brano' : 'Nuovo brano' }}</ion-title></ion-toolbar></ion-header>
-<ion-content class="song-content"><main class="song-shell">
-  <aside class="song-intro"><span class="eyebrow">Repertorio</span><h1>{{ editing ? 'Aggiorna il brano.' : 'Aggiungi un brano.' }}</h1><p>Parti dai metadati disponibili oppure inserisci tutto manualmente.</p><ol class="steps"><li [class.active]="step()===1" [class.done]="step()>1"><span>1</span><div><strong>Magic Song</strong><small>Trova il brano</small></div></li><li [class.active]="step()===2" [class.done]="step()>2"><span>2</span><div><strong>Dettagli musicali</strong><small>Controlla i dati</small></div></li><li [class.active]="step()===3"><span>3</span><div><strong>Organizzazione</strong><small>Stato, tag e note</small></div></li></ol></aside>
-  <section class="song-panel">
-  @if(loading()){<div class="loading-state"><ion-spinner name="crescent" /> Caricamento brano…</div>}@else{
-  <form [formGroup]="form" (ngSubmit)="save()">
-    @if(step()===1){<section class="form-step magic-step" [formGroup]="magicForm"><header><span class="step-kicker"><ion-icon name="sparkles-outline" /> Magic Song</span><h2>Cerca, scegli, completa.</h2><p>Inserisci titolo e artista: cercheremo la registrazione e la arricchiremo con i metadati Spotify.</p></header><div class="field-grid two-columns"><label><span>Titolo *</span><ion-input formControlName="title" fill="outline" placeholder="Es. Come Together" /></label><label><span>Artista</span><ion-input formControlName="artist" fill="outline" placeholder="Es. The Beatles" /></label></div><div class="magic-actions"><ion-button type="button" (click)="searchMagicSong()" [disabled]="magicLoading()">@if(magicLoading()){<ion-spinner name="crescent" />}@else{<ion-icon slot="start" name="search-outline" />} Cerca brano</ion-button><button type="button" class="text-action" (click)="continueManually()">Inserisci manualmente</button></div>@if(magicError()){<p class="inline-error">{{ magicError() }}</p>}@if(metadataResults().length){<div class="metadata-results">@for(result of metadataResults();track result.externalId){<button type="button" class="metadata-card" (click)="chooseMetadata(result)" [disabled]="detailLoading()">@if(result.artworkUrl){<img [src]="result.artworkUrl" alt="" />}@else{<span class="cover-placeholder"><ion-icon name="musical-notes-outline" /></span>}<span class="metadata-copy"><strong>{{ result.title }}</strong><small>{{ result.artist || 'Artista sconosciuto' }}</small><small>{{ result.album }}</small></span><span class="provider">{{ result.provider==='spotify'?'Spotify':'MusicBrainz' }}</span></button>}</div>}</section>}
-    @if(step()===2){<section class="form-step"><header><span class="step-kicker">Dettagli musicali</span><h2>Controlla le informazioni.</h2><p>I dati trovati restano sempre modificabili.</p></header><div class="field-grid two-columns"><label class="wide"><span>Titolo *</span><ion-input formControlName="title" fill="outline" /></label><label><span>Eseguito da</span><ion-input formControlName="performedBy" fill="outline" /></label><label><span>Album</span><ion-input formControlName="album" fill="outline" /></label><label><span>Musica di</span><ion-input formControlName="musicBy" fill="outline" /></label><label><span>Testo di</span><ion-input formControlName="lyricsBy" fill="outline" /></label><label><span>Tonalità *</span><ion-input formControlName="key" fill="outline" /></label><label><span>BPM</span><ion-input type="number" formControlName="bpm" fill="outline" /></label><label><span>Durata * (mm:ss)</span><ion-input formControlName="duration" fill="outline" inputmode="numeric" placeholder="3:45" /></label></div>@if(error()){<p class="inline-error">{{ error() }}</p>}<footer class="step-actions"><ion-button type="button" fill="clear" (click)="goToStep(1)" [disabled]="editing">Indietro</ion-button><ion-button type="button" (click)="goToStep(3)">Continua</ion-button></footer></section>}
-    @if(step()===3){<section class="form-step"><header><span class="step-kicker">Organizzazione</span><h2>Preparalo per la band.</h2><p>Imposta stato, medley e indicazioni utili per prove e scalette.</p></header><div class="field-grid"><label><span>Stato</span><ion-select formControlName="status" fill="outline" interface="popover"><ion-select-option value="draft">Bozza</ion-select-option><ion-select-option value="active">Attivo</ion-select-option><ion-select-option value="archived">Archiviato</ion-select-option></ion-select></label><label><span>Medley</span><ion-select [value]="creatingLinkGroup ? '__new__' : form.controls.linkGroup.value" fill="outline" interface="popover" placeholder="Nessun medley" (ionChange)="onLinkGroupChoice($event)"><ion-select-option value="">Nessun medley</ion-select-option>@for(group of existingLinkGroups;track group){<ion-select-option [value]="group">{{ group }}</ion-select-option>}<ion-select-option value="__new__">+ Crea nuovo medley</ion-select-option></ion-select></label>@if(creatingLinkGroup){<label><span>Nome del nuovo medley</span><ion-input formControlName="linkGroup" fill="outline" placeholder="Es. Medley anni '80" /></label>}<label><span>Tag</span><ion-input formControlName="tagsText" fill="outline" placeholder="Dance, acustico, anni 90" /></label>@if(existingTags.length){<div class="suggestions"><small>Tag usati</small>@for(tag of existingTags;track tag){<ion-chip (click)="applyTag(tag)" [outline]="!hasTag(tag)">{{ tag }}</ion-chip>}</div>}<label><span>Note</span><ion-textarea formControlName="notes" fill="outline" [autoGrow]="true" [rows]="4" /></label></div>@if(error()){<p class="inline-error">{{ error() }}</p>}<footer class="step-actions"><ion-button type="button" fill="clear" (click)="goToStep(2)">Indietro</ion-button><ion-button type="submit" [disabled]="saving()">@if(saving()){<ion-spinner name="crescent" />}@else{<ion-icon slot="start" name="checkmark-circle-outline" />} Salva brano</ion-button></footer></section>}
-  </form>}
-  </section>
-</main></ion-content>
+<ion-header class="song-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="../" icon="arrow-back-outline" text="Repertorio"/>
+    </ion-buttons>
+    <ion-title>{{ editing ? 'Modifica brano' : 'Nuovo brano' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="song-content">
+  <main class="song-shell">
+    <aside class="song-intro"><span class="eyebrow">Repertorio</span>
+      <h1>{{ editing ? 'Aggiorna il brano.' : 'Aggiungi un brano.' }}</h1>
+      <p>Parti dai metadati disponibili oppure inserisci tutto manualmente.</p>
+      <app-daisy-steps class="desktop-steps" [horizontal]="false"
+                       [steps]="[{ label: 'Cerca', active: step() >= 1 }, { label: 'Dettagli', active: step() >= 2 }, { label: 'Organizza', active: step() >= 3 }]"
+                       ariaLabel="Creazione brano"/>
+      <app-daisy-steps class="mobile-steps"
+                       [steps]="[{ label: 'Cerca', active: step() >= 1 }, { label: 'Dettagli', active: step() >= 2 }, { label: 'Organizza', active: step() >= 3 }]"
+                       ariaLabel="Creazione brano"/>
+    </aside>
+    <section class="song-panel">
+      @if (loading()) {
+        <div class="loading-state">
+          <ion-spinner name="crescent"/>
+          Caricamento brano…
+        </div>
+      } @else {
+        <form class="gigsaw-outlined-form" [formGroup]="form" (ngSubmit)="save()">
+          @if (step() === 1) {
+            <section class="form-step magic-step" [formGroup]="magicForm">
+              <header><span class="step-kicker"><ion-icon name="sparkles-outline"/> Magic Song</span>
+                <h2>Cerca, scegli, completa.</h2>
+                <p>Inserisci titolo e artista: cercheremo la registrazione sui servizi musicali disponibili.</p>
+              </header>
+              <div class="field-grid two-columns"><label><span>Titolo *</span>
+                <ion-input formControlName="title" placeholder="Es. Come Together"/>
+              </label><label><span>Artista</span>
+                <ion-input formControlName="artist" placeholder="Es. The Beatles"/>
+              </label></div>
+              <div class="magic-actions">
+                <ion-button type="button" (click)="searchMagicSong()" [disabled]="magicLoading()">@if (magicLoading()) {
+                  <ion-spinner name="crescent"/>
+                } @else {
+                  <ion-icon slot="start" name="search-outline"/>
+                } Cerca brano
+                </ion-button>
+                <button type="button" class="text-action" (click)="continueManually()">Inserisci manualmente</button>
+              </div>@if (magicError()) {
+              <p class="inline-error">{{ magicError() }}</p>
+            }
+              @if (metadataResults().length) {
+                <div class="metadata-results">@for (result of metadataResults(); track result.externalId) {
+                  <button type="button" class="metadata-card" (click)="chooseMetadata(result)"
+                          [disabled]="detailLoading()">@if (result.artworkUrl) {
+                    <img [src]="result.artworkUrl" alt=""/>
+                  } @else {
+                    <span class="cover-placeholder"><ion-icon name="musical-notes-outline"/></span>
+                  }<span
+                    class="metadata-copy"><strong>{{ result.title }}</strong><small>{{ result.artist || 'Artista sconosciuto' }}</small><small>{{ result.album }}</small></span><span
+                    class="provider">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
+                  </button>
+                }</div>
+              }</section>
+          }
+          @if (step() === 2) {
+            <section class="form-step">
+              <header><span class="step-kicker">Dettagli musicali</span>
+                <h2>Controlla le informazioni.</h2>
+                <p>I dati trovati restano sempre modificabili.</p></header>
+              <div class="field-grid two-columns"><label class="wide"><span>Titolo *</span>
+                <ion-input formControlName="title"/>
+              </label><label><span>Eseguito da</span>
+                <ion-input formControlName="performedBy"/>
+              </label><label><span>Album</span>
+                <ion-input formControlName="album"/>
+              </label><label><span>Musica di</span>
+                <ion-input formControlName="musicBy"/>
+              </label><label><span>Testo di</span>
+                <ion-input formControlName="lyricsBy"/>
+              </label><label><span>Tonalità *</span>
+                <ion-input formControlName="key"/>
+              </label><label><span>BPM</span>
+                <ion-input type="number" formControlName="bpm"/>
+              </label><label><span>Durata * (mm:ss)</span>
+                <ion-input formControlName="duration" inputmode="numeric" placeholder="3:45"/>
+              </label></div>@if (error()) {
+              <p class="inline-error">{{ error() }}</p>
+            }
+              <footer class="step-actions form-action-bar">
+                <ion-button type="button" fill="clear" (click)="goToStep(1)" [disabled]="editing">Indietro</ion-button>
+                <ion-button type="button" (click)="goToStep(3)">Continua</ion-button>
+              </footer>
+            </section>
+          }
+          @if (step() === 3) {
+            <section class="form-step">
+              <header><span class="step-kicker">Organizzazione</span>
+                <h2>Preparalo per la band.</h2>
+                <p>Imposta stato, medley e indicazioni utili per prove e scalette.</p></header>
+              <div class="field-grid"><label><span>Stato</span>
+                <ion-select formControlName="status" interface="popover">
+                  <ion-select-option value="draft">Bozza</ion-select-option>
+                  <ion-select-option value="active">Attivo</ion-select-option>
+                  <ion-select-option value="archived">Archiviato</ion-select-option>
+                </ion-select>
+              </label><label><span>Medley</span>
+                <ion-select [value]="creatingLinkGroup ? '__new__' : form.controls.linkGroup.value"
+                            interface="popover" placeholder="Nessun medley" (ionChange)="onLinkGroupChoice($event)">
+                  <ion-select-option value="">Nessun medley
+                  </ion-select-option>@for (group of existingLinkGroups; track group) {
+                  <ion-select-option [value]="group">{{ group }}</ion-select-option>
+                }
+                  <ion-select-option value="__new__">+ Crea nuovo medley</ion-select-option>
+                </ion-select>
+              </label>@if (creatingLinkGroup) {
+                <label><span>Nome del nuovo medley</span>
+                  <ion-input formControlName="linkGroup" placeholder="Es. Medley anni '80"/>
+                </label>
+              }<label><span>Tag</span>
+                <ion-input formControlName="tagsText" placeholder="Dance, acustico, anni 90"/>
+              </label>@if (existingTags.length) {
+                <div class="suggestions"><small>Tag usati</small>@for (tag of existingTags; track tag) {
+                  <ion-chip (click)="applyTag(tag)" [outline]="!hasTag(tag)">{{ tag }}</ion-chip>
+                }</div>
+              }<label><span>Note</span>
+                <ion-textarea formControlName="notes" [autoGrow]="true" [rows]="4"/>
+              </label></div>@if (error()) {
+              <p class="inline-error">{{ error() }}</p>
+            }
+              <footer class="step-actions form-action-bar">
+                <ion-button type="button" fill="clear" (click)="goToStep(2)">Indietro</ion-button>
+                <ion-button type="submit" [disabled]="saving()">@if (saving()) {
+                  <ion-spinner name="crescent"/>
+                } @else {
+                  <ion-icon slot="start" name="checkmark-circle-outline"/>
+                } Salva brano
+                </ion-button>
+              </footer>
+            </section>
+          }
+        </form>
+      }
+    </section>
+  </main>
+</ion-content>

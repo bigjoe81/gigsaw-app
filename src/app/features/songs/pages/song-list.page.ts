@@ -1,8 +1,9 @@
 
-import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   IonButton,
+  IonBadge,
   IonButtons,
   IonContent,
   IonHeader,
@@ -11,6 +12,7 @@ import {
   IonLabel,
   IonList,
   IonMenuButton,
+  ModalController,
   IonRefresher,
   IonRefresherContent,
   IonSkeletonText,
@@ -19,14 +21,17 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { add, alertCircle, gitNetwork } from 'ionicons/icons';
+import { add, alertCircle, chevronForward, gitNetwork, musicalNotesOutline } from 'ionicons/icons';
+import { finalize, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';
+import { SongDetailPage } from './song-detail.page';
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
+    IonBadge,
     IonButton,
     IonButtons,
     IonContent,
@@ -42,17 +47,22 @@ import { SongService } from '../services/song.service';
     IonText,
     IonTitle,
     IonToolbar
-],
+  ],
   templateUrl: './song-list.page.html',
-  styles: ['.state{min-height:55%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}.state ion-icon{font-size:44px;color:var(--ion-color-medium)}'],
+  styleUrls: ['./song-list.page.scss'],
 })
 export class SongListPage implements OnInit {
-  songs: Song[] = [];
-  loading = true;
-  error = '';
+  readonly songs = signal<Song[]>([]);
+  readonly loading = signal(true);
+  readonly error = signal('');
 
-  constructor(private readonly songsApi: SongService) {
-    addIcons({ add, alertCircle, gitNetwork });
+  constructor(
+    private readonly songsApi: SongService,
+    private readonly modalController: ModalController,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+  ) {
+    addIcons({ add, alertCircle, chevronForward, gitNetwork, musicalNotesOutline });
   }
 
   ngOnInit(): void {
@@ -60,29 +70,50 @@ export class SongListPage implements OnInit {
   }
 
   load(event?: CustomEvent): void {
-    this.loading = !event;
-    this.error = '';
-    this.songsApi.list().subscribe({
-      next: (songs) => {
-        this.songs = songs;
-        this.loading = false;
+    if (!event) this.loading.set(true);
+    this.error.set('');
+    this.songsApi.list().pipe(
+      timeout(15000),
+      finalize(() => {
+        this.loading.set(false);
         event?.detail.complete();
+      }),
+    ).subscribe({
+      next: (songs) => {
+        this.songs.set(songs);
       },
       error: (error: Error) => {
-        this.error = error.message || 'Impossibile caricare i brani.';
-        this.loading = false;
-        event?.detail.complete();
+        this.error.set(error.message || 'Impossibile caricare i brani.');
       },
     });
   }
 
   subtitle(song: Song): string {
     return [
-      song.status,
       song.album,
       song.linkGroup ? `Link: ${song.linkGroup}` : '',
       song.tags?.length ? `Tag: ${song.tags.join(', ')}` : '',
       song.bpm ? `${song.bpm} bpm` : '',
     ].filter(Boolean).join(' · ') || 'Apri dettagli';
+  }
+
+  statusLabel(status: Song['status']): string {
+    return status === 'active' ? 'Attivo' : status === 'archived' ? 'Archiviato' : 'Bozza';
+  }
+
+  async openSong(id: number): Promise<void> {
+    const modal = await this.modalController.create({
+      component: SongDetailPage,
+      componentProps: { songId: id, isModal: true },
+      cssClass: 'song-detail-modal',
+    });
+    await modal.present();
+
+    const result = await modal.onDidDismiss<{ id: number }>();
+    if (result.role === 'edit') {
+      await this.router.navigate([id, 'edit'], { relativeTo: this.route });
+    } else if (result.role === 'deleted') {
+      this.load();
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject } from '@angular/core';
+import { Component, EnvironmentInjector, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import {
   IonContent,
@@ -16,6 +16,7 @@ import {
   albumsOutline,
   arrowBackOutline,
   colorPaletteOutline,
+  homeOutline,
   listOutline,
   micOutline,
   musicalNotesOutline,
@@ -24,7 +25,7 @@ import {
 } from 'ionicons/icons';
 import { BandContextService } from '../core/services/band-context.service';
 
-type BandSection = 'repertorio' | 'prove' | 'concerti' | 'scalette' | 'locandine' | 'band';
+type BandSection = 'dashboard' | 'repertorio' | 'prove' | 'concerti' | 'scalette' | 'locandine' | 'band';
 
 @Component({
   selector: 'app-band-layout',
@@ -49,12 +50,14 @@ export class BandLayoutPage {
   public environmentInjector = inject(EnvironmentInjector);
   private readonly route = inject(ActivatedRoute);
   private readonly bandContext = inject(BandContextService);
+  readonly menuCollapsed = signal(false);
 
   readonly sections: Array<{
     key: BandSection;
     label: string;
     icon: string;
   }> = [
+    { key: 'dashboard', label: 'Dashboard', icon: 'home-outline' },
     { key: 'repertorio', label: 'Repertorio', icon: 'musical-notes-outline' },
     { key: 'prove', label: 'Prove', icon: 'mic-outline' },
     { key: 'concerti', label: 'Concerti', icon: 'radio-outline' },
@@ -68,6 +71,7 @@ export class BandLayoutPage {
       albumsOutline,
       arrowBackOutline,
       colorPaletteOutline,
+      homeOutline,
       listOutline,
       micOutline,
       musicalNotesOutline,
@@ -79,5 +83,15 @@ export class BandLayoutPage {
   sectionHref(section: BandSection): string {
     const bandId = this.route.snapshot.paramMap.get('bandId') ?? this.bandContext.getCurrentBand();
     return bandId ? `/band/${bandId}/${section}` : '/bands';
+  }
+
+  handleLayoutClick(event: MouseEvent): void {
+    if (!window.matchMedia('(min-width: 600px)').matches) return;
+    const path = event.composedPath();
+    const menuButtonClicked = path.some((target) => target instanceof HTMLElement && target.tagName === 'ION-MENU-BUTTON');
+    if (!menuButtonClicked) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.menuCollapsed.update((collapsed) => !collapsed);
   }
 }

@@ -38,6 +38,8 @@ export interface RehearsalSession extends BandScopedEntity {
   endTime?: string | null;
   rehearsalRoomId?: number | null;
   notes?: string | null;
+  songIds?: number[];
+  songs?: Song[];
 }
 
 export interface RecordingSession extends BandScopedEntity {

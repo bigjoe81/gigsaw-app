@@ -2,26 +2,26 @@
 :root {
   color-scheme: dark;
 
-  --ion-color-primary: #6FAEFF;
-  --ion-color-primary-rgb: 111,174,255;
+  --ion-color-primary: #F97316;
+  --ion-color-primary-rgb: 249,115,22;
   --ion-color-primary-contrast: #07111F;
   --ion-color-primary-contrast-rgb: 7,17,31;
-  --ion-color-primary-shade: #6299E0;
-  --ion-color-primary-tint: #7DB7FF;
+  --ion-color-primary-shade: #E06814;
+  --ion-color-primary-tint: #FA812D;
 
-  --ion-color-secondary: #3A7BFF;
-  --ion-color-secondary-rgb: 58,123,255;
-  --ion-color-secondary-contrast: #FFFFFF;
-  --ion-color-secondary-contrast-rgb: 255,255,255;
-  --ion-color-secondary-shade: #336CE0;
-  --ion-color-secondary-tint: #4E88FF;
+  --ion-color-secondary: #60A5FA;
+  --ion-color-secondary-rgb: 96,165,250;
+  --ion-color-secondary-contrast: #07111F;
+  --ion-color-secondary-contrast-rgb: 7,17,31;
+  --ion-color-secondary-shade: #5695E1;
+  --ion-color-secondary-tint: #70AEFB;
 
-  --ion-color-tertiary: #8C9BFF;
-  --ion-color-tertiary-rgb: 140,155,255;
-  --ion-color-tertiary-contrast: #0F172A;
-  --ion-color-tertiary-contrast-rgb: 15,23,42;
-  --ion-color-tertiary-shade: #7B88E0;
-  --ion-color-tertiary-tint: #98A5FF;
+  --ion-color-tertiary: #60A5FA;
+  --ion-color-tertiary-rgb: 96,165,250;
+  --ion-color-tertiary-contrast: #07111F;
+  --ion-color-tertiary-contrast-rgb: 7,17,31;
+  --ion-color-tertiary-shade: #5695E1;
+  --ion-color-tertiary-tint: #70AEFB;
 
   --ion-color-success: #32C67A;
   --ion-color-success-rgb: 50,198,122;
@@ -55,11 +55,24 @@
   --ion-text-color-rgb: 229,237,247;
   --ion-card-background: #111827;
   --ion-toolbar-background: #0F172A;
+  --gigsaw-toolbar: #0F172A;
   --ion-item-background: #111827;
 
-  --gigsaw-blue: #6FAEFF;
+  /* GigSaw brand palette, centralized alongside the Ionic color roles. */
+  --ion-color-brand-orange: var(--ion-color-primary);
+  --ion-color-brand-blue: var(--ion-color-secondary);
+  --ion-color-brand-pink: #DB2777;
+  --ion-color-brand-pink-rgb: 219,39,119;
+  --ion-color-brand-navy: #071426;
+  --ion-color-brand-navy-rgb: 7,20,38;
+  --ion-gradient-brand: linear-gradient(155deg, var(--ion-color-brand-orange) 0%, var(--ion-color-brand-pink) 100%);
+  --ion-gradient-brand-reversed: linear-gradient(155deg, var(--ion-color-brand-pink) 0%, var(--ion-color-brand-orange) 100%);
+
+  --gigsaw-blue: var(--ion-color-brand-blue);
   --gigsaw-blue-light: #93C5FD;
-  --gigsaw-navy: #1E3A8A;
+  --gigsaw-orange: var(--ion-color-brand-orange);
+  --gigsaw-pink: var(--ion-color-brand-pink);
+  --gigsaw-navy: var(--ion-color-brand-navy);
   --gigsaw-background: #0B1220;
   --gigsaw-surface: #111827;
   --gigsaw-border: #243244;

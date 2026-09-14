@@ -10,35 +10,40 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <form [formGroup]="form" class="ion-padding">
-    <ion-item>
-      <ion-label position="stacked">Gruppo linkato</ion-label>
-      <ion-input formControlName="linkGroup" placeholder="es. intro-medley" />
-    </ion-item>
-    @if (existingLinkGroups.length) {
-      <div class="chips">
-        @for (group of existingLinkGroups; track group) {
-          <ion-chip (click)="applyLinkGroup(group)" [outline]="form.controls.linkGroup.value !== group">{{ group }}</ion-chip>
-        }
-      </div>
-    }
-    <div class="actions">
-      <ion-button fill="outline" (click)="apply()">Assegna ai selezionati</ion-button>
-      <ion-button color="warning" fill="outline" (click)="clear()" [disabled]="saving || !selectedIds.length">Rimuovi gruppo</ion-button>
-    </div>
-  </form>
+  <main class="medley-page">
+    <header class="page-intro"><span class="eyebrow">Repertorio</span><h1>Gruppi di brani (medley)</h1><p>Organizza i brani collegati e trascinali nell’ordine in cui vuoi eseguirli.</p></header>
 
-  <ion-list inset>
-    @for (song of songs; track song.id) {
-      <ion-item>
-        <ion-checkbox slot="start" [checked]="selectedIds.includes(song.id)" (ionChange)="toggleSong(song.id)" />
-        <ion-label>
-          <h2>{{ song.title }}</h2>
-          <p>{{ subtitle(song) }}</p>
-        </ion-label>
-      </ion-item>
+    @if (groupedSongs().length) {
+      <section class="group-grid">
+        @for (group of groupedSongs(); track group.name) {
+          <article class="group-card" [class.expanded]="expandedGroup === group.name">
+            <button class="group-header" type="button" (click)="toggleGroup(group.name)">
+              <span class="group-icon">♪</span><span class="group-copy"><strong>{{ group.name }}</strong><small>{{ group.songs.length }} {{ group.songs.length === 1 ? 'brano' : 'brani' }}</small></span><span class="group-chevron">{{ expandedGroup === group.name ? '⌃' : '⌄' }}</span>
+            </button>
+            <div class="group-actions"><button type="button" (click)="$event.stopPropagation(); editGroupSongs(group.name)">Modifica brani</button><button type="button" (click)="$event.stopPropagation(); renameGroup(group.name)">Rinomina</button><button type="button" class="danger" (click)="$event.stopPropagation(); removeGroup(group.name)">Rimuovi</button></div>
+            @if (expandedGroup === group.name) {
+              <ion-reorder-group class="group-songs" [disabled]="false" (ionItemReorder)="reorder($event, group.name)">
+                @for (song of group.songs; track song.id; let index = $index) {
+                  <ion-item class="medley-song" lines="none"><span class="song-index">{{ index + 1 }}</span><span class="song-title"><strong>{{ song.title }}</strong><small>{{ subtitle(song) }}</small></span><ion-button class="remove-song" fill="clear" color="danger" slot="end" (click)="removeSongFromGroup(song); $event.stopPropagation()" aria-label="Rimuovi dal medley">×</ion-button><ion-reorder slot="end" /></ion-item>
+                }
+              </ion-reorder-group>
+            }
+          </article>
+        }
+      </section>
+    } @else {
+      <div class="empty-groups"><strong>Nessun medley creato</strong><span>Assegna i brani a un gruppo per iniziare.</span></div>
     }
-  </ion-list>
+
+    <section class="assign-panel">
+      <header><div><h2>{{ editingGroup() ? 'Modifica il medley' : 'Crea un medley' }}</h2></div><span class="selection-count">{{ selectedIds.length }} selezionati</span></header>
+      <form [formGroup]="form">
+        <ion-input fill="outline" formControlName="linkGroup" placeholder="Nome del nuovo medley, es. intro-medley" />
+        <div class="song-picker">@for (song of songs(); track song.id) { <ion-item lines="none"><ion-checkbox slot="start" [checked]="selectedIds.includes(song.id)" (ionChange)="toggleSong(song.id)" /><ion-label><strong>{{ song.title }}</strong><small>{{ song.linkGroup || 'Senza medley' }}</small></ion-label></ion-item> }</div>
+        <div class="actions"><ion-button (click)="apply()" [disabled]="saving || !selectedIds.length">{{ editingGroup() ? 'Modifica medley' : 'Crea medley' }}</ion-button><ion-button color="warning" fill="outline" (click)="clear()" [disabled]="saving || !selectedIds.length">Rimuovi gruppo</ion-button></div>
+      </form>
+    </section>
+  </main>
 
   @if (error) {
     <ion-note class="ion-padding" color="danger">{{ error }}</ion-note>

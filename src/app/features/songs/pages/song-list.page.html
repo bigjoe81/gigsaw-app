@@ -1,37 +1,64 @@
-<ion-header>
+<ion-header class="repertoire-header">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button menu="band-menu" />
     </ion-buttons>
     <ion-title>Brani</ion-title>
     <ion-buttons slot="end">
-      <ion-button [routerLink]="['link-groups']">Link</ion-button>
-      <ion-button [routerLink]="['new']" aria-label="Crea"><ion-icon slot="icon-only" name="add" /></ion-button>
+      <ion-button fill="clear" color="secondary" [routerLink]="['link-groups']">Medley</ion-button>
+      <ion-button class="create-song" [routerLink]="['new']" aria-label="Crea brano"><ion-icon slot="start" name="add" /> Nuovo</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="repertoire-content">
   <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
-  @if (loading) {
+  @if (loading()) {
     <ion-list>
       @for (item of [1,2,3]; track item) {
         <ion-item><ion-label><ion-skeleton-text [animated]="true" style="width:55%" /><ion-skeleton-text [animated]="true" style="width:35%" /></ion-label></ion-item>
       }
     </ion-list>
-  } @else if (error) {
-    <div class="state"><ion-icon name="alert-circle" /><ion-text color="danger">{{ error }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
-  } @else if (!songs.length) {
-    <div class="state"><ion-icon name="git-network" /><ion-text>Nessun brano presente.</ion-text><ion-button [routerLink]="['new']">Crea brano</ion-button></div>
+  } @else if (error()) {
+    <div class="state"><ion-icon name="alert-circle" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
+  } @else if (!songs().length) {
+    <div class="state"><ion-icon name="musical-notes-outline" /><ion-text class="font-bold">Nessun brano presente</ion-text>
+      <ion-button [routerLink]="['new']">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Crea brano
+      </ion-button>
+    </div>
   } @else {
-    <ion-list inset>
-      @for (song of songs; track song.id) {
-        <ion-item button detail [routerLink]="[song.id]">
-          <ion-label>
-            <h2>{{ song.title }}</h2>
-            <p>{{ subtitle(song) }}</p>
-          </ion-label>
-        </ion-item>
-      }
-    </ion-list>
+    <section class="library" aria-labelledby="library-title">
+      <header class="library-header">
+        <div>
+          <p>Repertorio</p>
+          <h1 id="library-title">I tuoi brani</h1>
+        </div>
+        <div class="library-actions">
+          <span class="song-count">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>
+          <ion-button class="library-medleys" fill="outline" [routerLink]="['link-groups']">Gestisci medley</ion-button>
+          <ion-button class="library-add" [routerLink]="['new']"><ion-icon slot="start" name="add" />Aggiungi brano</ion-button>
+        </div>
+      </header>
+
+      <ion-list class="song-list" lines="none">
+        @for (song of songs(); track song.id) {
+          <ion-item class="song-row" [detail]="false" (click)="openSong(song.id)">
+            <span class="song-icon" slot="start"><ion-icon name="musical-notes-outline" /></span>
+            <ion-label>
+              <div class="song-heading">
+                <h2>{{ song.title }}</h2>
+              </div>
+              @if (song.performedBy) { <p class="artist">{{ song.performedBy }}</p> }
+              <p class="metadata">{{ subtitle(song) }}</p>
+            </ion-label>
+            <div class="song-actions" slot="end">
+              <ion-badge [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
+              <span class="open-song" aria-hidden="true"><ion-icon name="chevron-forward" /></span>
+            </div>
+          </ion-item>
+        }
+      </ion-list>
+    </section>
   }
 </ion-content>
