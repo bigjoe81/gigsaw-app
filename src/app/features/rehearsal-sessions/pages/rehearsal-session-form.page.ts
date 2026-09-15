@@ -1,60 +1,120 @@
-
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonIcon, IonInput, IonLabel, IonNote, IonPopover, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
-import { RehearsalSession, Song } from '../../../core/models/band-resources.models';
+import { finalize, forkJoin, of } from 'rxjs';
+import {
+  IonBackButton,
+  IonButton,
+  IonButtons,
+  IonCheckbox,
+  IonContent,
+  IonDatetime,
+  IonDatetimeButton,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonNote,
+  IonPopover,
+  IonSelect,
+  IonSelectOption,
+  IonSpinner,
+  IonTextarea,
+  IonTitle,
+  IonToolbar,
+  ToastController,
+} from '@ionic/angular/standalone';
+import {
+  RehearsalRoom,
+  RehearsalSession,
+  RehearsalStatus,
+  Song,
+} from '../../../core/models/band-resources.models';
 import { DaisyStepsComponent } from '../../../shared/ui/daisyui';
 import { SongService } from '../../songs/services/song.service';
+import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DaisyStepsComponent, IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonIcon, IonInput, IonLabel, IonNote, IonPopover, IonSpinner, IonTextarea, IonTitle, IonToolbar],
-  templateUrl: './rehearsal-session-form.page.html', styleUrls: ['./rehearsal-session-form.page.scss'],
+  imports: [ReactiveFormsModule, RouterLink, DaisyStepsComponent, IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonIcon, IonInput, IonNote, IonPopover, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  templateUrl: './rehearsal-session-form.page.html',
+  styleUrls: ['./rehearsal-session-form.page.scss'],
 })
 export class RehearsalSessionFormPage implements OnInit {
-  form = this.fb.nonNullable.group({ title: ['', Validators.required], date: [this.today(), Validators.required], startTime: '', endTime: '', rehearsalRoomId: '', notes: '' });
+  readonly form = this.fb.nonNullable.group({
+    title: ['', Validators.required],
+    date: [this.today(), Validators.required],
+    startTime: '',
+    endTime: '',
+    status: 'confirmed' as RehearsalStatus,
+    rehearsalRoomId: ['', Validators.required],
+    notes: '',
+  });
   editing = false;
   saving = false;
   loading = true;
   error = '';
   step = 1;
   songs: Song[] = [];
+  rehearsalRooms: RehearsalRoom[] = [];
   selectedSongIds: number[] = [];
   private id?: number;
   private bandId?: number;
 
-  constructor(private readonly fb: FormBuilder, private readonly rehearsalSessions: RehearsalSessionService, private readonly songService: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastController) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly rehearsalSessions: RehearsalSessionService,
+    private readonly rehearsalRoomsApi: RehearsalRoomService,
+    private readonly songService: SongService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly toast: ToastController,
+  ) {}
 
   ngOnInit(): void {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.editing = !!this.id;
     forkJoin({
+      rooms: this.rehearsalRoomsApi.list(),
       songs: this.songService.list(),
       session: this.id ? this.rehearsalSessions.get(this.id) : of(undefined),
     }).subscribe({
-      next: ({ songs, session }) => {
+      next: ({ rooms, songs, session }) => {
+        this.rehearsalRooms = rooms;
         this.songs = songs.filter((song) => song.status !== 'archived');
         if (session) {
-          this.form.patchValue({ title: session.title, date: session.date ?? '', startTime: session.startTime ?? '', endTime: session.endTime ?? '', rehearsalRoomId: session.rehearsalRoomId != null ? String(session.rehearsalRoomId) : '', notes: session.notes ?? '' });
+          this.form.patchValue({
+            title: session.title,
+            date: this.normalizeDate(session.date),
+            startTime: this.normalizeTime(session.startTime),
+            endTime: this.normalizeTime(session.endTime),
+            status: session.status ?? 'confirmed',
+            rehearsalRoomId: session.rehearsalRoomId != null ? String(session.rehearsalRoomId) : '',
+            notes: session.notes ?? '',
+          });
           this.selectedSongIds = session.songIds ?? session.songs?.map((song) => song.id) ?? [];
         }
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Impossibile caricare i dati della prova.';
+      error: (error: unknown) => {
+        this.error = this.apiErrorMessage(error, 'Impossibile caricare i dati della prova.');
         this.loading = false;
       },
     });
   }
 
   continueToSongs(): void {
+    this.error = '';
     this.form.controls.title.markAsTouched();
     this.form.controls.date.markAsTouched();
-    if (this.form.controls.title.invalid || this.form.controls.date.invalid) return;
+    this.form.controls.rehearsalRoomId.markAsTouched();
+    if (this.form.controls.title.invalid || this.form.controls.date.invalid || this.form.controls.rehearsalRoomId.invalid) {
+      this.error = 'Completa titolo, data e sala prove prima di continuare.';
+      return;
+    }
+    if (!this.timeRangeValid()) return;
     this.step = 2;
   }
 
@@ -65,22 +125,43 @@ export class RehearsalSessionFormPage implements OnInit {
   }
 
   save(): void {
-    if (this.form.invalid || this.saving) { this.form.markAllAsTouched(); return; }
+    this.error = '';
+    if (this.form.invalid || this.saving || !this.timeRangeValid()) {
+      this.form.markAllAsTouched();
+      if (!this.error) this.error = 'Completa i campi obbligatori prima di salvare.';
+      return;
+    }
+
     this.saving = true;
+    const values = this.form.getRawValue();
     const payload: Partial<RehearsalSession> = {
-      ...this.form.getRawValue(),
-      date: this.normalizeDate(this.form.controls.date.value),
-      rehearsalRoomId: this.toNumber(this.form.getRawValue().rehearsalRoomId),
+      title: values.title.trim(),
+      date: this.normalizeDate(values.date),
+      startTime: values.startTime || null,
+      endTime: values.endTime || null,
+      status: values.status,
+      rehearsalRoomId: Number(values.rehearsalRoomId),
+      notes: values.notes.trim() || null,
       songIds: this.selectedSongIds,
     };
-    const request = this.editing ? this.rehearsalSessions.update(this.id!, payload) : this.rehearsalSessions.create(payload);
-    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Prova salvata.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/prove` : '/bands'); }, error: (error: Error) => { this.error = error.message || 'Salvataggio non riuscito.'; this.saving = false; } });
+    const request = this.editing
+      ? this.rehearsalSessions.update(this.id!, payload)
+      : this.rehearsalSessions.create(payload);
+
+    request.pipe(finalize(() => { this.saving = false; })).subscribe({
+      next: async () => {
+        (await this.toast.create({ message: 'Prova salvata.', duration: 1800, color: 'success' })).present();
+        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/prove` : '/bands');
+      },
+      error: (error: unknown) => {
+        this.error = this.apiErrorMessage(error, 'Salvataggio non riuscito.');
+        this.step = 1;
+      },
+    });
   }
 
-  private toNumber(value: string): number | null {
-    if (!value) return null;
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
+  roomLabel(room: RehearsalRoom): string {
+    return [room.name, room.city].filter(Boolean).join(' · ');
   }
 
   onDateChange(event: CustomEvent<{ value?: string | string[] | null }>): void {
@@ -89,12 +170,22 @@ export class RehearsalSessionFormPage implements OnInit {
     dateControl.markAsTouched();
   }
 
-  private normalizeDate(value: string | string[] | null | undefined): string {
-    if (Array.isArray(value)) {
-      return this.normalizeDate(value[0]);
+  private timeRangeValid(): boolean {
+    const { startTime, endTime } = this.form.getRawValue();
+    if (startTime && endTime && endTime <= startTime) {
+      this.error = 'L’orario di fine deve essere successivo all’orario di inizio.';
+      return false;
     }
+    return true;
+  }
 
+  private normalizeDate(value: string | string[] | null | undefined): string {
+    if (Array.isArray(value)) return this.normalizeDate(value[0]);
     return value ? String(value).slice(0, 10) : '';
+  }
+
+  private normalizeTime(value: string | null | undefined): string {
+    return value ? value.slice(0, 5) : '';
   }
 
   private today(): string {
@@ -105,15 +196,23 @@ export class RehearsalSessionFormPage implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+  private apiErrorMessage(error: unknown, fallback: string): string {
+    if (error instanceof HttpErrorResponse) {
+      const validationErrors = error.error?.errors as Record<string, string[]> | undefined;
+      const firstValidationError = validationErrors
+        ? Object.values(validationErrors).find((messages) => messages.length)?.[0]
+        : undefined;
+      return firstValidationError || error.error?.message || fallback;
+    }
+    return error instanceof Error ? error.message : fallback;
+  }
+
   private getBandId(): number | undefined {
     const segments = [this.route.snapshot, this.route.parent?.snapshot, this.route.parent?.parent?.snapshot, this.route.parent?.parent?.parent?.snapshot];
     for (const snapshot of segments) {
       const value = Number(snapshot?.paramMap.get('bandId'));
-      if (Number.isInteger(value) && value > 0) {
-        return value;
-      }
+      if (Number.isInteger(value) && value > 0) return value;
     }
-
     return undefined;
   }
 }

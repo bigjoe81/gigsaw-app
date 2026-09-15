@@ -1,9 +1,43 @@
-
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonSearchbar, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
-import { debounceTime, distinctUntilChanged, forkJoin, of, Subject, switchMap } from 'rxjs';
+import {
+  IonBackButton,
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonDatetime,
+  IonDatetimeButton,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonNote,
+  IonSearchbar,
+  IonSpinner,
+  IonTextarea,
+  IonTitle,
+  IonToolbar,
+  ToastController,
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { calendarOutline, locationOutline } from 'ionicons/icons';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  finalize,
+  forkJoin,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
 import { Venue } from '../../venues/models/venue.models';
 import { MapboxAddressSuggestion, MapboxGeocodingService } from '../../venues/services/mapbox-geocoding.service';
@@ -12,15 +46,43 @@ import { GigService } from '../services/gig.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonSearchbar, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  imports: [
+    ReactiveFormsModule,
+    IonBackButton,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonDatetime,
+    IonDatetimeButton,
+    IonHeader,
+    IonIcon,
+    IonInput,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonModal,
+    IonNote,
+    IonSearchbar,
+    IonSpinner,
+    IonTextarea,
+    IonTitle,
+    IonToolbar,
+  ],
   templateUrl: './gig-form.page.html',
-  styles: [`.venue-results{margin:8px 16px 0;border:1px solid var(--ion-color-light-shade);border-radius:16px;overflow:hidden;}.venue-result-title{font-weight:600;}.venue-result-meta{display:block;font-size:.9rem;color:var(--ion-color-medium);margin-top:4px;}.venue-selection-note{display:block;padding:8px 16px 0;}.venue-actions{display:flex;gap:8px;flex-wrap:wrap;padding:8px 16px 0;}`],
+  styleUrl: './gig-form.page.scss',
 })
 export class GigFormPage implements OnInit {
-  form = this.fb.nonNullable.group({ title: ['', Validators.required], date: ['', Validators.required], venueId: '', notes: '' });
+  readonly form = this.fb.nonNullable.group({
+    title: ['', [Validators.required, Validators.maxLength(255)]],
+    date: ['', Validators.required],
+    time: '',
+    venueId: '',
+    notes: '',
+  });
+
   editing = false;
+  loading = true;
   saving = false;
-  loadingVenues = true;
   searchingMapbox = false;
   error = '';
   venueQuery = '';
@@ -41,7 +103,9 @@ export class GigFormPage implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly toast: ToastController,
-  ) {}
+  ) {
+    addIcons({ calendarOutline, locationOutline });
+  }
 
   ngOnInit(): void {
     this.bandId = this.getBandId();
@@ -55,52 +119,49 @@ export class GigFormPage implements OnInit {
     }).subscribe({
       next: ({ venues, gig }) => {
         this.venues = venues;
-        this.filteredVenues = venues;
-        this.loadingVenues = false;
-
-        if (gig) {
-          this.form.patchValue({
-            title: gig.title,
-            date: gig.date ?? '',
-            venueId: gig.venueId != null ? String(gig.venueId) : '',
-            notes: gig.notes ?? '',
-          });
-
-          if (gig.venueId != null) {
-            const venue = this.venues.find((item) => item.id === gig.venueId);
-            if (venue) {
-              this.selectExistingVenue(venue);
-            }
-          }
-        }
+        this.filteredVenues = venues.slice(0, 8);
+        if (gig) this.patchGig(gig);
+        this.loading = false;
       },
-      error: () => {
-        this.loadingVenues = false;
-        this.error = this.id ? 'Impossibile caricare il concerto.' : 'Impossibile caricare le venue.';
+      error: (error: unknown) => {
+        this.error = this.apiErrorMessage(error, this.id ? 'Impossibile caricare il concerto.' : 'Impossibile caricare le venue.');
+        this.loading = false;
       },
     });
   }
 
   save(): void {
-    if (this.form.invalid || this.saving) { this.form.markAllAsTouched(); return; }
+    this.error = '';
+    if (this.form.invalid || this.saving) {
+      this.form.markAllAsTouched();
+      this.error = 'Completa i campi obbligatori prima di salvare.';
+      return;
+    }
+    if (!this.selectedVenue && !this.pendingVenue) {
+      this.error = 'Seleziona una venue dai risultati prima di salvare.';
+      return;
+    }
+
     this.saving = true;
     this.resolveVenueIdForSave().pipe(
       switchMap((venueId) => {
+        const values = this.form.getRawValue();
         const payload: Partial<Gig> = {
-          ...this.form.getRawValue(),
-          date: this.normalizeDate(this.form.controls.date.value),
+          title: values.title.trim(),
+          date: this.combineDateAndTime(values.date, values.time),
           venueId,
+          notes: values.notes.trim() || null,
         };
         return this.editing ? this.gigs.update(this.id!, payload) : this.gigs.create(payload);
       }),
+      finalize(() => { this.saving = false; }),
     ).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Concerto salvato.', duration: 1800, color: 'success' })).present();
         void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/concerti` : '/bands');
       },
-      error: (error: Error) => {
-        this.error = error.message || 'Salvataggio non riuscito.';
-        this.saving = false;
+      error: (error: unknown) => {
+        this.error = this.apiErrorMessage(error, 'Salvataggio non riuscito.');
       },
     });
   }
@@ -134,7 +195,6 @@ export class GigFormPage implements OnInit {
       this.selectExistingVenue(existingVenue);
       return;
     }
-
     this.selectedVenue = undefined;
     this.pendingVenue = result;
     this.venueQuery = result.fullAddress;
@@ -147,7 +207,7 @@ export class GigFormPage implements OnInit {
     this.selectedVenue = undefined;
     this.pendingVenue = undefined;
     this.venueQuery = '';
-    this.filteredVenues = this.venues;
+    this.filteredVenues = this.venues.slice(0, 8);
     this.mapboxResults = [];
     this.form.patchValue({ venueId: '' }, { emitEvent: false });
   }
@@ -164,10 +224,16 @@ export class GigFormPage implements OnInit {
     return this.mapbox.isConfigured();
   }
 
-  private toNumber(value: string): number | null {
-    if (!value) return null;
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
+  private patchGig(gig: Gig): void {
+    this.form.patchValue({
+      title: gig.title,
+      date: this.normalizeDate(gig.date),
+      time: this.extractTime(gig.date),
+      venueId: gig.venueId != null ? String(gig.venueId) : '',
+      notes: gig.notes ?? '',
+    });
+    const venue = gig.venue ?? this.venues.find((item) => item.id === gig.venueId);
+    if (venue) this.selectExistingVenue(venue);
   }
 
   private bindVenueSearch(): void {
@@ -177,110 +243,98 @@ export class GigFormPage implements OnInit {
       switchMap((query) => {
         const trimmed = query.trim();
         this.filteredVenues = this.filterVenues(trimmed);
-
         if (!this.mapbox.isConfigured() || trimmed.length < 3) {
           this.searchingMapbox = false;
           return of([] as MapboxAddressSuggestion[]);
         }
-
         this.searchingMapbox = true;
-        return this.mapbox.search(trimmed);
+        return this.mapbox.search(trimmed).pipe(
+          catchError(() => of([] as MapboxAddressSuggestion[])),
+          finalize(() => { this.searchingMapbox = false; }),
+        );
       }),
-    ).subscribe({
-      next: (results) => {
-        this.mapboxResults = results.filter((result) => !this.findMatchingVenue(result));
-        this.searchingMapbox = false;
-      },
-      error: () => {
-        this.mapboxResults = [];
-        this.searchingMapbox = false;
-      },
+    ).subscribe((results) => {
+      this.mapboxResults = results.filter((result) => !this.findMatchingVenue(result));
     });
   }
 
   private filterVenues(query: string): Venue[] {
-    if (!query) {
-      return this.venues.slice(0, 8);
-    }
-
+    if (!query) return this.venues.slice(0, 8);
     const normalizedQuery = this.normalize(query);
-    return this.venues
-      .filter((venue) => this.normalize(this.venueLabel(venue)).includes(normalizedQuery))
-      .slice(0, 8);
+    return this.venues.filter((venue) => this.normalize(this.venueLabel(venue)).includes(normalizedQuery)).slice(0, 8);
   }
 
   private findMatchingVenue(result: MapboxAddressSuggestion): Venue | undefined {
     const normalizedAddress = this.normalize(result.address || result.fullAddress);
     const normalizedCity = this.normalize(result.city ?? '');
-
     return this.venues.find((venue) => {
       const venueAddress = this.normalize(venue.address ?? '');
       const venueCity = this.normalize(venue.city ?? '');
       if (venueAddress && normalizedAddress && venueAddress === normalizedAddress) {
         return !normalizedCity || !venueCity || venueCity === normalizedCity;
       }
-
-      return this.normalize(venue.name) === this.normalize(result.name)
-        && venueAddress === normalizedAddress;
+      return this.normalize(venue.name) === this.normalize(result.name) && venueAddress === normalizedAddress;
     });
   }
 
-  private resolveVenueIdForSave() {
-    if (this.selectedVenue) {
-      return of(this.selectedVenue.id);
-    }
+  private resolveVenueIdForSave(): Observable<number> {
+    if (this.selectedVenue) return of(this.selectedVenue.id);
+    if (!this.pendingVenue) return throwError(() => new Error('Seleziona una venue.'));
 
-    if (this.pendingVenue) {
-      const existingVenue = this.findMatchingVenue(this.pendingVenue);
-      if (existingVenue) {
-        return of(existingVenue.id);
-      }
+    const existingVenue = this.findMatchingVenue(this.pendingVenue);
+    if (existingVenue) return of(existingVenue.id);
 
-      const payload: Partial<Venue> = {
-        name: this.pendingVenue.name,
-        address: this.pendingVenue.address || this.pendingVenue.fullAddress,
-        city: this.pendingVenue.city,
-        latitude: this.pendingVenue.latitude,
-        longitude: this.pendingVenue.longitude,
-      };
-
-      return this.venuesApi.create(payload).pipe(
-        switchMap((venue) => {
-          this.venues = [venue, ...this.venues];
-          this.selectExistingVenue(venue);
-          return of(venue.id);
-        }),
-      );
-    }
-
-    return of(this.toNumber(this.form.getRawValue().venueId));
+    const payload: Partial<Venue> = {
+      name: this.pendingVenue.name,
+      address: this.pendingVenue.address || this.pendingVenue.fullAddress,
+      city: this.pendingVenue.city,
+      latitude: this.pendingVenue.latitude,
+      longitude: this.pendingVenue.longitude,
+    };
+    return this.venuesApi.create(payload).pipe(
+      switchMap((venue) => {
+        this.venues = [venue, ...this.venues];
+        this.selectExistingVenue(venue);
+        return of(venue.id);
+      }),
+    );
   }
 
-  private normalize(value: string): string {
-    return value
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim();
+  private combineDateAndTime(date: string, time: string): string {
+    const normalizedDate = this.normalizeDate(date);
+    return time ? `${normalizedDate}T${time}:00` : normalizedDate;
   }
 
   private normalizeDate(value: string | string[] | null | undefined): string {
-    if (Array.isArray(value)) {
-      return this.normalizeDate(value[0]);
-    }
-
+    if (Array.isArray(value)) return this.normalizeDate(value[0]);
     return value ? String(value).slice(0, 10) : '';
+  }
+
+  private extractTime(value: string): string {
+    return value.match(/[T\s](\d{2}:\d{2})/)?.[1] ?? '';
+  }
+
+  private normalize(value: string): string {
+    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  private apiErrorMessage(error: unknown, fallback: string): string {
+    if (error instanceof HttpErrorResponse) {
+      const validationErrors = error.error?.errors as Record<string, string[]> | undefined;
+      const firstValidationError = validationErrors
+        ? Object.values(validationErrors).find((messages) => messages.length)?.[0]
+        : undefined;
+      return firstValidationError || error.error?.message || fallback;
+    }
+    return error instanceof Error ? error.message : fallback;
   }
 
   private getBandId(): number | undefined {
     const segments = [this.route.snapshot, this.route.parent?.snapshot, this.route.parent?.parent?.snapshot, this.route.parent?.parent?.parent?.snapshot];
     for (const snapshot of segments) {
       const value = Number(snapshot?.paramMap.get('bandId'));
-      if (Number.isInteger(value) && value > 0) {
-        return value;
-      }
+      if (Number.isInteger(value) && value > 0) return value;
     }
-
     return undefined;
   }
 }

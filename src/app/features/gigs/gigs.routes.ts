@@ -1,3 +1,11 @@
-import { Routes } from '@angular/router'; import { ResourceConfig } from '../../shared/models/resource-form.models'; import { ResourceDetailPage } from '../../shared/ui/resource-detail.page'; import { ResourceListPage } from '../../shared/ui/resource-list.page'; import { GigFormPage } from './pages/gig-form.page'; import { GigService } from './services/gig.service';
-const resource:ResourceConfig={key:'gigs',singular:'concerto',plural:'Concerti',service:GigService,fields:[{key:'title',label:'Titolo',type:'text',required:true},{key:'date',label:'Data',type:'date',required:true},{key:'venueId',label:'ID venue',type:'number'},{key:'notes',label:'Note',type:'textarea'}]};
-export const GIG_ROUTES:Routes=[{path:'',component:ResourceListPage,data:{resource}},{path:'new',component:GigFormPage,data:{resource}},{path:':id',component:ResourceDetailPage,data:{resource}},{path:':id/edit',component:GigFormPage,data:{resource}}];
+import { Routes } from '@angular/router';
+import { GigDetailPage } from './pages/gig-detail.page';
+import { GigFormPage } from './pages/gig-form.page';
+import { GigListPage } from './pages/gig-list.page';
+
+export const GIG_ROUTES: Routes = [
+  { path: '', component: GigListPage },
+  { path: 'new', component: GigFormPage },
+  { path: ':id', component: GigDetailPage },
+  { path: ':id/edit', component: GigFormPage },
+];

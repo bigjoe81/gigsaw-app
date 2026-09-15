@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>Concerto</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['edit']"><ion-icon slot="start" name="pencil-outline" />Modifica</ion-button>
+      <ion-button color="danger" (click)="confirmDelete()"><ion-icon slot="icon-only" name="trash-outline" /></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="gig-detail">
+    @if (loading) {
+      <section class="hero-card skeleton"><ion-skeleton-text [animated]="true" style="width: 36%" /><ion-skeleton-text [animated]="true" style="width: 72%" /><ion-skeleton-text [animated]="true" style="width: 54%" /></section>
+    } @else if (error || !gig) {
+      <ion-note class="error-note" color="danger">{{ error || 'Concerto non trovato.' }}</ion-note>
+    } @else {
+      <section class="hero-card">
+        <p class="eyebrow">Data live</p>
+        <h1>{{ gig.title || gig.venue?.name || 'Concerto' }}</h1>
+        <div class="hero-meta"><span><ion-icon name="calendar-outline" />{{ date(gig.date) }}</span>@if (time(gig.date); as gigTime) { <span><ion-icon name="time-outline" />{{ gigTime }}</span> }</div>
+      </section>
+
+      <section class="detail-grid">
+        <article class="detail-card">
+          <div class="card-icon"><ion-icon name="location-outline" /></div>
+          <div><p>Venue</p><h2>{{ gig.venue?.name || 'Venue non disponibile' }}</h2>@if (venueAddress(gig)) { <span>{{ venueAddress(gig) }}</span> }</div>
+        </article>
+        <article class="detail-card notes-card">
+          <div><p>Note organizzative</p><h2>{{ gig.notes || 'Nessuna nota inserita.' }}</h2></div>
+        </article>
+      </section>
+    }
+  </main>
+</ion-content>

@@ -1,0 +1,31 @@
+.gig-form { max-width: 900px; margin: 0 auto; padding: 24px 16px 48px; }
+.form-intro { margin-bottom: 20px; }
+.form-intro h1 { margin: 4px 0 6px; font-size: clamp(1.55rem, 3vw, 2rem); font-weight: 800; }
+.form-intro p { margin: 0; color: var(--ion-color-medium); }
+.eyebrow { color: var(--ion-color-primary) !important; font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.form-card { display: grid; gap: 18px; margin-bottom: 16px; padding: 20px; border: 1px solid var(--gigsaw-border, var(--ion-color-step-150)); border-radius: 18px; background: var(--ion-card-background); }
+.section-heading { display: flex; align-items: flex-start; gap: 12px; }
+.section-heading ion-icon { flex: 0 0 auto; padding: 9px; border-radius: 10px; color: var(--ion-color-primary); background: rgba(var(--ion-color-primary-rgb), .12); font-size: 20px; }
+.section-heading h2, .section-heading p { margin: 0; }
+.section-heading h2 { font-size: 1rem; font-weight: 800; }
+.section-heading p { margin-top: 3px; color: var(--ion-color-medium); font-size: .86rem; }
+.field { display: grid; gap: 7px; min-width: 0; font-size: .9rem; font-weight: 700; }
+.field strong, .field small { color: var(--ion-color-danger); }
+.field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+ion-input, ion-textarea { --background: var(--ion-item-background, var(--ion-card-background)); --border-color: var(--gigsaw-border, var(--ion-color-step-300)); --border-radius: 11px; --highlight-color-focused: var(--ion-color-primary); min-height: 48px; }
+.date-field { display: flex; min-height: 48px; align-items: center; padding: 7px 11px; border: 1px solid var(--gigsaw-border, var(--ion-color-step-300)); border-radius: 11px; background: var(--ion-item-background, var(--ion-card-background)); }
+.venue-card ion-searchbar { --background: var(--ion-item-background, var(--ion-card-background)); --border-radius: 11px; padding: 0; }
+.venue-results { overflow: hidden; margin: 0; padding: 0; border: 1px solid var(--gigsaw-border, var(--ion-color-step-200)); border-radius: 12px; background: transparent; }
+.venue-results ion-item { --background: transparent; }
+.venue-results ion-label { display: grid; gap: 3px; }
+.venue-results span, .selection-card span { color: var(--ion-color-medium); font-size: .84rem; }
+.map-results { border-color: rgba(var(--ion-color-primary-rgb), .35); }
+.selection-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 10px 13px 15px; border: 1px solid rgba(var(--ion-color-success-rgb), .4); border-radius: 12px; background: rgba(var(--ion-color-success-rgb), .08); }
+.selection-card.pending { border-color: rgba(var(--ion-color-primary-rgb), .4); background: rgba(var(--ion-color-primary-rgb), .08); }
+.selection-card div { display: grid; gap: 4px; }
+.searching, .loading-state { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--ion-color-medium); }
+.loading-state { min-height: 220px; }
+.error-banner { display: block; padding: 13px 15px; border: 1px solid rgba(var(--ion-color-danger-rgb), .35); border-radius: 12px; background: rgba(var(--ion-color-danger-rgb), .08); }
+.form-actions { display: flex; justify-content: flex-end; padding-top: 4px; }
+.form-actions ion-button { min-width: 190px; }
+@media (max-width: 680px) { .gig-form { padding: 18px 12px 36px; } .form-card { padding: 16px; border-radius: 15px; } .field-grid { grid-template-columns: 1fr; } .form-actions ion-button { width: 100%; } }

@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
+    <ion-title>Concerti</ion-title>
+    <ion-buttons slot="end"><ion-button [routerLink]="['new']" aria-label="Nuovo concerto"><ion-icon slot="icon-only" name="add" /></ion-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+  <main class="gigs-page">
+    <section class="page-heading">
+      <div><p class="eyebrow">Agenda live</p><h1>I concerti della band</h1><p>Organizza date, venue e informazioni operative in un unico posto.</p></div>
+      <ion-button [routerLink]="['new']"><ion-icon slot="start" name="add" />Nuovo concerto</ion-button>
+    </section>
+
+    @if (!loading && !error && gigs.length) {
+      <section class="summary-card">
+        <div><strong>{{ upcomingCount }}</strong><span>date in programma</span></div>
+        <div><strong>{{ gigs.length - upcomingCount }}</strong><span>concerti passati</span></div>
+      </section>
+      <nav class="filters" aria-label="Filtra concerti">
+        <button type="button" [class.active]="filter === 'upcoming'" (click)="setFilter('upcoming')">Prossimi</button>
+        <button type="button" [class.active]="filter === 'past'" (click)="setFilter('past')">Passati</button>
+        <button type="button" [class.active]="filter === 'all'" (click)="setFilter('all')">Tutti</button>
+      </nav>
+    }
+
+    @if (loading) {
+      <section class="gig-grid">
+        @for (item of [1, 2, 3]; track item) {
+          <article class="gig-card skeleton"><ion-skeleton-text [animated]="true" style="width: 58%" /><ion-skeleton-text [animated]="true" style="width: 82%" /><ion-skeleton-text [animated]="true" style="width: 42%" /></article>
+        }
+      </section>
+    } @else if (error) {
+      <section class="state"><ion-icon name="alert-circle-outline" /><ion-text color="danger">{{ error }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
+    } @else if (!visibleGigs.length) {
+      <section class="state"><ion-icon name="calendar-clear-outline" /><h2>{{ gigs.length ? 'Nessun concerto in questa vista' : 'Nessun concerto ancora' }}</h2><p>{{ gigs.length ? 'Prova un altro filtro.' : 'Aggiungi la prima data live della band.' }}</p>@if (!gigs.length) { <ion-button [routerLink]="['new']">Aggiungi concerto</ion-button> }</section>
+    } @else {
+      <section class="gig-grid">
+        @for (gig of visibleGigs; track gig.id) {
+          <a class="gig-card" [routerLink]="[gig.id]">
+            <div class="date-badge"><strong>{{ day(gig) }}</strong><span>{{ month(gig) }}</span></div>
+            <div class="gig-copy">
+              <span class="status" [class.past]="!isUpcoming(gig)">{{ isUpcoming(gig) ? 'In programma' : 'Concluso' }}</span>
+              <h2>{{ gig.title || venue(gig) }}</h2>
+              <p><ion-icon name="location-outline" />{{ venue(gig) }}</p>
+              <p><ion-icon name="time-outline" />{{ fullDate(gig) }}@if (time(gig); as gigTime) { · {{ gigTime }} }</p>
+            </div>
+          </a>
+        }
+      </section>
+    }
+  </main>
+</ion-content>
