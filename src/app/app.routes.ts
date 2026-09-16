@@ -59,6 +59,16 @@ export const routes: Routes = [
           import('./features/gigs/gigs.routes').then((m) => m.GIG_ROUTES),
       },
       {
+        path: 'locations',
+        loadChildren: () =>
+          import('./features/venues/venues.routes').then((m) => m.VENUE_ROUTES),
+      },
+      {
+        path: 'venues',
+        redirectTo: 'locations',
+        pathMatch: 'full',
+      },
+      {
         path: 'scalette',
         loadChildren: () =>
           import('./features/setlists/setlists.routes').then((m) => m.SETLIST_ROUTES),

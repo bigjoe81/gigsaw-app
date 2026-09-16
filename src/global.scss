@@ -10,6 +10,7 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
+@import "flatpickr/dist/themes/dark.css";
 @import "@ionic/angular/css/core.css";
 
 /* Basic CSS for apps built with Ionic */
@@ -17,6 +18,10 @@
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
+
+.gigsaw-control:focus {
+  border-color: #fff !important;
+}
 
 /* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
@@ -206,6 +211,23 @@ ion-button ion-icon {
 .gigsaw-outlined-form :is(ion-input, ion-textarea)::part(native) {
   border-radius: 10px;
   outline: none;
+}
+
+/* One canonical application header. Keep this rule last so feature styles and
+   Ionic's dark palette cannot replace its background. */
+ion-header,
+ion-header ion-toolbar {
+  background: var(--gigsaw-header-background, #0f172a) !important;
+}
+
+ion-header ion-toolbar {
+  --background: var(--gigsaw-header-background, #0f172a) !important;
+  --color: var(--gigsaw-text, #e5edf7);
+  --border-color: var(--gigsaw-border, #243244);
+}
+
+ion-header ion-toolbar::part(background) {
+  background: var(--gigsaw-header-background, #0f172a) !important;
 }
 
 @media (max-width: 600px) {

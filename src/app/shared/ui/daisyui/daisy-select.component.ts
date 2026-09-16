@@ -6,11 +6,15 @@ import { AfterViewInit, Component, ElementRef, ViewChild, computed, effect, inpu
   template: `
     <select
       #selectElement
-      class="select w-full bg-white {{ controlClass() }}"
+      class="gigsaw-control select w-full border border-solid border-[#3b5273] bg-[#0f172a] text-[#e5edf7] focus:outline-none {{ controlClass() }}"
+      [class.select-error]="invalid()"
+      [class.select-success]="valid() && !invalid()"
+      [style.border-color]="invalid() ? 'var(--color-error)' : valid() ? 'var(--color-success)' : '#3b5273'"
       [multiple]="multiple()"
       [disabled]="disabled()"
       [value]="multiple() ? '' : singleValue()"
       (change)="onSelect($event)"
+      (blur)="blurred.emit()"
     >
       <ng-content />
     </select>
@@ -23,8 +27,11 @@ export class DaisySelectComponent implements AfterViewInit {
   readonly controlClass = input('');
   readonly value = input<string | string[]>('');
   readonly disabled = input(false);
+  readonly valid = input(false);
+  readonly invalid = input(false);
 
   readonly valueChange = output<string | string[]>();
+  readonly blurred = output<void>();
 
   private readonly viewReady = signal(false);
   readonly singleValue = computed(() => {

@@ -8,13 +8,11 @@ import {
   IonButton,
   IonButtons,
   IonCheckbox,
-  IonChip,
   IonContent,
   IonHeader,
   IonInput,
   IonItem,
   IonLabel,
-  IonList,
   IonNote,
   IonReorder,
   IonReorderGroup,
@@ -29,7 +27,7 @@ import { SongService } from '../services/song.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonCheckbox, IonChip, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonNote, IonReorder, IonReorderGroup, IonSpinner, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonReorder, IonReorderGroup, IonSpinner, IonTitle, IonToolbar],
   templateUrl: './song-link-groups.page.html',
   styleUrls: ['./song-link-groups.page.scss'],
 })

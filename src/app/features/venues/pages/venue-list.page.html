@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
+    <ion-title>Luoghi</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="venue-page">
+    <header class="page-heading">
+      <div><span class="eyebrow">Anagrafica luoghi</span><h1>I luoghi della band</h1><p>Gestisci venue dei concerti e sale utilizzate per le prove.</p></div>
+      <div class="create-actions">
+        <app-daisy-button tone="outline" [routerLink]="['room', 'new']"><ion-icon name="add" /> Sala prove</app-daisy-button>
+        <app-daisy-button tone="primary" [routerLink]="['venue', 'new']"><ion-icon name="add" /> Venue concerto</app-daisy-button>
+      </div>
+    </header>
+
+    @if (!loading() && !error() && locationCount()) {
+      <section class="venue-tools">
+        <div class="summary"><span><strong>{{ venues().length }}</strong> venue</span><span><strong>{{ rehearsalRooms().length }}</strong> sale prove</span><span><strong>{{ cityCount() }}</strong> città</span></div>
+        <app-daisy-input name="locationSearch" placeholder="Cerca per nome, indirizzo o città" [value]="query()" (valueChange)="query.set($event)" />
+      </section>
+    }
+
+    @if (loading()) {
+      <section class="state"><app-daisy-loading size="lg" /><span>Caricamento luoghi…</span></section>
+    } @else if (error()) {
+      <section class="state"><app-daisy-message tone="error">{{ error() }}</app-daisy-message><app-daisy-button tone="outline" (click)="load()">Riprova</app-daisy-button></section>
+    } @else if (!visibleLocations().length) {
+      <section class="state"><ion-icon name="business-outline" /><h2>{{ locationCount() ? 'Nessun risultato' : 'Nessun luogo salvato' }}</h2><p>{{ locationCount() ? 'Modifica i termini della ricerca.' : 'Aggiungi una venue o una sala prove.' }}</p></section>
+    } @else {
+      <section class="venue-list">
+        @for (item of visibleLocations(); track item.kind + '-' + item.location.id) {
+          <article class="venue-row">
+            <div class="venue-icon"><ion-icon name="location-outline" /></div>
+            <div class="venue-copy"><span class="location-kind">{{ item.kind === 'venue' ? 'Venue concerto' : 'Sala prove' }}</span><h2>{{ item.location.name }}</h2><p>{{ address(item.location) }}</p></div>
+            <div class="venue-actions">
+              <app-daisy-button tone="ghost" [routerLink]="[item.kind, item.location.id, 'edit']" aria-label="Modifica luogo"><ion-icon name="pencil-outline" /></app-daisy-button>
+              <app-daisy-button tone="ghost" [loading]="deletingKey() === item.kind + '-' + item.location.id" (click)="confirmDelete(item.kind, item.location)" aria-label="Elimina luogo"><ion-icon name="trash-outline" /></app-daisy-button>
+            </div>
+          </article>
+        }
+      </section>
+    }
+  </main>
+</ion-content>

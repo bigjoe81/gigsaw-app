@@ -1,5 +1,5 @@
 :host{--b:#d8e2f0;--t:#081433;--m:#53617d;--p:var(--ion-color-primary);--g:#16b47a;--a:#efa62c}
-.dashboard-shell ion-toolbar{--background:#fff;--border-color:var(--b);--min-height:78px;--padding-start:28px;--padding-end:24px}
+.dashboard-shell ion-toolbar{--min-height:78px;--padding-start:28px;--padding-end:24px}
 ion-menu-button{display:none}.breadcrumbs,.search-box,.top-actions{display:flex;align-items:center}.breadcrumbs{gap:18px;color:var(--m);font-size:15px;font-weight:500}.breadcrumbs ion-icon{color:#273650;font-size:22px}.breadcrumbs strong{color:var(--t)}
 .search-box{position:absolute;left:50%;width:min(405px,34vw);height:49px;transform:translateX(-50%);gap:14px;padding:0 16px;border:1px solid var(--b);border-radius:8px;background:#fff;color:#71809c}.search-box ion-icon{font-size:24px}.search-box input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--t);font:inherit}
 .top-actions{gap:18px}.icon-button{position:relative;display:grid;width:38px;height:38px;place-items:center;border:0;background:transparent;color:#273650}.icon-button ion-icon{font-size:27px}.icon-button span{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--p)}
@@ -17,7 +17,6 @@ ion-menu-button{display:none}.breadcrumbs,.search-box,.top-actions{display:flex;
 
 /* Fixed GigSaw night theme. */
 :host { --b: #26364D; --t: #E5EDF7; --m: #94A3B8; --p: var(--ion-color-primary); }
-.dashboard-shell ion-toolbar { --background: var(--gigsaw-toolbar); }
 .dashboard-content { --background: #0B1220; }
 .search-box,
 .stat-card,

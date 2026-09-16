@@ -8,7 +8,10 @@ import { AfterViewInit, Component, ElementRef, input, output, viewChildren } fro
       @for (digit of digits; track $index) {
         <input
           #digitInput
-          class="input input-bordered otp-cell"
+          class="gigsaw-control input otp-cell border border-solid bg-[#0f172a] text-[#e5edf7] focus:outline-none"
+          [class.input-error]="invalid()"
+          [class.input-success]="valid() && !invalid()"
+          [style.border-color]="invalid() ? 'var(--color-error)' : valid() ? 'var(--color-success)' : '#3b5273'"
           type="text"
           inputmode="numeric"
           autocomplete="one-time-code"
@@ -43,6 +46,10 @@ import { AfterViewInit, Component, ElementRef, input, output, viewChildren } fro
       caret-color: var(--color-primary, currentColor);
     }
 
+    .otp-cell:focus {
+      background-color: #18243a !important;
+    }
+
     @media (max-width: 360px) {
       .otp-grid {
         gap: 6px;
@@ -59,6 +66,8 @@ export class DaisyOtpInputComponent implements AfterViewInit {
   readonly value = input('');
   readonly disabled = input(false);
   readonly label = input('Codice OTP');
+  readonly valid = input(false);
+  readonly invalid = input(false);
   readonly valueChange = output<string>();
   readonly complete = output<string>();
   readonly digitInputs = viewChildren<ElementRef<HTMLInputElement>>('digitInput');

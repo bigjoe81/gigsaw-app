@@ -1,10 +1,7 @@
 <ion-content class="ion-padding otp-content" [fullscreen]="true">
   <div class="otp-shell">
     <div class="otp-brand">
-      <picture>
-        <source srcset="assets/logo-hor-dark.png" media="(prefers-color-scheme: dark)" />
-        <img src="assets/logo-hor.png" alt="GigSaw logo" />
-      </picture>
+      <img src="assets/logo-hor-dark.png" alt="GigSaw logo" />
       <p class="otp-brand-note">Inserisci il codice inviato a<br /><strong>{{ email || 'la tua email' }}</strong></p>
     </div>
 
@@ -14,6 +11,8 @@
         <app-daisy-otp-input
           [value]="code()"
           [disabled]="loading"
+          [valid]="touched() && codeValid()"
+          [invalid]="touched() && !codeValid()"
           (valueChange)="updateCode($event)"
           (complete)="verify()"
         />

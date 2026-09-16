@@ -34,12 +34,28 @@ export interface SetlistSong extends Song {
 
 export interface RehearsalSession extends BandScopedEntity {
   date: string;
+  status: RehearsalStatus;
   startTime?: string | null;
   endTime?: string | null;
   rehearsalRoomId?: number | null;
+  rehearsalRoom?: RehearsalRoom | null;
   notes?: string | null;
   songIds?: number[];
   songs?: Song[];
+}
+
+export type RehearsalStatus = 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
+
+export interface RehearsalRoom {
+  id: number;
+  name: string;
+  address?: string | null;
+  city?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface RecordingSession extends BandScopedEntity {
@@ -54,6 +70,7 @@ export interface RecordingSession extends BandScopedEntity {
 export interface Gig extends BandScopedEntity {
   date: string;
   venueId?: number | null;
+  venue?: Venue | null;
   notes?: string | null;
 }
 
@@ -124,4 +141,4 @@ export interface SetlistGeneration {
 }
 
 export type BandResource = Song | RehearsalSession | RecordingSession | Gig | Venue | Setlist;
-export type ResourceKey = 'songs' | 'rehearsal-sessions' | 'recording-sessions' | 'gigs' | 'venues' | 'setlists';
+export type ResourceKey = 'songs' | 'rehearsal-sessions' | 'rehearsal-rooms' | 'recording-sessions' | 'gigs' | 'venues' | 'setlists';

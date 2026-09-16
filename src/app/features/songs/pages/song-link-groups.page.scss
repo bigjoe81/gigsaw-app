@@ -1,6 +1,5 @@
 :host { display:block; height:100%; }
 ion-content { --background: var(--gigsaw-background); }
-ion-toolbar { --background: var(--gigsaw-background) !important; --color: var(--gigsaw-text); --border-color: transparent; }
 .medley-page { width:min(980px,calc(100% - 40px)); margin:34px auto 60px; }
 .page-intro { margin-bottom:24px; }
 .eyebrow { color:var(--ion-color-primary); font-size:.7rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }

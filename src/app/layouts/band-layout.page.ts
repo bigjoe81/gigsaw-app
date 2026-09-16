@@ -21,11 +21,12 @@ import {
   micOutline,
   musicalNotesOutline,
   peopleOutline,
+  pinOutline,
   radioOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../core/services/band-context.service';
 
-type BandSection = 'dashboard' | 'repertorio' | 'prove' | 'concerti' | 'scalette' | 'locandine' | 'band';
+type BandSection = 'dashboard' | 'repertorio' | 'prove' | 'concerti' | 'locations' | 'scalette' | 'locandine' | 'band';
 
 @Component({
   selector: 'app-band-layout',
@@ -61,6 +62,7 @@ export class BandLayoutPage {
     { key: 'repertorio', label: 'Repertorio', icon: 'musical-notes-outline' },
     { key: 'prove', label: 'Prove', icon: 'mic-outline' },
     { key: 'concerti', label: 'Concerti', icon: 'radio-outline' },
+    { key: 'locations', label: 'Luoghi', icon: 'pin-outline' },
     { key: 'scalette', label: 'Scalette', icon: 'list-outline' },
     { key: 'locandine', label: 'Locandine', icon: 'color-palette-outline' },
     { key: 'band', label: 'Band', icon: 'people-outline' },
@@ -76,6 +78,7 @@ export class BandLayoutPage {
       micOutline,
       musicalNotesOutline,
       peopleOutline,
+      pinOutline,
       radioOutline,
     });
   }

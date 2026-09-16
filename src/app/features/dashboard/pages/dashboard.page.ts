@@ -62,10 +62,6 @@ interface DashboardActivity {
   avatar: string;
 }
 
-interface DashboardGig extends Gig {
-  venue?: { name?: string | null } | null;
-}
-
 @Component({
   standalone: true,
   imports: [
@@ -168,11 +164,11 @@ export class DashboardPage {
       finalize(() => this.loading.set(false)),
     ).subscribe(({ band, songs, gigs }) => {
       if (!band) this.loadError.set('Alcuni dati della dashboard non sono disponibili.');
-      this.populateDashboard(band, songs, (gigs as DashboardGig[]).filter((gig) => gig.bandId === bandId));
+      this.populateDashboard(band, songs, gigs.filter((gig) => gig.bandId === bandId));
     });
   }
 
-  private populateDashboard(band: Band | null, songs: Song[], gigs: DashboardGig[]): void {
+  private populateDashboard(band: Band | null, songs: Song[], gigs: Gig[]): void {
     const now = Date.now();
     const upcomingGigs = gigs
       .filter((gig) => this.dateValue(gig.date) >= now)
@@ -221,7 +217,7 @@ export class DashboardPage {
     this.repertoireTotal.set(songs.length);
   }
 
-  private toDashboardEvent(gig: DashboardGig): DashboardEvent {
+  private toDashboardEvent(gig: Gig): DashboardEvent {
     const date = new Date(gig.date);
     return {
       id: gig.id,

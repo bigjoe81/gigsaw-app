@@ -1,100 +1,115 @@
-<ion-header><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons><ion-title>{{ editing ? 'Modifica concerto' : 'Nuovo concerto' }}</ion-title><ion-buttons slot="end"><ion-button (click)="save()" [disabled]="saving">@if(saving){<ion-spinner name="crescent" />}@else{Salva}</ion-button></ion-buttons></ion-toolbar></ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>{{ editing() ? 'Modifica concerto' : 'Nuovo concerto' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content>
-  <form [formGroup]="form" (ngSubmit)="save()">
-    <ion-item>
-      <ion-label position="stacked">Titolo *</ion-label>
-      <ion-input formControlName="title" />
-    </ion-item>
+  <main class="gig-shell">
+    <aside class="gig-intro">
+      <span class="eyebrow">Calendario live</span>
+      <h1>{{ editing() ? 'Aggiorna il concerto.' : 'Pianifica il prossimo live.' }}</h1>
+      <p>Data, venue e dettagli operativi: tutto ciò che serve alla band per arrivare pronta sul palco.</p>
+    </aside>
 
-    <ion-item>
-      <ion-label position="stacked">Data *</ion-label>
-      <ion-datetime-button datetime="gig-date" />
-    </ion-item>
-    <ion-modal [keepContentsMounted]="true">
-      <ng-template>
-        <ion-datetime
-          id="gig-date"
-          presentation="date"
-          locale="it-IT"
-          [value]="form.controls.date.value"
-          (ionChange)="onDateChange($event)"
-        />
-      </ng-template>
-    </ion-modal>
+    <section class="gig-panel">
+      <form [formGroup]="form" (ngSubmit)="save()" class="gig-form">
+        <header class="form-heading">
+          <span class="eyebrow">Dettagli concerto</span>
+          <h1>{{ editing() ? 'Modifica il concerto' : 'Aggiungi un concerto' }}</h1>
+          <p>Inserisci le informazioni operative che serviranno a tutta la band.</p>
+        </header>
 
-    <ion-item>
-      <ion-label position="stacked">Venue</ion-label>
-      <ion-searchbar
-        [value]="venueQuery"
-        placeholder="Cerca venue o indirizzo"
-        (ionInput)="onVenueQueryInput($event)"
-      />
-    </ion-item>
+        @if (loading()) {
+          <div class="loading-state"><app-daisy-loading /><span>Caricamento…</span></div>
+        } @else {
+      <section class="form-section">
+        <div class="section-heading">
+          <ion-icon name="calendar-outline" />
+          <div><h2>Evento</h2><p>Identifica il live e indica quando inizierà.</p></div>
+        </div>
 
-    @if (selectedVenue) {
-      <ion-note class="venue-selection-note" color="success">
-        Venue selezionata: {{ venueLabel(selectedVenue) }}
-      </ion-note>
-      <div class="venue-actions">
-        <ion-button size="small" fill="outline" type="button" (click)="clearVenueSelection()">Cambia venue</ion-button>
-      </div>
-    } @else if (pendingVenue) {
-      <ion-note class="venue-selection-note" color="primary">
-        Nuovo indirizzo selezionato. Al salvataggio verrà creata una nuova venue in anagrafica.
-      </ion-note>
-      <ion-note class="venue-selection-note" color="medium">{{ pendingVenue.fullAddress }}</ion-note>
-      <div class="venue-actions">
-        <ion-button size="small" fill="outline" type="button" (click)="clearVenueSelection()">Cambia indirizzo</ion-button>
-      </div>
-    } @else {
-      @if (loadingVenues) {
-        <ion-note class="venue-selection-note" color="medium">Caricamento venue…</ion-note>
-      } @else if (!mapboxConfigured()) {
-        <ion-note class="venue-selection-note" color="medium">
-          La ricerca indirizzi Mapbox è disattiva finché `mapboxAccessToken` non viene valorizzato negli environment.
-        </ion-note>
-      }
+        <label class="field">
+          <span>Titolo <strong>*</strong></span>
+          <app-daisy-input name="title" placeholder="Es. Crossroads Blues Trio — Live al Bloom" [value]="form.controls.title.value" [valid]="form.controls.title.touched && form.controls.title.valid" [invalid]="form.controls.title.touched && form.controls.title.invalid" (valueChange)="form.controls.title.setValue($event)" (blurred)="form.controls.title.markAsTouched()" />
+          @if (form.controls.title.touched && form.controls.title.invalid) { <small>Inserisci un titolo.</small> }
+        </label>
 
-      @if (filteredVenues.length) {
-        <ion-list class="venue-results">
-          @for (venue of filteredVenues; track venue.id) {
-            <ion-item button detail="false" (click)="selectExistingVenue(venue)">
-              <ion-label>
-                <div class="venue-result-title">{{ venue.name }}</div>
-                <span class="venue-result-meta">{{ venueMeta(venue) }}</span>
-              </ion-label>
-            </ion-item>
+        <div class="field-grid">
+          <label class="field">
+            <span>Data <strong>*</strong></span>
+            <app-daisy-datepicker name="date" [value]="form.controls.date.value" [valid]="form.controls.date.touched && form.controls.date.valid" [invalid]="form.controls.date.touched && form.controls.date.invalid" (valueChange)="form.controls.date.setValue($event)" (blurred)="form.controls.date.markAsTouched()" />
+          </label>
+          <label class="field">
+            <span>Ora inizio</span>
+            <app-daisy-time-input name="time" [value]="form.controls.time.value" [valid]="form.controls.time.touched && !!form.controls.time.value" (valueChange)="form.controls.time.setValue($event)" (blurred)="form.controls.time.markAsTouched()" />
+          </label>
+        </div>
+
+      </section>
+
+      <section class="form-section venue-section">
+        <div class="section-heading">
+          <ion-icon name="location-outline" />
+          <div><h2>Venue</h2><p>Cerca nell’anagrafica o seleziona un nuovo indirizzo.</p></div>
+        </div>
+
+        <app-daisy-input name="venueQuery" placeholder="Nome locale, indirizzo o città" [value]="venueQuery()" [valid]="!!selectedVenue() || !!pendingVenue()" [invalid]="!!error() && !selectedVenue() && !pendingVenue()" (valueChange)="onVenueQueryInput($event)" />
+
+        @if (selectedVenue(); as venue) {
+          <div class="selection-card success">
+            <div><strong>{{ venue.name }}</strong><span>{{ venueMeta(venue) }}</span></div>
+            <ion-button size="small" fill="clear" type="button" (click)="clearVenueSelection()">Cambia</ion-button>
+          </div>
+        } @else if (pendingVenue(); as venue) {
+          <div class="selection-card pending">
+            <div><strong>Nuova venue</strong><span>{{ venue.fullAddress }}</span></div>
+            <ion-button size="small" fill="clear" type="button" (click)="clearVenueSelection()">Cambia</ion-button>
+          </div>
+        } @else {
+          @if (!mapboxConfigured()) {
+            <app-daisy-message>Ricerca indirizzi esterna non configurata: puoi selezionare una venue esistente.</app-daisy-message>
           }
-        </ion-list>
-      }
 
-      @if (searchingMapbox) {
-        <ion-note class="venue-selection-note" color="medium">Ricerca indirizzi…</ion-note>
-      }
-
-      @if (mapboxResults.length) {
-        <ion-list class="venue-results">
-          @for (result of mapboxResults; track result.id) {
-            <ion-item button detail="false" (click)="selectMapboxResult(result)">
-              <ion-label>
-                <div class="venue-result-title">{{ result.name }}</div>
-                <span class="venue-result-meta">{{ result.fullAddress }}</span>
-              </ion-label>
-            </ion-item>
+          @if (filteredVenues().length) {
+            <ion-list class="venue-results">
+              @for (venue of filteredVenues(); track venue.id) {
+                <ion-item button detail="false" (click)="selectExistingVenue(venue)">
+                  <ion-label><strong>{{ venue.name }}</strong><span>{{ venueMeta(venue) }}</span></ion-label>
+                </ion-item>
+              }
+            </ion-list>
           }
-        </ion-list>
-      }
-    }
 
-    <ion-item>
-      <ion-label position="stacked">Note</ion-label>
-      <ion-textarea autoGrow formControlName="notes" />
-    </ion-item>
+          @if (searchingMapbox()) { <div class="searching"><app-daisy-loading size="sm" /><span>Ricerca indirizzi…</span></div> }
 
-    @if (error) {
-      <ion-note class="ion-padding" color="danger">{{ error }}</ion-note>
-    }
+          @if (mapboxResults().length) {
+            <ion-list class="venue-results map-results">
+              @for (result of mapboxResults(); track result.id) {
+                <ion-item button detail="false" (click)="selectMapboxResult(result)">
+                  <ion-label><strong>{{ result.name }}</strong><span>{{ result.fullAddress }}</span></ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          }
+        }
+      </section>
 
-    <ion-button class="ion-margin" type="submit" expand="block" [disabled]="saving">Salva concerto</ion-button>
-  </form>
+      <section class="form-section notes-section">
+        <label class="field">
+          <span>Note organizzative</span>
+          <app-daisy-textarea name="notes" placeholder="Orari, contatti, parcheggio, indicazioni per il palco…" [value]="form.controls.notes.value" [valid]="form.controls.notes.touched && !!form.controls.notes.value" (valueChange)="form.controls.notes.setValue($event)" (blurred)="form.controls.notes.markAsTouched()" />
+        </label>
+      </section>
+
+      @if (error()) { <app-daisy-message tone="error" messageClass="error-banner">{{ error() }}</app-daisy-message> }
+
+      <div class="form-actions">
+        <app-daisy-button type="submit" tone="primary" [loading]="saving()" buttonClass="min-w-48">Salva concerto</app-daisy-button>
+      </div>
+        }
+      </form>
+    </section>
+  </main>
 </ion-content>

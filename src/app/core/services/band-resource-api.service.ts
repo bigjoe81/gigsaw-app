@@ -13,8 +13,7 @@ export class BandResourceApiService {
 
   list<T extends { id: number }>(bandId: number, resource: ResourceKey): Observable<T[]> {
     const endpoint = this.endpoint(resource, bandId);
-    const params = resource === 'songs' ? { bandId: String(bandId) } : undefined;
-    const request = this.http.get<ApiEnvelope<T[]>>(endpoint.collection, { params }).pipe(map((response) => this.unwrapList<T>(response)));
+    const request = this.http.get<ApiEnvelope<T[]>>(endpoint.collection, { params: this.listParams(resource, bandId) }).pipe(map((response) => this.unwrapList<T>(response)));
     const fallback = this.http.get<ApiEnvelope<T[]>>(this.nestedSongUrl(bandId)).pipe(map((response) => this.unwrapList<T>(response)));
     return this.withSongFallback(resource, request, fallback);
   }
@@ -47,12 +46,13 @@ export class BandResourceApiService {
 
   private endpoint(resource: ResourceKey, bandId: number): { collection: string } {
     if (resource === 'setlists') {
-      return { collection: `${API_BASE_URL}/bands/${bandId}/${resource}` };
+      return { collection: `${API_BASE_URL}/bands/${bandId}/setlists` };
     }
 
     const pathByResource: Record<ResourceKey, string> = {
       songs: 'songs',
       'rehearsal-sessions': 'rehearses',
+      'rehearsal-rooms': 'rehearsal-rooms',
       'recording-sessions': 'recording-sessions',
       gigs: 'gigs',
       venues: 'venues',
@@ -64,6 +64,14 @@ export class BandResourceApiService {
 
   private itemUrl(resource: ResourceKey, bandId: number, id: number): string {
     return `${this.endpoint(resource, bandId).collection}/${id}`;
+  }
+
+  private listParams(resource: ResourceKey, bandId: number): Record<string, string> | undefined {
+    if (resource === 'songs' || resource === 'gigs' || resource === 'rehearsal-sessions') {
+      return { bandId: String(bandId) };
+    }
+
+    return undefined;
   }
 
   private unwrap<T>(response: ApiEnvelope<T>): T {
@@ -94,15 +102,13 @@ export class BandResourceApiService {
   /** Laravel resources conventionally use snake_case; pages use TypeScript camelCase. */
   private toApi<T>(resource: ResourceKey, bandId: number, payload: Partial<T>): Record<string, unknown> {
     const result = Object.entries(payload as Record<string, unknown>).reduce<Record<string, unknown>>((result, [key, value]) => {
-      // Null is meaningful for nullable fields (for example link_group): it
-      // explicitly clears the value on update and must reach the API.
       if (value !== undefined && value !== '') {
         result[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)] = value;
       }
       return result;
     }, {});
 
-    if (resource === 'songs') {
+    if (resource === 'songs' || resource === 'gigs' || resource === 'rehearsal-sessions') {
       result['band_id'] = bandId;
     }
 
