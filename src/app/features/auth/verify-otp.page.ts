@@ -9,7 +9,11 @@ import { DaisyAlertComponent, DaisyButtonComponent, DaisyMessageComponent, Daisy
   standalone: true,
   imports: [RouterLink, DaisyAlertComponent, DaisyButtonComponent, DaisyMessageComponent, DaisyOtpInputComponent, IonContent],
   templateUrl: './verify-otp.page.html',
-  styles: [`.otp-content::part(scroll) {
+  styles: [`.otp-content {
+    --background: var(--ion-color-brand-navy);
+  }
+
+  .otp-content::part(scroll) {
     min-height: 100%;
     display: grid;
     align-items: center;
@@ -30,7 +34,7 @@ import { DaisyAlertComponent, DaisyButtonComponent, DaisyMessageComponent, Daisy
     padding: 8px 0 24px;
   }
 
-  .otp-brand picture, .otp-brand img {
+  .otp-brand img {
     width: min(300px, 48vw);
     height: auto;
     display: block;

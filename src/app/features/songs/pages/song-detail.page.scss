@@ -6,12 +6,6 @@
   background: var(--gigsaw-background);
 }
 
-ion-toolbar {
-  --background: var(--gigsaw-toolbar);
-  --color: var(--gigsaw-text);
-  --border-color: var(--gigsaw-border);
-}
-
 ion-content {
   flex: 1 1 auto;
   min-height: 0;

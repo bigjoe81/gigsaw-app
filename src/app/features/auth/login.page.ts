@@ -1,14 +1,18 @@
 import { Component, computed, signal } from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import { IonContent, IonInput } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import {AuthService} from '../../core/auth/auth.service';
-import { DaisyButtonComponent, DaisyMessageComponent } from '../../shared/ui/daisyui';
+import { DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent } from '../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, DaisyButtonComponent, DaisyMessageComponent, IonContent, IonInput],
+  imports: [RouterLink, DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent, IonContent],
   templateUrl: './login.page.html',
-  styles: [`.login-content::part(scroll) {
+  styles: [`.login-content {
+    --background: var(--ion-color-brand-navy);
+  }
+
+  .login-content::part(scroll) {
     min-height: 100%;
     display: grid;
     align-items: center;

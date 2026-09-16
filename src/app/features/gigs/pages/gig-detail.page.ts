@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   AlertController,
@@ -16,6 +16,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, locationOutline, pencilOutline, timeOutline, trashOutline } from 'ionicons/icons';
+import { finalize } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
 import { GigService } from '../services/gig.service';
 
@@ -26,9 +27,9 @@ import { GigService } from '../services/gig.service';
   styleUrl: './gig-detail.page.scss',
 })
 export class GigDetailPage implements OnInit {
-  gig?: Gig;
-  loading = true;
-  error = '';
+  readonly gig = signal<Gig | undefined>(undefined);
+  readonly loading = signal(true);
+  readonly error = signal('');
   private id!: number;
 
   constructor(
@@ -43,9 +44,11 @@ export class GigDetailPage implements OnInit {
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
-    this.gigsApi.get(this.id).subscribe({
-      next: (gig) => { this.gig = gig; this.loading = false; },
-      error: () => { this.error = 'Impossibile caricare il concerto.'; this.loading = false; },
+    this.gigsApi.get(this.id).pipe(
+      finalize(() => this.loading.set(false)),
+    ).subscribe({
+      next: (gig) => this.gig.set(gig),
+      error: () => this.error.set('Impossibile caricare il concerto.'),
     });
   }
 

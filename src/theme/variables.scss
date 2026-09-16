@@ -54,8 +54,9 @@
   --ion-text-color: #E5EDF7;
   --ion-text-color-rgb: 229,237,247;
   --ion-card-background: #111827;
-  --ion-toolbar-background: #0F172A;
-  --gigsaw-toolbar: #0F172A;
+  --gigsaw-header-background: #0F172A;
+  --ion-toolbar-background: var(--gigsaw-header-background);
+  --gigsaw-toolbar: var(--gigsaw-header-background);
   --ion-item-background: #111827;
 
   /* GigSaw brand palette, centralized alongside the Ionic color roles. */

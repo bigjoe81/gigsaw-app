@@ -1,83 +1,105 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>{{ editing ? 'Modifica prova' : 'Nuova prova' }}</ion-title>
+    <ion-title>{{ editing() ? 'Modifica prova' : 'Nuova prova' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="rehearsal-form-content">
   <main class="rehearsal-shell">
     <aside class="rehearsal-intro">
       <span class="eyebrow">Calendario</span>
-      <h1>{{ editing ? 'Aggiorna la prova.' : 'Pianifica la tua prova.' }}</h1>
+      <h1>{{ editing() ? 'Aggiorna la prova.' : 'Pianifica la tua prova.' }}</h1>
       <p>Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro.</p>
-      <app-daisy-steps class="rehearsal-steps" [horizontal]="false" [steps]="[{ label: 'Dettagli', active: step >= 1 }, { label: 'Brani da provare', active: step >= 2 }]" ariaLabel="Avanzamento creazione prova" />
+      <app-daisy-steps class="rehearsal-steps" [horizontal]="false" [steps]="[{ label: 'Dettagli', active: step() >= 1 }, { label: 'Brani da provare', active: step() >= 2 }]" ariaLabel="Avanzamento creazione prova" />
     </aside>
 
     <section class="rehearsal-panel">
-      @if (loading) {
-        <div class="loading-state"><ion-spinner name="crescent" /> Caricamento…</div>
+      @if (loading()) {
+        <div class="loading-state"><app-daisy-loading /> Caricamento…</div>
       } @else {
         <form class="gigsaw-outlined-form" [formGroup]="form" (ngSubmit)="save()">
-          @if (step === 1) {
+          @if (step() === 1) {
             <header class="form-heading">
               <span class="eyebrow">Dettagli appuntamento</span>
-              <h1>{{ editing ? 'Modifica la prova' : 'Crea una nuova prova' }}</h1>
+              <h1>{{ editing() ? 'Modifica la prova' : 'Crea una nuova prova' }}</h1>
               <p>Inserisci le informazioni essenziali per tutta la band.</p>
             </header>
 
             <section class="form-card">
-              <label><span>Titolo *</span><ion-input formControlName="title" placeholder="Es. Prova generale" /></label>
+              <label>
+                <span>Titolo *</span>
+                <app-daisy-input
+                  name="title"
+                  placeholder="Es. Prova generale"
+                  [value]="form.controls.title.value"
+                  [valid]="form.controls.title.touched && form.controls.title.valid"
+                  [invalid]="form.controls.title.touched && form.controls.title.invalid"
+                  (valueChange)="form.controls.title.setValue($event)"
+                  (blurred)="form.controls.title.markAsTouched()"
+                />
+              </label>
               <label>
                 <span>Data *</span>
-                <div class="gigsaw-date-control">
-                  <ion-datetime-button datetime="datetime" [class.control-invalid]="form.controls.date.touched && form.controls.date.invalid" [attr.aria-invalid]="form.controls.date.touched && form.controls.date.invalid" />
-                  <ion-icon name="calendar-outline" aria-hidden="true" />
-                </div>
+                <app-daisy-datepicker
+                  name="date"
+                  [value]="form.controls.date.value"
+                  [valid]="form.controls.date.touched && form.controls.date.valid"
+                  [invalid]="form.controls.date.touched && form.controls.date.invalid"
+                  (valueChange)="form.controls.date.setValue($event)"
+                  (blurred)="form.controls.date.markAsTouched()"
+                />
               </label>
-              <ion-popover [keepContentsMounted]="true">
-                <ng-template><ion-datetime id="datetime" presentation="date" locale="it-IT" [value]="form.controls.date.value" (ionChange)="onDateChange($event)" /></ng-template>
-              </ion-popover>
 
               <div class="time-grid">
-                <label><span>Ora inizio</span><ion-input type="time" formControlName="startTime" /></label>
-                <label><span>Ora fine</span><ion-input type="time" formControlName="endTime" /></label>
+                <label>
+                  <span>Ora inizio</span>
+                  <app-daisy-time-input name="startTime" [value]="form.controls.startTime.value" [valid]="form.controls.startTime.touched && !!form.controls.startTime.value" (valueChange)="form.controls.startTime.setValue($event)" (blurred)="form.controls.startTime.markAsTouched()" />
+                </label>
+                <label>
+                  <span>Ora fine</span>
+                  <app-daisy-time-input name="endTime" [value]="form.controls.endTime.value" [valid]="form.controls.endTime.touched && !!form.controls.endTime.value" (valueChange)="form.controls.endTime.setValue($event)" (blurred)="form.controls.endTime.markAsTouched()" />
+                </label>
               </div>
 
               <label>
                 <span>Stato</span>
-                <ion-select formControlName="status" interface="popover">
-                  <ion-select-option value="scheduled">Da confermare</ion-select-option>
-                  <ion-select-option value="confirmed">Confermata</ion-select-option>
-                  <ion-select-option value="completed">Completata</ion-select-option>
-                  <ion-select-option value="cancelled">Annullata</ion-select-option>
-                </ion-select>
+                <app-daisy-select [value]="form.controls.status.value" [valid]="form.controls.status.touched && form.controls.status.valid" [invalid]="form.controls.status.touched && form.controls.status.invalid" (valueChange)="form.controls.status.setValue($any($event))" (blurred)="form.controls.status.markAsTouched()">
+                  <option value="scheduled">Da confermare</option>
+                  <option value="confirmed">Confermata</option>
+                  <option value="completed">Completata</option>
+                  <option value="cancelled">Annullata</option>
+                </app-daisy-select>
               </label>
 
               <label>
                 <span>Sala prove *</span>
-                <ion-select formControlName="rehearsalRoomId" interface="action-sheet" placeholder="Seleziona una sala">
-                  @for (room of rehearsalRooms; track room.id) {
-                    <ion-select-option [value]="room.id.toString()">{{ roomLabel(room) }}</ion-select-option>
+                <app-daisy-select [value]="form.controls.rehearsalRoomId.value" [valid]="form.controls.rehearsalRoomId.touched && form.controls.rehearsalRoomId.valid" [invalid]="form.controls.rehearsalRoomId.touched && form.controls.rehearsalRoomId.invalid" (valueChange)="form.controls.rehearsalRoomId.setValue($any($event))" (blurred)="form.controls.rehearsalRoomId.markAsTouched()">
+                  <option value="" disabled>Seleziona una sala</option>
+                  @for (room of rehearsalRooms(); track room.id) {
+                    <option [value]="room.id.toString()">{{ roomLabel(room) }}</option>
                   }
-                </ion-select>
-                @if (!rehearsalRooms.length) { <small class="field-help">Nessuna sala prova disponibile.</small> }
+                </app-daisy-select>
+                @if (!rehearsalRooms().length) { <app-daisy-message messageClass="field-help">Nessuna sala prova disponibile.</app-daisy-message> }
               </label>
 
-              <label><span>Note</span><ion-textarea [autoGrow]="true" formControlName="notes" placeholder="Aggiungi una nota per la band" /></label>
-              @if (error) { <ion-note class="form-error" color="danger">{{ error }}</ion-note> }
+              <label>
+                <span>Note</span>
+                <app-daisy-textarea name="notes" placeholder="Aggiungi una nota per la band" [value]="form.controls.notes.value" [valid]="form.controls.notes.touched && !!form.controls.notes.value" (valueChange)="form.controls.notes.setValue($event)" (blurred)="form.controls.notes.markAsTouched()" />
+              </label>
+              @if (error()) { <app-daisy-message tone="error" messageClass="form-error">{{ error() }}</app-daisy-message> }
             </section>
 
             <footer class="form-actions">
-              <ion-button fill="outline" [routerLink]="['../']">Annulla</ion-button>
-              <ion-button type="button" (click)="continueToSongs()" [disabled]="!rehearsalRooms.length">Continua</ion-button>
+              <app-daisy-button tone="outline" [routerLink]="['../']">Annulla</app-daisy-button>
+              <app-daisy-button tone="primary" (click)="continueToSongs()" [disabled]="!rehearsalRooms().length">Continua</app-daisy-button>
             </footer>
           } @else {
             <header class="form-heading"><span class="eyebrow">Repertorio</span><h1>Brani da provare</h1><p>Seleziona i brani da preparare durante questa prova.</p></header>
             <section class="song-picker">
-              @if (songs.length) {
-                @for (song of songs; track song.id) {
-                  <label class="song-option">
-                    <ion-checkbox [checked]="selectedSongIds.includes(song.id)" (ionChange)="toggleSong(song.id, $event.detail.checked)" [attr.aria-label]="song.title" />
+              @if (songs().length) {
+                @for (song of songs(); track song.id) {
+                  <label class="song-option" [class.selected]="selectedSongIds().includes(song.id)">
+                    <app-daisy-checkbox [checked]="selectedSongIds().includes(song.id)" (checkedChange)="toggleSong(song.id, $event)" [attr.aria-label]="song.title" />
                     <span class="song-option-copy"><strong>{{ song.title }}</strong><small>{{ song.performedBy || song.album || 'Nessun dettaglio aggiuntivo' }}</small></span>
                     @if (song.key) { <span class="song-key">{{ song.key }}</span> }
                   </label>
@@ -86,10 +108,10 @@
                 <div class="empty-songs"><ion-icon name="musical-notes-outline" aria-hidden="true" /><strong>Nessun brano disponibile</strong><span>Aggiungi prima qualche brano al repertorio.</span></div>
               }
             </section>
-            @if (error) { <ion-note class="form-error" color="danger">{{ error }}</ion-note> }
+            @if (error()) { <app-daisy-message tone="error" messageClass="form-error">{{ error() }}</app-daisy-message> }
             <footer class="form-actions">
-              <ion-button type="button" fill="outline" (click)="step = 1">Indietro</ion-button>
-              <ion-button type="submit" [disabled]="saving">@if (saving) { <ion-spinner name="crescent" /> } @else { {{ editing ? 'Salva modifiche' : 'Crea prova' }} }</ion-button>
+              <app-daisy-button tone="outline" (click)="step.set(1)">Indietro</app-daisy-button>
+              <app-daisy-button type="submit" tone="primary" [loading]="saving()">{{ editing() ? 'Salva modifiche' : 'Crea prova' }}</app-daisy-button>
             </footer>
           }
         </form>

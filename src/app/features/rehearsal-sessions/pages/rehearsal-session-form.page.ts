@@ -1,25 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, forkJoin, of } from 'rxjs';
 import {
   IonBackButton,
-  IonButton,
   IonButtons,
-  IonCheckbox,
   IonContent,
-  IonDatetime,
-  IonDatetimeButton,
   IonHeader,
   IonIcon,
-  IonInput,
-  IonNote,
-  IonPopover,
-  IonSelect,
-  IonSelectOption,
-  IonSpinner,
-  IonTextarea,
   IonTitle,
   IonToolbar,
   ToastController,
@@ -30,14 +19,25 @@ import {
   RehearsalStatus,
   Song,
 } from '../../../core/models/band-resources.models';
-import { DaisyStepsComponent } from '../../../shared/ui/daisyui';
+import {
+  DaisyButtonComponent,
+  DaisyCheckboxComponent,
+  DaisyDatepickerComponent,
+  DaisyInputComponent,
+  DaisyLoadingComponent,
+  DaisyMessageComponent,
+  DaisySelectComponent,
+  DaisyStepsComponent,
+  DaisyTextareaComponent,
+  DaisyTimeInputComponent,
+} from '../../../shared/ui/daisyui';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DaisyStepsComponent, IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonIcon, IonInput, IonNote, IonPopover, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, RouterLink, DaisyButtonComponent, DaisyCheckboxComponent, DaisyDatepickerComponent, DaisyInputComponent, DaisyLoadingComponent, DaisyMessageComponent, DaisySelectComponent, DaisyStepsComponent, DaisyTextareaComponent, DaisyTimeInputComponent, IonBackButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })
@@ -51,14 +51,14 @@ export class RehearsalSessionFormPage implements OnInit {
     rehearsalRoomId: ['', Validators.required],
     notes: '',
   });
-  editing = false;
-  saving = false;
-  loading = true;
-  error = '';
-  step = 1;
-  songs: Song[] = [];
-  rehearsalRooms: RehearsalRoom[] = [];
-  selectedSongIds: number[] = [];
+  readonly editing = signal(false);
+  readonly saving = signal(false);
+  readonly loading = signal(true);
+  readonly error = signal('');
+  readonly step = signal(1);
+  readonly songs = signal<Song[]>([]);
+  readonly rehearsalRooms = signal<RehearsalRoom[]>([]);
+  readonly selectedSongIds = signal<number[]>([]);
   private id?: number;
   private bandId?: number;
 
@@ -75,15 +75,17 @@ export class RehearsalSessionFormPage implements OnInit {
   ngOnInit(): void {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
-    this.editing = !!this.id;
+    this.editing.set(!!this.id);
     forkJoin({
       rooms: this.rehearsalRoomsApi.list(),
       songs: this.songService.list(),
       session: this.id ? this.rehearsalSessions.get(this.id) : of(undefined),
-    }).subscribe({
+    }).pipe(
+      finalize(() => this.loading.set(false)),
+    ).subscribe({
       next: ({ rooms, songs, session }) => {
-        this.rehearsalRooms = rooms;
-        this.songs = songs.filter((song) => song.status !== 'archived');
+        this.rehearsalRooms.set(rooms);
+        this.songs.set(songs.filter((song) => song.status !== 'archived'));
         if (session) {
           this.form.patchValue({
             title: session.title,
@@ -94,45 +96,43 @@ export class RehearsalSessionFormPage implements OnInit {
             rehearsalRoomId: session.rehearsalRoomId != null ? String(session.rehearsalRoomId) : '',
             notes: session.notes ?? '',
           });
-          this.selectedSongIds = session.songIds ?? session.songs?.map((song) => song.id) ?? [];
+          this.selectedSongIds.set(session.songIds ?? session.songs?.map((song) => song.id) ?? []);
         }
-        this.loading = false;
       },
       error: (error: unknown) => {
-        this.error = this.apiErrorMessage(error, 'Impossibile caricare i dati della prova.');
-        this.loading = false;
+        this.error.set(this.apiErrorMessage(error, 'Impossibile caricare i dati della prova.'));
       },
     });
   }
 
   continueToSongs(): void {
-    this.error = '';
+    this.error.set('');
     this.form.controls.title.markAsTouched();
     this.form.controls.date.markAsTouched();
     this.form.controls.rehearsalRoomId.markAsTouched();
     if (this.form.controls.title.invalid || this.form.controls.date.invalid || this.form.controls.rehearsalRoomId.invalid) {
-      this.error = 'Completa titolo, data e sala prove prima di continuare.';
+      this.error.set('Completa titolo, data e sala prove prima di continuare.');
       return;
     }
     if (!this.timeRangeValid()) return;
-    this.step = 2;
+    this.step.set(2);
   }
 
   toggleSong(songId: number, checked: boolean): void {
-    this.selectedSongIds = checked
-      ? Array.from(new Set([...this.selectedSongIds, songId]))
-      : this.selectedSongIds.filter((id) => id !== songId);
+    this.selectedSongIds.update((selectedIds) => checked
+      ? Array.from(new Set([...selectedIds, songId]))
+      : selectedIds.filter((id) => id !== songId));
   }
 
   save(): void {
-    this.error = '';
-    if (this.form.invalid || this.saving || !this.timeRangeValid()) {
+    this.error.set('');
+    if (this.form.invalid || this.saving() || !this.timeRangeValid()) {
       this.form.markAllAsTouched();
-      if (!this.error) this.error = 'Completa i campi obbligatori prima di salvare.';
+      if (!this.error()) this.error.set('Completa i campi obbligatori prima di salvare.');
       return;
     }
 
-    this.saving = true;
+    this.saving.set(true);
     const values = this.form.getRawValue();
     const payload: Partial<RehearsalSession> = {
       title: values.title.trim(),
@@ -142,20 +142,20 @@ export class RehearsalSessionFormPage implements OnInit {
       status: values.status,
       rehearsalRoomId: Number(values.rehearsalRoomId),
       notes: values.notes.trim() || null,
-      songIds: this.selectedSongIds,
+      songIds: this.selectedSongIds(),
     };
-    const request = this.editing
+    const request = this.editing()
       ? this.rehearsalSessions.update(this.id!, payload)
       : this.rehearsalSessions.create(payload);
 
-    request.pipe(finalize(() => { this.saving = false; })).subscribe({
+    request.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Prova salvata.', duration: 1800, color: 'success' })).present();
         void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/prove` : '/bands');
       },
       error: (error: unknown) => {
-        this.error = this.apiErrorMessage(error, 'Salvataggio non riuscito.');
-        this.step = 1;
+        this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));
+        this.step.set(1);
       },
     });
   }
@@ -164,16 +164,10 @@ export class RehearsalSessionFormPage implements OnInit {
     return [room.name, room.city].filter(Boolean).join(' · ');
   }
 
-  onDateChange(event: CustomEvent<{ value?: string | string[] | null }>): void {
-    const dateControl = this.form.controls.date;
-    dateControl.setValue(this.normalizeDate(event.detail.value), { emitEvent: false });
-    dateControl.markAsTouched();
-  }
-
   private timeRangeValid(): boolean {
     const { startTime, endTime } = this.form.getRawValue();
     if (startTime && endTime && endTime <= startTime) {
-      this.error = 'L’orario di fine deve essere successivo all’orario di inizio.';
+      this.error.set('L’orario di fine deve essere successivo all’orario di inizio.');
       return false;
     }
     return true;

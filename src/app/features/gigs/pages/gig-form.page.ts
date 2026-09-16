@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -7,19 +7,11 @@ import {
   IonButton,
   IonButtons,
   IonContent,
-  IonDatetime,
-  IonDatetimeButton,
   IonHeader,
   IonIcon,
-  IonInput,
   IonItem,
   IonLabel,
   IonList,
-  IonModal,
-  IonNote,
-  IonSearchbar,
-  IonSpinner,
-  IonTextarea,
   IonTitle,
   IonToolbar,
   ToastController,
@@ -39,6 +31,15 @@ import {
   throwError,
 } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
+import {
+  DaisyButtonComponent,
+  DaisyDatepickerComponent,
+  DaisyInputComponent,
+  DaisyLoadingComponent,
+  DaisyMessageComponent,
+  DaisyTextareaComponent,
+  DaisyTimeInputComponent,
+} from '../../../shared/ui/daisyui';
 import { Venue } from '../../venues/models/venue.models';
 import { MapboxAddressSuggestion, MapboxGeocodingService } from '../../venues/services/mapbox-geocoding.service';
 import { VenueService } from '../../venues/services/venue.service';
@@ -52,21 +53,20 @@ import { GigService } from '../services/gig.service';
     IonButton,
     IonButtons,
     IonContent,
-    IonDatetime,
-    IonDatetimeButton,
     IonHeader,
     IonIcon,
-    IonInput,
     IonItem,
     IonLabel,
     IonList,
-    IonModal,
-    IonNote,
-    IonSearchbar,
-    IonSpinner,
-    IonTextarea,
     IonTitle,
     IonToolbar,
+    DaisyButtonComponent,
+    DaisyDatepickerComponent,
+    DaisyInputComponent,
+    DaisyLoadingComponent,
+    DaisyMessageComponent,
+    DaisyTextareaComponent,
+    DaisyTimeInputComponent,
   ],
   templateUrl: './gig-form.page.html',
   styleUrl: './gig-form.page.scss',
@@ -80,17 +80,17 @@ export class GigFormPage implements OnInit {
     notes: '',
   });
 
-  editing = false;
-  loading = true;
-  saving = false;
-  searchingMapbox = false;
-  error = '';
-  venueQuery = '';
-  venues: Venue[] = [];
-  filteredVenues: Venue[] = [];
-  mapboxResults: MapboxAddressSuggestion[] = [];
-  selectedVenue?: Venue;
-  pendingVenue?: MapboxAddressSuggestion;
+  readonly editing = signal(false);
+  readonly loading = signal(true);
+  readonly saving = signal(false);
+  readonly searchingMapbox = signal(false);
+  readonly error = signal('');
+  readonly venueQuery = signal('');
+  readonly venues = signal<Venue[]>([]);
+  readonly filteredVenues = signal<Venue[]>([]);
+  readonly mapboxResults = signal<MapboxAddressSuggestion[]>([]);
+  readonly selectedVenue = signal<Venue | undefined>(undefined);
+  readonly pendingVenue = signal<MapboxAddressSuggestion | undefined>(undefined);
   private id?: number;
   private bandId?: number;
   private readonly venueQueryChanges = new Subject<string>();
@@ -110,39 +110,39 @@ export class GigFormPage implements OnInit {
   ngOnInit(): void {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
-    this.editing = !!this.id;
+    this.editing.set(!!this.id);
     this.bindVenueSearch();
 
     forkJoin({
       venues: this.venuesApi.list(),
       gig: this.id ? this.gigs.get(this.id) : of(undefined),
-    }).subscribe({
+    }).pipe(
+      finalize(() => this.loading.set(false)),
+    ).subscribe({
       next: ({ venues, gig }) => {
-        this.venues = venues;
-        this.filteredVenues = venues.slice(0, 8);
+        this.venues.set(venues);
+        this.filteredVenues.set(venues.slice(0, 8));
         if (gig) this.patchGig(gig);
-        this.loading = false;
       },
       error: (error: unknown) => {
-        this.error = this.apiErrorMessage(error, this.id ? 'Impossibile caricare il concerto.' : 'Impossibile caricare le venue.');
-        this.loading = false;
+        this.error.set(this.apiErrorMessage(error, this.id ? 'Impossibile caricare il concerto.' : 'Impossibile caricare le venue.'));
       },
     });
   }
 
   save(): void {
-    this.error = '';
-    if (this.form.invalid || this.saving) {
+    this.error.set('');
+    if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
-      this.error = 'Completa i campi obbligatori prima di salvare.';
+      this.error.set('Completa i campi obbligatori prima di salvare.');
       return;
     }
-    if (!this.selectedVenue && !this.pendingVenue) {
-      this.error = 'Seleziona una venue dai risultati prima di salvare.';
+    if (!this.selectedVenue() && !this.pendingVenue()) {
+      this.error.set('Seleziona una venue dai risultati prima di salvare.');
       return;
     }
 
-    this.saving = true;
+    this.saving.set(true);
     this.resolveVenueIdForSave().pipe(
       switchMap((venueId) => {
         const values = this.form.getRawValue();
@@ -152,40 +152,34 @@ export class GigFormPage implements OnInit {
           venueId,
           notes: values.notes.trim() || null,
         };
-        return this.editing ? this.gigs.update(this.id!, payload) : this.gigs.create(payload);
+        return this.editing() ? this.gigs.update(this.id!, payload) : this.gigs.create(payload);
       }),
-      finalize(() => { this.saving = false; }),
+      finalize(() => this.saving.set(false)),
     ).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Concerto salvato.', duration: 1800, color: 'success' })).present();
         void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/concerti` : '/bands');
       },
       error: (error: unknown) => {
-        this.error = this.apiErrorMessage(error, 'Salvataggio non riuscito.');
+        this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));
       },
     });
   }
 
-  onVenueQueryInput(event: Event): void {
-    const target = event.target as HTMLIonSearchbarElement | null;
-    const value = target?.value?.toString() ?? '';
-    this.venueQuery = value;
-    this.selectedVenue = undefined;
-    this.pendingVenue = undefined;
+  onVenueQueryInput(value: string): void {
+    this.venueQuery.set(value);
+    this.selectedVenue.set(undefined);
+    this.pendingVenue.set(undefined);
     this.form.patchValue({ venueId: '' }, { emitEvent: false });
     this.venueQueryChanges.next(value);
   }
 
-  onDateChange(event: CustomEvent<{ value?: string | string[] | null }>): void {
-    this.form.patchValue({ date: this.normalizeDate(event.detail.value) }, { emitEvent: false });
-  }
-
   selectExistingVenue(venue: Venue): void {
-    this.selectedVenue = venue;
-    this.pendingVenue = undefined;
-    this.venueQuery = this.venueLabel(venue);
-    this.filteredVenues = [];
-    this.mapboxResults = [];
+    this.selectedVenue.set(venue);
+    this.pendingVenue.set(undefined);
+    this.venueQuery.set(this.venueLabel(venue));
+    this.filteredVenues.set([]);
+    this.mapboxResults.set([]);
     this.form.patchValue({ venueId: String(venue.id) }, { emitEvent: false });
   }
 
@@ -195,20 +189,20 @@ export class GigFormPage implements OnInit {
       this.selectExistingVenue(existingVenue);
       return;
     }
-    this.selectedVenue = undefined;
-    this.pendingVenue = result;
-    this.venueQuery = result.fullAddress;
-    this.filteredVenues = [];
-    this.mapboxResults = [];
+    this.selectedVenue.set(undefined);
+    this.pendingVenue.set(result);
+    this.venueQuery.set(result.fullAddress);
+    this.filteredVenues.set([]);
+    this.mapboxResults.set([]);
     this.form.patchValue({ venueId: '' }, { emitEvent: false });
   }
 
   clearVenueSelection(): void {
-    this.selectedVenue = undefined;
-    this.pendingVenue = undefined;
-    this.venueQuery = '';
-    this.filteredVenues = this.venues.slice(0, 8);
-    this.mapboxResults = [];
+    this.selectedVenue.set(undefined);
+    this.pendingVenue.set(undefined);
+    this.venueQuery.set('');
+    this.filteredVenues.set(this.venues().slice(0, 8));
+    this.mapboxResults.set([]);
     this.form.patchValue({ venueId: '' }, { emitEvent: false });
   }
 
@@ -232,7 +226,7 @@ export class GigFormPage implements OnInit {
       venueId: gig.venueId != null ? String(gig.venueId) : '',
       notes: gig.notes ?? '',
     });
-    const venue = gig.venue ?? this.venues.find((item) => item.id === gig.venueId);
+    const venue = gig.venue ?? this.venues().find((item) => item.id === gig.venueId);
     if (venue) this.selectExistingVenue(venue);
   }
 
@@ -242,32 +236,32 @@ export class GigFormPage implements OnInit {
       distinctUntilChanged(),
       switchMap((query) => {
         const trimmed = query.trim();
-        this.filteredVenues = this.filterVenues(trimmed);
+        this.filteredVenues.set(this.filterVenues(trimmed));
         if (!this.mapbox.isConfigured() || trimmed.length < 3) {
-          this.searchingMapbox = false;
+          this.searchingMapbox.set(false);
           return of([] as MapboxAddressSuggestion[]);
         }
-        this.searchingMapbox = true;
+        this.searchingMapbox.set(true);
         return this.mapbox.search(trimmed).pipe(
           catchError(() => of([] as MapboxAddressSuggestion[])),
-          finalize(() => { this.searchingMapbox = false; }),
+          finalize(() => this.searchingMapbox.set(false)),
         );
       }),
     ).subscribe((results) => {
-      this.mapboxResults = results.filter((result) => !this.findMatchingVenue(result));
+      this.mapboxResults.set(results.filter((result) => !this.findMatchingVenue(result)));
     });
   }
 
   private filterVenues(query: string): Venue[] {
-    if (!query) return this.venues.slice(0, 8);
+    if (!query) return this.venues().slice(0, 8);
     const normalizedQuery = this.normalize(query);
-    return this.venues.filter((venue) => this.normalize(this.venueLabel(venue)).includes(normalizedQuery)).slice(0, 8);
+    return this.venues().filter((venue) => this.normalize(this.venueLabel(venue)).includes(normalizedQuery)).slice(0, 8);
   }
 
   private findMatchingVenue(result: MapboxAddressSuggestion): Venue | undefined {
     const normalizedAddress = this.normalize(result.address || result.fullAddress);
     const normalizedCity = this.normalize(result.city ?? '');
-    return this.venues.find((venue) => {
+    return this.venues().find((venue) => {
       const venueAddress = this.normalize(venue.address ?? '');
       const venueCity = this.normalize(venue.city ?? '');
       if (venueAddress && normalizedAddress && venueAddress === normalizedAddress) {
@@ -278,22 +272,24 @@ export class GigFormPage implements OnInit {
   }
 
   private resolveVenueIdForSave(): Observable<number> {
-    if (this.selectedVenue) return of(this.selectedVenue.id);
-    if (!this.pendingVenue) return throwError(() => new Error('Seleziona una venue.'));
+    const selectedVenue = this.selectedVenue();
+    const pendingVenue = this.pendingVenue();
+    if (selectedVenue) return of(selectedVenue.id);
+    if (!pendingVenue) return throwError(() => new Error('Seleziona una venue.'));
 
-    const existingVenue = this.findMatchingVenue(this.pendingVenue);
+    const existingVenue = this.findMatchingVenue(pendingVenue);
     if (existingVenue) return of(existingVenue.id);
 
     const payload: Partial<Venue> = {
-      name: this.pendingVenue.name,
-      address: this.pendingVenue.address || this.pendingVenue.fullAddress,
-      city: this.pendingVenue.city,
-      latitude: this.pendingVenue.latitude,
-      longitude: this.pendingVenue.longitude,
+      name: pendingVenue.name,
+      address: pendingVenue.address || pendingVenue.fullAddress,
+      city: pendingVenue.city,
+      latitude: pendingVenue.latitude,
+      longitude: pendingVenue.longitude,
     };
     return this.venuesApi.create(payload).pipe(
       switchMap((venue) => {
-        this.venues = [venue, ...this.venues];
+        this.venues.update((venues) => [venue, ...venues]);
         this.selectExistingVenue(venue);
         return of(venue.id);
       }),

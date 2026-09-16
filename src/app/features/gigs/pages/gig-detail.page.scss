@@ -1,6 +1,8 @@
-.gig-detail { max-width: 950px; margin: 0 auto; padding: 26px 18px 48px; }
-.hero-card, .detail-card { border: 1px solid var(--gigsaw-border, var(--ion-color-step-150)); border-radius: 18px; background: var(--ion-card-background); }
-.hero-card { padding: 28px; background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), .15), var(--ion-card-background) 62%); }
+:host { display: block; height: 100%; }
+ion-content { --background: var(--gigsaw-background); }
+.gig-detail { max-width: 950px; margin: 0 auto; padding: 34px 20px 56px; color: var(--gigsaw-text); }
+.hero-card, .detail-card { border: 1px solid var(--gigsaw-border); border-radius: 18px; background: #101d30; }
+.hero-card { padding: 28px; background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), .15), #101d30 62%); }
 .hero-card h1 { margin: 5px 0 14px; font-size: clamp(1.7rem, 4vw, 2.5rem); font-weight: 850; }
 .eyebrow { margin: 0; color: var(--ion-color-primary); font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .hero-meta { display: flex; flex-wrap: wrap; gap: 14px; color: var(--ion-color-medium); }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -16,6 +16,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add, alertCircleOutline, calendarClearOutline, locationOutline, timeOutline } from 'ionicons/icons';
+import { finalize } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
 import { GigService } from '../services/gig.service';
 
@@ -28,10 +29,16 @@ type GigFilter = 'upcoming' | 'past' | 'all';
   styleUrl: './gig-list.page.scss',
 })
 export class GigListPage implements OnInit {
-  gigs: Gig[] = [];
-  loading = true;
-  error = '';
-  filter: GigFilter = 'upcoming';
+  readonly gigs = signal<Gig[]>([]);
+  readonly loading = signal(true);
+  readonly error = signal('');
+  readonly filter = signal<GigFilter>('upcoming');
+  readonly visibleGigs = computed(() => {
+    const filter = this.filter();
+    if (filter === 'all') return this.gigs();
+    return this.gigs().filter((gig) => filter === 'upcoming' ? this.isUpcoming(gig) : !this.isUpcoming(gig));
+  });
+  readonly upcomingCount = computed(() => this.gigs().filter((gig) => this.isUpcoming(gig)).length);
 
   constructor(private readonly gigsApi: GigService) {
     addIcons({ add, alertCircleOutline, calendarClearOutline, locationOutline, timeOutline });
@@ -42,33 +49,25 @@ export class GigListPage implements OnInit {
   }
 
   load(event?: CustomEvent): void {
-    this.loading = !event;
-    this.error = '';
-    this.gigsApi.list().subscribe({
-      next: (gigs) => {
-        this.gigs = [...gigs].sort((left, right) => this.timestamp(left.date) - this.timestamp(right.date));
-        this.loading = false;
+    this.loading.set(!event);
+    this.error.set('');
+    this.gigsApi.list().pipe(
+      finalize(() => {
+        this.loading.set(false);
         event?.detail.complete();
+      }),
+    ).subscribe({
+      next: (gigs) => {
+        this.gigs.set([...gigs].sort((left, right) => this.timestamp(left.date) - this.timestamp(right.date)));
       },
       error: (error: Error) => {
-        this.error = error.message || 'Impossibile caricare i concerti.';
-        this.loading = false;
-        event?.detail.complete();
+        this.error.set(error.message || 'Impossibile caricare i concerti.');
       },
     });
   }
 
-  get visibleGigs(): Gig[] {
-    if (this.filter === 'all') return this.gigs;
-    return this.gigs.filter((gig) => this.filter === 'upcoming' ? this.isUpcoming(gig) : !this.isUpcoming(gig));
-  }
-
-  get upcomingCount(): number {
-    return this.gigs.filter((gig) => this.isUpcoming(gig)).length;
-  }
-
   setFilter(filter: GigFilter): void {
-    this.filter = filter;
+    this.filter.set(filter);
   }
 
   isUpcoming(gig: Gig): boolean {

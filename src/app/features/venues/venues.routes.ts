@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
 import { ResourceConfig } from '../../shared/models/resource-form.models';
-import { ResourceDetailPage } from '../../shared/ui/resource-detail.page';
-import { ResourceListPage } from '../../shared/ui/resource-list.page';
 import { VenueFormPage } from './pages/venue-form.page';
+import { VenueListPage } from './pages/venue-list.page';
 import { VenueService } from './services/venue.service';
 
 const resource: ResourceConfig = {
@@ -17,8 +16,9 @@ const resource: ResourceConfig = {
 };
 
 export const VENUE_ROUTES: Routes = [
-  { path: '', component: ResourceListPage, data: { resource } },
-  { path: 'new', component: VenueFormPage, data: { resource } },
-  { path: ':id', component: ResourceDetailPage, data: { resource } },
-  { path: ':id/edit', component: VenueFormPage, data: { resource } },
+  { path: '', component: VenueListPage, data: { resource } },
+  { path: 'venue/new', component: VenueFormPage, data: { resource } },
+  { path: 'venue/:id/edit', component: VenueFormPage, data: { resource } },
+  { path: 'room/new', component: VenueFormPage },
+  { path: 'room/:id/edit', component: VenueFormPage },
 ];
