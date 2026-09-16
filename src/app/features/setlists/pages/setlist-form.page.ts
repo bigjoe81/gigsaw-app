@@ -1,54 +1,16 @@
-
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonChip,
-  IonCol,
-  IonContent,
-  IonDatetime,
-  IonDatetimeButton,
-  IonGrid,
-  IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonModal,
-  IonNote,
-  IonReorder,
-  IonReorderGroup,
-  IonRow,
-  IonSelect,
-  IonSelectOption,
-  IonSpinner,
-  IonTextarea,
-  IonText,
-  IonTitle,
-  IonToggle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
-import type { ItemReorderEventDetail } from '@ionic/angular';
-import { forkJoin, of } from 'rxjs';
-import { Gig, Setlist, SetlistMemberNote, Song } from '../../../core/models/band-resources.models';
-import { BandMember } from '../../bands/models/band.models';
-import { BandService } from '../../bands/services/band.service';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { Subscription, debounceTime, forkJoin, of, Subject } from 'rxjs';
+import { Song } from '../../../core/models/band-resources.models';
 import { GigService } from '../../gigs/services/gig.service';
 import { SongService } from '../../songs/services/song.service';
-import {
-  SetlistGeneratePayload,
-  SetlistSongEntryPayload,
-  SetlistTemplate,
-  SetlistUpsertPayload,
-} from '../models/setlist.models';
+import { MagicConstraints, MagicProposal, SetlistItem, SetlistSnapshot, SetlistWorkspace, WorkspaceSet } from '../models/setlist-workspace.models';
+import { MagicSetService } from '../services/magic-set.service';
+import { cloneWorkspace, createMedley, LocalSetlistRepository, moveItem, setDuration, SetlistHistoryService, splitMedley, uid } from '../services/setlist-workspace.service';
+import { SetlistValidationService } from '../services/setlist-validation.service';
 import { SetlistService } from '../services/setlist.service';
 
 type MagicSetPreset = 'short' | 'standard' | 'wedding' | 'pub3';
