@@ -1,4 +1,114 @@
-<ion-header><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons><ion-title>{{ editing ? 'Modifica prova' : 'Nuova prova' }}</ion-title><ion-buttons slot="end"><ion-button (click)="save()" [disabled]="saving">@if(saving){<ion-spinner name="crescent" />}@else{Salva}</ion-button></ion-buttons></ion-toolbar></ion-header>
-<ion-content><form [formGroup]="form" (ngSubmit)="save()"><ion-item><ion-label position="stacked">Titolo *</ion-label><ion-input formControlName="title" /></ion-item><ion-item><ion-label position="stacked">Data *</ion-label><ion-datetime-button datetime="rehearsal-date" /></ion-item><ion-modal [keepContentsMounted]="true"><ng-template><ion-datetime id="rehearsal-date" presentation="date" locale="it-IT" [value]="form.controls.date.value" (ionChange)="onDateChange($event)" /></ng-template></ion-modal><ion-item><ion-label position="stacked">Ora inizio</ion-label><ion-input type="time" formControlName="startTime" /></ion-item><ion-item><ion-label position="stacked">Ora fine</ion-label><ion-input type="time" formControlName="endTime" /></ion-item><ion-item><ion-label position="stacked">ID sala prove</ion-label><ion-input type="number" formControlName="rehearsalRoomId" /></ion-item><ion-item><ion-label position="stacked">Note</ion-label><ion-textarea autoGrow formControlName="notes" /></ion-item>@if (error) {
-<ion-note class="ion-padding" color="danger">{{ error }}</ion-note>
-}<ion-button class="ion-margin" type="submit" expand="block" [disabled]="saving">Salva prova</ion-button></form></ion-content>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="../"/>
+    </ion-buttons>
+    <ion-title>{{ editing ? 'Modifica prova' : 'Nuova prova' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="rehearsal-form-content">
+  <main class="rehearsal-shell">
+    <aside class="rehearsal-intro"><span class="eyebrow">Calendario</span>
+      <h1>{{ editing ? 'Aggiorna la prova.' : 'Pianifica la tua prova.' }}</h1>
+      <p>Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro.</p>
+      <app-daisy-steps
+        class="rehearsal-steps"
+        [horizontal]="false"
+        [steps]="[
+          { label: 'Dettagli', active: step >= 1 },
+          { label: 'Brani da provare', active: step >= 2 }
+        ]"
+        ariaLabel="Avanzamento creazione prova"
+      />
+    </aside>
+    <section class="rehearsal-panel">
+      @if (loading) {
+        <div class="loading-state"><ion-spinner name="crescent"></ion-spinner> Caricamento…</div>
+      } @else {
+      <form class="gigsaw-outlined-form" [formGroup]="form" (ngSubmit)="save()">
+        @if (step === 1) {
+        <header class="form-heading"><span class="eyebrow">Dettagli appuntamento</span>
+          <h1>{{ editing ? 'Modifica la prova' : 'Crea una nuova prova' }}</h1>
+          <p>Inserisci le informazioni essenziali per tutta la band.</p></header>
+        <section class="form-card"><label><span>Titolo *</span>
+          <ion-input formControlName="title" placeholder="Es. Prova generale"/>
+        </label><label><span>Data *</span>
+          <div class="gigsaw-date-control">
+            <ion-datetime-button
+              datetime="datetime"
+              [class.control-invalid]="form.controls.date.touched && form.controls.date.invalid"
+              [attr.aria-invalid]="form.controls.date.touched && form.controls.date.invalid"
+            ></ion-datetime-button>
+            <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+          </div>
+        </label>
+          <ion-popover [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="datetime"
+                presentation="date"
+                locale="it-IT"
+                [value]="form.controls.date.value"
+                (ionChange)="onDateChange($event)"
+              ></ion-datetime>
+            </ng-template>
+          </ion-popover>
+          <div class="time-grid"><label><span>Ora inizio</span>
+            <ion-input type="time" formControlName="startTime"/>
+          </label><label><span>Ora fine</span>
+            <ion-input type="time" formControlName="endTime"/>
+          </label></div>
+          <label><span>Sala prove</span>
+            <ion-input type="number" formControlName="rehearsalRoomId"
+                       placeholder="ID sala (facoltativo)"/>
+          </label><label><span>Note</span>
+            <ion-textarea [autoGrow]="true" formControlName="notes" placeholder="Aggiungi una nota per la band"/>
+          </label>@if (error) {
+            <ion-note class="ion-padding" color="danger">{{ error }}</ion-note>
+          }</section>
+        <footer class="form-actions">
+          <ion-button fill="outline" [routerLink]="['../']">Annulla</ion-button>
+          <ion-button type="button" (click)="continueToSongs()">Continua</ion-button>
+        </footer>
+        } @else {
+          <header class="form-heading"><span class="eyebrow">Repertorio</span>
+            <h1>Brani da provare</h1>
+            <p>Seleziona i brani da preparare durante questa prova.</p>
+          </header>
+          <section class="song-picker">
+            @if (songs.length) {
+              @for (song of songs; track song.id) {
+                <label class="song-option">
+                  <ion-checkbox
+                    [checked]="selectedSongIds.includes(song.id)"
+                    (ionChange)="toggleSong(song.id, $event.detail.checked)"
+                    [attr.aria-label]="song.title"
+                  ></ion-checkbox>
+                  <span class="song-option-copy">
+                    <strong>{{ song.title }}</strong>
+                    <small>{{ song.performedBy || song.album || 'Nessun dettaglio aggiuntivo' }}</small>
+                  </span>
+                  @if (song.key) { <span class="song-key">{{ song.key }}</span> }
+                </label>
+              }
+            } @else {
+              <div class="empty-songs">
+                <ion-icon name="musical-notes-outline" aria-hidden="true"></ion-icon>
+                <strong>Nessun brano disponibile</strong>
+                <span>Aggiungi prima qualche brano al repertorio.</span>
+              </div>
+            }
+          </section>
+          @if (error) { <ion-note class="ion-padding" color="danger">{{ error }}</ion-note> }
+          <footer class="form-actions">
+            <ion-button type="button" fill="outline" (click)="step = 1">Indietro</ion-button>
+            <ion-button type="submit" [disabled]="saving">
+              <span>{{ saving ? 'Salvataggio…' : (editing ? 'Salva modifiche' : 'Crea prova') }}</span>
+            </ion-button>
+          </footer>
+        }
+      </form>
+      }
+    </section>
+  </main>
+</ion-content>

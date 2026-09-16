@@ -1,17 +1,101 @@
+:host {
+  --band-menu-width: 260px;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 ion-split-pane {
-  --side-width: 260px;
-  --side-max-width: 260px;
-  --side-min-width: 260px;
+  width: 100%;
+  height: 100%;
+  --border: 0;
+  --side-width: var(--band-menu-width);
+  --side-max-width: var(--band-menu-width);
+  --side-min-width: var(--band-menu-width);
 }
 
 ion-menu {
-  --width: 260px;
-  --background: var(--ion-background-color);
-  border-right: 1px solid var(--ion-color-step-150, #d7d8da);
+  --width: var(--band-menu-width);
+  --background: var(--ion-color-brand-navy);
+  border-right: 0;
 }
 
 ion-menu ion-content {
-  --background: var(--ion-background-color);
+  --background: var(--ion-color-brand-navy);
+}
+
+/* Ionic can miss the menu-pane-visible state when this nested routed layout is
+   restored from the router outlet. The split pane state remains authoritative. */
+ion-split-pane.split-pane-visible > ion-menu {
+  position: relative;
+  display: flex !important;
+  flex: 0 0 var(--band-menu-width);
+  width: var(--band-menu-width);
+  min-width: var(--band-menu-width);
+  max-width: var(--band-menu-width);
+  transform: none !important;
+}
+
+ion-split-pane.split-pane-visible > ion-menu::part(container) {
+  width: var(--band-menu-width);
+  transform: none !important;
+  box-shadow: none;
+}
+
+ion-split-pane.menu-collapsed {
+  --band-menu-width: 76px;
+}
+
+ion-split-pane.menu-collapsed .menu-brand {
+  justify-content: center;
+  padding-inline: 10px;
+}
+
+ion-split-pane.menu-collapsed .menu-brand > div:last-child,
+ion-split-pane.menu-collapsed ion-item ion-label {
+  display: none;
+}
+
+ion-split-pane.menu-collapsed ion-list {
+  padding-inline: 8px;
+}
+
+ion-split-pane.menu-collapsed ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-inline: 0;
+}
+
+ion-split-pane.menu-collapsed ion-item::part(native) {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+ion-split-pane.menu-collapsed ion-item ion-icon {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+}
+
+ion-split-pane:not(.menu-collapsed) ion-item ion-icon[slot='start'] {
+  margin-inline-end: 22px;
+}
+
+ion-split-pane.menu-collapsed ion-item.is-active {
+  --border-radius: 8px;
+}
+
+ion-split-pane.split-pane-visible > .split-pane-main {
+  margin: 0 !important;
+  transform: none !important;
+}
+
+ion-split-pane.split-pane-visible > .menu-content-open {
+  overflow: visible !important;
+  cursor: auto !important;
+  touch-action: auto !important;
+  pointer-events: auto !important;
 }
 
 .menu-brand {
@@ -64,7 +148,7 @@ ion-list {
 
 ion-item {
   --min-height: 44px;
-  --padding-start: 12px;
+  --padding-start: 20px;
   --inner-padding-end: 12px;
   --background: transparent;
   --border-radius: 8px;
@@ -78,12 +162,14 @@ ion-item ion-icon {
 }
 
 ion-item.is-active {
-  --background: rgba(var(--ion-color-primary-rgb), 0.12);
-  --color: var(--ion-color-primary);
+  --background: var(--ion-gradient-brand-reversed);
+  --border-radius: 8px 0 0 8px;
+  --color: #fff;
+  margin-inline-end: -8px;
 }
 
 ion-item.is-active ion-icon {
-  color: var(--ion-color-primary);
+  color: #fff;
 }
 
 .menu-footer {

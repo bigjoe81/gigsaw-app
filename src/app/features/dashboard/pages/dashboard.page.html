@@ -18,7 +18,7 @@
         <ion-icon aria-hidden="true" name="notifications-outline" />
         <span></span>
       </button>
-      <div class="user-avatar" aria-label="Giorgio">G</div>
+      <div class="user-avatar" [attr.aria-label]="userName">{{ userInitial }}</div>
       <ion-button [routerLink]="[bandBaseUrl, 'repertorio', 'new']">
         <ion-icon slot="start" name="add-outline" />
         Nuovo
@@ -30,12 +30,19 @@
 <ion-content class="dashboard-content">
   <main class="dashboard">
     <section class="hero">
-      <h1>Buon pomeriggio, Giorgio</h1>
+      <h1>Buon pomeriggio, {{ userName }}</h1>
       <p>Ecco cosa succede nella tua band.</p>
     </section>
 
+    @if (loading()) {
+      <section class="panel" role="status">Caricamento dashboard…</section>
+    } @else {
+    @if (loadError()) {
+      <section class="panel" role="alert">{{ loadError() }}</section>
+    }
+
     <section class="stats-grid" aria-label="Statistiche principali">
-      @for (card of cards; track card.label) {
+      @for (card of cards(); track card.label) {
         <article class="stat-card">
           <div class="stat-icon">
             <ion-icon aria-hidden="true" [name]="card.icon" />
@@ -62,7 +69,7 @@
           <h2>Prossimi impegni</h2>
         </header>
         <div class="event-list">
-          @for (event of events; track event.title) {
+          @for (event of events(); track event.id) {
             <article class="event-row" [class]="'event-row ' + event.tone">
               <time>
                 <span>{{ event.badgeTop }}</span>
@@ -77,13 +84,10 @@
                   <small><ion-icon aria-hidden="true" name="location-outline" />{{ event.location }}</small>
                 }
               </div>
-              <div class="member-stack" aria-label="Partecipanti">
-                <span>G</span>
-                <span>I</span>
-                <span>R</span>
-              </div>
-              <a class="outline-action" [routerLink]="[bandBaseUrl]">{{ event.action }}</a>
+              <a class="outline-action" [routerLink]="event.link">{{ event.action }}</a>
             </article>
+          } @empty {
+            <p>Nessun impegno pianificato.</p>
           }
         </div>
         <a class="panel-link" [routerLink]="[bandBaseUrl, 'prove']">Vedi tutti gli impegni</a>
@@ -95,7 +99,7 @@
         </header>
         <div class="quick-grid">
           @for (action of quickActions; track action.label) {
-            <a class="quick-action" [routerLink]="[bandBaseUrl, action.link]">
+            <a class="quick-action" [routerLink]="[bandBaseUrl, ...action.route]">
               <ion-icon aria-hidden="true" [name]="action.icon" />
               <span>{{ action.label }}</span>
             </a>
@@ -108,17 +112,10 @@
           <h2>Attività recente</h2>
         </header>
         <div class="activity-list">
-          @for (activity of activities; track activity.time) {
+          @for (activity of activities(); track activity.id) {
             <article>
-              @if (activity.avatar === 'check') {
-                <span class="activity-avatar complete"><ion-icon aria-hidden="true" name="checkmark-circle" /></span>
-              } @else {
-                <span class="activity-avatar">{{ activity.avatar }}</span>
-              }
+              <span class="activity-avatar">{{ activity.avatar }}</span>
               <p>
-                @if (activity.actor) {
-                  <strong>{{ activity.actor }}</strong>
-                }
                 {{ activity.text }}
                 @if (activity.target) {
                   <a [routerLink]="[bandBaseUrl, 'repertorio']">{{ activity.target }}</a>
@@ -126,6 +123,8 @@
               </p>
               <time>{{ activity.time }}</time>
             </article>
+          } @empty {
+            <p>Nessuna attività recente.</p>
           }
         </div>
         <a class="panel-link" [routerLink]="[bandBaseUrl]">Vedi tutte le attività</a>
@@ -136,9 +135,9 @@
           <h2>Repertorio</h2>
         </header>
         <div class="repertoire-body">
-          <div class="donut" aria-label="Stato repertorio"></div>
+          <div class="donut" aria-label="Stato repertorio" [style.background]="repertoireChartBackground"></div>
           <div class="legend">
-            @for (item of repertoire; track item.label) {
+            @for (item of repertoire(); track item.label) {
               <div>
                 <span [class]="item.color"></span>
                 <p>{{ item.label }}</p>
@@ -147,11 +146,12 @@
             }
             <footer>
               <p>Totale brani</p>
-              <strong>42</strong>
+              <strong>{{ repertoireTotal() }}</strong>
             </footer>
           </div>
         </div>
       </section>
     </div>
+    }
   </main>
 </ion-content>

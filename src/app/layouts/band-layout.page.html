@@ -1,5 +1,5 @@
-<ion-split-pane contentId="band-content" when="true">
-  <ion-menu contentId="band-content" menuId="band-menu" type="reveal">
+<ion-split-pane contentId="band-content" when="(min-width: 600px)" [class.menu-collapsed]="menuCollapsed()" (click)="handleLayoutClick($event)">
+  <ion-menu contentId="band-content" menuId="band-menu">
     <ion-content>
       <header class="menu-brand">
         <div class="menu-brand__mark">
@@ -13,13 +13,13 @@
 
       <ion-list class="menu-nav" lines="none">
         @for (section of sections; track section.key) {
-          <ion-menu-toggle autoHide="false">
+          <ion-menu-toggle [autoHide]="false">
             <ion-item
-              button
-              detail="false"
+              [detail]="false"
               [routerLink]="sectionHref(section.key)"
               routerLinkActive="is-active"
               [routerLinkActiveOptions]="{ exact: false }"
+              [title]="section.label"
             >
               <ion-icon aria-hidden="true" slot="start" [name]="section.icon" />
               <ion-label>{{ section.label }}</ion-label>
@@ -29,8 +29,8 @@
       </ion-list>
 
       <ion-list class="menu-footer" lines="none">
-        <ion-menu-toggle autoHide="false">
-          <ion-item button detail="false" routerLink="/bands">
+        <ion-menu-toggle [autoHide]="false">
+          <ion-item [detail]="false" routerLink="/bands" title="Cambia band">
             <ion-icon aria-hidden="true" slot="start" name="arrow-back-outline" />
             <ion-label>Cambia band</ion-label>
           </ion-item>

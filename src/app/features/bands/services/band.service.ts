@@ -24,7 +24,7 @@ export class BandService {
   }
 
   create(payload: CreateBandRequest): Observable<Band> {
-    return this.http.post<ApiEnvelope<Band>>(`${API_BASE_URL}/bands`, payload).pipe(
+    return this.http.post<ApiEnvelope<Band>>(`${API_BASE_URL}/bands`, this.toFormData(payload)).pipe(
       map((response) => this.normalizeBand(this.unwrap(response))),
     );
   }

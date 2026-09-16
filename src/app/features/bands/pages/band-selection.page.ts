@@ -1,21 +1,17 @@
 
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  AlertController, IonButton, IonButtons,
+  AlertController,
   IonContent, IonHeader,
   IonIcon,
-  IonMenu, IonMenuButton, IonSplitPane, IonTitle, IonToolbar,
-  MenuController,
+  IonModal, IonTitle, IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   add,
   calendarOutline,
-  close,
-  cloudUploadOutline,
   helpCircleOutline,
-  imageOutline,
   logOutOutline,
   musicalNotes,
   timeOutline,
@@ -24,44 +20,24 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
 import {
   DaisyButtonComponent,
-  DaisyCheckboxComponent,
-  DaisyInputComponent,
-  DaisyLoadingComponent,
   DaisyMessageComponent,
-  DaisySelectComponent,
-  DaisyStepItem,
-  DaisyStepsComponent,
 } from '../../../shared/ui/daisyui';
 import { Band } from '../models/band.models';
 import { BandService } from '../services/band.service';
-
-interface CreateBandFormValue {
-  name: string;
-  genres: string[];
-  city: string;
-  owner: boolean;
-}
+import { BandCreatePage } from './band-create.page';
 
 @Component({
   standalone: true,
   imports: [
+    BandCreatePage,
     DaisyButtonComponent,
-    DaisyCheckboxComponent,
-    DaisyInputComponent,
-    DaisyLoadingComponent,
     DaisyMessageComponent,
-    DaisySelectComponent,
-    DaisyStepsComponent,
     IonContent,
-    IonIcon,
-    IonMenu,
     IonHeader,
+    IonIcon,
+    IonModal,
     IonToolbar,
     IonTitle,
-    IonButtons,
-    IonMenuButton,
-    IonSplitPane,
-    IonButton,
   ],
   templateUrl: './band-selection.page.html',
   styleUrls: ['./band-selection.page.scss'],
@@ -72,35 +48,18 @@ export class BandSelectionPage {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly alert = inject(AlertController);
-  private readonly menu = inject(MenuController);
 
   readonly bands = signal<Band[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
-  saving = false;
-  createError = '';
-  readonly createSteps: DaisyStepItem[] = [
-    { label: 'Crea la band', active: true },
-    { label: 'Invita i membri' },
-  ];
-
-  readonly createForm = signal<CreateBandFormValue>({
-    name: 'Big Joe & The Rollers',
-    genres: ['Blues', "Rock'n'roll"],
-    city: 'Milano',
-    owner: true,
-  });
-  readonly createFormTouched = signal(false);
-  readonly createFormValid = computed(() => this.createForm().name.trim().length > 0);
+  readonly createModalOpen = signal(false);
+  readonly createBandModal = viewChild<IonModal>('createBandModal');
 
   constructor() {
     addIcons({
       add,
       calendarOutline,
-      close,
-      cloudUploadOutline,
       helpCircleOutline,
-      imageOutline,
       logOutOutline,
       musicalNotes,
       timeOutline,
@@ -182,55 +141,19 @@ export class BandSelectionPage {
     });
   }
 
-  openCreatePanel(): void {
-    void this.menu.open('create-band-panel');
+  openCreateModal(): void {
+    this.createModalOpen.set(true);
   }
 
-  closeCreatePanel(): void {
-    void this.menu.close('create-band-panel');
+  closeCreateModal(): void {
+    this.createModalOpen.set(false);
   }
 
-  updateCreateName(name: string): void {
-    this.createForm.update((form) => ({ ...form, name }));
-  }
-
-  updateCreateGenres(genres: string | string[]): void {
-    this.createForm.update((form) => ({
-      ...form,
-      genres: Array.isArray(genres) ? genres : [genres].filter(Boolean),
-    }));
-  }
-
-  updateCreateCity(city: string): void {
-    this.createForm.update((form) => ({ ...form, city }));
-  }
-
-  updateCreateOwner(owner: boolean): void {
-    this.createForm.update((form) => ({ ...form, owner }));
-  }
-
-  createBand(): void {
-    this.createFormTouched.set(true);
-
-    if (!this.createFormValid() || this.saving) {
-      return;
-    }
-
-    this.saving = true;
-    this.createError = '';
-
-    this.bandService.create({ name: this.createForm().name.trim() }).subscribe({
-      next: (band) => {
-        this.saving = false;
-        this.bandContext.setCurrentBand(band.id);
-        void this.menu.close('create-band-panel');
-        void this.router.navigateByUrl(`/band/${band.id}/dashboard`);
-      },
-      error: (error: { error?: { message?: string } }) => {
-        this.saving = false;
-        this.createError = error.error?.message || 'Creazione band non riuscita.';
-      },
-    });
+  async onBandCreated(band: Band): Promise<void> {
+    this.createModalOpen.set(false);
+    await this.createBandModal()?.dismiss(band, 'created');
+    this.bandContext.setCurrentBand(band.id);
+    await this.router.navigateByUrl(`/band/${band.id}/band`);
   }
 
   logout(): void {

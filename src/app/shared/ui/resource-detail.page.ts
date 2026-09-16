@@ -9,6 +9,7 @@ import { BandResource } from '../../core/models/band-resources.models';
   standalone: true,
   imports: [RouterLink, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonList, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './resource-detail.page.html',
+  styleUrls: ['./resource-detail.page.scss'],
 })
 export class ResourceDetailPage implements OnInit {
   config!: ResourceConfig; item?: BandResource; loading = true; private id!: number; private service: any;

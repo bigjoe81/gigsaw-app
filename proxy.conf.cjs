@@ -1,4 +1,4 @@
-const target = 'https://gigsaw.test';
+const target = 'http://127.0.0.1:8000';
 
 const rewriteDevelopmentCookies = (proxyRes) => {
   const cookies = proxyRes.headers['set-cookie'];

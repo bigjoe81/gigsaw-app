@@ -1,34 +1,85 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
-import { forkJoin, of } from 'rxjs';
+import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { arrowBackOutline, checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline } from 'ionicons/icons';
+import { finalize, forkJoin, of } from 'rxjs';
 import { Song, SongStatus } from '../../../core/models/band-resources.models';
+import { DaisyStepsComponent } from '../../../shared/ui/daisyui';
 import { SongService } from '../services/song.service';
+import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, DaisyStepsComponent, IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar],
   templateUrl: './song-form.page.html',
-  styles: ['.suggestions{display:flex;gap:8px;flex-wrap:wrap;padding:8px 16px 0}'],
+  styleUrls: ['./song-form.page.scss'],
+  styles: [`
+    :host { width: 100%; }
+    .song-content { --background: #fff; }
+    .song-shell {
+      width: 100%;
+      max-width: none;
+      min-height: calc(100vh - 56px);
+      margin: 0;
+      box-shadow: none;
+    }
+    .field-grid ion-select::part(icon) {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      margin: 0;
+      transform: translateY(-50%);
+    }
+    @media (max-width: 800px) {
+      .steps {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-top: 20px;
+      }
+      .steps li {
+        grid-template-columns: 36px 1fr;
+      }
+      .steps li > span {
+        width: 36px;
+        height: 36px;
+      }
+      .steps small {
+        display: block;
+      }
+    }
+  `],
 })
 export class SongFormPage implements OnInit {
-  form = this.fb.nonNullable.group({ title: ['', Validators.required], album: '', performedBy: '', musicBy: '', lyricsBy: '', key: '', bpm: '', duration: ['', Validators.required], linkGroup: '', tagsText: '', status: 'draft' as SongStatus, notes: '' });
+  form = this.fb.nonNullable.group({ title: ['', Validators.required], album: '', performedBy: '', musicBy: '', lyricsBy: '', key: ['', Validators.required], bpm: '', duration: ['', Validators.required], linkGroup: '', tagsText: '', status: 'draft' as SongStatus, notes: '' });
+  magicForm = this.fb.nonNullable.group({ title: ['', [Validators.required, Validators.minLength(2)]], artist: '' });
   existingLinkGroups: string[] = [];
   existingTags: string[] = [];
+  creatingLinkGroup = false;
   editing = false;
-  saving = false;
-  error = '';
+  readonly step = signal(1);
+  readonly loading = signal(true);
+  readonly saving = signal(false);
+  readonly magicLoading = signal(false);
+  readonly detailLoading = signal(false);
+  readonly metadataResults = signal<SongMetadataCandidate[]>([]);
+  readonly selectedMetadata = signal<SongMetadataDetail | null>(null);
+  readonly error = signal('');
+  readonly magicError = signal('');
   private id?: number;
   private bandId?: number;
 
-  constructor(private readonly fb: FormBuilder, private readonly songs: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastController) {}
+  constructor(private readonly fb: FormBuilder, private readonly songs: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastController) {
+    addIcons({ arrowBackOutline, checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline });
+  }
 
   ngOnInit(): void {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.editing = !!this.id;
+    if (this.editing) this.step.set(2);
     forkJoin({
       songs: this.songs.list(),
       song: this.id ? this.songs.get(this.id) : of(undefined),
@@ -44,15 +95,76 @@ export class SongFormPage implements OnInit {
         if (song) {
           this.form.patchValue({ title: song.title, album: song.album ?? '', performedBy: song.performedBy ?? '', musicBy: song.musicBy ?? '', lyricsBy: song.lyricsBy ?? '', key: song.key ?? '', bpm: song.bpm != null ? String(song.bpm) : '', duration: this.formatDuration(song.duration), linkGroup: song.linkGroup ?? '', tagsText: (song.tags ?? []).join(', '), status: song.status ?? 'draft', notes: song.notes ?? '' });
         }
+        this.loading.set(false);
       },
-      error: () => this.error = 'Impossibile caricare il brano.',
+      error: () => { this.error.set('Impossibile caricare il brano.'); this.loading.set(false); },
     });
   }
 
+  searchMagicSong(): void {
+    if (this.magicForm.invalid || this.magicLoading()) { this.magicForm.markAllAsTouched(); return; }
+    const values = this.magicForm.getRawValue();
+    this.magicLoading.set(true);
+    this.magicError.set('');
+    this.metadataResults.set([]);
+    this.songs.searchMetadata(values.title, values.artist).pipe(
+      finalize(() => this.magicLoading.set(false)),
+    ).subscribe({
+      next: (results) => {
+        this.metadataResults.set(results);
+        if (!results.length) this.magicError.set('Nessun risultato trovato. Puoi continuare manualmente.');
+      },
+      error: (error: { error?: { message?: string }; message?: string; status?: number }) => {
+        const fallback = error.status === 0
+          ? 'Backend non raggiungibile. Controlla che l’API sia avviata.'
+          : 'Ricerca metadati non disponibile. Puoi continuare manualmente.';
+        this.magicError.set(error.error?.message || error.message || fallback);
+      },
+    });
+  }
+
+  chooseMetadata(candidate: SongMetadataCandidate): void {
+    if (this.detailLoading()) return;
+    if (!candidate.recordingMbid) {
+      this.applyMetadata(candidate);
+      this.step.set(2);
+      return;
+    }
+    this.detailLoading.set(true);
+    this.songs.metadataDetail(candidate.recordingMbid).pipe(
+      finalize(() => this.detailLoading.set(false)),
+    ).subscribe({
+      next: (detail) => { this.selectedMetadata.set(detail); this.applyMetadata(detail); this.step.set(2); },
+      error: () => { this.applyMetadata(candidate); this.step.set(2); },
+    });
+  }
+
+  continueManually(): void {
+    const values = this.magicForm.getRawValue();
+    this.form.patchValue({ title: values.title, performedBy: values.artist });
+    this.step.set(2);
+  }
+
+  goToStep(nextStep: number): void {
+    if (nextStep === 3 && (this.form.controls.title.invalid || this.form.controls.duration.invalid)) {
+      this.form.controls.title.markAsTouched();
+      this.form.controls.duration.markAsTouched();
+      return;
+    }
+    this.step.set(Math.max(1, Math.min(3, nextStep)));
+  }
+
   save(): void {
-    if (this.form.invalid || this.saving) { this.form.markAllAsTouched(); return; }
-    this.saving = true;
+    if (this.form.invalid || this.saving()) { this.form.markAllAsTouched(); this.step.set(2); return; }
+    this.saving.set(true);
+    this.error.set('');
     const durationSeconds = this.parseDuration(this.form.getRawValue().duration);
+    if (durationSeconds === null) {
+      this.error.set('Inserisci una durata valida nel formato mm:ss.');
+      this.saving.set(false);
+      this.step.set(2);
+      return;
+    }
     const values = this.form.getRawValue();
     const payload: Partial<Song> = {
       title: values.title,
@@ -69,7 +181,22 @@ export class SongFormPage implements OnInit {
       tags: this.parseTags(values.tagsText),
     };
     const request = this.editing ? this.songs.update(this.id!, payload) : this.songs.create(payload);
-    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Brano salvato.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/bands'); }, error: (error: Error) => { this.error = error.message || 'Salvataggio non riuscito.'; this.saving = false; } });
+    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Brano salvato.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/bands'); }, error: (error: Error) => { this.error.set(error.message || 'Salvataggio non riuscito.'); this.saving.set(false); } });
+  }
+
+  private applyMetadata(metadata: SongMetadataCandidate | SongMetadataDetail): void {
+    const detail = metadata as SongMetadataDetail;
+    const musicCredits = (detail.credits ?? []).filter((credit) => ['composer', 'writer'].includes(credit.role.toLowerCase())).map((credit) => credit.name);
+    const lyricCredits = (detail.credits ?? []).filter((credit) => ['lyricist', 'writer'].includes(credit.role.toLowerCase())).map((credit) => credit.name);
+    this.form.patchValue({
+      title: metadata.title,
+      performedBy: metadata.artist ?? '',
+      album: metadata.album ?? '',
+      duration: this.formatDuration(metadata.durationSeconds),
+      bpm: detail.bpm != null ? String(detail.bpm) : '',
+      musicBy: Array.from(new Set(musicCredits)).join(', '),
+      lyricsBy: Array.from(new Set(lyricCredits)).join(', '),
+    });
   }
 
   private toNumber(value: string): number | null {
@@ -111,6 +238,12 @@ export class SongFormPage implements OnInit {
 
   applyLinkGroup(group: string): void {
     this.form.patchValue({ linkGroup: group });
+  }
+
+  onLinkGroupChoice(event: CustomEvent<{ value: string }>): void {
+    const value = event.detail.value;
+    this.creatingLinkGroup = value === '__new__';
+    this.form.patchValue({ linkGroup: this.creatingLinkGroup ? '' : value });
   }
 
   applyTag(tag: string): void {

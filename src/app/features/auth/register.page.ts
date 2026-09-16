@@ -1,13 +1,26 @@
 import { Component, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonInput } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
-import { DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent } from '../../shared/ui/daisyui';
+import { DaisyButtonComponent, DaisyMessageComponent } from '../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent, IonContent, IonHeader, IonTitle, IonToolbar],
+  imports: [RouterLink, DaisyButtonComponent, DaisyMessageComponent, IonContent, IonInput],
   templateUrl: './register.page.html',
+  styles: [`.register-content::part(scroll) {
+    min-height: 100%;
+    display: grid;
+    align-items: center;
+    padding-top: max(24px, var(--ion-safe-area-top));
+    padding-bottom: max(24px, var(--ion-safe-area-bottom));
+  }
+
+  @media (max-width: 767px) {
+    .register-content::part(scroll) {
+      align-items: start;
+    }
+  }`],
 })
 export class RegisterPage {
   readonly name = signal('');
