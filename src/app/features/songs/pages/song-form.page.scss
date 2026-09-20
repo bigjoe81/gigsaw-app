@@ -3,7 +3,7 @@
 /* Fixed GigSaw night theme. */
 :host { --navy: #E5EDF7; --blue: var(--ion-color-brand-blue); --muted: #9AABC1; }
 .song-intro { background: var(--ion-gradient-brand); }
-.song-content.song-content { --background: #0B1220 !important; }
+.song-content.song-content { --background: var(--gigsaw-background) !important; }
 .song-shell { background: #111827; box-shadow: 0 18px 55px rgba(0, 0, 0, .2); }
 .form-step h2,
 .field-grid label { color: #E5EDF7; }

@@ -17,7 +17,7 @@ ion-menu-button{display:none}.breadcrumbs,.search-box,.top-actions{display:flex;
 
 /* Fixed GigSaw night theme. */
 :host { --b: #26364D; --t: #E5EDF7; --m: #94A3B8; --p: var(--ion-color-primary); }
-.dashboard-content { --background: #0B1220; }
+.dashboard-content { --background: var(--gigsaw-background); }
 .search-box,
 .stat-card,
 .panel { background: #111827; }

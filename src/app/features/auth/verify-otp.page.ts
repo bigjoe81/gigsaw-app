@@ -10,7 +10,7 @@ import { DaisyAlertComponent, DaisyButtonComponent, DaisyMessageComponent, Daisy
   imports: [RouterLink, DaisyAlertComponent, DaisyButtonComponent, DaisyMessageComponent, DaisyOtpInputComponent, IonContent],
   templateUrl: './verify-otp.page.html',
   styles: [`.otp-content {
-    --background: var(--ion-color-brand-navy);
+    --background: var(--gigsaw-background);
   }
 
   .otp-content::part(scroll) {

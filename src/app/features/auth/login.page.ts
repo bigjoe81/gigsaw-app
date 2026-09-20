@@ -9,7 +9,7 @@ import { DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent } from
   imports: [RouterLink, DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent, IonContent],
   templateUrl: './login.page.html',
   styles: [`.login-content {
-    --background: var(--ion-color-brand-navy);
+    --background: var(--gigsaw-background);
   }
 
   .login-content::part(scroll) {

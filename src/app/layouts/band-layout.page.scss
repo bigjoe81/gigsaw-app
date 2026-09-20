@@ -16,12 +16,12 @@ ion-split-pane {
 
 ion-menu {
   --width: var(--band-menu-width);
-  --background: var(--ion-color-brand-navy);
+  --background: var(--gigsaw-background);
   border-right: 0;
 }
 
 ion-menu ion-content {
-  --background: var(--ion-color-brand-navy);
+  --background: var(--gigsaw-background);
 }
 
 /* Ionic can miss the menu-pane-visible state when this nested routed layout is
@@ -163,9 +163,8 @@ ion-item ion-icon {
 
 ion-item.is-active {
   --background: var(--ion-gradient-brand-reversed);
-  --border-radius: 8px 0 0 8px;
+  --border-radius: 8px;
   --color: #fff;
-  margin-inline-end: -8px;
 }
 
 ion-item.is-active ion-icon {

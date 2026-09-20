@@ -518,7 +518,7 @@
     --create-border: #2b3b52;
     --create-muted: #9aabc1;
   }
-  .create-content { --background: #0b1220; }
+  .create-content { --background: var(--gigsaw-background); }
   .intro-panel { color: #fff; }
   .brand-logo { filter: none; }
   .optional-label,
@@ -530,8 +530,8 @@
   .inline-notice { color: #f6d887; background: #3b3015; }
   .inline-notice button { color: #ffe8a8; }
   .error-banner { color: #ffbbc3; border-color: #6f3440; background: #351a21; }
-  .form-actions { background: rgba(11, 18, 32, 0.96); }
-  .embedded .form-actions { background: rgba(11, 18, 32, 0.96); }
+  .form-actions { background: rgba(18, 18, 18, 0.96); }
+  .embedded .form-actions { background: rgba(18, 18, 18, 0.96); }
 
 .text-control {
   --background: #111827;

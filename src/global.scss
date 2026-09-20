@@ -87,6 +87,10 @@
 }
 
 @layer components {
+  ion-content {
+    --background: var(--gigsaw-background);
+  }
+
   ion-card {
     @apply overflow-hidden rounded-xl shadow-lg;
   }
@@ -113,7 +117,7 @@ form > app-daisy-button[type='submit'] {
   margin-top: 1.5rem;
   padding: 0.75rem max(1rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
   border-top: 1px solid rgba(127, 144, 168, 0.22);
-  background: color-mix(in srgb, var(--ion-background-color, #0b1220) 94%, transparent);
+  background: color-mix(in srgb, var(--ion-background-color, #121212) 94%, transparent);
   box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(12px);
 }
