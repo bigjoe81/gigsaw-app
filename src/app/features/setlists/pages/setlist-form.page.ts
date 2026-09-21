@@ -3,7 +3,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { Subscription, debounceTime, forkJoin, of, Subject } from 'rxjs';
+import { Subscription, debounceTime, finalize, forkJoin, of, Subject, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { GigService } from '../../gigs/services/gig.service';
 import { SongService } from '../../songs/services/song.service';
@@ -15,13 +15,51 @@ import { SetlistService } from '../services/setlist.service';
 
 @Component({ standalone: true, imports: [CommonModule, FormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
 export class SetlistFormPage implements OnInit, OnDestroy {
-  mode: 'manual' | 'magic' = 'manual'; mobileTab: 'repertoire' | 'setlist' | 'inspector' = 'setlist'; loading = true; saveState: 'dirty' | 'saving' | 'saved' = 'saved';
+  mode: 'manual' | 'magic' = 'manual'; mobileTab: 'repertoire' | 'setlist' | 'inspector' = 'setlist'; loading = true; loadError = ''; saveState: 'dirty' | 'saving' | 'saved' = 'saved';
   songs: Song[] = []; search = ''; genre = ''; key = ''; status = ''; sort = 'title'; selected?: SetlistItem; selectedIds = new Set<string>(); proposal?: MagicProposal; snapshot?: SetlistSnapshot; compare = false; prompt = '';
   workspace: SetlistWorkspace = { id: 'new', title: 'Nuova scaletta', sets: [{ id: uid('set'), name: 'Set 1', targetSeconds: 2700, items: [] }], updatedAt: new Date().toISOString() };
   constraints: MagicConstraints = { totalSeconds: 5400, setCount: 2, setSeconds: 2700, breakSeconds: 900, requiredSongIds: [], excludedSongIds: [], encoreSongIds: [], consecutiveGroups: [], separatedPairs: [], mandatoryMedleys: [], balanceSingers: true, energyCurve: 'wave', alternateGenres: true, separateSameKeys: true, maxDraftSongs: 2, preferLiveReady: true };
-  private changes = new Subject<void>(); private sub = new Subscription(); undoStack: SetlistWorkspace[] = []; redoStack: SetlistWorkspace[] = [];
+  private changes = new Subject<void>(); private sub = new Subscription(); private routeId = 'new'; private hasDraft = false; undoStack: SetlistWorkspace[] = []; redoStack: SetlistWorkspace[] = [];
   private songsApi = inject(SongService); private gigsApi = inject(GigService); private api = inject(SetlistService); private route = inject(ActivatedRoute); private repository = inject(LocalSetlistRepository); private magic = inject(MagicSetService); private history = inject(SetlistHistoryService); validator = inject(SetlistValidationService);
-  ngOnInit() { const id = this.route.snapshot.paramMap.get('id') ?? 'new'; this.workspace.id = id; const draft = this.repository.load(id); if (draft) this.workspace = draft; forkJoin({ songs: this.songsApi.list(), gigs: this.gigsApi.list(), setlist: id !== 'new' ? this.api.get(+id) : of(undefined) }).subscribe({ next: ({ songs, gigs, setlist }) => { this.songs = songs; if (!draft && setlist) { this.workspace.title = setlist.title; this.workspace.gigLabel = gigs.find(g => g.id === setlist.gigId)?.title; this.workspace.sets[0].items = (setlist.songs ?? []).map(s => this.songItem(s)); } this.loading = false; }, error: () => this.loading = false }); this.sub.add(this.changes.pipe(debounceTime(700)).subscribe(() => { this.saveState = 'saving'; this.repository.save(this.workspace); setTimeout(() => this.saveState = 'saved', 250); })); }
+  ngOnInit() {
+    this.routeId = this.route.snapshot.paramMap.get('id') ?? 'new';
+    this.workspace.id = this.routeId;
+    const draft = this.repository.load(this.routeId);
+    this.hasDraft = Boolean(draft);
+    if (draft) this.workspace = draft;
+    this.loadWorkspace();
+    this.sub.add(this.changes.pipe(debounceTime(700)).subscribe(() => {
+      this.saveState = 'saving';
+      this.repository.save(this.workspace);
+      setTimeout(() => this.saveState = 'saved', 250);
+    }));
+  }
+  loadWorkspace() {
+    this.loading = true;
+    this.loadError = '';
+    forkJoin({
+      songs: this.songsApi.list(),
+      gigs: this.gigsApi.list(),
+      setlist: this.routeId !== 'new' ? this.api.get(+this.routeId) : of(undefined),
+    }).pipe(
+      timeout(15000),
+      finalize(() => this.loading = false),
+    ).subscribe({
+      next: ({ songs, gigs, setlist }) => {
+        this.songs = songs;
+        if (!this.hasDraft && setlist) {
+          this.workspace.title = setlist.title;
+          this.workspace.gigLabel = gigs.find(g => g.id === setlist.gigId)?.title;
+          this.workspace.sets[0].items = (setlist.songs ?? []).map(s => this.songItem(s));
+        }
+      },
+      error: (error: Error) => {
+        this.loadError = error.name === 'TimeoutError'
+          ? 'Il server sta impiegando troppo tempo a caricare il workspace.'
+          : error.message || 'Impossibile caricare repertorio e scaletta.';
+      },
+    });
+  }
   ngOnDestroy() { this.sub.unsubscribe(); }
   get filteredSongs() { const q = this.search.toLowerCase(); return this.songs.filter(s => (!q || [s.title, s.performedBy, s.key, ...(s.tags ?? [])].join(' ').toLowerCase().includes(q)) && (!this.key || s.key === this.key) && (!this.status || s.status === this.status)).sort((a,b) => this.sort === 'duration' ? (a.duration ?? 0)-(b.duration ?? 0) : a.title.localeCompare(b.title)); }
   get issues() { return this.validator.validate(this.workspace, this.constraints); } get duration() { return this.workspace.sets.reduce((n,s) => n + setDuration(s), 0); } get songCount() { return this.workspace.sets.reduce((n, s) => n + s.items.filter(i => i.type === 'song').length, 0); }

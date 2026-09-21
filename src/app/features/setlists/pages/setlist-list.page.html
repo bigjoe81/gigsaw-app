@@ -1,55 +1,62 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="band-menu" />
-    </ion-buttons>
-    <ion-title>Setlist</ion-title>
+    <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
+    <ion-title>Scalette</ion-title>
     <ion-buttons slot="end">
-      <ion-button [routerLink]="['templates']">Template</ion-button>
-      <ion-button [routerLink]="['new']"><ion-icon slot="icon-only" name="add" /></ion-button>
+      <ion-button [routerLink]="['templates']" aria-label="Template scalette"><ion-icon slot="icon-only" name="library-outline" /></ion-button>
+      <ion-button [routerLink]="['new']" aria-label="Nuova scaletta"><ion-icon slot="icon-only" name="add" /></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+  <main class="setlists-page">
+    <section class="page-heading">
+      <div><p class="eyebrow">Live workspace</p><h1>Le scalette della band</h1><p>Prepara i set, controlla tempi e passaggi, porta il PDF sul palco.</p></div>
+      <div class="heading-actions">
+        <ion-button fill="outline" [routerLink]="['templates']"><ion-icon slot="start" name="library-outline" />Template</ion-button>
+        <ion-button [routerLink]="['new']"><ion-icon slot="start" name="add" />Nuova scaletta</ion-button>
+      </div>
+    </section>
 
-  @if (loading) {
-    <ion-list class="p-4">
-      @for (item of [1, 2, 3]; track item) {
-        <ion-item class="rounded-2xl">
-          <ion-label>
-            <ion-skeleton-text [animated]="true" style="width: 55%" />
-            <ion-skeleton-text [animated]="true" style="width: 35%" />
-          </ion-label>
-        </ion-item>
-      }
-    </ion-list>
-  } @else if (error) {
-    <div class="flex min-h-[55vh] flex-col items-center justify-center gap-4 p-6 text-center">
-      <ion-icon name="alert-circle" class="text-[44px] text-[var(--ion-color-medium)]" />
-      <ion-text color="danger">{{ error }}</ion-text>
-      <ion-button fill="outline" (click)="load()">Riprova</ion-button>
-    </div>
-  } @else if (!setlists.length) {
-    <div class="flex min-h-[55vh] flex-col items-center justify-center gap-4 p-6 text-center">
-      <ion-icon name="musical-notes" class="text-[44px] text-[var(--ion-color-medium)]" />
-      <ion-text>Nessuna setlist presente.</ion-text>
-      <ion-button [routerLink]="['new']">Crea setlist</ion-button>
-    </div>
-  } @else {
-    <div class="p-4">
-      <ion-list inset>
-        @for (setlist of setlists; track setlist.id) {
-          <ion-item button detail [routerLink]="[setlist.id]" class="rounded-2xl">
-            <ion-label>
-              <h2 class="m-0 text-base font-bold">{{ setlist.title }}</h2>
-              <p class="m-0 mt-1 text-[0.92rem] leading-6">{{ subtitle(setlist) }}</p>
-            </ion-label>
-            <ion-button fill="clear" size="small" slot="end" (click)="downloadPdf(setlist, $event)">Scarica</ion-button>
-            <ion-button fill="clear" size="small" slot="end" (click)="sharePdf(setlist, $event)">Condividi</ion-button>
-          </ion-item>
+    @if (!loading() && !error() && setlists().length) {
+      <section class="summary-card" aria-label="Riepilogo scalette">
+        <div><strong>{{ setlists().length }}</strong><span>scalette salvate</span></div>
+        <div><strong>{{ totalSongs() }}</strong><span>brani complessivi</span></div>
+      </section>
+    }
+
+    @if (loading()) {
+      <section class="setlist-grid" aria-label="Caricamento scalette">
+        @for (item of [1, 2, 3]; track item) {
+          <article class="setlist-card skeleton"><ion-skeleton-text [animated]="true" style="width: 28%" /><ion-skeleton-text [animated]="true" style="width: 66%" /><ion-skeleton-text [animated]="true" style="width: 48%" /></article>
         }
-      </ion-list>
-    </div>
-  }
+      </section>
+    } @else if (error()) {
+      <section class="state"><ion-icon name="alert-circle-outline" /><h2>Caricamento non riuscito</h2><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
+    } @else if (!setlists().length) {
+      <section class="state empty-state"><span class="state-icon"><ion-icon name="musical-notes-outline" /></span><h2>Il palco è ancora vuoto</h2><p>Crea la prima scaletta partendo dal repertorio della band.</p><ion-button [routerLink]="['new']"><ion-icon slot="start" name="add" />Crea scaletta</ion-button></section>
+    } @else {
+      <section class="setlist-grid">
+        @for (setlist of setlists(); track setlist.id) {
+          <a class="setlist-card" [routerLink]="[setlist.id]">
+            <div class="card-topline"><span class="setlist-badge"><ion-icon name="list-outline" />Scaletta</span><span class="date"><ion-icon name="calendar-outline" />{{ date(setlist) }}</span></div>
+            <div class="card-copy"><h2>{{ setlist.title }}</h2>@if (setlist.notes) { <p>{{ setlist.notes }}</p> }</div>
+            <div class="metrics"><span><strong>{{ songCount(setlist) }}</strong> brani</span><span><strong>{{ setCount(setlist) || '—' }}</strong> set</span></div>
+            <div class="card-actions">
+              <button type="button" (click)="downloadPdf(setlist, $event)" [disabled]="pdfAction() !== null">
+                @if (pdfAction() === 'download-' + setlist.id) { <span class="loading loading-spinner loading-xs"></span> } @else { <ion-icon name="download-outline" /> }
+                Scarica PDF
+              </button>
+              <button type="button" (click)="sharePdf(setlist, $event)" [disabled]="pdfAction() !== null">
+                @if (pdfAction() === 'share-' + setlist.id) { <span class="loading loading-spinner loading-xs"></span> } @else { <ion-icon name="share-social-outline" /> }
+                Condividi
+              </button>
+            </div>
+          </a>
+        }
+      </section>
+    }
+  </main>
 </ion-content>
