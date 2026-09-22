@@ -16,7 +16,7 @@ import { SetlistService } from '../services/setlist.service';
 @Component({ standalone: true, imports: [CommonModule, FormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
 export class SetlistFormPage implements OnInit, OnDestroy {
   mode: 'manual' | 'magic' = 'manual'; mobileTab: 'repertoire' | 'setlist' | 'inspector' = 'setlist'; readonly loading = signal(true); readonly repertoireLoading = signal(true); readonly loadError = signal(''); readonly repertoireError = signal(''); saveState: 'dirty' | 'saving' | 'saved' = 'saved';
-  songs: Song[] = []; search = ''; genre = ''; key = ''; status = ''; sort = 'title'; selected?: SetlistItem; selectedIds = new Set<string>(); proposal?: MagicProposal; snapshot?: SetlistSnapshot; compare = false; prompt = '';
+  songs: Song[] = []; search = ''; genre = ''; key = ''; status = ''; sort = 'title'; selected?: SetlistItem; selectedIds = new Set<string>(); proposal?: MagicProposal; snapshot?: SetlistSnapshot; compare = false;
   workspace: SetlistWorkspace = { id: 'new', title: 'Nuova scaletta', sets: [{ id: uid('set'), name: 'Set 1', targetSeconds: 2700, items: [] }], updatedAt: new Date().toISOString() };
   constraints: MagicConstraints = { totalSeconds: 5400, setCount: 2, setSeconds: 2700, breakSeconds: 900, requiredSongIds: [], excludedSongIds: [], encoreSongIds: [], consecutiveGroups: [], separatedPairs: [], mandatoryMedleys: [], balanceSingers: true, energyCurve: 'wave', alternateGenres: true, separateSameKeys: true, maxDraftSongs: 2, preferLiveReady: true };
   private changes = new Subject<void>(); private sub = new Subscription(); private routeId = 'new'; private hasDraft = false; undoStack: SetlistWorkspace[] = []; redoStack: SetlistWorkspace[] = [];
@@ -100,8 +100,8 @@ export class SetlistFormPage implements OnInit, OnDestroy {
   toggleSelect(item:SetlistItem) { this.selectedIds.has(item.id)?this.selectedIds.delete(item.id):this.selectedIds.add(item.id); }
   medley(set:WorkspaceSet) { const ids=set.items.filter(i=>this.selectedIds.has(i.id)).map(i=>i.id); if(ids.length>1)this.mutate(()=>Object.assign(set,createMedley(set,ids))); }
   split(set:WorkspaceSet,item:SetlistItem){if(item.medleyId)this.mutate(()=>Object.assign(set,splitMedley(set,item.medleyId!)));}
-  generate() { this.proposal=this.magic.generate(this.songs,this.constraints,this.prompt,this.proposal); }
-  regenerateSet(index:number){ const next=this.magic.generate(this.songs,this.constraints,this.prompt,this.proposal); if(this.proposal)this.proposal.sets[index]=next.sets[index]; }
+  generate() { this.proposal=this.magic.generate(this.songs,this.constraints,'',this.proposal); }
+  regenerateSet(index:number){ const next=this.magic.generate(this.songs,this.constraints,'',this.proposal); if(this.proposal)this.proposal.sets[index]=next.sets[index]; }
   applyProposal(){if(!this.proposal)return; const applied=this.history.apply(this.workspace,this.proposal); this.snapshot=applied.snapshot; this.mutate(()=>this.workspace=applied.workspace); this.mode='manual';}
   restore(){if(this.snapshot)this.mutate(()=>this.workspace=this.history.restore(this.snapshot!));}
   undo(){const prior=this.undoStack.pop();if(prior){this.redoStack.push(cloneWorkspace(this.workspace));this.workspace=prior;this.changes.next();}}
@@ -135,7 +135,6 @@ export class SetlistFormPage implements OnInit, OnDestroy {
       },
     });
   }
-  promptHint(text:string){this.prompt=[this.prompt.trim(),text].filter(Boolean).join(' ');}
   trackDrag(item:SetlistItem,event:DragEvent){event.dataTransfer?.setData('text/plain',item.id);}
   drop(set:WorkspaceSet,event:DragEvent){event.preventDefault();const id=event.dataTransfer?.getData('text/plain');if(id)this.mutate(()=>this.workspace=moveItem(this.workspace,id,set.id,set.items.length));}
   private songItem(song:Song):SetlistItem{return {id:uid('song'),type:'song',song,title:song.title,durationSeconds:song.duration??240,concertKey:song.key??undefined};}
