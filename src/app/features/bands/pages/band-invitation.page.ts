@@ -16,6 +16,7 @@ import { BandService } from '../services/band.service';
   styleUrls: ['./band-invitation.page.scss'],
 })
 export class BandInvitationPage implements OnInit {
+  private static readonly pendingInvitationKey = 'gigsaw.pending-band-invitation';
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
@@ -44,30 +45,58 @@ export class BandInvitationPage implements OnInit {
     if (this.auth.isAuthenticated) {
       this.authenticated.set(true);
       this.sessionLoading.set(false);
+      this.completePendingInvitation();
       return;
     }
 
     this.auth.restoreSession().pipe(
       finalize(() => this.sessionLoading.set(false)),
-    ).subscribe((user) => this.authenticated.set(Boolean(user)));
+    ).subscribe((user) => {
+      this.authenticated.set(Boolean(user));
+      if (user) this.completePendingInvitation();
+    });
+  }
+
+  ionViewWillEnter(): void {
+    if (!this.auth.isAuthenticated) return;
+
+    this.authenticated.set(true);
+    this.sessionLoading.set(false);
+    this.completePendingInvitation();
   }
 
   participate(): void {
     if (this.joining() || !this.joinCode) return;
 
-    if (!this.authenticated()) {
+    if (!this.auth.isAuthenticated) {
+      this.rememberPendingInvitation();
       void this.router.navigate(['/accedi'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
+
+    this.authenticated.set(true);
+    this.joinBand();
+  }
+
+  private completePendingInvitation(): void {
+    if (this.pendingInvitationCode() !== this.joinCode) return;
+
+    this.joinBand();
+  }
+
+  private joinBand(): void {
+    if (this.joining() || !this.joinCode) return;
 
     this.joining.set(true);
     this.error.set('');
     this.bandService.join(this.joinCode).subscribe({
       next: (band) => {
+        this.clearPendingInvitation();
         this.bandContext.setCurrentBand(band.id);
         void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
       },
-      error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
+      error: (error: { status?: number; error?: { errors?: Record<string, string[]>; message?: string } }) => {
+        if (error.status !== 401) this.clearPendingInvitation();
         this.error.set(
           error.error?.errors?.['join_code']?.[0]
           || error.error?.message
@@ -76,5 +105,29 @@ export class BandInvitationPage implements OnInit {
         this.joining.set(false);
       },
     });
+  }
+
+  private rememberPendingInvitation(): void {
+    try {
+      sessionStorage.setItem(BandInvitationPage.pendingInvitationKey, this.joinCode);
+    } catch {
+      // The live authentication check still prevents a loop when storage is unavailable.
+    }
+  }
+
+  private pendingInvitationCode(): string {
+    try {
+      return sessionStorage.getItem(BandInvitationPage.pendingInvitationKey) ?? '';
+    } catch {
+      return '';
+    }
+  }
+
+  private clearPendingInvitation(): void {
+    try {
+      sessionStorage.removeItem(BandInvitationPage.pendingInvitationKey);
+    } catch {
+      // No action is required when storage is unavailable.
+    }
   }
 }
