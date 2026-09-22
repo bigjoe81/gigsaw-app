@@ -79,9 +79,13 @@
                 <ion-input formControlName="lyricsBy"/>
               </label><label><span>Tonalità *</span>
                 <ion-input formControlName="key"/>
-              </label><label><span>BPM</span>
+              </label><div class="bpm-control"><label><span>BPM</span>
                 <ion-input type="number" formControlName="bpm"/>
-              </label><label><span>Durata * (mm:ss)</span>
+              </label><button type="button" class="tap-tempo-button" (click)="tapTempo()" [class.is-active]="tapCount() > 0"
+                              aria-label="Batti il tempo per calcolare i BPM">
+                <span class="tap-tempo-beat" aria-hidden="true">TAP</span>
+                <span class="tap-tempo-copy"><strong>{{ tappedBpm() ?? 'Tap tempo' }}</strong><small>@if (tappedBpm()) { BPM rilevati } @else if (tapCount()) { Continua a battere } @else { Tocca a tempo }</small></span>
+              </button><small class="tap-tempo-help">Desktop: barra spaziatrice · Mobile: tocca il pulsante</small></div><label><span>Durata * (mm:ss)</span>
                 <ion-input formControlName="duration" inputmode="numeric" placeholder="3:45"/>
               </label></div>@if (error()) {
               <p class="inline-error">{{ error() }}</p>
