@@ -118,7 +118,7 @@ export class SongFormPage implements OnInit, OnDestroy {
 
   tapTempo(): void {
     const now = performance.now();
-    const previousTap = this.tapTimestamps.at(-1);
+    const previousTap = this.tapTimestamps[this.tapTimestamps.length - 1];
     if (!previousTap || now - previousTap > 2000) this.tapTimestamps = [];
 
     this.tapTimestamps.push(now);
