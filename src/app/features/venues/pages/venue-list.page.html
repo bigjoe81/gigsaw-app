@@ -10,8 +10,8 @@
     <header class="page-heading">
       <div><span class="eyebrow">Anagrafica luoghi</span><h1>I luoghi della band</h1><p>Gestisci venue dei concerti e sale utilizzate per le prove.</p></div>
       <div class="create-actions">
-        <app-daisy-button tone="outline" [routerLink]="['room', 'new']"><ion-icon name="add" /> Sala prove</app-daisy-button>
-        <app-daisy-button tone="primary" [routerLink]="['venue', 'new']"><ion-icon name="add" /> Venue concerto</app-daisy-button>
+        <app-daisy-button tone="outline" [routerLink]="['sala', 'nuova']"><ion-icon name="add" /> Sala prove</app-daisy-button>
+        <app-daisy-button tone="primary" [routerLink]="['locale', 'nuovo']"><ion-icon name="add" /> Venue concerto</app-daisy-button>
       </div>
     </header>
 
@@ -35,7 +35,7 @@
             <div class="venue-icon"><ion-icon name="location-outline" /></div>
             <div class="venue-copy"><span class="location-kind">{{ item.kind === 'venue' ? 'Venue concerto' : 'Sala prove' }}</span><h2>{{ item.location.name }}</h2><p>{{ address(item.location) }}</p></div>
             <div class="venue-actions">
-              <app-daisy-button tone="ghost" [routerLink]="[item.kind, item.location.id, 'edit']" aria-label="Modifica luogo"><ion-icon name="pencil-outline" /></app-daisy-button>
+              <app-daisy-button tone="ghost" [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']" aria-label="Modifica luogo"><ion-icon name="pencil-outline" /></app-daisy-button>
               <app-daisy-button tone="ghost" [loading]="deletingKey() === item.kind + '-' + item.location.id" (click)="confirmDelete(item.kind, item.location)" aria-label="Elimina luogo"><ion-icon name="trash-outline" /></app-daisy-button>
             </div>
           </article>

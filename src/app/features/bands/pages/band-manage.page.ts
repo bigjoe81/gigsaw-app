@@ -32,6 +32,7 @@ import {
 import type { ItemReorderCustomEvent } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline } from 'ionicons/icons';
+import { finalize, timeout } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { Band, BandGenre, BandInputChannel, BandMember, BandPressPhoto, BandStagePlotItem, PendingBandInvitation, UpdateBandRequest } from '../models/band.models';
@@ -162,6 +163,10 @@ export class BandManagePage implements OnInit {
     return this.band?.currentUserRole === 'ADMIN';
   }
 
+  get bandInviteLink(): string {
+    return this.buildInvitationUrl();
+  }
+
   get inputChannels(): FormArray {
     return this.techForm.get('inputChannels') as FormArray;
   }
@@ -192,28 +197,24 @@ export class BandManagePage implements OnInit {
   }
 
   load(): void {
-    this.loading = true;
+    this.loading = !this.band;
     this.error = '';
-    this.bandService.get(this.bandId).subscribe({
+    this.bandService.get(this.bandId).pipe(
+      timeout({ first: 15000 }),
+      finalize(() => { this.loading = false; }),
+    ).subscribe({
       next: (band) => {
         this.band = band;
         this.patchProfileForm(band);
         this.patchTechForm(band);
-        this.loading = false;
       },
       error: (error: { error?: { message?: string } }) => {
-        this.error = error.error?.message || 'Impossibile caricare la band.';
-        this.loading = false;
+        this.error = error.error?.message || 'Impossibile caricare le impostazioni della band. Riprova.';
       },
     });
   }
 
   private getBandId(): number | undefined {
-    const currentBandId = this.bandContext.getCurrentBand();
-    if (Number.isInteger(currentBandId) && currentBandId! > 0) {
-      return currentBandId!;
-    }
-
     const segments = [
       this.route.snapshot,
       this.route.parent?.snapshot,
@@ -224,8 +225,14 @@ export class BandManagePage implements OnInit {
     for (const snapshot of segments) {
       const value = Number(snapshot?.paramMap.get('bandId'));
       if (Number.isInteger(value) && value > 0) {
+        this.bandContext.setCurrentBand(value);
         return value;
       }
+    }
+
+    const currentBandId = this.bandContext.getCurrentBand();
+    if (Number.isInteger(currentBandId) && currentBandId! > 0) {
+      return currentBandId!;
     }
 
     return undefined;
@@ -683,6 +690,20 @@ export class BandManagePage implements OnInit {
     (await this.toast.create({ message: 'Link invito copiato.', duration: 1600, color: 'success' })).present();
   }
 
+  async copyBandInviteLink(): Promise<void> {
+    if (!this.bandInviteLink) return;
+    if (navigator.clipboard) await navigator.clipboard.writeText(this.bandInviteLink);
+    (await this.toast.create({ message: 'Link invito copiato.', duration: 1600, color: 'success' })).present();
+  }
+
+  shareBandInviteOnWhatsApp(): void {
+    this.shareInvitationOnWhatsApp({ id: 0, name: '', email: '', role: 'BAND_MEMBER' });
+  }
+
+  scrollToPersonalInvite(): void {
+    document.getElementById('personal-invite-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   private invitationMessage(invitation: PendingBandInvitation): string {
     const greeting = invitation.name?.trim() ? `Ciao ${invitation.name.trim()}!` : 'Ciao!';
     const bandName = this.band?.name ?? 'la mia band';
@@ -692,10 +713,16 @@ export class BandManagePage implements OnInit {
   private invitationUrl(invitation: PendingBandInvitation): string {
     if (invitation.inviteUrl) return invitation.inviteUrl;
 
-    const code = this.band?.joinCode?.trim() ?? '';
-    const url = new URL(`/invite/${encodeURIComponent(code)}`, window.location.origin);
+    return this.buildInvitationUrl(invitation.name);
+  }
+
+  private buildInvitationUrl(inviteeName?: string): string {
+    const code = this.band?.joinCode?.trim();
+    if (!code || typeof window === 'undefined') return '';
+
+    const url = new URL(`/invito/${encodeURIComponent(code)}`, window.location.origin);
     if (this.band?.name) url.searchParams.set('band', this.band.name);
-    if (invitation.name) url.searchParams.set('name', invitation.name);
+    if (inviteeName) url.searchParams.set('name', inviteeName);
     url.searchParams.set('bandId', String(this.bandId));
     return url.toString();
   }

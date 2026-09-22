@@ -79,7 +79,7 @@ export class VerifyOtpPage {
   readonly email = this.route.snapshot.queryParamMap.get('email') ?? '';
   readonly name = this.route.snapshot.queryParamMap.get('name') ?? '';
   readonly purpose = this.normalizedPurpose();
-  readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/bands';
+  readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/band';
   challengeId = Number(this.route.snapshot.queryParamMap.get('challengeId') ?? 0);
 
   loading = false;

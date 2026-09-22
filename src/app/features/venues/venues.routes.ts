@@ -17,8 +17,12 @@ const resource: ResourceConfig = {
 
 export const VENUE_ROUTES: Routes = [
   { path: '', component: VenueListPage, data: { resource } },
-  { path: 'venue/new', component: VenueFormPage, data: { resource } },
-  { path: 'venue/:id/edit', component: VenueFormPage, data: { resource } },
-  { path: 'room/new', component: VenueFormPage },
-  { path: 'room/:id/edit', component: VenueFormPage },
+  { path: 'locale/nuovo', component: VenueFormPage, data: { resource } },
+  { path: 'locale/:id/modifica', component: VenueFormPage, data: { resource } },
+  { path: 'sala/nuova', component: VenueFormPage },
+  { path: 'sala/:id/modifica', component: VenueFormPage },
+  { path: 'venue/new', redirectTo: 'locale/nuovo', pathMatch: 'full' },
+  { path: 'venue/:id/edit', redirectTo: 'locale/:id/modifica', pathMatch: 'full' },
+  { path: 'room/new', redirectTo: 'sala/nuova', pathMatch: 'full' },
+  { path: 'room/:id/edit', redirectTo: 'sala/:id/modifica', pathMatch: 'full' },
 ];

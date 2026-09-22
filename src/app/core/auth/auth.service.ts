@@ -100,13 +100,13 @@ export class AuthService {
       catchError(() => of(void 0)),
       finalize(() => {
         this.clearSession();
-        if (navigate) void this.router.navigateByUrl('/login');
+        if (navigate) void this.router.navigateByUrl('/accedi');
       }),
     );
   }
 
   /** Starts the server-side OAuth flow. Google credentials never reach the Ionic bundle. */
-  startGoogleLogin(returnUrl = '/bands'): void {
+  startGoogleLogin(returnUrl = '/band'): void {
     localStorage.setItem(GOOGLE_RETURN_URL_KEY, returnUrl);
     window.location.assign(`${environment.apiUrl}${environment.googleAuthPath}`);
   }
@@ -132,15 +132,15 @@ export class AuthService {
   }
 
   consumeGoogleReturnUrl(): string {
-    const returnUrl = localStorage.getItem(GOOGLE_RETURN_URL_KEY) || '/bands';
+    const returnUrl = localStorage.getItem(GOOGLE_RETURN_URL_KEY) || '/band';
     localStorage.removeItem(GOOGLE_RETURN_URL_KEY);
-    return returnUrl.startsWith('/') ? returnUrl : '/bands';
+    return returnUrl.startsWith('/') ? returnUrl : '/band';
   }
 
   handleUnauthorized(): void {
     if (!this.isAuthenticated && !this.token) return;
     this.clearSession();
-    void this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+    void this.router.navigate(['/accedi'], { queryParams: { returnUrl: this.router.url } });
   }
 
   private fetchUser(): Observable<User> {

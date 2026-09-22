@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
     <ion-title>Template setlist</ion-title>
-    <ion-buttons slot="end"><ion-button [routerLink]="['new']"><ion-icon slot="icon-only" name="add" /></ion-button></ion-buttons>
+    <ion-buttons slot="end"><ion-button [routerLink]="['nuovo']"><ion-icon slot="icon-only" name="add" /></ion-button></ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -16,7 +16,7 @@
   } @else if (error) {
     <div class="state"><ion-icon name="alert-circle" /><ion-text color="danger">{{ error }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
   } @else if (!templates.length) {
-    <div class="state"><ion-icon name="library" /><ion-text>Nessun template presente.</ion-text><ion-button [routerLink]="['new']">Crea template</ion-button></div>
+    <div class="state"><ion-icon name="library" /><ion-text>Nessun template presente.</ion-text><ion-button [routerLink]="['nuovo']">Crea template</ion-button></div>
   } @else {
     <ion-list inset>
       @for (template of templates; track template.id) {

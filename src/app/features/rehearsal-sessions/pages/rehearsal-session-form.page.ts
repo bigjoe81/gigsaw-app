@@ -151,7 +151,7 @@ export class RehearsalSessionFormPage implements OnInit {
     request.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Prova salvata.', duration: 1800, color: 'success' })).present();
-        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/prove` : '/bands');
+        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/prove` : '/band');
       },
       error: (error: unknown) => {
         this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));

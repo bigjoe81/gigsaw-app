@@ -5,7 +5,9 @@ import { GigListPage } from './pages/gig-list.page';
 
 export const GIG_ROUTES: Routes = [
   { path: '', component: GigListPage },
-  { path: 'new', component: GigFormPage },
+  { path: 'nuovo', component: GigFormPage },
+  { path: 'new', redirectTo: 'nuovo', pathMatch: 'full' },
+  { path: ':id/edit', redirectTo: ':id/modifica', pathMatch: 'full' },
+  { path: ':id/modifica', component: GigFormPage },
   { path: ':id', component: GigDetailPage },
-  { path: ':id/edit', component: GigFormPage },
 ];

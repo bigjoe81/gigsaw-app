@@ -4,37 +4,41 @@ import { BandLayoutPage } from './layouts/band-layout.page';
 
 export const routes: Routes = [
   {
-    path: 'login',
+    path: 'accedi',
     loadComponent: () => import('./features/auth/login.page').then((m) => m.LoginPage),
   },
   {
-    path: 'register',
+    path: 'registrati',
     loadComponent: () => import('./features/auth/register.page').then((m) => m.RegisterPage),
   },
   {
-    path: 'verify-otp',
+    path: 'verifica-codice',
     loadComponent: () => import('./features/auth/verify-otp.page').then((m) => m.VerifyOtpPage),
   },
   {
-    path: 'invite/:joinCode',
+    path: 'password-dimenticata',
+    loadComponent: () => import('./features/auth/forgot-password.page').then((m) => m.ForgotPasswordPage),
+  },
+  {
+    path: 'reimposta-password',
+    loadComponent: () => import('./features/auth/reset-password.page').then((m) => m.ResetPasswordPage),
+  },
+  {
+    path: 'invito/:joinCode',
     loadComponent: () => import('./features/bands/pages/band-invitation.page').then((m) => m.BandInvitationPage),
   },
   {
-    path: 'bands',
+    path: 'band/nuova',
     canActivate: [authGuard],
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./features/bands/pages/band-selection.page').then((m) => m.BandSelectionPage),
-      },
-      {
-        path: 'new',
-        loadComponent: () => import('./features/bands/pages/band-create.page').then((m) => m.BandCreatePage),
-      },
-    ],
+    loadComponent: () => import('./features/bands/pages/band-create.page').then((m) => m.BandCreatePage),
   },
   {
-    path: 'auth/google/callback',
+    path: 'band',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/bands/pages/band-selection.page').then((m) => m.BandSelectionPage),
+  },
+  {
+    path: 'autenticazione/google/ritorno',
     loadComponent: () => import('./features/auth/google-callback.page').then((m) => m.GoogleCallbackPage),
   },
   {
@@ -43,7 +47,7 @@ export const routes: Routes = [
     component: BandLayoutPage,
     children: [
       {
-        path: 'dashboard',
+        path: 'panoramica',
         loadComponent: () =>
           import('./features/dashboard/pages/dashboard.page').then((m) => m.DashboardPage),
       },
@@ -63,13 +67,18 @@ export const routes: Routes = [
           import('./features/gigs/gigs.routes').then((m) => m.GIG_ROUTES),
       },
       {
-        path: 'locations',
+        path: 'luoghi',
         loadChildren: () =>
           import('./features/venues/venues.routes').then((m) => m.VENUE_ROUTES),
       },
       {
+        path: 'locations',
+        redirectTo: 'luoghi',
+        pathMatch: 'full',
+      },
+      {
         path: 'venues',
-        redirectTo: 'locations',
+        redirectTo: 'luoghi',
         pathMatch: 'full',
       },
       {
@@ -83,17 +92,31 @@ export const routes: Routes = [
           import('./features/poster-templates/poster-templates.routes').then((m) => m.POSTER_TEMPLATE_ROUTES),
       },
       {
-        path: 'band',
+        path: 'impostazioni',
         loadComponent: () =>
           import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage),
       },
       {
+        path: 'band',
+        redirectTo: 'impostazioni',
+        pathMatch: 'full',
+      },
+      {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'panoramica',
         pathMatch: 'full',
       },
     ],
   },
-  { path: '', redirectTo: '/bands', pathMatch: 'full' },
-  { path: '**', redirectTo: '/bands' },
+  { path: 'login', redirectTo: '/accedi', pathMatch: 'full' },
+  { path: 'register', redirectTo: '/registrati', pathMatch: 'full' },
+  { path: 'verify-otp', redirectTo: '/verifica-codice', pathMatch: 'full' },
+  { path: 'forgot-password', redirectTo: '/password-dimenticata', pathMatch: 'full' },
+  { path: 'reset-password', redirectTo: '/reimposta-password', pathMatch: 'full' },
+  { path: 'invite/:joinCode', redirectTo: '/invito/:joinCode', pathMatch: 'full' },
+  { path: 'bands/new', redirectTo: '/band/nuova', pathMatch: 'full' },
+  { path: 'bands', redirectTo: '/band', pathMatch: 'full' },
+  { path: 'auth/google/callback', redirectTo: '/autenticazione/google/ritorno', pathMatch: 'full' },
+  { path: '', redirectTo: '/band', pathMatch: 'full' },
+  { path: '**', redirectTo: '/band' },
 ];

@@ -84,7 +84,7 @@ export class BandSelectionPage {
 
   selectBand(band: Band): void {
     this.bandContext.setCurrentBand(band.id);
-    void this.router.navigateByUrl(`/band/${band.id}/dashboard`);
+    void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
   }
 
   formatGenres(band: Band): string {
@@ -153,7 +153,7 @@ export class BandSelectionPage {
     this.createModalOpen.set(false);
     await this.createBandModal()?.dismiss(band, 'created');
     this.bandContext.setCurrentBand(band.id);
-    await this.router.navigateByUrl(`/band/${band.id}/band`);
+    await this.router.navigateByUrl(`/band/${band.id}/impostazioni`);
   }
 
   logout(): void {

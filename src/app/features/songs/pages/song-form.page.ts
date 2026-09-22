@@ -232,7 +232,7 @@ export class SongFormPage implements OnInit, OnDestroy {
       tags: this.parseTags(values.tagsText),
     };
     const request = this.editing ? this.songs.update(this.id!, payload) : this.songs.create(payload);
-    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Brano salvato.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/bands'); }, error: (error: Error) => { this.error.set(error.message || 'Salvataggio non riuscito.'); this.saving.set(false); } });
+    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Brano salvato.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/band'); }, error: (error: Error) => { this.error.set(error.message || 'Salvataggio non riuscito.'); this.saving.set(false); } });
   }
 
   private applyMetadata(metadata: SongMetadataCandidate | SongMetadataDetail): void {

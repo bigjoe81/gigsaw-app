@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-menu-button menu="band-menu" />
     </ion-buttons>
-    <ion-title>Band</ion-title>
+    <ion-title>Impostazioni</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -16,7 +16,10 @@
       </ion-card-content>
     </ion-card>
   } @else if (!band) {
-    <ion-note class="ion-padding" color="danger">{{ error || 'Band non trovata.' }}</ion-note>
+    <div class="ion-padding">
+      <ion-note color="danger">{{ error || 'Band non trovata.' }}</ion-note>
+      <ion-button class="ion-margin-top" expand="block" fill="outline" type="button" (click)="load()">Riprova</ion-button>
+    </div>
   } @else {
     <ion-card>
       <ion-card-header>
@@ -31,6 +34,32 @@
     </ion-card>
 
     @if (isAdmin) {
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Invita membri</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-note color="medium">Condividi questo link: chi lo apre trova subito il pulsante “Partecipa”.</ion-note>
+          <ion-item class="ion-margin-top">
+            <ion-label position="stacked">Link d’invito</ion-label>
+            <ion-input [value]="bandInviteLink" readonly />
+          </ion-item>
+          <div class="action-row">
+            <ion-button type="button" (click)="copyBandInviteLink()" [disabled]="!bandInviteLink">
+              <ion-icon slot="start" name="copy-outline" /> Copia link
+            </ion-button>
+            @if (canShareOnWhatsApp) {
+              <ion-button type="button" color="success" (click)="shareBandInviteOnWhatsApp()" [disabled]="!bandInviteLink">
+                <ion-icon slot="start" name="logo-whatsapp" /> WhatsApp
+              </ion-button>
+            }
+            <ion-button type="button" fill="outline" (click)="scrollToPersonalInvite()">
+              <ion-icon slot="start" name="mail-outline" /> Invito con email e ruolo
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
       <ion-card>
         <ion-card-header>
           <ion-card-title>Profilo band</ion-card-title>
@@ -427,9 +456,9 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-card>
+      <ion-card id="personal-invite-card">
         <ion-card-header>
-          <ion-card-title>Invita persona</ion-card-title>
+          <ion-card-title>Invito personalizzato</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <form [formGroup]="inviteForm" (ngSubmit)="invite()">

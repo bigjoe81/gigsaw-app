@@ -36,6 +36,6 @@
     </form>
 
     <app-daisy-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending || !challengeId" [loading]="resending">Invia un nuovo codice</app-daisy-button>
-    <a class="btn btn-ghost mt-2 w-full" [routerLink]="purpose === 'register' ? '/register' : '/login'">Torna indietro</a>
+    <a class="btn btn-ghost mt-2 w-full" [routerLink]="purpose === 'register' ? '/registrati' : '/accedi'">Torna indietro</a>
   </div>
 </ion-content>

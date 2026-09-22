@@ -26,7 +26,7 @@ export class VenueFormPage implements OnInit {
 
   ngOnInit(): void {
     this.bandId = this.getBandId();
-    this.kind = this.route.snapshot.url[0]?.path === 'room' ? 'room' : 'venue';
+    this.kind = ['sala', 'room'].includes(this.route.snapshot.url[0]?.path) ? 'room' : 'venue';
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.editing = !!this.id;
     if (this.id) {
@@ -45,7 +45,7 @@ export class VenueFormPage implements OnInit {
     };
     const service = this.kind === 'venue' ? this.venues : this.rehearsalRooms;
     const request: Observable<Venue | RehearsalRoom> = this.editing ? service.update(this.id!, payload) : service.create(payload);
-    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Luogo salvato.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/locations` : '/bands'); }, error: (error: Error) => { this.error = error.message || 'Salvataggio non riuscito.'; this.saving = false; } });
+    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Luogo salvato.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/luoghi` : '/band'); }, error: (error: Error) => { this.error = error.message || 'Salvataggio non riuscito.'; this.saving = false; } });
   }
 
   private toNumber(value: string): number | null {

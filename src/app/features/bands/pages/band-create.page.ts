@@ -212,7 +212,7 @@ export class BandCreatePage implements OnDestroy {
       return;
     }
 
-    void this.router.navigateByUrl('/bands');
+    void this.router.navigateByUrl('/band');
   }
 
   save(): void {
@@ -238,7 +238,7 @@ export class BandCreatePage implements OnDestroy {
           this.created.emit(band);
           return;
         }
-        void this.router.navigateByUrl(`/band/${band.id}/band`);
+        void this.router.navigateByUrl(`/band/${band.id}/impostazioni`);
       },
       error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
         this.error = error.error?.errors?.['name']?.[0]

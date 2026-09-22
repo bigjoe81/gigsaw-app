@@ -71,7 +71,7 @@ export class SongDetailPage implements OnInit {
       void this.modalController.dismiss({ id: this.id }, 'edit');
       return;
     }
-    void this.router.navigate(['edit'], { relativeTo: this.route });
+    void this.router.navigate(['modifica'], { relativeTo: this.route });
   }
 
   load(): void {
