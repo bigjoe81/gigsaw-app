@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  @if (loading) {
+  @if (loading()) {
     <ion-card>
       <ion-card-content>
         <ion-skeleton-text [animated]="true" style="width: 55%" />
@@ -17,7 +17,7 @@
     </ion-card>
   } @else if (!band) {
     <div class="ion-padding">
-      <ion-note color="danger">{{ error || 'Band non trovata.' }}</ion-note>
+      <ion-note color="danger">{{ loadError() || 'Band non trovata.' }}</ion-note>
       <ion-button class="ion-margin-top" expand="block" fill="outline" type="button" (click)="load()">Riprova</ion-button>
     </div>
   } @else {
