@@ -117,7 +117,12 @@ export class VerifyOtpPage {
       code: this.code().trim(),
       purpose: this.purpose,
     }).subscribe({
-      next: () => void this.router.navigateByUrl(this.returnUrl),
+      next: () => {
+        const destination = this.purpose === 'register' && this.returnUrl === '/band'
+          ? '/inizia'
+          : this.returnUrl;
+        void this.router.navigateByUrl(destination);
+      },
       error: (error: { error?: { message?: string } }) => {
         this.error.set(error.error?.message || 'Codice non valido.');
         this.loading = false;

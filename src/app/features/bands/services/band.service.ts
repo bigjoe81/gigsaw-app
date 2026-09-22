@@ -95,6 +95,15 @@ export class BandService {
     return this.http.put<void>(`${API_BASE_URL}/bands/${bandId}/user/${userId}/role`, { role });
   }
 
+  updateMemberInstruments(bandId: number, userId: number, instruments: string[]): Observable<BandMember> {
+    return this.http.put<ApiEnvelope<BandMember>>(
+      `${API_BASE_URL}/bands/${bandId}/user/${userId}/strumenti`,
+      { instruments },
+    ).pipe(
+      map((response) => this.normalizeMember(this.unwrap(response))),
+    );
+  }
+
   private unwrap<T>(response: ApiEnvelope<T>): T {
     if (typeof response !== 'object' || response === null || !('data' in response)) {
       return response;
@@ -137,12 +146,7 @@ export class BandService {
       genres: band.genres ?? [],
       membersCount: band.membersCount ?? band.members_count ?? null,
       pressPhotos: this.normalizePressPhotos(band.pressPhotos ?? band.press_photos ?? []),
-      members: (band.members ?? []).map((member: any): BandMember => ({
-        id: member.id,
-        name: member.name,
-        role: member.role ?? null,
-        status: member.status ?? null,
-      })),
+      members: (band.members ?? []).map((member: any) => this.normalizeMember(member)),
       invitations: (band.invitations ?? []).map((invitation: any) => this.normalizeInvitation(invitation)),
     };
   }
@@ -171,12 +175,7 @@ export class BandService {
       inputChannels: pressKit.inputChannels ?? pressKit.input_channels ?? [],
       stagePlotLayout: pressKit.stagePlotLayout ?? pressKit.stage_plot_layout ?? [],
       genres: pressKit.genres ?? [],
-      members: (pressKit.members ?? []).map((member: any): BandMember => ({
-        id: member.id,
-        name: member.name,
-        role: member.role ?? null,
-        status: member.status ?? null,
-      })),
+      members: (pressKit.members ?? []).map((member: any) => this.normalizeMember(member)),
       logo: pressKit.logo ?? null,
       cover: pressKit.cover ?? null,
       pressPhotos: this.normalizePressPhotos(pressKit.pressPhotos ?? pressKit.press_photos ?? []),
@@ -199,6 +198,33 @@ export class BandService {
       email: invitation.email,
       role: invitation.role ?? null,
       inviteUrl: invitation.inviteUrl ?? invitation.invite_url ?? invitation.url ?? null,
+    };
+  }
+
+  private normalizeMember(member: any): BandMember {
+    const value = member.instruments;
+    let instruments: unknown[] = [];
+
+    if (Array.isArray(value)) {
+      instruments = value;
+    } else if (typeof value === 'string') {
+      try {
+        const decoded = JSON.parse(value);
+        instruments = Array.isArray(decoded) ? decoded : [];
+      } catch {
+        instruments = value.split(',');
+      }
+    }
+
+    return {
+      id: member.id,
+      name: member.name,
+      role: member.role ?? null,
+      status: member.status ?? null,
+      instruments: instruments
+        .filter((instrument): instrument is string => typeof instrument === 'string')
+        .map((instrument) => instrument.trim())
+        .filter(Boolean),
     };
   }
 

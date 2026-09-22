@@ -6,6 +6,7 @@ import { peopleOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
 import { DaisyButtonComponent, DaisyMessageComponent } from '../../../shared/ui/daisyui';
 import { BandService } from '../services/band.service';
 
@@ -22,6 +23,7 @@ export class BandInvitationPage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly bandService = inject(BandService);
   private readonly bandContext = inject(BandContextService);
+  private readonly onboarding = inject(OnboardingService);
 
   readonly joinCode = this.route.snapshot.paramMap.get('joinCode')?.trim() ?? '';
   readonly bandName = this.route.snapshot.queryParamMap.get('band')?.trim() || 'una band';
@@ -93,7 +95,11 @@ export class BandInvitationPage implements OnInit {
       next: (band) => {
         this.clearPendingInvitation();
         this.bandContext.setCurrentBand(band.id);
-        void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
+        if (this.onboarding.shouldShow()) {
+          void this.router.navigate(['/inizia'], { queryParams: { bandId: band.id, percorso: 'invito' } });
+        } else {
+          void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
+        }
       },
       error: (error: { status?: number; error?: { errors?: Record<string, string[]>; message?: string } }) => {
         if (error.status !== 401) this.clearPendingInvitation();

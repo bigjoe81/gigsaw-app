@@ -18,6 +18,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
 import {
   DaisyButtonComponent,
   DaisyMessageComponent,
@@ -48,6 +49,7 @@ export class BandSelectionPage {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly alert = inject(AlertController);
+  private readonly onboarding = inject(OnboardingService);
 
   readonly bands = signal<Band[]>([]);
   readonly loading = signal(true);
@@ -74,6 +76,11 @@ export class BandSelectionPage {
       next: (bands) => {
         this.bands.set(bands);
         this.loading.set(false);
+        if (!bands.length && this.onboarding.shouldShow()) {
+          void this.router.navigateByUrl('/inizia');
+        } else if (bands.length && this.onboarding.shouldShow()) {
+          this.onboarding.complete();
+        }
       },
       error: (error: { error?: { message?: string } }) => {
         this.error.set(error.error?.message || 'Impossibile caricare le band.');
@@ -147,6 +154,10 @@ export class BandSelectionPage {
 
   closeCreateModal(): void {
     this.createModalOpen.set(false);
+  }
+
+  openOnboarding(): void {
+    void this.router.navigate(['/inizia'], { queryParams: { ripeti: 1 } });
   }
 
   async onBandCreated(band: Band): Promise<void> {

@@ -3,6 +3,7 @@ export interface BandMember {
   name: string;
   role?: string;
   status?: string;
+  instruments?: string[];
 }
 
 export interface PendingBandInvitation {

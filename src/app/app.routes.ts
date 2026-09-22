@@ -28,6 +28,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/bands/pages/band-invitation.page').then((m) => m.BandInvitationPage),
   },
   {
+    path: 'inizia',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/onboarding/onboarding.page').then((m) => m.OnboardingPage),
+  },
+  {
     path: 'band/nuova',
     canActivate: [authGuard],
     loadComponent: () => import('./features/bands/pages/band-create.page').then((m) => m.BandCreatePage),
