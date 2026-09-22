@@ -1,5 +1,5 @@
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
@@ -52,7 +52,7 @@ import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models
     }
   `],
 })
-export class SongFormPage implements OnInit {
+export class SongFormPage implements OnInit, OnDestroy {
   form = this.fb.nonNullable.group({ title: ['', Validators.required], album: '', performedBy: '', musicBy: '', lyricsBy: '', key: ['', Validators.required], bpm: '', duration: ['', Validators.required], linkGroup: '', tagsText: '', status: 'draft' as SongStatus, notes: '' });
   magicForm = this.fb.nonNullable.group({ title: ['', [Validators.required, Validators.minLength(2)]], artist: '' });
   existingLinkGroups: string[] = [];
@@ -68,6 +68,10 @@ export class SongFormPage implements OnInit {
   readonly selectedMetadata = signal<SongMetadataDetail | null>(null);
   readonly error = signal('');
   readonly magicError = signal('');
+  readonly tapCount = signal(0);
+  readonly tappedBpm = signal<number | null>(null);
+  private tapTimestamps: number[] = [];
+  private tapResetTimer?: ReturnType<typeof setTimeout>;
   private id?: number;
   private bandId?: number;
 
@@ -99,6 +103,53 @@ export class SongFormPage implements OnInit {
       },
       error: () => { this.error.set('Impossibile caricare il brano.'); this.loading.set(false); },
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.tapResetTimer) clearTimeout(this.tapResetTimer);
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onTapTempoKeydown(event: KeyboardEvent): void {
+    if (this.step() !== 2 || event.code !== 'Space' || event.repeat || this.isTypingTarget(event)) return;
+    event.preventDefault();
+    this.tapTempo();
+  }
+
+  tapTempo(): void {
+    const now = performance.now();
+    const previousTap = this.tapTimestamps.at(-1);
+    if (!previousTap || now - previousTap > 2000) this.tapTimestamps = [];
+
+    this.tapTimestamps.push(now);
+    if (this.tapTimestamps.length > 9) this.tapTimestamps.shift();
+    this.tapCount.set(this.tapTimestamps.length);
+
+    if (this.tapTimestamps.length >= 2) {
+      const intervals = this.tapTimestamps.slice(1).map((tap, index) => tap - this.tapTimestamps[index]);
+      const averageInterval = intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length;
+      const bpm = Math.round(60000 / averageInterval);
+      if (bpm >= 20 && bpm <= 300) {
+        this.tappedBpm.set(bpm);
+        this.form.controls.bpm.setValue(String(bpm));
+      }
+    }
+
+    if (this.tapResetTimer) clearTimeout(this.tapResetTimer);
+    this.tapResetTimer = setTimeout(() => this.resetTapTempo(), 2500);
+  }
+
+  private resetTapTempo(): void {
+    this.tapTimestamps = [];
+    this.tapCount.set(0);
+    this.tappedBpm.set(null);
+    this.tapResetTimer = undefined;
+  }
+
+  private isTypingTarget(event: KeyboardEvent): boolean {
+    return event.composedPath().some((target) => target instanceof HTMLElement && (
+      target.isContentEditable || target.matches('input, textarea, select, button, ion-input, ion-textarea, ion-select')
+    ));
   }
 
   searchMagicSong(): void {
