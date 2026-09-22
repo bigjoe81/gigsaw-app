@@ -1,5 +1,5 @@
 
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -143,12 +143,12 @@ export class BandManagePage implements OnInit {
 
   band?: Band;
   availableGenres: BandGenre[] = [];
-  loading = true;
+  readonly loading = signal(true);
+  readonly loadError = signal('');
   inviting = false;
   savingProfile = false;
   savingTech = false;
   uploadingPressPhotos = false;
-  error = '';
   inviteError = '';
   profileError = '';
   techError = '';
@@ -182,8 +182,8 @@ export class BandManagePage implements OnInit {
   ngOnInit(): void {
     const bandId = this.getBandId();
     if (!bandId) {
-      this.error = 'Band non trovata.';
-      this.loading = false;
+      this.loadError.set('Band non trovata.');
+      this.loading.set(false);
       return;
     }
 
@@ -197,11 +197,11 @@ export class BandManagePage implements OnInit {
   }
 
   load(): void {
-    this.loading = !this.band;
-    this.error = '';
+    this.loading.set(!this.band);
+    this.loadError.set('');
     this.bandService.get(this.bandId).pipe(
       timeout({ first: 15000 }),
-      finalize(() => { this.loading = false; }),
+      finalize(() => this.loading.set(false)),
     ).subscribe({
       next: (band) => {
         this.band = band;
@@ -209,7 +209,7 @@ export class BandManagePage implements OnInit {
         this.patchTechForm(band);
       },
       error: (error: { error?: { message?: string } }) => {
-        this.error = error.error?.message || 'Impossibile caricare le impostazioni della band. Riprova.';
+        this.loadError.set(error.error?.message || 'Impossibile caricare le impostazioni della band. Riprova.');
       },
     });
   }
