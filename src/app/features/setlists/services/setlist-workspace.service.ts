@@ -22,8 +22,24 @@ export interface SetlistRepository { load(id: string): SetlistWorkspace | null; 
 @Injectable({ providedIn: 'root' })
 export class LocalSetlistRepository implements SetlistRepository {
   private key(id: string) { return `gigsaw:setlist-draft:${id}`; }
-  load(id: string) { const raw = localStorage.getItem(this.key(id)); return raw ? JSON.parse(raw) as SetlistWorkspace : null; }
+  load(id: string) {
+    const raw = localStorage.getItem(this.key(id));
+    if (!raw) return null;
+
+    try {
+      const draft = JSON.parse(raw) as Partial<SetlistWorkspace>;
+      if (!draft || typeof draft.title !== 'string' || !Array.isArray(draft.sets)) {
+        localStorage.removeItem(this.key(id));
+        return null;
+      }
+      return draft as SetlistWorkspace;
+    } catch {
+      localStorage.removeItem(this.key(id));
+      return null;
+    }
+  }
   save(value: SetlistWorkspace) { localStorage.setItem(this.key(value.id), JSON.stringify(value)); }
+  remove(id: string) { localStorage.removeItem(this.key(id)); }
 }
 @Injectable({ providedIn: 'root' })
 export class SetlistHistoryService {

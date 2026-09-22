@@ -20,6 +20,7 @@ ion-content { --background: var(--gigsaw-background); color: var(--gigsaw-text);
 .catalog-card b, .item-main b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .catalog-card small, .item-main small { color: var(--ion-color-medium); font-size: .7rem; }
 .song-catalog { margin-top: .5rem; }
+.catalog-state { display: grid; min-height: 180px; place-items: center; align-content: center; gap: .75rem; padding: 1rem; color: var(--ion-color-medium); text-align: center; }
 .set-actions, .set-toolbar, .row-actions, .hints, .proposal-status { display: flex; flex-wrap: wrap; gap: .35rem; }
 .set-actions { margin-bottom: .6rem; }
 .set-panel { overflow: hidden; margin-bottom: .75rem; padding: 0; }
