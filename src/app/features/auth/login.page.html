@@ -31,6 +31,6 @@
       <app-daisy-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Invia codice OTP</app-daisy-button>
     </form>
     <app-daisy-button buttonClass="mt-3 w-full" tone="outline" type="button" (click)="loginWithGoogle()">Continua con Google</app-daisy-button>
-    <a class="btn btn-ghost mt-2 w-full" routerLink="/register">Crea account</a>
+    <a class="btn btn-ghost mt-2 w-full" routerLink="/register" [queryParams]="{ returnUrl }">Crea account</a>
   </div>
 </ion-content>

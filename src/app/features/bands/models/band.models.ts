@@ -10,6 +10,7 @@ export interface PendingBandInvitation {
   name: string;
   email: string;
   role?: string;
+  inviteUrl?: string | null;
 }
 
 export interface BandGenre {

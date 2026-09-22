@@ -31,10 +31,10 @@ import {
 } from '@ionic/angular/standalone';
 import type { ItemReorderCustomEvent } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, cloudUpload, downloadOutline, imageOutline, removeCircleOutline, shareOutline, trashOutline } from 'ionicons/icons';
+import { addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline } from 'ionicons/icons';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
-import { Band, BandGenre, BandInputChannel, BandMember, BandPressPhoto, BandStagePlotItem, UpdateBandRequest } from '../models/band.models';
+import { Band, BandGenre, BandInputChannel, BandMember, BandPressPhoto, BandStagePlotItem, PendingBandInvitation, UpdateBandRequest } from '../models/band.models';
 import { BandPressKitService } from '../services/band-press-kit.service';
 import { BandService } from '../services/band.service';
 import { GenreService } from '../services/genre.service';
@@ -153,6 +153,8 @@ export class BandManagePage implements OnInit {
   techError = '';
   selectedLogoFile: File | null = null;
   selectedPressPhotos: File[] = [];
+  lastInvitation?: PendingBandInvitation;
+  readonly canShareOnWhatsApp = this.isMobileDevice();
   private bandId!: number;
   private dragCleanup?: () => void;
 
@@ -169,7 +171,7 @@ export class BandManagePage implements OnInit {
   }
 
   constructor() {
-    addIcons({ addCircleOutline, cloudUpload, downloadOutline, imageOutline, removeCircleOutline, shareOutline, trashOutline });
+    addIcons({ addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline });
   }
 
   ngOnInit(): void {
@@ -643,10 +645,16 @@ export class BandManagePage implements OnInit {
     const payload = this.inviteForm.getRawValue();
 
     this.bandService.invite(this.bandId, payload).subscribe({
-      next: async () => {
+      next: async (invitation) => {
         this.inviting = false;
+        this.lastInvitation = {
+          ...invitation,
+          name: invitation.name || payload.name,
+          email: invitation.email || payload.email,
+          role: invitation.role || payload.role,
+        };
         this.inviteForm.patchValue({ name: '', email: '', role: 'BAND_MEMBER' });
-        (await this.toast.create({ message: 'Invito creato.', duration: 1800, color: 'success' })).present();
+        (await this.toast.create({ message: 'Invito pronto da condividere.', duration: 1800, color: 'success' })).present();
         this.load();
       },
       error: async (error: { error?: { message?: string } }) => {
@@ -655,6 +663,46 @@ export class BandManagePage implements OnInit {
         (await this.toast.create({ message: this.inviteError, duration: 2200, color: 'danger' })).present();
       },
     });
+  }
+
+  shareInvitationOnWhatsApp(invitation: PendingBandInvitation): void {
+    const shareUrl = `https://wa.me/?text=${encodeURIComponent(this.invitationMessage(invitation))}`;
+    const opened = window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    if (!opened) window.location.assign(shareUrl);
+  }
+
+  shareInvitationByEmail(invitation: PendingBandInvitation): void {
+    const subject = `Invito a partecipare a ${this.band?.name ?? 'GigSaw'}`;
+    const body = this.invitationMessage(invitation);
+    window.location.href = `mailto:${encodeURIComponent(invitation.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  async copyInvitationLink(invitation: PendingBandInvitation): Promise<void> {
+    const inviteUrl = this.invitationUrl(invitation);
+    if (navigator.clipboard) await navigator.clipboard.writeText(inviteUrl);
+    (await this.toast.create({ message: 'Link invito copiato.', duration: 1600, color: 'success' })).present();
+  }
+
+  private invitationMessage(invitation: PendingBandInvitation): string {
+    const greeting = invitation.name?.trim() ? `Ciao ${invitation.name.trim()}!` : 'Ciao!';
+    const bandName = this.band?.name ?? 'la mia band';
+    return `${greeting} Ti invito a partecipare alla band “${bandName}” su GigSaw. Apri il link e premi “Partecipa”:\n${this.invitationUrl(invitation)}`;
+  }
+
+  private invitationUrl(invitation: PendingBandInvitation): string {
+    if (invitation.inviteUrl) return invitation.inviteUrl;
+
+    const code = this.band?.joinCode?.trim() ?? '';
+    const url = new URL(`/invite/${encodeURIComponent(code)}`, window.location.origin);
+    if (this.band?.name) url.searchParams.set('band', this.band.name);
+    if (invitation.name) url.searchParams.set('name', invitation.name);
+    url.searchParams.set('bandId', String(this.bandId));
+    return url.toString();
+  }
+
+  private isMobileDevice(): boolean {
+    return typeof window !== 'undefined'
+      && (window.matchMedia('(max-width: 767px)').matches || navigator.maxTouchPoints > 0);
   }
 
   canEditRole(member: BandMember): boolean {

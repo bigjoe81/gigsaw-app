@@ -448,12 +448,33 @@
                 <ion-select-option value="ADMIN">Admin</ion-select-option>
               </ion-select>
             </ion-item>
-            <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="inviting">
-              @if (inviting) { <ion-spinner name="crescent" /> } @else { Invia invito }
+            <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="inviting || !band.joinCode">
+              @if (inviting) { <ion-spinner name="crescent" /> } @else { Prepara invito }
             </ion-button>
           </form>
+          <ion-note class="ion-margin-top" color="medium">Creeremo un link diretto: chi lo apre dovrà premere “Partecipa”.</ion-note>
           @if (inviteError) {
             <ion-note class="ion-margin-top" color="danger">{{ inviteError }}</ion-note>
+          }
+
+          @if (lastInvitation) {
+            <div class="rounded-2xl border border-[var(--gigsaw-border)] bg-[color-mix(in_srgb,var(--ion-color-primary)_8%,transparent)] p-4 mt-5">
+              <strong class="block">Invito pronto per {{ lastInvitation.name }}</strong>
+              <span class="block mt-1 text-sm text-[var(--gigsaw-muted)]">Scegli come condividerlo.</span>
+              <div class="action-row">
+                @if (canShareOnWhatsApp) {
+                  <ion-button type="button" color="success" (click)="shareInvitationOnWhatsApp(lastInvitation)">
+                    <ion-icon slot="start" name="logo-whatsapp" /> WhatsApp
+                  </ion-button>
+                }
+                <ion-button type="button" (click)="shareInvitationByEmail(lastInvitation)">
+                  <ion-icon slot="start" name="mail-outline" /> Invia email
+                </ion-button>
+                <ion-button type="button" fill="outline" (click)="copyInvitationLink(lastInvitation)">
+                  <ion-icon slot="start" name="copy-outline" /> Copia link
+                </ion-button>
+              </div>
+            </div>
           }
         </ion-card-content>
       </ion-card>
@@ -471,6 +492,19 @@
                     <h2>{{ invitation.name }}</h2>
                     <p>{{ invitation.email }} · {{ roleLabel(invitation.role) }}</p>
                   </ion-label>
+                  <div slot="end" class="action-row">
+                    @if (canShareOnWhatsApp) {
+                      <ion-button type="button" size="small" fill="clear" color="success" aria-label="Condividi su WhatsApp" (click)="shareInvitationOnWhatsApp(invitation)">
+                        <ion-icon slot="icon-only" name="logo-whatsapp" />
+                      </ion-button>
+                    }
+                    <ion-button type="button" size="small" fill="clear" aria-label="Invia email" (click)="shareInvitationByEmail(invitation)">
+                      <ion-icon slot="icon-only" name="mail-outline" />
+                    </ion-button>
+                    <ion-button type="button" size="small" fill="clear" aria-label="Copia link" (click)="copyInvitationLink(invitation)">
+                      <ion-icon slot="icon-only" name="copy-outline" />
+                    </ion-button>
+                  </div>
                 </ion-item>
               }
             </ion-list>
