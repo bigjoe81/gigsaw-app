@@ -32,6 +32,7 @@ export class LoginPage {
   readonly emailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim()));
   loading = false;
   error = '';
+  readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/bands';
 
   constructor(private readonly auth: AuthService, private readonly router: Router, private readonly route: ActivatedRoute) {
   }
@@ -48,7 +49,6 @@ export class LoginPage {
     }
 
     const email = this.email().trim();
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/bands';
     this.loading = true;
     this.error = '';
     this.auth.requestOtp({ email, purpose: 'login' }).subscribe({
@@ -57,7 +57,7 @@ export class LoginPage {
           challengeId: challenge.challengeId,
           email: challenge.email,
           purpose: challenge.intent,
-          returnUrl,
+          returnUrl: this.returnUrl,
         },
       }),
       error: (error: { error?: { message?: string } }) => {
@@ -72,6 +72,6 @@ export class LoginPage {
   }
 
   loginWithGoogle(): void {
-    this.auth.startGoogleLogin(this.route.snapshot.queryParamMap.get('returnUrl') || '/bands');
+    this.auth.startGoogleLogin(this.returnUrl);
   }
 }

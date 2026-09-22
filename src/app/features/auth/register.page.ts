@@ -32,6 +32,7 @@ export class RegisterPage {
   readonly touched = signal(false);
   readonly nameValid = computed(() => this.name().trim().length > 0);
   readonly emailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim()));
+  readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/bands';
   loading = false; error = '';
 
   constructor(private readonly auth: AuthService, private readonly router: Router, private readonly route: ActivatedRoute) {}
@@ -53,7 +54,6 @@ export class RegisterPage {
 
     const name = this.name().trim();
     const email = this.email().trim();
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/bands';
     this.loading = true;
     this.error = '';
     this.auth.requestOtp({ name, email, purpose: 'register' }).subscribe({
@@ -63,7 +63,7 @@ export class RegisterPage {
           name,
           email: challenge.email,
           purpose: challenge.intent,
-          returnUrl,
+          returnUrl: this.returnUrl,
         },
       }),
       error: (error: {error?: {message?: string}}) => {

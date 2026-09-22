@@ -87,7 +87,7 @@ export class BandService {
 
   invite(bandId: number, payload: { email: string; name: string; role: string }): Observable<PendingBandInvitation> {
     return this.http.post<ApiEnvelope<PendingBandInvitation>>(`${API_BASE_URL}/bands/${bandId}/user/invite`, payload).pipe(
-      map((response) => this.unwrap(response)),
+      map((response) => this.normalizeInvitation(this.unwrap(response))),
     );
   }
 
@@ -143,12 +143,7 @@ export class BandService {
         role: member.role ?? null,
         status: member.status ?? null,
       })),
-      invitations: (band.invitations ?? []).map((invitation: any): PendingBandInvitation => ({
-        id: invitation.id,
-        name: invitation.name,
-        email: invitation.email,
-        role: invitation.role ?? null,
-      })),
+      invitations: (band.invitations ?? []).map((invitation: any) => this.normalizeInvitation(invitation)),
     };
   }
 
@@ -195,6 +190,16 @@ export class BandService {
       url: photo.url ?? null,
       previewUrl: photo.previewUrl ?? photo.preview_url ?? null,
     }));
+  }
+
+  private normalizeInvitation(invitation: any): PendingBandInvitation {
+    return {
+      id: invitation.id,
+      name: invitation.name,
+      email: invitation.email,
+      role: invitation.role ?? null,
+      inviteUrl: invitation.inviteUrl ?? invitation.invite_url ?? invitation.url ?? null,
+    };
   }
 
   private toFormData(payload: UpdateBandRequest): FormData {

@@ -16,6 +16,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/verify-otp.page').then((m) => m.VerifyOtpPage),
   },
   {
+    path: 'invite/:joinCode',
+    loadComponent: () => import('./features/bands/pages/band-invitation.page').then((m) => m.BandInvitationPage),
+  },
+  {
     path: 'bands',
     canActivate: [authGuard],
     children: [

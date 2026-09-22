@@ -1,0 +1,27 @@
+<ion-content class="invitation-content" [fullscreen]="true">
+  <main class="invitation-shell">
+    <img class="brand-logo" src="assets/logo-hor-dark.png" alt="GigSaw" />
+
+    <section class="invitation-card">
+      <span class="invitation-icon"><ion-icon name="people-outline" aria-hidden="true" /></span>
+      <p class="eyebrow">Invito alla band</p>
+      <h1>@if (inviteeName) { Ciao {{ inviteeName }}! } Sei stato invitato in {{ bandName }}</h1>
+      <p class="description">Entra nello spazio condiviso per repertorio, prove, concerti e scalette.</p>
+
+      @if (error()) {
+        <app-daisy-message tone="error" messageClass="mt-5">{{ error() }}</app-daisy-message>
+      }
+
+      @if (sessionLoading()) {
+        <span class="loading loading-spinner loading-lg text-primary" aria-label="Controllo accesso"></span>
+      } @else {
+        <app-daisy-button buttonClass="participate-button" tone="primary" type="button" [loading]="joining()" (click)="participate()">
+          Partecipa
+        </app-daisy-button>
+        @if (!authenticated()) {
+          <p class="auth-note">Accedi o crea il tuo account: al termine tornerai automaticamente qui.</p>
+        }
+      }
+    </section>
+  </main>
+</ion-content>
