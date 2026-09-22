@@ -7,7 +7,7 @@
         @if (pdfLoading) { <ion-spinner name="crescent" /> } @else { PDF }
       </ion-button>
       <ion-button (click)="sharePdf()" [disabled]="pdfLoading">Condividi</ion-button>
-      <ion-button [routerLink]="['edit']">Modifica</ion-button>
+      <ion-button [routerLink]="['modifica']">Modifica</ion-button>
       <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
     </ion-buttons>
   </ion-toolbar>

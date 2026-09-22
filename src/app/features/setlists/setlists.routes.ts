@@ -8,11 +8,17 @@ import { SetlistTemplateListPage } from './pages/setlist-template-list.page';
 
 export const SETLIST_ROUTES: Routes = [
   { path: '', component: SetlistListPage },
-  { path: 'new', component: SetlistFormPage },
-  { path: 'templates', component: SetlistTemplateListPage },
-  { path: 'templates/new', component: SetlistTemplateFormPage },
-  { path: 'templates/:templateId', component: SetlistTemplateDetailPage },
-  { path: 'templates/:templateId/edit', component: SetlistTemplateFormPage },
+  { path: 'nuova', component: SetlistFormPage },
+  { path: 'modelli', component: SetlistTemplateListPage },
+  { path: 'modelli/nuovo', component: SetlistTemplateFormPage },
+  { path: 'modelli/:templateId/modifica', component: SetlistTemplateFormPage },
+  { path: 'modelli/:templateId', component: SetlistTemplateDetailPage },
+  { path: 'new', redirectTo: 'nuova', pathMatch: 'full' },
+  { path: 'templates', redirectTo: 'modelli', pathMatch: 'full' },
+  { path: 'templates/new', redirectTo: 'modelli/nuovo', pathMatch: 'full' },
+  { path: 'templates/:templateId/edit', redirectTo: 'modelli/:templateId/modifica', pathMatch: 'full' },
+  { path: 'templates/:templateId', redirectTo: 'modelli/:templateId', pathMatch: 'full' },
+  { path: ':id/edit', redirectTo: ':id/modifica', pathMatch: 'full' },
+  { path: ':id/modifica', component: SetlistFormPage },
   { path: ':id', component: SetlistDetailPage },
-  { path: ':id/edit', component: SetlistFormPage },
 ];

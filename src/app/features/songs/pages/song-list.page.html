@@ -5,8 +5,8 @@
     </ion-buttons>
     <ion-title>Brani</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" color="secondary" [routerLink]="['link-groups']">Medley</ion-button>
-      <ion-button class="create-song" [routerLink]="['new']" aria-label="Crea brano"><ion-icon slot="start" name="add" /> Nuovo</ion-button>
+      <ion-button fill="clear" color="secondary" [routerLink]="['gruppi-collegati']">Medley</ion-button>
+      <ion-button class="create-song" [routerLink]="['nuovo']" aria-label="Crea brano"><ion-icon slot="start" name="add" /> Nuovo</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -22,7 +22,7 @@
     <div class="state"><ion-icon name="alert-circle" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
   } @else if (!songs().length) {
     <div class="state"><ion-icon name="musical-notes-outline" /><ion-text class="font-bold">Nessun brano presente</ion-text>
-      <ion-button [routerLink]="['new']">
+      <ion-button [routerLink]="['nuovo']">
         <ion-icon slot="start" name="add"></ion-icon>
         Crea brano
       </ion-button>
@@ -36,8 +36,8 @@
         </div>
         <div class="library-actions">
           <span class="song-count">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>
-          <ion-button class="library-medleys" fill="outline" [routerLink]="['link-groups']">Gestisci medley</ion-button>
-          <ion-button class="library-add" [routerLink]="['new']"><ion-icon slot="start" name="add" />Aggiungi brano</ion-button>
+          <ion-button class="library-medleys" fill="outline" [routerLink]="['gruppi-collegati']">Gestisci medley</ion-button>
+          <ion-button class="library-add" [routerLink]="['nuovo']"><ion-icon slot="start" name="add" />Aggiungi brano</ion-button>
         </div>
       </header>
 

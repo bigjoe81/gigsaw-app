@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
     <ion-title>Concerti</ion-title>
-    <ion-buttons slot="end"><ion-button [routerLink]="['new']" aria-label="Nuovo concerto"><ion-icon slot="icon-only" name="add" /></ion-button></ion-buttons>
+    <ion-buttons slot="end"><ion-button [routerLink]="['nuovo']" aria-label="Nuovo concerto"><ion-icon slot="icon-only" name="add" /></ion-button></ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -11,7 +11,7 @@
   <main class="gigs-page">
     <section class="page-heading">
       <div><p class="eyebrow">Agenda live</p><h1>I concerti della band</h1><p>Organizza date, venue e informazioni operative in un unico posto.</p></div>
-      <ion-button [routerLink]="['new']"><ion-icon slot="start" name="add" />Nuovo concerto</ion-button>
+      <ion-button [routerLink]="['nuovo']"><ion-icon slot="start" name="add" />Nuovo concerto</ion-button>
     </section>
 
     @if (!loading() && !error() && gigs().length) {
@@ -35,7 +35,7 @@
     } @else if (error()) {
       <section class="state"><ion-icon name="alert-circle-outline" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
     } @else if (!visibleGigs().length) {
-      <section class="state"><ion-icon name="calendar-clear-outline" /><h2>{{ gigs().length ? 'Nessun concerto in questa vista' : 'Nessun concerto ancora' }}</h2><p>{{ gigs().length ? 'Prova un altro filtro.' : 'Aggiungi la prima data live della band.' }}</p>@if (!gigs().length) { <ion-button [routerLink]="['new']">Aggiungi concerto</ion-button> }</section>
+      <section class="state"><ion-icon name="calendar-clear-outline" /><h2>{{ gigs().length ? 'Nessun concerto in questa vista' : 'Nessun concerto ancora' }}</h2><p>{{ gigs().length ? 'Prova un altro filtro.' : 'Aggiungi la prima data live della band.' }}</p>@if (!gigs().length) { <ion-button [routerLink]="['nuovo']">Aggiungi concerto</ion-button> }</section>
     } @else {
       <section class="gig-grid">
         @for (gig of visibleGigs(); track gig.id) {

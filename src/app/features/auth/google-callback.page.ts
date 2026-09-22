@@ -26,5 +26,5 @@ export class GoogleCallbackPage implements OnInit {
       error: () => this.error = 'Impossibile completare l’accesso con Google.',
     });
   }
-  retry(): void { void this.router.navigateByUrl('/login'); }
+  retry(): void { void this.router.navigateByUrl('/accedi'); }
 }

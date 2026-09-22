@@ -71,7 +71,7 @@ export class PosterTemplateEditorPage {
     if (!this.name.trim()) { await this.message('Inserisci un nome per il template.', 'warning'); return; }
     const item = this.storage.save(this.bandId, this.name, this.document, this.templateId ?? undefined);
     await this.message('Template salvato sul dispositivo.', 'success');
-    if (!this.templateId) await this.router.navigate(['/band', this.bandId, 'locandine', item.id, 'edit']);
+    if (!this.templateId) await this.router.navigate(['/band', this.bandId, 'locandine', item.id, 'modifica']);
   }
 
   exportPng(): void {

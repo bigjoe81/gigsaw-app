@@ -6,5 +6,5 @@ export const activeBandGuard: CanActivateFn = () => {
   const router = inject(Router);
   const bandContext = inject(BandContextService);
 
-  return bandContext.getCurrentBand() ? true : router.createUrlTree(['/bands']);
+  return bandContext.getCurrentBand() ? true : router.createUrlTree(['/band']);
 };

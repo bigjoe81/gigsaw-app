@@ -32,7 +32,7 @@ export class LoginPage {
   readonly emailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim()));
   loading = false;
   error = '';
-  readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/bands';
+  readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/band';
 
   constructor(private readonly auth: AuthService, private readonly router: Router, private readonly route: ActivatedRoute) {
   }
@@ -52,7 +52,7 @@ export class LoginPage {
     this.loading = true;
     this.error = '';
     this.auth.requestOtp({ email, purpose: 'login' }).subscribe({
-      next: ({ challenge }) => void this.router.navigate(['/verify-otp'], {
+      next: ({ challenge }) => void this.router.navigate(['/verifica-codice'], {
         queryParams: {
           challengeId: challenge.challengeId,
           email: challenge.email,

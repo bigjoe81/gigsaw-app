@@ -38,7 +38,7 @@ export class RecordingSessionFormPage implements OnInit {
       takeNumber: this.toNumber(this.form.getRawValue().takeNumber),
     };
     const request = this.editing ? this.recordingSessions.update(this.id!, payload) : this.recordingSessions.create(payload);
-    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Sessione salvata.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/bands'); }, error: (error: Error) => { this.error = error.message || 'Salvataggio non riuscito.'; this.saving = false; } });
+    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Sessione salvata.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/band'); }, error: (error: Error) => { this.error = error.message || 'Salvataggio non riuscito.'; this.saving = false; } });
   }
 
   private toNumber(value: string): number | null {

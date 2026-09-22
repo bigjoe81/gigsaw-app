@@ -111,7 +111,7 @@ export class SongListPage implements OnInit {
 
     const result = await modal.onDidDismiss<{ id: number }>();
     if (result.role === 'edit') {
-      await this.router.navigate([id, 'edit'], { relativeTo: this.route });
+      await this.router.navigate([id, 'modifica'], { relativeTo: this.route });
     } else if (result.role === 'deleted') {
       this.load();
     }

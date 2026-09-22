@@ -91,10 +91,10 @@ export class DashboardPage {
   readonly activities = signal<DashboardActivity[]>([]);
 
   readonly quickActions = [
-    { icon: 'musical-notes-outline', label: 'Aggiungi brano', route: ['repertorio', 'new'] },
-    { icon: 'list-outline', label: 'Crea scaletta', route: ['scalette', 'new'] },
-    { icon: 'mic-outline', label: 'Registra prova', route: ['prove', 'new'] },
-    { icon: 'ticket-outline', label: 'Nuovo concerto', route: ['concerti', 'new'] },
+    { icon: 'musical-notes-outline', label: 'Aggiungi brano', route: ['repertorio', 'nuovo'] },
+    { icon: 'list-outline', label: 'Crea scaletta', route: ['scalette', 'nuova'] },
+    { icon: 'mic-outline', label: 'Registra prova', route: ['prove', 'nuova'] },
+    { icon: 'ticket-outline', label: 'Nuovo concerto', route: ['concerti', 'nuovo'] },
   ];
 
   readonly repertoire = signal([
@@ -141,7 +141,7 @@ export class DashboardPage {
 
   get bandBaseUrl(): string {
     const bandId = this.bandContext.getCurrentBand();
-    return bandId ? `/band/${bandId}` : '/bands';
+    return bandId ? `/band/${bandId}` : '/band';
   }
 
   private loadDashboard(): void {

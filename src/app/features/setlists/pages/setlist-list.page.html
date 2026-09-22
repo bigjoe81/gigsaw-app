@@ -3,8 +3,8 @@
     <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
     <ion-title>Scalette</ion-title>
     <ion-buttons slot="end">
-      <ion-button [routerLink]="['templates']" aria-label="Template scalette"><ion-icon slot="icon-only" name="library-outline" /></ion-button>
-      <ion-button [routerLink]="['new']" aria-label="Nuova scaletta"><ion-icon slot="icon-only" name="add" /></ion-button>
+      <ion-button [routerLink]="['modelli']" aria-label="Template scalette"><ion-icon slot="icon-only" name="library-outline" /></ion-button>
+      <ion-button [routerLink]="['nuova']" aria-label="Nuova scaletta"><ion-icon slot="icon-only" name="add" /></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -15,8 +15,8 @@
     <section class="page-heading">
       <div><p class="eyebrow">Live workspace</p><h1>Le scalette della band</h1><p>Prepara i set, controlla tempi e passaggi, porta il PDF sul palco.</p></div>
       <div class="heading-actions">
-        <ion-button fill="outline" [routerLink]="['templates']"><ion-icon slot="start" name="library-outline" />Template</ion-button>
-        <ion-button [routerLink]="['new']"><ion-icon slot="start" name="add" />Nuova scaletta</ion-button>
+        <ion-button fill="outline" [routerLink]="['modelli']"><ion-icon slot="start" name="library-outline" />Template</ion-button>
+        <ion-button [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Nuova scaletta</ion-button>
       </div>
     </section>
 
@@ -36,7 +36,7 @@
     } @else if (error()) {
       <section class="state"><ion-icon name="alert-circle-outline" /><h2>Caricamento non riuscito</h2><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
     } @else if (!setlists().length) {
-      <section class="state empty-state"><span class="state-icon"><ion-icon name="musical-notes-outline" /></span><h2>Il palco è ancora vuoto</h2><p>Crea la prima scaletta partendo dal repertorio della band.</p><ion-button [routerLink]="['new']"><ion-icon slot="start" name="add" />Crea scaletta</ion-button></section>
+      <section class="state empty-state"><span class="state-icon"><ion-icon name="musical-notes-outline" /></span><h2>Il palco è ancora vuoto</h2><p>Crea la prima scaletta partendo dal repertorio della band.</p><ion-button [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Crea scaletta</ion-button></section>
     } @else {
       <section class="setlist-grid">
         @for (setlist of setlists(); track setlist.id) {

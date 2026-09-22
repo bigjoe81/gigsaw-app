@@ -6,8 +6,11 @@ import { SongListPage } from './pages/song-list.page';
 
 export const SONG_ROUTES: Routes = [
   { path: '', component: SongListPage },
-  { path: 'new', component: SongFormPage },
-  { path: 'link-groups', component: SongLinkGroupsPage },
+  { path: 'nuovo', component: SongFormPage },
+  { path: 'gruppi-collegati', component: SongLinkGroupsPage },
+  { path: 'new', redirectTo: 'nuovo', pathMatch: 'full' },
+  { path: 'link-groups', redirectTo: 'gruppi-collegati', pathMatch: 'full' },
+  { path: ':id/edit', redirectTo: ':id/modifica', pathMatch: 'full' },
+  { path: ':id/modifica', component: SongFormPage },
   { path: ':id', component: SongDetailPage },
-  { path: ':id/edit', component: SongFormPage },
 ];

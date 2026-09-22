@@ -158,7 +158,7 @@ export class GigFormPage implements OnInit {
     ).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Concerto salvato.', duration: 1800, color: 'success' })).present();
-        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/concerti` : '/bands');
+        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/concerti` : '/band');
       },
       error: (error: unknown) => {
         this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));

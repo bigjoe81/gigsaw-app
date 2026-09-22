@@ -56,7 +56,7 @@ export class BandInvitationPage implements OnInit {
     if (this.joining() || !this.joinCode) return;
 
     if (!this.authenticated()) {
-      void this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      void this.router.navigate(['/accedi'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
 
@@ -65,7 +65,7 @@ export class BandInvitationPage implements OnInit {
     this.bandService.join(this.joinCode).subscribe({
       next: (band) => {
         this.bandContext.setCurrentBand(band.id);
-        void this.router.navigateByUrl(`/band/${band.id}/dashboard`);
+        void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
       },
       error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
         this.error.set(

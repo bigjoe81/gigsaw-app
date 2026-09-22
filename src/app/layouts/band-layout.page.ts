@@ -20,13 +20,13 @@ import {
   listOutline,
   micOutline,
   musicalNotesOutline,
-  peopleOutline,
   pinOutline,
   radioOutline,
+  settingsOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../core/services/band-context.service';
 
-type BandSection = 'dashboard' | 'repertorio' | 'prove' | 'concerti' | 'locations' | 'scalette' | 'locandine' | 'band';
+type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'luoghi' | 'scalette' | 'locandine' | 'impostazioni';
 
 @Component({
   selector: 'app-band-layout',
@@ -58,14 +58,14 @@ export class BandLayoutPage {
     label: string;
     icon: string;
   }> = [
-    { key: 'dashboard', label: 'Dashboard', icon: 'home-outline' },
+    { key: 'panoramica', label: 'Panoramica', icon: 'home-outline' },
     { key: 'repertorio', label: 'Repertorio', icon: 'musical-notes-outline' },
     { key: 'prove', label: 'Prove', icon: 'mic-outline' },
     { key: 'concerti', label: 'Concerti', icon: 'radio-outline' },
-    { key: 'locations', label: 'Luoghi', icon: 'pin-outline' },
+    { key: 'luoghi', label: 'Luoghi', icon: 'pin-outline' },
     { key: 'scalette', label: 'Scalette', icon: 'list-outline' },
     { key: 'locandine', label: 'Locandine', icon: 'color-palette-outline' },
-    { key: 'band', label: 'Band', icon: 'people-outline' },
+    { key: 'impostazioni', label: 'Impostazioni', icon: 'settings-outline' },
   ];
 
   constructor() {
@@ -77,15 +77,15 @@ export class BandLayoutPage {
       listOutline,
       micOutline,
       musicalNotesOutline,
-      peopleOutline,
       pinOutline,
       radioOutline,
+      settingsOutline,
     });
   }
 
   sectionHref(section: BandSection): string {
     const bandId = this.route.snapshot.paramMap.get('bandId') ?? this.bandContext.getCurrentBand();
-    return bandId ? `/band/${bandId}/${section}` : '/bands';
+    return bandId ? `/band/${bandId}/${section}` : '/band';
   }
 
   handleLayoutClick(event: MouseEvent): void {
