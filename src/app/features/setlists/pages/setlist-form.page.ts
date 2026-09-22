@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { Subscription, debounceTime, finalize, forkJoin, of, Subject, timeout } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
+import { Subscription, debounceTime, finalize, forkJoin, Subject, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { GigService } from '../../gigs/services/gig.service';
 import { SongService } from '../../songs/services/song.service';
@@ -15,12 +15,12 @@ import { SetlistService } from '../services/setlist.service';
 
 @Component({ standalone: true, imports: [CommonModule, FormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
 export class SetlistFormPage implements OnInit, OnDestroy {
-  mode: 'manual' | 'magic' = 'manual'; mobileTab: 'repertoire' | 'setlist' | 'inspector' = 'setlist'; loading = true; loadError = ''; saveState: 'dirty' | 'saving' | 'saved' = 'saved';
+  mode: 'manual' | 'magic' = 'manual'; mobileTab: 'repertoire' | 'setlist' | 'inspector' = 'setlist'; loading = true; repertoireLoading = true; loadError = ''; repertoireError = ''; saveState: 'dirty' | 'saving' | 'saved' = 'saved';
   songs: Song[] = []; search = ''; genre = ''; key = ''; status = ''; sort = 'title'; selected?: SetlistItem; selectedIds = new Set<string>(); proposal?: MagicProposal; snapshot?: SetlistSnapshot; compare = false; prompt = '';
   workspace: SetlistWorkspace = { id: 'new', title: 'Nuova scaletta', sets: [{ id: uid('set'), name: 'Set 1', targetSeconds: 2700, items: [] }], updatedAt: new Date().toISOString() };
   constraints: MagicConstraints = { totalSeconds: 5400, setCount: 2, setSeconds: 2700, breakSeconds: 900, requiredSongIds: [], excludedSongIds: [], encoreSongIds: [], consecutiveGroups: [], separatedPairs: [], mandatoryMedleys: [], balanceSingers: true, energyCurve: 'wave', alternateGenres: true, separateSameKeys: true, maxDraftSongs: 2, preferLiveReady: true };
   private changes = new Subject<void>(); private sub = new Subscription(); private routeId = 'new'; private hasDraft = false; undoStack: SetlistWorkspace[] = []; redoStack: SetlistWorkspace[] = [];
-  private songsApi = inject(SongService); private gigsApi = inject(GigService); private api = inject(SetlistService); private route = inject(ActivatedRoute); private repository = inject(LocalSetlistRepository); private magic = inject(MagicSetService); private history = inject(SetlistHistoryService); validator = inject(SetlistValidationService);
+  private songsApi = inject(SongService); private gigsApi = inject(GigService); private api = inject(SetlistService); private route = inject(ActivatedRoute); private router = inject(Router); private toast = inject(ToastController); private repository = inject(LocalSetlistRepository); private magic = inject(MagicSetService); private history = inject(SetlistHistoryService); validator = inject(SetlistValidationService);
   ngOnInit() {
     this.routeId = this.route.snapshot.paramMap.get('id') ?? 'new';
     this.workspace.id = this.routeId;
@@ -35,15 +35,26 @@ export class SetlistFormPage implements OnInit, OnDestroy {
     }));
   }
   loadWorkspace() {
-    this.loading = true;
     this.loadError = '';
+    this.repertoireError = '';
+    this.repertoireLoading = true;
+
+    // A new workspace is immediately usable: only its repertoire is required.
+    // Do not make creation wait for unrelated gigs or an existing setlist.
+    if (this.routeId === 'new') {
+      this.loading = false;
+      this.loadRepertoire();
+      return;
+    }
+
+    this.loading = true;
     forkJoin({
       songs: this.songsApi.list(),
       gigs: this.gigsApi.list(),
-      setlist: this.routeId !== 'new' ? this.api.get(+this.routeId) : of(undefined),
+      setlist: this.api.get(+this.routeId),
     }).pipe(
       timeout(15000),
-      finalize(() => this.loading = false),
+      finalize(() => { this.loading = false; this.repertoireLoading = false; }),
     ).subscribe({
       next: ({ songs, gigs, setlist }) => {
         this.songs = songs;
@@ -57,6 +68,19 @@ export class SetlistFormPage implements OnInit, OnDestroy {
         this.loadError = error.name === 'TimeoutError'
           ? 'Il server sta impiegando troppo tempo a caricare il workspace.'
           : error.message || 'Impossibile caricare repertorio e scaletta.';
+      },
+    });
+  }
+  private loadRepertoire() {
+    this.songsApi.list().pipe(
+      timeout(15000),
+      finalize(() => this.repertoireLoading = false),
+    ).subscribe({
+      next: (songs) => this.songs = songs,
+      error: (error: Error) => {
+        this.repertoireError = error.name === 'TimeoutError'
+          ? 'Il repertorio sta impiegando troppo tempo. Puoi comunque preparare la scaletta e riprovare.'
+          : error.message || 'Impossibile caricare il repertorio.';
       },
     });
   }
@@ -82,7 +106,35 @@ export class SetlistFormPage implements OnInit, OnDestroy {
   restore(){if(this.snapshot)this.mutate(()=>this.workspace=this.history.restore(this.snapshot!));}
   undo(){const prior=this.undoStack.pop();if(prior){this.redoStack.push(cloneWorkspace(this.workspace));this.workspace=prior;this.changes.next();}}
   redo(){const next=this.redoStack.pop();if(next){this.undoStack.push(cloneWorkspace(this.workspace));this.workspace=next;this.changes.next();}}
-  saveNow(){this.repository.save(this.workspace);this.saveState='saved';}
+  saveNow(){
+    if (this.saveState === 'saving') return;
+    this.repository.save(this.workspace);
+    this.saveState='saving';
+    const songItems = this.workspace.sets
+      .reduce<SetlistItem[]>((items, set) => items.concat(set.items), [])
+      .filter(item => item.type === 'song' && item.song?.id);
+    const payload = {
+      title: this.workspace.title.trim() || 'Nuova scaletta',
+      songEntries: songItems.map(item => ({ songId: item.song!.id, notes: item.sharedNotes || null })),
+    };
+    const request = this.routeId === 'new' ? this.api.create(payload) : this.api.update(+this.routeId, payload);
+    request.pipe(finalize(() => { if (this.saveState === 'saving') this.saveState = 'dirty'; })).subscribe({
+      next: async (setlist) => {
+        const previousId = this.routeId;
+        this.routeId = String(setlist.id);
+        this.workspace.id = this.routeId;
+        this.repository.remove(previousId);
+        this.repository.save(this.workspace);
+        this.saveState = 'saved';
+        await (await this.toast.create({ message: 'Scaletta salvata.', duration: 1800, color: 'success' })).present();
+        if (previousId === 'new') void this.router.navigate(['..', setlist.id], { relativeTo: this.route });
+      },
+      error: async (error: Error) => {
+        this.saveState = 'dirty';
+        await (await this.toast.create({ message: error.message || 'Salvataggio non riuscito.', duration: 2400, color: 'danger' })).present();
+      },
+    });
+  }
   promptHint(text:string){this.prompt=[this.prompt.trim(),text].filter(Boolean).join(' ');}
   trackDrag(item:SetlistItem,event:DragEvent){event.dataTransfer?.setData('text/plain',item.id);}
   drop(set:WorkspaceSet,event:DragEvent){event.preventDefault();const id=event.dataTransfer?.getData('text/plain');if(id)this.mutate(()=>this.workspace=moveItem(this.workspace,id,set.id,set.items.length));}
