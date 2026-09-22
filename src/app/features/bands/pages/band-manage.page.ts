@@ -1,7 +1,7 @@
 
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -98,6 +98,7 @@ export class BandManagePage implements OnInit {
   ] as const;
 
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly bandContext = inject(BandContextService);
   private readonly bandService = inject(BandService);
   private readonly genreService = inject(GenreService);
@@ -145,6 +146,7 @@ export class BandManagePage implements OnInit {
   availableGenres: BandGenre[] = [];
   readonly loading = signal(true);
   readonly loadError = signal('');
+  readonly savingMemberInstruments = signal<number | null>(null);
   inviting = false;
   savingProfile = false;
   savingTech = false;
@@ -158,6 +160,7 @@ export class BandManagePage implements OnInit {
   readonly canShareOnWhatsApp = this.isMobileDevice();
   private bandId!: number;
   private dragCleanup?: () => void;
+  private readonly memberInstrumentDrafts = new Map<number, string>();
 
   get isAdmin(): boolean {
     return this.band?.currentUserRole === 'ADMIN';
@@ -173,6 +176,10 @@ export class BandManagePage implements OnInit {
 
   get stagePlotLayout(): FormArray {
     return this.techForm.get('stagePlotLayout') as FormArray;
+  }
+
+  openOnboarding(): void {
+    void this.router.navigate(['/inizia'], { queryParams: { ripeti: 1 } });
   }
 
   constructor() {
@@ -205,6 +212,7 @@ export class BandManagePage implements OnInit {
     ).subscribe({
       next: (band) => {
         this.band = band;
+        this.syncMemberInstrumentDrafts(band.members ?? []);
         this.patchProfileForm(band);
         this.patchTechForm(band);
       },
@@ -750,6 +758,59 @@ export class BandManagePage implements OnInit {
         this.load();
       },
     });
+  }
+
+  canEditInstruments(member: BandMember): boolean {
+    return this.isAdmin || member.id === this.auth.currentUser()?.id;
+  }
+
+  memberInstrumentsDraft(member: BandMember): string {
+    return this.memberInstrumentDrafts.get(member.id) ?? (member.instruments ?? []).join(', ');
+  }
+
+  updateMemberInstrumentsDraft(member: BandMember, event: Event): void {
+    const value = (event as CustomEvent<{ value?: string | null }>).detail?.value ?? '';
+    this.memberInstrumentDrafts.set(member.id, value);
+  }
+
+  saveMemberInstruments(member: BandMember): void {
+    if (!this.canEditInstruments(member) || this.savingMemberInstruments() !== null) return;
+
+    const instruments = this.parseInstruments(this.memberInstrumentsDraft(member));
+    this.savingMemberInstruments.set(member.id);
+    this.bandService.updateMemberInstruments(this.bandId, member.id, instruments).pipe(
+      finalize(() => this.savingMemberInstruments.set(null)),
+    ).subscribe({
+      next: async (updatedMember) => {
+        member.instruments = updatedMember.instruments;
+        this.memberInstrumentDrafts.set(member.id, (updatedMember.instruments ?? []).join(', '));
+        (await this.toast.create({ message: 'Strumenti aggiornati.', duration: 1600, color: 'success' })).present();
+      },
+      error: async (error: { error?: { message?: string } }) => {
+        (await this.toast.create({ message: error.error?.message || 'Aggiornamento strumenti non riuscito.', duration: 2200, color: 'danger' })).present();
+      },
+    });
+  }
+
+  private syncMemberInstrumentDrafts(members: BandMember[]): void {
+    this.memberInstrumentDrafts.clear();
+    for (const member of members) {
+      this.memberInstrumentDrafts.set(member.id, (member.instruments ?? []).join(', '));
+    }
+  }
+
+  private parseInstruments(value: string): string[] {
+    const seen = new Set<string>();
+    return value
+      .split(',')
+      .map((instrument) => instrument.trim())
+      .filter((instrument) => {
+        const key = instrument.toLocaleLowerCase('it');
+        if (!instrument || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .slice(0, 20);
   }
 
   roleLabel(role?: string | null): string {

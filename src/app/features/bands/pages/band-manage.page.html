@@ -30,6 +30,9 @@
         @if (band.genres?.length) {
           <ion-note class="ion-margin-top" color="medium">Generi: {{ genreLabel(band) }}</ion-note>
         }
+        <div class="action-row">
+          <ion-button type="button" size="small" fill="outline" (click)="openOnboarding()">Guida introduttiva</ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
 
@@ -549,10 +552,13 @@
       <ion-card-content>
         <ion-list inset>
           @for (member of band.members ?? []; track member.id) {
-            <ion-item>
+            <ion-item [lines]="canEditInstruments(member) ? 'none' : 'full'">
               <ion-label>
                 <h2>{{ member.name }}</h2>
                 <p>{{ roleLabel(member.role) }} · {{ member.status || 'ACTIVE' }}</p>
+                @if (!canEditInstruments(member)) {
+                  <p>Strumenti: {{ member.instruments?.length ? member.instruments.join(', ') : 'non indicati' }}</p>
+                }
               </ion-label>
               @if (isAdmin && canEditRole(member)) {
                 <ion-select
@@ -566,6 +572,22 @@
                 </ion-select>
               }
             </ion-item>
+            @if (canEditInstruments(member)) {
+              <ion-item>
+                <ion-input
+                  label="Strumenti suonati"
+                  labelPlacement="stacked"
+                  placeholder="Es. voce, chitarra, tastiere"
+                  [value]="memberInstrumentsDraft(member)"
+                  [maxlength]="500"
+                  (ionInput)="updateMemberInstrumentsDraft(member, $event)"
+                />
+                <ion-button slot="end" type="button" size="small" (click)="saveMemberInstruments(member)" [disabled]="savingMemberInstruments() !== null">
+                  @if (savingMemberInstruments() === member.id) { <ion-spinner name="crescent" /> } @else { Salva }
+                </ion-button>
+              </ion-item>
+              <ion-note class="ion-padding-horizontal" color="medium">Separa più strumenti con una virgola.</ion-note>
+            }
           }
         </ion-list>
       </ion-card-content>
