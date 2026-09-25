@@ -5,27 +5,27 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="rehearsal-form-content">
-  <main class="rehearsal-shell">
-    <aside class="rehearsal-intro">
-      <span class="eyebrow">Calendario</span>
-      <h1>{{ editing() ? 'Aggiorna la prova.' : 'Pianifica la tua prova.' }}</h1>
-      <p>Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro.</p>
-      <app-daisy-steps class="rehearsal-steps" [horizontal]="false" [steps]="[{ label: 'Dettagli', active: step() >= 1 }, { label: 'Brani da provare', active: step() >= 2 }]" ariaLabel="Avanzamento creazione prova" />
+  <main class="grid min-h-full w-full grid-cols-[minmax(260px,32%)_1fr] bg-[var(--gigsaw-background)] max-[800px]:block">
+    <aside class="flex min-h-full flex-col [background:var(--ion-gradient-brand)] px-11 py-16 text-white max-[800px]:min-h-0 max-[800px]:px-6 max-[800px]:py-7">
+      <span class="text-xs font-extrabold uppercase tracking-[.11em] text-white/80">Calendario</span>
+      <h1 class="my-3.5 text-[2.1rem] leading-[1.05] max-[800px]:m-0 max-[800px]:text-[1.8rem]">{{ editing() ? 'Aggiorna la prova.' : 'Pianifica la tua prova.' }}</h1>
+      <p class="leading-[1.55] text-white/85 max-[800px]:hidden">Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro.</p>
+      <app-daisy-steps class="mt-11 block w-full max-[800px]:mt-5" [horizontal]="false" [steps]="[{ label: 'Dettagli', active: step() >= 1 }, { label: 'Brani da provare', active: step() >= 2 }]" ariaLabel="Avanzamento creazione prova" />
     </aside>
 
-    <section class="rehearsal-panel">
+    <section class="px-[clamp(28px,5vw,72px)] py-[58px] max-[800px]:px-5 max-[800px]:py-8">
       @if (loading()) {
-        <div class="loading-state"><app-daisy-loading /> Caricamento…</div>
+        <div class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[#9aabc1]"><app-daisy-loading /> Caricamento…</div>
       } @else {
-        <form class="gigsaw-outlined-form" [formGroup]="form" (ngSubmit)="save()">
+        <form class="gigsaw-outlined-form mx-auto w-full max-w-[760px] pb-24" [formGroup]="form" (ngSubmit)="save()">
           @if (step() === 1) {
-            <header class="form-heading">
-              <span class="eyebrow">Dettagli appuntamento</span>
-              <h1>{{ editing() ? 'Modifica la prova' : 'Crea una nuova prova' }}</h1>
-              <p>Inserisci le informazioni essenziali per tutta la band.</p>
+            <header class="mb-[34px]">
+              <span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Dettagli appuntamento</span>
+              <h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">{{ editing() ? 'Modifica la prova' : 'Crea una nuova prova' }}</h1>
+              <p class="m-0 text-[#9aabc1]">Inserisci le informazioni essenziali per tutta la band.</p>
             </header>
 
-            <section class="form-card">
+            <section class="grid gap-5">
               <label>
                 <span>Titolo *</span>
                 <app-daisy-input
@@ -50,7 +50,7 @@
                 />
               </label>
 
-              <div class="time-grid">
+              <div class="grid grid-cols-2 gap-5 max-[800px]:grid-cols-1">
                 <label>
                   <span>Ora inizio</span>
                   <app-daisy-time-input name="startTime" [value]="form.controls.startTime.value" [valid]="form.controls.startTime.touched && !!form.controls.startTime.value" (valueChange)="form.controls.startTime.setValue($event)" (blurred)="form.controls.startTime.markAsTouched()" />
@@ -89,33 +89,38 @@
               @if (error()) { <app-daisy-message tone="error" messageClass="form-error">{{ error() }}</app-daisy-message> }
             </section>
 
-            <footer class="form-actions">
-              <app-daisy-button tone="outline" [routerLink]="['../']">Annulla</app-daisy-button>
-              <app-daisy-button tone="primary" (click)="continueToSongs()" [disabled]="!rehearsalRooms().length">Continua</app-daisy-button>
-            </footer>
           } @else {
-            <header class="form-heading"><span class="eyebrow">Repertorio</span><h1>Brani da provare</h1><p>Seleziona i brani da preparare durante questa prova.</p></header>
-            <section class="song-picker">
+            <header class="mb-[34px]"><span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Repertorio</span><h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">Brani da provare</h1><p class="m-0 text-[#9aabc1]">Seleziona i brani da preparare durante questa prova.</p></header>
+            <section class="grid gap-2.5">
               @if (songs().length) {
                 @for (song of songs(); track song.id) {
-                  <label class="song-option" [class.selected]="selectedSongIds().includes(song.id)">
+                  <label class="song-option grid min-h-[72px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3.5 rounded-xl border border-[#2b3b52] bg-[#0f172a] px-4 py-3" [class.selected]="selectedSongIds().includes(song.id)">
                     <app-daisy-checkbox [checked]="selectedSongIds().includes(song.id)" (checkedChange)="toggleSong(song.id, $event)" [attr.aria-label]="song.title" />
-                    <span class="song-option-copy"><strong>{{ song.title }}</strong><small>{{ song.performedBy || song.album || 'Nessun dettaglio aggiuntivo' }}</small></span>
-                    @if (song.key) { <span class="song-key">{{ song.key }}</span> }
+                    <span class="grid min-w-0 gap-1"><strong class="overflow-hidden text-ellipsis whitespace-nowrap text-[#e5edf7]">{{ song.title }}</strong><small class="text-[#9aabc1]">{{ song.performedBy || song.album || 'Nessun dettaglio aggiuntivo' }}</small></span>
+                    @if (song.key) { <span class="rounded-[7px] bg-[#172554] px-2 py-1 text-xs font-extrabold text-[#93c5fd]">{{ song.key }}</span> }
                   </label>
                 }
               } @else {
-                <div class="empty-songs"><ion-icon name="musical-notes-outline" aria-hidden="true" /><strong>Nessun brano disponibile</strong><span>Aggiungi prima qualche brano al repertorio.</span></div>
+                <div class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[#9aabc1]"><ion-icon class="text-[42px] text-[var(--ion-color-brand-blue)]" name="musical-notes-outline" aria-hidden="true" /><strong class="text-[#e5edf7]">Nessun brano disponibile</strong><span>Aggiungi prima qualche brano al repertorio.</span></div>
               }
             </section>
             @if (error()) { <app-daisy-message tone="error" messageClass="form-error">{{ error() }}</app-daisy-message> }
-            <footer class="form-actions">
-              <app-daisy-button tone="outline" (click)="step.set(1)">Indietro</app-daisy-button>
-              <app-daisy-button type="submit" tone="primary" [loading]="saving()">{{ editing() ? 'Salva modifiche' : 'Crea prova' }}</app-daisy-button>
-            </footer>
           }
         </form>
       }
     </section>
   </main>
+  @if (!loading()) {
+    <div slot="fixed" class="floating-action-toolbar" role="toolbar" aria-label="Azioni del form">
+      <div class="flex justify-end gap-2.5 p-2.5">
+        @if (step() === 1) {
+          <app-daisy-button tone="outline" buttonClass="font-bold max-[800px]:flex-1" [routerLink]="['../']">Annulla</app-daisy-button>
+          <app-daisy-button tone="primary" buttonClass="font-bold max-[800px]:flex-1" (click)="continueToSongs()" [disabled]="!rehearsalRooms().length">Continua</app-daisy-button>
+        } @else {
+          <app-daisy-button tone="outline" buttonClass="font-bold max-[800px]:flex-1" (click)="step.set(1)">Indietro</app-daisy-button>
+          <app-daisy-button tone="primary" buttonClass="font-bold max-[800px]:flex-1" [loading]="saving()" (click)="save()">{{ editing() ? 'Salva modifiche' : 'Crea prova' }}</app-daisy-button>
+        }
+      </div>
+    </div>
+  }
 </ion-content>

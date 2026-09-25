@@ -9,7 +9,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild, computed, effect, inpu
       class="gigsaw-control select w-full border border-solid border-[#3b5273] bg-[#0f172a] text-[#e5edf7] focus:outline-none {{ controlClass() }}"
       [class.select-error]="invalid()"
       [class.select-success]="valid() && !invalid()"
-      [style.border-color]="invalid() ? 'var(--color-error)' : valid() ? 'var(--color-success)' : '#3b5273'"
+      [style.border-color]="invalid() ? 'var(--color-error)' : valid() ? 'var(--color-success)' : 'var(--gigsaw-input-border)'"
       [multiple]="multiple()"
       [disabled]="disabled()"
       [value]="multiple() ? '' : singleValue()"

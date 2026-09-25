@@ -534,8 +534,8 @@
   .embedded .form-actions { background: rgba(18, 18, 18, 0.96); }
 
 .text-control {
-  --background: #111827;
-  --border-color: #2B3B52;
+  --background: var(--gigsaw-input-background);
+  --border-color: var(--gigsaw-input-border);
   --color: #E5EDF7;
   --placeholder-color: #7F90A8;
 }

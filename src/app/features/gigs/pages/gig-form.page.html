@@ -6,42 +6,42 @@
 </ion-header>
 
 <ion-content>
-  <main class="gig-shell">
-    <aside class="gig-intro">
-      <span class="eyebrow">Calendario live</span>
-      <h1>{{ editing() ? 'Aggiorna il concerto.' : 'Pianifica il prossimo live.' }}</h1>
-      <p>Data, venue e dettagli operativi: tutto ciò che serve alla band per arrivare pronta sul palco.</p>
+  <main class="grid min-h-full grid-cols-[minmax(280px,32%)_1fr] bg-[var(--gigsaw-background)] max-[800px]:block">
+    <aside class="flex min-h-full flex-col [background:var(--ion-gradient-brand)] px-11 py-16 text-white max-[800px]:min-h-0 max-[800px]:px-6 max-[800px]:py-7">
+      <span class="text-xs font-extrabold uppercase tracking-[.12em] text-white/60">Calendario live</span>
+      <h1 class="my-3.5 text-[clamp(2rem,3.3vw,2.65rem)] leading-[1.05] max-[800px]:m-0 max-[800px]:text-[1.8rem]">{{ editing() ? 'Aggiorna il concerto.' : 'Pianifica il prossimo live.' }}</h1>
+      <p class="m-0 leading-[1.55] text-white/85 max-[800px]:hidden">Data, venue e dettagli operativi: tutto ciò che serve alla band per arrivare pronta sul palco.</p>
     </aside>
 
-    <section class="gig-panel">
-      <form [formGroup]="form" (ngSubmit)="save()" class="gig-form">
-        <header class="form-heading">
-          <span class="eyebrow">Dettagli concerto</span>
-          <h1>{{ editing() ? 'Modifica il concerto' : 'Aggiungi un concerto' }}</h1>
-          <p>Inserisci le informazioni operative che serviranno a tutta la band.</p>
+    <section class="px-[clamp(28px,5vw,72px)] py-[58px] max-[800px]:px-5 max-[800px]:py-8">
+      <form [formGroup]="form" (ngSubmit)="save()" class="mx-auto w-full max-w-[760px] pb-20 text-[var(--gigsaw-text)]">
+        <header class="mb-9">
+          <span class="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Dettagli concerto</span>
+          <h1 class="my-2.5 text-[clamp(1.55rem,3vw,2rem)]">{{ editing() ? 'Modifica il concerto' : 'Aggiungi un concerto' }}</h1>
+          <p class="m-0 text-[var(--gigsaw-muted)]">Inserisci le informazioni operative che serviranno a tutta la band.</p>
         </header>
 
         @if (loading()) {
-          <div class="loading-state"><app-daisy-loading /><span>Caricamento…</span></div>
+          <div class="flex min-h-[220px] items-center justify-center gap-2.5 text-[var(--ion-color-medium)]"><app-daisy-loading /><span>Caricamento…</span></div>
         } @else {
-      <section class="form-section">
-        <div class="section-heading">
-          <ion-icon name="calendar-outline" />
-          <div><h2>Evento</h2><p>Identifica il live e indica quando inizierà.</p></div>
+      <section class="grid gap-5 pb-[30px]">
+        <div class="flex items-start gap-3">
+          <ion-icon class="shrink-0 rounded-[10px] bg-[rgba(var(--ion-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ion-color-primary)]" name="calendar-outline" />
+          <div><h2 class="m-0 text-base font-extrabold">Evento</h2><p class="mt-0.5 text-sm text-[var(--ion-color-medium)]">Identifica il live e indica quando inizierà.</p></div>
         </div>
 
-        <label class="field">
-          <span>Titolo <strong>*</strong></span>
+        <label class="grid min-w-0 gap-[7px] text-sm font-bold">
+          <span>Titolo <strong class="text-[var(--ion-color-danger)]">*</strong></span>
           <app-daisy-input name="title" placeholder="Es. Crossroads Blues Trio — Live al Bloom" [value]="form.controls.title.value" [valid]="form.controls.title.touched && form.controls.title.valid" [invalid]="form.controls.title.touched && form.controls.title.invalid" (valueChange)="form.controls.title.setValue($event)" (blurred)="form.controls.title.markAsTouched()" />
-          @if (form.controls.title.touched && form.controls.title.invalid) { <small>Inserisci un titolo.</small> }
+          @if (form.controls.title.touched && form.controls.title.invalid) { <small class="text-[var(--ion-color-danger)]">Inserisci un titolo.</small> }
         </label>
 
-        <div class="field-grid">
-          <label class="field">
-            <span>Data <strong>*</strong></span>
+        <div class="grid grid-cols-2 gap-3.5 max-[680px]:grid-cols-1">
+          <label class="grid min-w-0 gap-[7px] text-sm font-bold">
+            <span>Data <strong class="text-[var(--ion-color-danger)]">*</strong></span>
             <app-daisy-datepicker name="date" [value]="form.controls.date.value" [valid]="form.controls.date.touched && form.controls.date.valid" [invalid]="form.controls.date.touched && form.controls.date.invalid" (valueChange)="form.controls.date.setValue($event)" (blurred)="form.controls.date.markAsTouched()" />
           </label>
-          <label class="field">
+          <label class="grid min-w-0 gap-[7px] text-sm font-bold">
             <span>Ora inizio</span>
             <app-daisy-time-input name="time" [value]="form.controls.time.value" [valid]="form.controls.time.touched && !!form.controls.time.value" (valueChange)="form.controls.time.setValue($event)" (blurred)="form.controls.time.markAsTouched()" />
           </label>
@@ -49,10 +49,10 @@
 
       </section>
 
-      <section class="form-section venue-section">
-        <div class="section-heading">
-          <ion-icon name="location-outline" />
-          <div><h2>Venue</h2><p>Cerca nell’anagrafica o seleziona un nuovo indirizzo.</p></div>
+      <section class="grid gap-5 border-t border-[var(--gigsaw-border)] py-[30px]">
+        <div class="flex items-start gap-3">
+          <ion-icon class="shrink-0 rounded-[10px] bg-[rgba(var(--ion-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ion-color-primary)]" name="location-outline" />
+          <div><h2 class="m-0 text-base font-extrabold">Venue</h2><p class="mt-0.5 text-sm text-[var(--ion-color-medium)]">Cerca nell’anagrafica o seleziona un nuovo indirizzo.</p></div>
         </div>
 
         <app-daisy-input name="venueQuery" placeholder="Nome locale, indirizzo o città" [value]="venueQuery()" [valid]="!!selectedVenue() || !!pendingVenue()" [invalid]="!!error() && !selectedVenue() && !pendingVenue()" (valueChange)="onVenueQueryInput($event)" />
@@ -96,8 +96,8 @@
         }
       </section>
 
-      <section class="form-section notes-section">
-        <label class="field">
+      <section class="grid gap-5 border-t border-[var(--gigsaw-border)] pt-[30px] pb-[30px]">
+        <label class="grid min-w-0 gap-[7px] text-sm font-bold">
           <span>Note organizzative</span>
           <app-daisy-textarea name="notes" placeholder="Orari, contatti, parcheggio, indicazioni per il palco…" [value]="form.controls.notes.value" [valid]="form.controls.notes.touched && !!form.controls.notes.value" (valueChange)="form.controls.notes.setValue($event)" (blurred)="form.controls.notes.markAsTouched()" />
         </label>
@@ -105,8 +105,8 @@
 
       @if (error()) { <app-daisy-message tone="error" messageClass="error-banner">{{ error() }}</app-daisy-message> }
 
-      <div class="form-actions">
-        <app-daisy-button type="submit" tone="primary" [loading]="saving()" buttonClass="min-w-48">Salva concerto</app-daisy-button>
+      <div class="form-actions form-action-bar">
+        <app-daisy-button type="submit" tone="primary" [loading]="saving()" buttonClass="min-w-48 max-[680px]:w-full">Salva concerto</app-daisy-button>
       </div>
         }
       </form>

@@ -8,7 +8,7 @@ import { Component, input, output } from '@angular/core';
       class="gigsaw-control textarea w-full border border-solid border-[#3b5273] bg-[#0f172a] text-[#e5edf7] placeholder:text-[#64748b] focus:outline-none {{ controlClass() }}"
       [class.textarea-error]="invalid()"
       [class.textarea-success]="valid() && !invalid()"
-      [style.border-color]="invalid() ? 'var(--color-error)' : valid() ? 'var(--color-success)' : '#3b5273'"
+      [style.border-color]="invalid() ? 'var(--color-error)' : valid() ? 'var(--color-success)' : 'var(--gigsaw-input-border)'"
       [name]="name()"
       [placeholder]="placeholder()"
       [rows]="rows()"
