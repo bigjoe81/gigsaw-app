@@ -17,16 +17,16 @@
       </ion-card-content>
     </ion-card>
   } @else if(item){
-    <ion-list class="detail-list" inset>
+    <app-daisy-list listClass="detail-list">
       @for (field of config.fields; track field) {
-        <ion-item>
-          <ion-label>
+        <app-daisy-list-item>
+          <div class="list-col-grow">
             <p>{{field.label}}</p>
             <h2>{{ display(field.key) || '—' }}</h2>
-          </ion-label>
-        </ion-item>
+          </div>
+        </app-daisy-list-item>
       }
-    </ion-list>
+    </app-daisy-list>
   } @else {
     <ion-note class="ion-padding">Record non trovato.</ion-note>
   }

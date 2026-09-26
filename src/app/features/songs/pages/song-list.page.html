@@ -13,11 +13,11 @@
 <ion-content class="repertoire-content">
   <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
   @if (loading()) {
-    <ion-list>
+    <app-daisy-list>
       @for (item of [1,2,3]; track item) {
-        <ion-item><ion-label><ion-skeleton-text [animated]="true" style="width:55%" /><ion-skeleton-text [animated]="true" style="width:35%" /></ion-label></ion-item>
+        <app-daisy-list-item><div class="list-col-grow"><ion-skeleton-text [animated]="true" style="width:55%" /><ion-skeleton-text [animated]="true" style="width:35%" /></div></app-daisy-list-item>
       }
-    </ion-list>
+    </app-daisy-list>
   } @else if (error()) {
     <div class="state"><ion-icon name="alert-circle" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
   } @else if (!songs().length) {
@@ -41,24 +41,24 @@
         </div>
       </header>
 
-      <ion-list class="song-list" lines="none">
+      <app-daisy-list listClass="song-list">
         @for (song of songs(); track song.id) {
-          <ion-item class="song-row" [detail]="false" (click)="openSong(song.id)">
-            <span class="song-icon" slot="start"><ion-icon name="musical-notes-outline" /></span>
-            <ion-label>
+          <app-daisy-list-item itemClass="song-row" [interactive]="true" (selected)="openSong(song.id)">
+            <span class="song-icon"><ion-icon name="musical-notes-outline" /></span>
+            <div class="list-col-grow">
               <div class="song-heading">
                 <h2>{{ song.title }}</h2>
               </div>
               @if (song.performedBy) { <p class="artist">{{ song.performedBy }}</p> }
               <p class="metadata">{{ subtitle(song) }}</p>
-            </ion-label>
-            <div class="song-actions" slot="end">
+            </div>
+            <div class="song-actions">
               <ion-badge [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
               <span class="open-song" aria-hidden="true"><ion-icon name="chevron-forward" /></span>
             </div>
-          </ion-item>
+          </app-daisy-list-item>
         }
-      </ion-list>
+      </app-daisy-list>
     </section>
   }
 </ion-content>

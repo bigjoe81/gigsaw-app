@@ -17,7 +17,6 @@ import {
   IonInput,
   IonItem,
   IonLabel,
-  IonList,
   IonNote,
   IonSpinner,
   IonTextarea,
@@ -31,10 +30,11 @@ import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../../songs/services/song.service';
 import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
+import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonCheckbox, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonNote, IonSpinner, IonTextarea, IonTitle, IonToggle, IonToolbar],
+  imports: [ReactiveFormsModule, DaisyListComponent, DaisyListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonCheckbox, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSpinner, IonTextarea, IonTitle, IonToggle, IonToolbar],
   templateUrl: './setlist-template-form.page.html',
   styles: ['.generation-sections{display:grid;gap:18px}.gen-section{display:grid;gap:10px;padding:2px 0}.gen-section h3{margin:0;font-size:1rem;font-weight:700}.gen-intro{margin:0;color:var(--ion-color-medium-shade);font-size:.92rem;line-height:1.4}.field-help{display:block;margin:-2px 16px 0;color:var(--ion-color-medium);font-size:.82rem;line-height:1.35}.field-error{display:block;margin:-2px 16px 0;color:var(--ion-color-danger);font-size:.82rem;line-height:1.35}.invalid-field{--highlight-color-focused:var(--ion-color-danger);}.tag-suggestions{display:flex;gap:8px;flex-wrap:wrap;padding:4px 16px 0;}'],
 })

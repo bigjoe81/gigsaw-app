@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject, signal } from '@angular/core';
+import { Component, EnvironmentInjector, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import {
   IonContent,
@@ -25,6 +25,8 @@ import {
   settingsOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../core/services/band-context.service';
+import { Band } from '../features/bands/models/band.models';
+import { BandService } from '../features/bands/services/band.service';
 
 type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'luoghi' | 'scalette' | 'locandine' | 'impostazioni';
 
@@ -47,12 +49,15 @@ type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'luoghi'
     IonSplitPane,
   ],
 })
-export class BandLayoutPage {
+export class BandLayoutPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
   private readonly route = inject(ActivatedRoute);
   private readonly bandContext = inject(BandContextService);
+  private readonly bandService = inject(BandService);
   readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
   readonly menuCollapsed = signal(false);
+  readonly currentBand = signal<Band | null>(null);
+  readonly currentBandLoading = signal(true);
 
   readonly sections: Array<{
     key: BandSection;
@@ -81,6 +86,33 @@ export class BandLayoutPage {
       radioOutline,
       settingsOutline,
     });
+  }
+
+  ngOnInit(): void {
+    const bandId = Number(this.route.snapshot.paramMap.get('bandId')) || this.bandContext.getCurrentBand();
+    if (!bandId) {
+      this.currentBandLoading.set(false);
+      return;
+    }
+
+    this.bandContext.setCurrentBand(bandId);
+    this.bandService.get(bandId).subscribe({
+      next: (band) => {
+        this.currentBand.set(band);
+        this.currentBandLoading.set(false);
+      },
+      error: () => this.currentBandLoading.set(false),
+    });
+  }
+
+  bandInitials(name: string): string {
+    return name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join('')
+      .toUpperCase();
   }
 
   sectionHref(section: BandSection): string {

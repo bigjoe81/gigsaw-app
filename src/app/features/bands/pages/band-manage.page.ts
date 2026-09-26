@@ -11,20 +11,15 @@ import {
   IonCardTitle,
   IonContent,
   IonHeader,
-  IonInput,
   IonItem,
   IonLabel,
-  IonList,
   IonMenuButton,
   IonNote,
   IonIcon,
   IonReorder,
   IonReorderGroup,
-  IonSelect,
-  IonSelectOption,
   IonSkeletonText,
   IonSpinner,
-  IonTextarea,
   IonTitle,
   IonToolbar,
   ToastController,
@@ -41,11 +36,20 @@ import { BandService } from '../services/band.service';
 import { GenreService } from '../services/genre.service';
 import { BandMediaPackService } from '../services/band-media-pack.service';
 import { BandTechRiderService } from '../services/band-tech-rider.service';
+import { DaisyBadgeComponent, DaisyFileInputComponent, DaisyInputComponent, DaisyListComponent, DaisyListItemComponent, DaisySelectComponent, DaisyTextareaComponent, DaisyTypeaheadComponent, DaisyTypeaheadItem } from '../../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    DaisyFileInputComponent,
+    DaisyBadgeComponent,
+    DaisyInputComponent,
+    DaisyListComponent,
+    DaisyListItemComponent,
+    DaisyTypeaheadComponent,
+    DaisySelectComponent,
+    DaisyTextareaComponent,
     IonButton,
     IonButtons,
     IonCard,
@@ -54,27 +58,52 @@ import { BandTechRiderService } from '../services/band-tech-rider.service';
     IonCardTitle,
     IonContent,
     IonHeader,
-    IonInput,
     IonItem,
     IonIcon,
     IonLabel,
-    IonList,
     IonMenuButton,
     IonNote,
-    IonSelect,
-    IonSelectOption,
     IonReorder,
     IonReorderGroup,
     IonSkeletonText,
     IonSpinner,
-    IonTextarea,
     IonTitle,
     IonToolbar
 ],
   templateUrl: './band-manage.page.html',
+  styleUrl: './band-manage.page.scss',
   styles: ['.action-row{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0 8px;}.profile-logo{width:96px;height:96px;border-radius:20px;object-fit:cover;display:block;margin:0 auto 16px;box-shadow:0 10px 24px rgba(0,0,0,.12);}.press-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;margin-top:16px;}.press-photo-card{display:grid;gap:8px;}.press-photo-thumb{width:100%;aspect-ratio:1;border-radius:16px;object-fit:cover;background:var(--ion-color-light);}.channel-row{display:grid;gap:10px;padding:12px 0;border-bottom:1px solid var(--ion-color-light);}.stage-plot-grid{display:grid;gap:12px;margin-top:16px;}.stage-preview-shell{display:grid;gap:10px;}.stage-preview-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--ion-color-medium);letter-spacing:.05em;text-transform:uppercase;}.stage-preview{position:relative;min-height:280px;border-radius:22px;background:radial-gradient(circle at top,rgba(var(--ion-color-primary-rgb),0.14),transparent 35%),linear-gradient(180deg,rgba(10,23,35,.96) 0%,rgba(19,38,54,.95) 58%,rgba(11,18,27,.98) 100%);border:1px solid rgba(140,190,222,.28);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),0 18px 42px rgba(4,9,15,.26);}.stage-preview::before{content:\"\";position:absolute;inset:18px;background:repeating-linear-gradient(90deg,rgba(120,168,194,.12) 0 1px,transparent 1px 20%),repeating-linear-gradient(180deg,rgba(120,168,194,.12) 0 1px,transparent 1px 20%);border-radius:18px;}.stage-preview::after{content:\"AUDIENCE / FOH\";position:absolute;left:24px;right:24px;bottom:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);font-size:.74rem;letter-spacing:.14em;color:rgba(235,245,255,.7);text-align:center;}.stage-frame-label{position:absolute;font-size:.72rem;letter-spacing:.16em;color:rgba(231,242,251,.58);text-transform:uppercase;pointer-events:none;}.stage-frame-label.top{top:10px;left:50%;transform:translateX(-50%);}.stage-frame-label.left{left:6px;top:50%;transform:translateY(-50%) rotate(-90deg);}.stage-frame-label.right{right:6px;top:50%;transform:translateY(-50%) rotate(90deg);}.stage-grid-note{font-size:.78rem;color:var(--ion-color-medium);}.stage-plot-item{position:absolute;transform:translate(-50%,-50%);display:grid;gap:4px;align-items:center;justify-items:center;padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);background:rgba(18,29,40,.9);color:#f3f7fa;font-size:.78rem;line-height:1.2;min-width:92px;max-width:120px;text-align:center;box-shadow:0 12px 26px rgba(0,0,0,.28);cursor:grab;touch-action:none;user-select:none;}.stage-plot-item:active{cursor:grabbing;}.stage-plot-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,.08);font-size:1.05rem;font-weight:700;letter-spacing:.05em;}.stage-plot-badge{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(236,244,250,.72);}.stage-plot-name{font-weight:600;}.stage-plot-role{font-size:.7rem;color:rgba(236,244,250,.8);}.stage-plot-item[data-kind=\"drums\"]{background:rgba(139,31,31,.9);}.stage-plot-item[data-kind=\"drums\"] .stage-plot-icon{background:rgba(255,234,234,.14);}.stage-plot-item[data-kind=\"vocal\"]{background:rgba(17,103,84,.92);}.stage-plot-item[data-kind=\"bass\"]{background:rgba(18,82,128,.92);}.stage-plot-item[data-kind=\"guitar\"]{background:rgba(140,82,20,.92);}.stage-plot-item[data-kind=\"keys\"]{background:rgba(79,45,130,.92);}.stage-plot-item[data-kind=\"other\"]{background:rgba(48,61,76,.92);}'],
 })
 export class BandManagePage implements OnInit {
+  readonly settingsSection = signal<'profile' | 'tech' | 'media' | 'team'>('profile');
+  readonly techSection = signal<'channels' | 'stage' | 'notes'>('channels');
+  readonly selectedStageItem = signal<number | null>(null);
+  readonly genreQuery = signal('');
+
+  get genreTypeaheadItems(): DaisyTypeaheadItem[] {
+    const selected = new Set(this.profileForm.controls.genres.value);
+    return this.availableGenres
+      .filter((genre): genre is BandGenre & { id: number; name: string } => Number.isInteger(genre.id) && !!genre.name)
+      .filter((genre) => !selected.has(genre.id))
+      .map((genre) => ({ id: genre.id, label: genre.name, data: genre }));
+  }
+  readonly quickChannels: ReadonlyArray<Pick<BandInputChannel, 'name' | 'source'>> = [
+    { name: 'Voce', source: 'Mic' },
+    { name: 'Chitarra', source: 'Mic' },
+    { name: 'Basso', source: 'DI' },
+    { name: 'Tastiere L', source: 'DI' },
+    { name: 'Tastiere R', source: 'DI' },
+    { name: 'Kick', source: 'Mic' },
+    { name: 'Snare', source: 'Mic' },
+  ];
+  readonly stageItems = [
+    { label: 'Voce', instrument: 'Voce' },
+    { label: 'Chitarra', instrument: 'Chitarra' },
+    { label: 'Basso', instrument: 'Basso' },
+    { label: 'Tastiere', instrument: 'Tastiere' },
+    { label: 'Batteria', instrument: 'Batteria' },
+    { label: 'Monitor', instrument: 'Monitor' },
+  ] as const;
   readonly techPresets = [
     { id: 'rock-quartet', label: 'Quartetto rock' },
     { id: 'power-trio', label: 'Power trio' },
@@ -178,8 +207,17 @@ export class BandManagePage implements OnInit {
     return this.techForm.get('stagePlotLayout') as FormArray;
   }
 
+  get selectedGenres(): BandGenre[] {
+    const selected = new Set(this.profileForm.controls.genres.value);
+    return this.availableGenres.filter((genre) => genre.id !== undefined && selected.has(genre.id));
+  }
+
   openOnboarding(): void {
     void this.router.navigate(['/inizia'], { queryParams: { ripeti: 1 } });
+  }
+
+  selectSettingsSection(section: 'profile' | 'tech' | 'media' | 'team'): void {
+    this.settingsSection.set(section);
   }
 
   constructor() {
@@ -212,6 +250,7 @@ export class BandManagePage implements OnInit {
     ).subscribe({
       next: (band) => {
         this.band = band;
+        if (band.currentUserRole !== 'ADMIN') this.settingsSection.set('team');
         this.syncMemberInstrumentDrafts(band.members ?? []);
         this.patchProfileForm(band);
         this.patchTechForm(band);
@@ -264,6 +303,7 @@ export class BandManagePage implements OnInit {
     for (const item of band.stagePlotLayout ?? []) {
       this.stagePlotLayout.push(this.createStagePlotItemGroup(item));
     }
+    this.selectedStageItem.set(null);
   }
 
   patchProfileForm(band: Band): void {
@@ -288,6 +328,29 @@ export class BandManagePage implements OnInit {
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     this.selectedLogoFile = input?.files?.[0] ?? null;
+  }
+
+  onLogoFilesSelected(files: File[]): void {
+    this.selectedLogoFile = files[0] ?? null;
+  }
+
+  setGenreValues(value: string | string[]): void {
+    const values = Array.isArray(value) ? value : [value];
+    this.profileForm.controls.genres.setValue(values.map(Number).filter(Number.isInteger));
+  }
+
+  selectGenre(item: DaisyTypeaheadItem): void {
+    const genreId = Number(item.id);
+    if (!Number.isInteger(genreId) || this.profileForm.controls.genres.value.includes(genreId)) return;
+    this.profileForm.controls.genres.setValue([...this.profileForm.controls.genres.value, genreId]);
+    this.profileForm.controls.genres.markAsDirty();
+    this.genreQuery.set('');
+  }
+
+  removeGenre(genreId: number | undefined): void {
+    if (!Number.isInteger(genreId)) return;
+    this.profileForm.controls.genres.setValue(this.profileForm.controls.genres.value.filter((id) => id !== genreId));
+    this.profileForm.controls.genres.markAsDirty();
   }
 
   saveProfile(): void {
@@ -336,6 +399,16 @@ export class BandManagePage implements OnInit {
   onPressPhotosSelected(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     this.selectedPressPhotos = Array.from(input?.files ?? []);
+  }
+
+  onPressPhotoFilesSelected(files: File[]): void {
+    this.selectedPressPhotos = files;
+  }
+
+  changeRoleValue(member: BandMember, role: string | string[]): void {
+    const value = Array.isArray(role) ? role[0] : role;
+    if (!value || value === member.role) return;
+    this.updateRole(member, value);
   }
 
   uploadPressPhotos(): void {
@@ -395,17 +468,18 @@ export class BandManagePage implements OnInit {
     await this.mediaPackService.shareZip(this.bandId, `${this.band.name} media pack`);
   }
 
-  addInputChannel(): void {
+  addInputChannel(channel?: Partial<BandInputChannel>): void {
     this.inputChannels.push(this.createInputChannelGroup({
       channel: this.inputChannels.length + 1,
-      name: '',
-      source: '',
-      notes: '',
+      name: channel?.name ?? '',
+      source: channel?.source ?? '',
+      notes: channel?.notes ?? '',
     }));
   }
 
   removeInputChannel(index: number): void {
     this.inputChannels.removeAt(index);
+    this.renumberInputChannels();
   }
 
   reorderInputChannels(event: ItemReorderCustomEvent): void {
@@ -414,6 +488,7 @@ export class BandManagePage implements OnInit {
     controls.splice(event.detail.to, 0, moved);
     this.inputChannels.clear();
     controls.forEach((control) => this.inputChannels.push(control));
+    this.renumberInputChannels();
     event.detail.complete();
   }
 
@@ -425,10 +500,32 @@ export class BandManagePage implements OnInit {
       x: 50,
       y: 50,
     }));
+    this.selectedStageItem.set(this.stagePlotLayout.length - 1);
+  }
+
+  addStageItem(label: string, instrument: string): void {
+    const offset = (this.stagePlotLayout.length % 5) * 8;
+    this.stagePlotLayout.push(this.createStagePlotItemGroup({
+      id: crypto.randomUUID?.() ?? String(Date.now()),
+      label,
+      instrument,
+      x: 34 + offset,
+      y: 48 + (this.stagePlotLayout.length % 2) * 16,
+    }));
+    this.selectedStageItem.set(this.stagePlotLayout.length - 1);
   }
 
   removeStagePlotItem(index: number): void {
     this.stagePlotLayout.removeAt(index);
+    this.selectedStageItem.set(null);
+  }
+
+  selectStageItem(index: number): void {
+    this.selectedStageItem.set(index);
+  }
+
+  private renumberInputChannels(): void {
+    this.inputChannels.controls.forEach((control, index) => control.get('channel')?.setValue(index + 1));
   }
 
   async applyTechPreset(presetId: string): Promise<void> {
@@ -439,6 +536,7 @@ export class BandManagePage implements OnInit {
 
     this.stagePlotLayout.clear();
     preset.stagePlotLayout.forEach((item) => this.stagePlotLayout.push(this.createStagePlotItemGroup(item)));
+    this.selectedStageItem.set(null);
 
     this.techForm.patchValue({
       stagePlotNotes: preset.stagePlotNotes,
@@ -479,6 +577,7 @@ export class BandManagePage implements OnInit {
 
     this.stagePlotLayout.clear();
     preset.stagePlotLayout.forEach((item) => this.stagePlotLayout.push(this.createStagePlotItemGroup(item)));
+    this.selectedStageItem.set(null);
 
     if (preset.stagePlotNotes) {
       this.techForm.patchValue({
@@ -748,6 +847,10 @@ export class BandManagePage implements OnInit {
     const role = (event as CustomEvent<{ value?: string }>).detail?.value;
     if (!role || role === member.role) return;
 
+    this.updateRole(member, role);
+  }
+
+  private updateRole(member: BandMember, role: string): void {
     this.bandService.updateMemberRole(this.bandId, member.id, role).subscribe({
       next: async () => {
         member.role = role;
@@ -770,6 +873,10 @@ export class BandManagePage implements OnInit {
 
   updateMemberInstrumentsDraft(member: BandMember, event: Event): void {
     const value = (event as CustomEvent<{ value?: string | null }>).detail?.value ?? '';
+    this.memberInstrumentDrafts.set(member.id, value);
+  }
+
+  updateMemberInstrumentsValue(member: BandMember, value: string): void {
     this.memberInstrumentDrafts.set(member.id, value);
   }
 

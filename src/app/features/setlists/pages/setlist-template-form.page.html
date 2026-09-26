@@ -78,51 +78,51 @@
     <ion-card>
       <ion-card-header><ion-card-title>Opening</ion-card-title></ion-card-header>
       <ion-card-content>
-        <ion-list inset>
+        <app-daisy-list>
           @for (song of songs; track song.id) {
-            <ion-item>
-              <ion-checkbox slot="start" [checked]="segmentSelected('opening', song)" (ionChange)="toggleSegmentSong('opening', song)" />
-              <ion-label>
+            <app-daisy-list-item>
+              <ion-checkbox [checked]="segmentSelected('opening', song)" (ionChange)="toggleSegmentSong('opening', song)" />
+              <div class="list-col-grow">
                 <h2>{{ song.title }}</h2>
                 <p>{{ songMeta(song) }}</p>
-              </ion-label>
-            </ion-item>
+              </div>
+            </app-daisy-list-item>
           }
-        </ion-list>
+        </app-daisy-list>
       </ion-card-content>
     </ion-card>
 
     <ion-card>
       <ion-card-header><ion-card-title>Closing</ion-card-title></ion-card-header>
       <ion-card-content>
-        <ion-list inset>
+        <app-daisy-list>
           @for (song of songs; track song.id) {
-            <ion-item>
-              <ion-checkbox slot="start" [checked]="segmentSelected('closing', song)" (ionChange)="toggleSegmentSong('closing', song)" />
-              <ion-label>
+            <app-daisy-list-item>
+              <ion-checkbox [checked]="segmentSelected('closing', song)" (ionChange)="toggleSegmentSong('closing', song)" />
+              <div class="list-col-grow">
                 <h2>{{ song.title }}</h2>
                 <p>{{ songMeta(song) }}</p>
-              </ion-label>
-            </ion-item>
+              </div>
+            </app-daisy-list-item>
           }
-        </ion-list>
+        </app-daisy-list>
       </ion-card-content>
     </ion-card>
 
     <ion-card>
       <ion-card-header><ion-card-title>Encore</ion-card-title></ion-card-header>
       <ion-card-content>
-        <ion-list inset>
+        <app-daisy-list>
           @for (song of songs; track song.id) {
-            <ion-item>
-              <ion-checkbox slot="start" [checked]="segmentSelected('encore', song)" (ionChange)="toggleSegmentSong('encore', song)" />
-              <ion-label>
+            <app-daisy-list-item>
+              <ion-checkbox [checked]="segmentSelected('encore', song)" (ionChange)="toggleSegmentSong('encore', song)" />
+              <div class="list-col-grow">
                 <h2>{{ song.title }}</h2>
                 <p>{{ songMeta(song) }}</p>
-              </ion-label>
-            </ion-item>
+              </div>
+            </app-daisy-list-item>
           }
-        </ion-list>
+        </app-daisy-list>
       </ion-card-content>
     </ion-card>
 

@@ -12,7 +12,6 @@ import {
   IonHeader,
   IonItem,
   IonLabel,
-  IonList,
   IonNote,
   IonSkeletonText,
   IonTitle,
@@ -21,10 +20,11 @@ import {
 } from '@ionic/angular/standalone';
 import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
+import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonList, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [RouterLink, DaisyListComponent, DaisyListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './setlist-template-detail.page.html',
 })
 export class SetlistTemplateDetailPage implements OnInit {

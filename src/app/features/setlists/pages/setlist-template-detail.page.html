@@ -14,18 +14,18 @@
   } @else if (!template) {
     <ion-note class="ion-padding">Template non trovato.</ion-note>
   } @else {
-    <ion-list inset>
-      <ion-item><ion-label><p>Nome</p><h2>{{ template.name }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Descrizione</p><h2>{{ template.description || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Target brani</p><h2>{{ template.targetSongCount || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Tag brani</p><h2>{{ template.songTags?.join(', ') || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Durata show</p><h2>{{ formatSeconds(template.totalShowDurationSeconds) }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Set</p><h2>{{ template.setCount || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Target set</p><h2>{{ template.setTargets?.join(', ') || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Pausa</p><h2>{{ formatSeconds(template.breakDurationSeconds) }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Opening IDs</p><h2>{{ template.openingSongIds?.join(', ') || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Closing IDs</p><h2>{{ template.closingSongIds?.join(', ') || '—' }}</h2></ion-label></ion-item>
-      <ion-item><ion-label><p>Encore IDs</p><h2>{{ template.encoreSongIds?.join(', ') || '—' }}</h2></ion-label></ion-item>
-    </ion-list>
+    <app-daisy-list>
+      <app-daisy-list-item><div class="list-col-grow"><p>Nome</p><h2>{{ template.name }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Descrizione</p><h2>{{ template.description || '—' }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Target brani</p><h2>{{ template.targetSongCount || '—' }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Tag brani</p><h2>{{ template.songTags?.join(', ') || '—' }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Durata show</p><h2>{{ formatSeconds(template.totalShowDurationSeconds) }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Set</p><h2>{{ template.setCount || '—' }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Target set</p><h2>{{ template.setTargets?.join(', ') || '—' }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Pausa</p><h2>{{ formatSeconds(template.breakDurationSeconds) }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Opening IDs</p><h2>{{ template.openingSongIds?.join(', ') || '—' }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Closing IDs</p><h2>{{ template.closingSongIds?.join(', ') || '—' }}</h2></div></app-daisy-list-item>
+      <app-daisy-list-item><div class="list-col-grow"><p>Encore IDs</p><h2>{{ template.encoreSongIds?.join(', ') || '—' }}</h2></div></app-daisy-list-item>
+    </app-daisy-list>
   }
 </ion-content>

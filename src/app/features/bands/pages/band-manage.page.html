@@ -36,8 +36,25 @@
       </ion-card-content>
     </ion-card>
 
+    <nav class="settings-nav" aria-label="Sezioni impostazioni band">
+      @if (isAdmin) {
+        <button type="button" [class.active]="settingsSection() === 'profile'" (click)="selectSettingsSection('profile')">
+          <span class="settings-nav-icon">◎</span><span>Profilo<small>Identità e contatti</small></span>
+        </button>
+        <button type="button" [class.active]="settingsSection() === 'tech'" (click)="selectSettingsSection('tech')">
+          <span class="settings-nav-icon">⌁</span><span>Tech kit<small>Canali e palco</small></span>
+        </button>
+        <button type="button" [class.active]="settingsSection() === 'media'" (click)="selectSettingsSection('media')">
+          <span class="settings-nav-icon">▣</span><span>Media<small>Foto e press kit</small></span>
+        </button>
+      }
+      <button type="button" [class.active]="settingsSection() === 'team'" (click)="selectSettingsSection('team')">
+        <span class="settings-nav-icon">♢</span><span>Membri<small>Ruoli e inviti</small></span>
+      </button>
+    </nav>
+
     @if (isAdmin) {
-      <ion-card>
+      <ion-card [class.section-hidden]="settingsSection() !== 'team'">
         <ion-card-header>
           <ion-card-title>Invita membri</ion-card-title>
         </ion-card-header>
@@ -45,7 +62,7 @@
           <ion-note color="medium">Condividi questo link: chi lo apre trova subito il pulsante “Partecipa”.</ion-note>
           <ion-item class="ion-margin-top">
             <ion-label position="stacked">Link d’invito</ion-label>
-            <ion-input [value]="bandInviteLink" readonly />
+            <app-daisy-input [value]="bandInviteLink" [disabled]="true" />
           </ion-item>
           <div class="action-row">
             <ion-button type="button" (click)="copyBandInviteLink()" [disabled]="!bandInviteLink">
@@ -63,97 +80,82 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-card>
+      <ion-card [class.section-hidden]="settingsSection() !== 'profile'">
         <ion-card-header>
           <ion-card-title>Profilo band</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-            @if (band.logo) {
-              <img [src]="band.logo" alt="Logo band" class="profile-logo" />
-            }
+          <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+            <section class="profile-identity">
+              <div class="profile-logo-panel">
+                @if (band.logo) { <img [src]="band.logo" alt="Logo band" class="profile-logo" /> }
+                @else { <div class="profile-logo profile-logo-placeholder">{{ band.name.slice(0, 2).toUpperCase() }}</div> }
+                <app-daisy-file-input label="Cambia logo" accept="image/*" (filesChange)="onLogoFilesSelected($event)" />
+              </div>
+              <div class="profile-primary-fields">
+                <div class="field full"><label>Nome band</label><app-daisy-input [value]="profileForm.controls.name.value" [invalid]="profileForm.controls.name.touched && profileForm.controls.name.invalid" (valueChange)="profileForm.controls.name.setValue($event)" (blurred)="profileForm.controls.name.markAsTouched()" /></div>
+                <div class="field"><label>Città</label><app-daisy-input [value]="profileForm.controls.city.value" placeholder="Es. Milano" (valueChange)="profileForm.controls.city.setValue($event)" /></div>
+                <div class="field"><label>Paese</label><app-daisy-input [value]="profileForm.controls.country.value" placeholder="Es. Italia" (valueChange)="profileForm.controls.country.setValue($event)" /></div>
+                <div class="field full">
+                  <label>Generi</label>
+                  <app-daisy-typeahead
+                    name="genreQuery"
+                    [value]="genreQuery()"
+                    [items]="genreTypeaheadItems"
+                    [minChars]="0"
+                    [maxResults]="40"
+                    placeholder="Cerca un genere musicale…"
+                    emptyMessage="Nessun genere trovato."
+                    (valueChange)="genreQuery.set($event)"
+                    (selected)="selectGenre($event)"
+                  />
+                  @if (selectedGenres.length) {
+                    <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Generi selezionati">
+                      @for (genre of selectedGenres; track genre.id) {
+                        <app-daisy-badge
+                          tone="primary"
+                          appearance="outline"
+                          size="lg"
+                          [dismissible]="true"
+                          [dismissLabel]="'Rimuovi ' + genre.name"
+                          (dismissed)="removeGenre(genre.id)"
+                        >
+                          {{ genre.name }}
+                        </app-daisy-badge>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </section>
 
-            <ion-item>
-              <ion-label position="stacked">Nome band</ion-label>
-              <ion-input formControlName="name" />
-            </ion-item>
+            <section class="profile-section">
+              <div class="profile-section-title"><span>01</span><div><h3>Presentazione</h3><p>Il testo che vedranno promoter e venue.</p></div></div>
+              <div class="profile-bio-grid">
+                <div class="field"><label>Bio breve</label><app-daisy-textarea [rows]="4" [value]="profileForm.controls.bioShort.value" placeholder="Descrivi la band in poche righe" (valueChange)="profileForm.controls.bioShort.setValue($event)" /></div>
+                <div class="field"><label>Bio completa</label><app-daisy-textarea [rows]="7" [value]="profileForm.controls.bio.value" placeholder="Storia, influenze e progetto artistico" (valueChange)="profileForm.controls.bio.setValue($event)" /></div>
+              </div>
+            </section>
 
-            <ion-item>
-              <ion-label position="stacked">Logo</ion-label>
-              <input type="file" accept="image/*" (change)="onLogoSelected($event)" />
-            </ion-item>
-            @if (selectedLogoFile) {
-              <ion-note class="ion-padding-horizontal ion-padding-top" color="medium">{{ selectedLogoFile.name }}</ion-note>
-            }
+            <section class="profile-section">
+              <div class="profile-section-title"><span>02</span><div><h3>Contatti</h3><p>Riferimenti pubblici per richieste e booking.</p></div></div>
+              <div class="profile-fields-grid three">
+                <div class="field"><label>Email</label><app-daisy-input type="email" [value]="profileForm.controls.email.value" [invalid]="profileForm.controls.email.touched && profileForm.controls.email.invalid" placeholder="booking@band.it" (valueChange)="profileForm.controls.email.setValue($event)" (blurred)="profileForm.controls.email.markAsTouched()" /></div>
+                <div class="field"><label>Telefono</label><app-daisy-input type="tel" [value]="profileForm.controls.phone.value" placeholder="+39..." (valueChange)="profileForm.controls.phone.setValue($event)" /></div>
+                <div class="field"><label>Sito web</label><app-daisy-input type="url" [value]="profileForm.controls.website.value" placeholder="https://" (valueChange)="profileForm.controls.website.setValue($event)" /></div>
+              </div>
+            </section>
 
-            <ion-item>
-              <ion-label position="stacked">Generi</ion-label>
-              <ion-select formControlName="genres" interface="popover" multiple="true">
-                @for (genre of availableGenres; track genre.id) {
-                  <ion-select-option [value]="genre.id">{{ genre.name }}</ion-select-option>
-                }
-              </ion-select>
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Bio breve</ion-label>
-              <ion-input formControlName="bioShort" maxlength="500" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Bio completa</ion-label>
-              <ion-textarea formControlName="bio" autoGrow="true" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Città</ion-label>
-              <ion-input formControlName="city" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Paese</ion-label>
-              <ion-input formControlName="country" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Email contatto</ion-label>
-              <ion-input type="email" formControlName="email" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Telefono</ion-label>
-              <ion-input formControlName="phone" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Sito web</ion-label>
-              <ion-input type="url" formControlName="website" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Instagram</ion-label>
-              <ion-input type="url" formControlName="instagramUrl" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Facebook</ion-label>
-              <ion-input type="url" formControlName="facebookUrl" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">YouTube</ion-label>
-              <ion-input type="url" formControlName="youtubeUrl" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Spotify</ion-label>
-              <ion-input type="url" formControlName="spotifyUrl" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">TikTok</ion-label>
-              <ion-input type="url" formControlName="tiktokUrl" />
-            </ion-item>
+            <section class="profile-section">
+              <div class="profile-section-title"><span>03</span><div><h3>Social e streaming</h3><p>Collega i canali ufficiali della band.</p></div></div>
+              <div class="profile-fields-grid">
+                <div class="field"><label>Instagram</label><app-daisy-input type="url" [value]="profileForm.controls.instagramUrl.value" placeholder="https://instagram.com/..." (valueChange)="profileForm.controls.instagramUrl.setValue($event)" /></div>
+                <div class="field"><label>Facebook</label><app-daisy-input type="url" [value]="profileForm.controls.facebookUrl.value" placeholder="https://facebook.com/..." (valueChange)="profileForm.controls.facebookUrl.setValue($event)" /></div>
+                <div class="field"><label>YouTube</label><app-daisy-input type="url" [value]="profileForm.controls.youtubeUrl.value" placeholder="https://youtube.com/..." (valueChange)="profileForm.controls.youtubeUrl.setValue($event)" /></div>
+                <div class="field"><label>Spotify</label><app-daisy-input type="url" [value]="profileForm.controls.spotifyUrl.value" placeholder="https://open.spotify.com/..." (valueChange)="profileForm.controls.spotifyUrl.setValue($event)" /></div>
+                <div class="field"><label>TikTok</label><app-daisy-input type="url" [value]="profileForm.controls.tiktokUrl.value" placeholder="https://tiktok.com/..." (valueChange)="profileForm.controls.tiktokUrl.setValue($event)" /></div>
+              </div>
+            </section>
 
             @if (profileError) {
               <ion-note class="ion-padding-top" color="danger">{{ profileError }}</ion-note>
@@ -166,7 +168,7 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-card>
+      <ion-card [class.section-hidden]="settingsSection() !== 'media'">
         <ion-card-header>
           <ion-card-title>Media</ion-card-title>
         </ion-card-header>
@@ -183,7 +185,7 @@
           </div>
           <ion-item>
             <ion-label position="stacked">Foto promo</ion-label>
-            <input type="file" accept="image/*" multiple (change)="onPressPhotosSelected($event)" />
+            <app-daisy-file-input accept="image/*" [multiple]="true" (filesChange)="onPressPhotoFilesSelected($event)" />
           </ion-item>
           @if (selectedPressPhotos.length) {
             <ion-note class="ion-padding-horizontal ion-padding-top" color="medium">
@@ -217,7 +219,7 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-card>
+      <ion-card [class.section-hidden]="settingsSection() !== 'media'">
         <ion-card-header>
           <ion-card-title>Press kit</ion-card-title>
         </ion-card-header>
@@ -238,209 +240,174 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-card>
+      <ion-card class="tech-card" [class.section-hidden]="settingsSection() !== 'tech'">
         <ion-card-header>
-          <ion-card-title>Tecnica</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <form [formGroup]="techForm" (ngSubmit)="saveTech()">
-            <ion-item>
-              <ion-label position="stacked">Note fonico</ion-label>
-              <ion-textarea formControlName="soundEngineerNotes" autoGrow="true" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Stage plot note</ion-label>
-              <ion-textarea formControlName="stagePlotNotes" autoGrow="true" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Monitor mix note</ion-label>
-              <ion-textarea formControlName="monitorMixNotes" autoGrow="true" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Backline note</ion-label>
-              <ion-textarea formControlName="backlineNotes" autoGrow="true" />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">Hospitality note</ion-label>
-              <ion-textarea formControlName="hospitalityNotes" autoGrow="true" />
-            </ion-item>
-
-            <div class="action-row">
-              @for (preset of techPresets; track preset.id) {
-                <ion-button size="small" fill="outline" type="button" (click)="applyTechPreset(preset.id)">
-                  {{ preset.label }}
-                </ion-button>
-              }
+          <div class="tech-heading">
+            <div>
+              <span class="eyebrow">Live setup</span>
+              <ion-card-title>Tech kit</ion-card-title>
+              <p>Prepara input list e disposizione palco in modo visuale.</p>
             </div>
-
-            <ion-note color="medium">I preset sovrascrivono temporaneamente stage plot e lista canali finché non salvi la scheda tecnica.</ion-note>
-
-            <div class="action-row">
-              @for (preset of inputChannelPresets; track preset.id) {
-                <ion-button size="small" fill="outline" type="button" (click)="applyInputChannelPreset(preset.id)">
-                  {{ preset.label }}
-                </ion-button>
-              }
-            </div>
-
-            <ion-note color="medium">I preset canali aggiornano solo la input list e, se previsto, le note monitor/backline.</ion-note>
-
-            <div class="action-row">
-              @for (preset of drumMergePresets; track preset.id) {
-                <ion-button size="small" fill="outline" type="button" (click)="mergeDrumMikingPreset(preset.id)">
-                  {{ preset.label }}
-                </ion-button>
-              }
-            </div>
-
-            <ion-note color="medium">I preset drum merge aggiungono solo i canali batteria mancanti e rinumerano la lista.</ion-note>
-
-            <div class="action-row">
-              @for (preset of stagePlotPresets; track preset.id) {
-                <ion-button size="small" fill="outline" type="button" (click)="applyStagePlotPreset(preset.id)">
-                  {{ preset.label }}
-                </ion-button>
-              }
-            </div>
-
-            <ion-note color="medium">I preset stage plot aggiornano solo la disposizione sul palco e le note relative.</ion-note>
-
-            <div class="action-row">
-              <ion-button size="small" fill="outline" type="button" (click)="addInputChannel()">
-                <ion-icon slot="start" name="add-circle-outline" />
-                Aggiungi canale
-              </ion-button>
-              <ion-button size="small" fill="outline" type="button" (click)="addStagePlotItem()">
-                <ion-icon slot="start" name="add-circle-outline" />
-                Aggiungi posizione palco
-              </ion-button>
+            <div class="tech-heading-actions">
               <ion-button size="small" type="button" (click)="exportTechRider()">
-                <ion-icon slot="start" name="download-outline" />
-                Esporta PDF
+                <ion-icon slot="start" name="download-outline" /> PDF
               </ion-button>
               <ion-button size="small" fill="outline" type="button" (click)="shareTechRider()">
-                <ion-icon slot="start" name="share-outline" />
-                Condividi
+                <ion-icon slot="start" name="share-outline" /> Condividi
               </ion-button>
             </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <form class="tech-form" [formGroup]="techForm" (ngSubmit)="saveTech()">
+            <div class="preset-strip">
+              <span>Parti da un setup:</span>
+              <div class="chip-row">
+                @for (preset of techPresets; track preset.id) {
+                  <button type="button" class="preset-chip" (click)="applyTechPreset(preset.id)">{{ preset.label }}</button>
+                }
+              </div>
+            </div>
 
-            <div formArrayName="inputChannels">
+            <nav class="tech-tabs" aria-label="Sezioni scheda tecnica">
+              <button type="button" [class.active]="techSection() === 'channels'" (click)="techSection.set('channels')">
+                <span>01</span> Canali <b>{{ inputChannels.length }}</b>
+              </button>
+              <button type="button" [class.active]="techSection() === 'stage'" (click)="techSection.set('stage')">
+                <span>02</span> Palco <b>{{ stagePlotLayout.length }}</b>
+              </button>
+              <button type="button" [class.active]="techSection() === 'notes'" (click)="techSection.set('notes')">
+                <span>03</span> Note
+              </button>
+            </nav>
+
+            @if (techSection() === 'channels') {
+              <section class="tech-panel">
+                <div class="section-heading">
+                  <div><h3>Input list</h3><p>Aggiungi i canali più usati con un tap, poi rifinisci i dettagli.</p></div>
+                  <ion-button size="small" type="button" (click)="addInputChannel()"><ion-icon slot="start" name="add-circle-outline" /> Vuoto</ion-button>
+                </div>
+                <div class="quick-add" aria-label="Aggiunta rapida canali">
+                  @for (channel of quickChannels; track channel.name) {
+                    <button type="button" (click)="addInputChannel(channel)"><span>+</span>{{ channel.name }} <small>{{ channel.source }}</small></button>
+                  }
+                </div>
+                <details class="preset-details">
+                  <summary>Usa un preset canali</summary>
+                  <div class="chip-row">
+                    @for (preset of inputChannelPresets; track preset.id) {
+                      <button type="button" class="preset-chip" (click)="applyInputChannelPreset(preset.id)">{{ preset.label }}</button>
+                    }
+                    @for (preset of drumMergePresets; track preset.id) {
+                      <button type="button" class="preset-chip secondary" (click)="mergeDrumMikingPreset(preset.id)">+ {{ preset.label }}</button>
+                    }
+                  </div>
+                </details>
+                <div formArrayName="inputChannels" class="channel-list">
               <ion-reorder-group [disabled]="false" (ionItemReorder)="reorderInputChannels($event)">
                 @for (channel of inputChannels.controls; track $index) {
                   <div class="channel-row" [formGroupName]="$index">
-                    <ion-item lines="none">
-                      <ion-reorder slot="start"></ion-reorder>
-                      <ion-label>Canale mixer {{ $index + 1 }}</ion-label>
-                    </ion-item>
-
-                    <ion-item>
-                      <ion-label position="stacked">Canale</ion-label>
-                      <ion-input type="number" formControlName="channel" />
-                    </ion-item>
-
-                    <ion-item>
-                      <ion-label position="stacked">Nome</ion-label>
-                      <ion-input formControlName="name" />
-                    </ion-item>
-
-                    <ion-item>
-                      <ion-label position="stacked">Sorgente</ion-label>
-                      <ion-input formControlName="source" placeholder="Mic, DI, Wireless..." />
-                    </ion-item>
-
-                    <ion-item>
-                      <ion-label position="stacked">Note</ion-label>
-                      <ion-textarea formControlName="notes" autoGrow="true" />
-                    </ion-item>
-
-                    <ion-button size="small" color="danger" fill="clear" type="button" (click)="removeInputChannel($index)">
-                      <ion-icon slot="start" name="remove-circle-outline" />
-                      Rimuovi canale
+                    <div class="channel-handle"><ion-reorder></ion-reorder><strong>{{ $index + 1 }}</strong></div>
+                    <app-daisy-input [value]="channel.get('name')?.value" placeholder="Nome canale" (valueChange)="channel.get('name')?.setValue($event)" />
+                    <app-daisy-input [value]="channel.get('source')?.value" placeholder="Mic / DI / Wireless" (valueChange)="channel.get('source')?.setValue($event)" />
+                    <app-daisy-input [value]="channel.get('notes')?.value" placeholder="Note opzionali" (valueChange)="channel.get('notes')?.setValue($event)" />
+                    <ion-button aria-label="Rimuovi canale" size="small" color="danger" fill="clear" type="button" (click)="removeInputChannel($index)">
+                      <ion-icon slot="icon-only" name="trash-outline" />
                     </ion-button>
                   </div>
                 }
               </ion-reorder-group>
-            </div>
+                </div>
+                @if (!inputChannels.length) { <div class="empty-state">Nessun canale. Aggiungine uno o scegli un preset.</div> }
+              </section>
+            }
 
-            <div formArrayName="stagePlotLayout" class="stage-plot-grid">
-              @if (stagePlotLayout.controls.length) {
-                <div class="stage-preview-shell">
-                  <div class="stage-preview-meta">
-                    <span>Snap grid 5%</span>
-                    <span>Drag diretto sul palco</span>
-                    <span>Not to scale</span>
+            @if (techSection() === 'stage') {
+              <section class="tech-panel stage-workspace" formArrayName="stagePlotLayout">
+                <div class="section-heading">
+                  <div><h3>Posizione sul palco</h3><p>Aggiungi un elemento e trascinalo nella posizione corretta.</p></div>
+                </div>
+                <div class="stage-palette">
+                  @for (item of stageItems; track item.label) {
+                    <button type="button" (click)="addStageItem(item.label, item.instrument)"><span>{{ stagePlotIcon(item.instrument) }}</span>{{ item.label }}</button>
+                  }
+                  <button type="button" (click)="addStagePlotItem()"><span>+</span>Altro</button>
+                </div>
+                <details class="preset-details">
+                  <summary>Usa un layout pronto</summary>
+                  <div class="chip-row">
+                    @for (preset of stagePlotPresets; track preset.id) {
+                      <button type="button" class="preset-chip" (click)="applyStagePlotPreset(preset.id)">{{ preset.label }}</button>
+                    }
                   </div>
+                </details>
+                <div class="stage-layout">
+                  <div class="stage-preview-shell">
+                    <div class="stage-preview-meta"><span>Palco visto dal pubblico</span><span>Trascina per spostare</span></div>
                   <div class="stage-preview">
                     <div class="stage-frame-label top">Upstage</div>
-                    <div class="stage-frame-label left">Stage Left</div>
-                    <div class="stage-frame-label right">Stage Right</div>
                     @for (item of stagePlotLayout.controls; track $index) {
                       <div
                         class="stage-plot-item"
+                        [class.selected]="selectedStageItem() === $index"
                         [attr.data-kind]="stagePlotKind(item.get('instrument')?.value || item.get('label')?.value)"
                         [style.left.%]="item.get('x')?.value"
                         [style.top.%]="item.get('y')?.value"
-                        (pointerdown)="startStagePlotDrag($index, $event)"
+                        (pointerdown)="selectStageItem($index); startStagePlotDrag($index, $event)"
                       >
                         <div class="stage-plot-icon">{{ stagePlotIcon(item.get('instrument')?.value || item.get('label')?.value) }}</div>
-                        <div class="stage-plot-badge">{{ stagePlotBadge(item.get('instrument')?.value || item.get('label')?.value) }}</div>
                         <div class="stage-plot-name">{{ item.get('label')?.value || 'Posizione' }}</div>
-                        @if (item.get('instrument')?.value) {
-                          <div class="stage-plot-role">{{ item.get('instrument')?.value }}</div>
-                        }
                       </div>
                     }
                   </div>
-                  <div class="stage-grid-note">Le coordinate vengono arrotondate automaticamente alla griglia tecnica.</div>
+                    <div class="stage-grid-note">Gli elementi si allineano automaticamente alla griglia.</div>
+                  </div>
+                  <aside class="stage-editor">
+                    @for (item of stagePlotLayout.controls; track $index) {
+                      @if (selectedStageItem() === $index) {
+                        <div [formGroupName]="$index">
+                          <span class="eyebrow">Elemento selezionato</span>
+                          <label class="editor-field">Etichetta<app-daisy-input [value]="item.get('label')?.value" (valueChange)="item.get('label')?.setValue($event)" /></label>
+                          <label class="editor-field">Strumento / ruolo<app-daisy-input [value]="item.get('instrument')?.value" (valueChange)="item.get('instrument')?.setValue($event)" /></label>
+                          <div class="coordinate-row">
+                            <label class="editor-field">X %<app-daisy-input type="number" [value]="item.get('x')?.value" (valueChange)="item.get('x')?.setValue(+$event)" /></label>
+                            <label class="editor-field">Y %<app-daisy-input type="number" [value]="item.get('y')?.value" (valueChange)="item.get('y')?.setValue(+$event)" /></label>
+                          </div>
+                          <ion-button expand="block" color="danger" fill="outline" type="button" (click)="removeStagePlotItem($index)"><ion-icon slot="start" name="trash-outline" /> Rimuovi</ion-button>
+                        </div>
+                      }
+                    }
+                    @if (selectedStageItem() === null) {
+                      <div class="empty-state">Seleziona un elemento sul palco per modificarlo.</div>
+                    }
+                  </aside>
                 </div>
-              }
+              </section>
+            }
 
-              @for (item of stagePlotLayout.controls; track $index) {
-                <div class="channel-row" [formGroupName]="$index">
-                  <ion-item>
-                    <ion-label position="stacked">Label palco</ion-label>
-                    <ion-input formControlName="label" />
-                  </ion-item>
-
-                  <ion-item>
-                    <ion-label position="stacked">Strumento / ruolo</ion-label>
-                    <ion-input formControlName="instrument" />
-                  </ion-item>
-
-                  <ion-item>
-                    <ion-label position="stacked">Posizione X (%)</ion-label>
-                    <ion-input type="number" formControlName="x" />
-                  </ion-item>
-
-                  <ion-item>
-                    <ion-label position="stacked">Posizione Y (%)</ion-label>
-                    <ion-input type="number" formControlName="y" />
-                  </ion-item>
-
-                  <ion-button size="small" color="danger" fill="clear" type="button" (click)="removeStagePlotItem($index)">
-                    <ion-icon slot="start" name="remove-circle-outline" />
-                    Rimuovi posizione
-                  </ion-button>
-                </div>
-              }
-            </div>
+            @if (techSection() === 'notes') {
+              <section class="tech-panel notes-grid">
+                <div class="section-heading full"><div><h3>Note di produzione</h3><p>Tutto ciò che serve a fonico, palco e venue.</p></div></div>
+                <label class="field">Note per il fonico<app-daisy-textarea [value]="techForm.controls.soundEngineerNotes.value" placeholder="Indicazioni generali, PA, patch..." (valueChange)="techForm.controls.soundEngineerNotes.setValue($event)" /></label>
+                <label class="field">Monitor mix<app-daisy-textarea [value]="techForm.controls.monitorMixNotes.value" placeholder="Mix richiesti e preferenze..." (valueChange)="techForm.controls.monitorMixNotes.setValue($event)" /></label>
+                <label class="field">Backline<app-daisy-textarea [value]="techForm.controls.backlineNotes.value" (valueChange)="techForm.controls.backlineNotes.setValue($event)" /></label>
+                <label class="field">Note stage plot<app-daisy-textarea [value]="techForm.controls.stagePlotNotes.value" (valueChange)="techForm.controls.stagePlotNotes.setValue($event)" /></label>
+                <label class="field full">Hospitality<app-daisy-textarea [value]="techForm.controls.hospitalityNotes.value" (valueChange)="techForm.controls.hospitalityNotes.setValue($event)" /></label>
+              </section>
+            }
 
             @if (techError) {
               <ion-note color="danger">{{ techError }}</ion-note>
             }
 
-            <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="savingTech">
+            <ion-button class="tech-save" expand="block" type="submit" [disabled]="savingTech">
               @if (savingTech) { <ion-spinner name="crescent" /> } @else { Salva scheda tecnica }
             </ion-button>
           </form>
         </ion-card-content>
       </ion-card>
 
-      <ion-card>
+      <ion-card [class.section-hidden]="settingsSection() !== 'team'">
         <ion-card-header>
           <ion-card-title>Codice band</ion-card-title>
         </ion-card-header>
@@ -459,7 +426,7 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-card id="personal-invite-card">
+      <ion-card id="personal-invite-card" [class.section-hidden]="settingsSection() !== 'team'">
         <ion-card-header>
           <ion-card-title>Invito personalizzato</ion-card-title>
         </ion-card-header>
@@ -467,18 +434,18 @@
           <form [formGroup]="inviteForm" (ngSubmit)="invite()">
             <ion-item>
               <ion-label position="stacked">Nome</ion-label>
-              <ion-input formControlName="name" />
+              <app-daisy-input [value]="inviteForm.controls.name.value" (valueChange)="inviteForm.controls.name.setValue($event)" />
             </ion-item>
             <ion-item>
               <ion-label position="stacked">Email</ion-label>
-              <ion-input type="email" formControlName="email" />
+              <app-daisy-input type="email" [value]="inviteForm.controls.email.value" [invalid]="inviteForm.controls.email.touched && inviteForm.controls.email.invalid" (valueChange)="inviteForm.controls.email.setValue($event)" />
             </ion-item>
             <ion-item>
               <ion-label position="stacked">Ruolo</ion-label>
-              <ion-select formControlName="role" interface="popover">
-                <ion-select-option value="BAND_MEMBER">Membro band</ion-select-option>
-                <ion-select-option value="ADMIN">Admin</ion-select-option>
-              </ion-select>
+              <app-daisy-select [value]="inviteForm.controls.role.value" (valueChange)="inviteForm.controls.role.setValue($any($event))">
+                <option value="BAND_MEMBER">Membro band</option>
+                <option value="ADMIN">Admin</option>
+              </app-daisy-select>
             </ion-item>
             <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="inviting || !band.joinCode">
               @if (inviting) { <ion-spinner name="crescent" /> } @else { Prepara invito }
@@ -512,19 +479,19 @@
       </ion-card>
 
       @if (band.invitations?.length) {
-        <ion-card>
+        <ion-card [class.section-hidden]="settingsSection() !== 'team'">
           <ion-card-header>
             <ion-card-title>Inviti pendenti</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-list inset>
+            <app-daisy-list>
               @for (invitation of band.invitations; track invitation.id) {
-                <ion-item>
-                  <ion-label>
+                <app-daisy-list-item>
+                  <div class="list-col-grow">
                     <h2>{{ invitation.name }}</h2>
                     <p>{{ invitation.email }} · {{ roleLabel(invitation.role) }}</p>
-                  </ion-label>
-                  <div slot="end" class="action-row">
+                  </div>
+                  <div class="action-row">
                     @if (canShareOnWhatsApp) {
                       <ion-button type="button" size="small" fill="clear" color="success" aria-label="Condividi su WhatsApp" (click)="shareInvitationOnWhatsApp(invitation)">
                         <ion-icon slot="icon-only" name="logo-whatsapp" />
@@ -537,59 +504,55 @@
                       <ion-icon slot="icon-only" name="copy-outline" />
                     </ion-button>
                   </div>
-                </ion-item>
+                </app-daisy-list-item>
               }
-            </ion-list>
+            </app-daisy-list>
           </ion-card-content>
         </ion-card>
       }
     }
 
-    <ion-card>
+    <ion-card [class.section-hidden]="settingsSection() !== 'team'">
       <ion-card-header>
         <ion-card-title>Membri</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-list inset>
+        <app-daisy-list>
           @for (member of band.members ?? []; track member.id) {
-            <ion-item [lines]="canEditInstruments(member) ? 'none' : 'full'">
-              <ion-label>
+            <app-daisy-list-item>
+              <div class="list-col-grow">
                 <h2>{{ member.name }}</h2>
                 <p>{{ roleLabel(member.role) }} · {{ member.status || 'ACTIVE' }}</p>
                 @if (!canEditInstruments(member)) {
                   <p>Strumenti: {{ member.instruments?.length ? member.instruments.join(', ') : 'non indicati' }}</p>
                 }
-              </ion-label>
+              </div>
               @if (isAdmin && canEditRole(member)) {
-                <ion-select
-                  slot="end"
-                  interface="popover"
+                <app-daisy-select
                   [value]="member.role || 'BAND_MEMBER'"
-                  (ionChange)="changeRole(member, $event)"
+                  (valueChange)="changeRoleValue(member, $event)"
                 >
-                  <ion-select-option value="BAND_MEMBER">Membro band</ion-select-option>
-                  <ion-select-option value="ADMIN">Admin</ion-select-option>
-                </ion-select>
+                  <option value="BAND_MEMBER">Membro band</option>
+                  <option value="ADMIN">Admin</option>
+                </app-daisy-select>
               }
-            </ion-item>
+            </app-daisy-list-item>
             @if (canEditInstruments(member)) {
-              <ion-item>
-                <ion-input
-                  label="Strumenti suonati"
-                  labelPlacement="stacked"
+              <app-daisy-list-item>
+                <app-daisy-input
                   placeholder="Es. voce, chitarra, tastiere"
                   [value]="memberInstrumentsDraft(member)"
-                  [maxlength]="500"
-                  (ionInput)="updateMemberInstrumentsDraft(member, $event)"
+                  [maxLength]="500"
+                  (valueChange)="updateMemberInstrumentsValue(member, $event)"
                 />
                 <ion-button slot="end" type="button" size="small" (click)="saveMemberInstruments(member)" [disabled]="savingMemberInstruments() !== null">
                   @if (savingMemberInstruments() === member.id) { <ion-spinner name="crescent" /> } @else { Salva }
                 </ion-button>
-              </ion-item>
+              </app-daisy-list-item>
               <ion-note class="ion-padding-horizontal" color="medium">Separa più strumenti con una virgola.</ion-note>
             }
           }
-        </ion-list>
+        </app-daisy-list>
       </ion-card-content>
     </ion-card>
   }

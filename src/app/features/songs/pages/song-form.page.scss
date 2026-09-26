@@ -27,11 +27,35 @@
 }
 
 
-.bpm-control { display: grid; gap: 8px; }
+.field-grid > label {
+  grid-template-rows: auto auto;
+  align-self: start;
+}
+
+.musical-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+.field-stack { display: grid; gap: 20px; }
+.bpm-control {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--gigsaw-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--gigsaw-input-background) 58%, transparent);
+}
+.control-heading {
+  color: #E5EDF7;
+  font-size: .82rem;
+  font-weight: 800;
+}
 .tap-tempo-button {
   display: flex;
   width: 100%;
-  min-height: 64px;
+  min-height: 56px;
   align-items: center;
   gap: 12px;
   padding: 9px 12px;
@@ -65,3 +89,7 @@
 .tap-tempo-copy strong { font-size: .94rem; }
 .tap-tempo-copy small,
 .tap-tempo-help { color: var(--muted); font-size: .72rem; font-weight: 600; }
+
+@media (max-width: 800px) {
+  .musical-controls { grid-template-columns: 1fr; }
+}

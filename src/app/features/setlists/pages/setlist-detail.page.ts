@@ -14,7 +14,6 @@ import {
   IonHeader,
   IonItem,
   IonLabel,
-  IonList,
   IonNote,
   IonSpinner,
   IonSkeletonText,
@@ -27,11 +26,14 @@ import { BandService } from '../../bands/services/band.service';
 import { Setlist } from '../../../core/models/band-resources.models';
 import { SetlistPdfService } from '../services/setlist-pdf.service';
 import { SetlistService } from '../services/setlist.service';
+import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
+    DaisyListComponent,
+    DaisyListItemComponent,
     IonBackButton,
     IonButton,
     IonButtons,
@@ -43,7 +45,6 @@ import { SetlistService } from '../services/setlist.service';
     IonHeader,
     IonItem,
     IonLabel,
-    IonList,
     IonNote,
     IonSpinner,
     IonSkeletonText,

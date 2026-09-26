@@ -13,8 +13,7 @@
   <main class="create-shell" [class.embedded]="embedded">
     <aside class="intro-panel" aria-labelledby="create-band-title">
       <picture>
-        <source srcset="assets/logo-hor-dark.png" media="(prefers-color-scheme: dark)" />
-        <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
+         <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
       </picture>
 
       <div class="intro-copy">
@@ -150,51 +149,36 @@
                 <span class="selected-genres-label">Selezionati</span>
                 <div class="genre-list">
                   @for (genre of selectedGenres; track genre.id) {
-                    <button
-                      class="genre-chip selected"
-                      type="button"
-                      [attr.aria-label]="'Rimuovi ' + genre.name"
-                      (click)="toggleGenre(genre.id)"
+                    <app-daisy-badge
+                      tone="primary"
+                      appearance="outline"
+                      size="lg"
+                      [dismissible]="true"
+                      [dismissLabel]="'Rimuovi ' + genre.name"
+                      (dismissed)="toggleGenre(genre.id)"
                     >
                       {{ genre.name }}
-                      <ion-icon name="close" aria-hidden="true" />
-                    </button>
+                    </app-daisy-badge>
                   }
                 </div>
               </div>
             }
 
-            <ion-input
-              class="text-control genre-search"
-              formControlName="genreSearch"
-              type="search"
-              fill="outline"
+            <app-daisy-typeahead
+              controlClass="genre-search"
+              [value]="form.controls.genreSearch.value || ''"
+              [items]="genreTypeaheadItems"
+              [minChars]="3"
+              [maxResults]="40"
+              [filterLocally]="false"
               placeholder="Cerca un genere musicale"
-              aria-label="Cerca tra i generi musicali"
-              [clearInput]="true"
+              emptyMessage="Nessun genere trovato."
+              (valueChange)="onGenreSearchChange($event)"
+              (selected)="onGenreSelected($event)"
             />
 
             @if (!canSearchGenres) {
               <p class="genre-search-hint">Digita almeno 3 caratteri per cercare.</p>
-            } @else if (filteredGenres.length > 0) {
-              <div class="genre-list" role="group" aria-label="Generi musicali trovati">
-                @for (genre of filteredGenres; track genre.id) {
-                  <button
-                    class="genre-chip"
-                    type="button"
-                    [class.selected]="isGenreSelected(genre.id)"
-                    [attr.aria-pressed]="isGenreSelected(genre.id)"
-                    (click)="toggleGenre(genre.id)"
-                  >
-                    @if (isGenreSelected(genre.id)) {
-                      <ion-icon name="checkmark" aria-hidden="true" />
-                    }
-                    {{ genre.name }}
-                  </button>
-                }
-              </div>
-            } @else {
-              <p class="genre-search-hint" role="status">Nessun genere trovato.</p>
             }
           }
           @if (genresError) {

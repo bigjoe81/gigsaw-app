@@ -1,13 +1,14 @@
 import { Component, Injector, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AlertController, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonList, IonNote, IonSkeletonText, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
+import { AlertController, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { ResourceConfig } from '../models/resource-form.models';
 import { BandResource } from '../../core/models/band-resources.models';
+import { DaisyListComponent, DaisyListItemComponent } from './daisyui';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonList, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [RouterLink, DaisyListComponent, DaisyListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './resource-detail.page.html',
   styleUrls: ['./resource-detail.page.scss'],
 })

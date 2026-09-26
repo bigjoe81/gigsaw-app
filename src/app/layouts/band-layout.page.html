@@ -5,6 +5,28 @@
         <img src="assets/logo-hor.png" alt="GigSaw" class="menu-brand__logo" />
       </header>
 
+      @if (currentBand(); as band) {
+        <section class="current-band" [attr.title]="band.name" aria-label="Band corrente">
+          @if (band.logo) {
+            <img class="current-band__avatar" [src]="band.logo" [alt]="'Logo ' + band.name" />
+          } @else {
+            <span class="current-band__avatar current-band__initials" aria-hidden="true">{{ bandInitials(band.name) }}</span>
+          }
+          <span class="current-band__copy">
+            <small>Band corrente</small>
+            <strong>{{ band.name }}</strong>
+            @if (band.city || band.country) {
+              <span>{{ band.city }}@if (band.city && band.country) { · }{{ band.country }}</span>
+            }
+          </span>
+        </section>
+      } @else if (currentBandLoading()) {
+        <div class="current-band current-band--loading" aria-label="Caricamento band corrente">
+          <span class="skeleton current-band__avatar"></span>
+          <span class="current-band__copy"><span class="skeleton h-3 w-20"></span><span class="skeleton h-4 w-28"></span></span>
+        </div>
+      }
+
       <ion-list class="menu-nav" lines="none">
         @for (section of sections; track section.key) {
           <ion-menu-toggle [autoHide]="false">

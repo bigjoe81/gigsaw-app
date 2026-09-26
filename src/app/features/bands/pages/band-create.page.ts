@@ -29,6 +29,7 @@ import { BandContextService } from '../../../core/services/band-context.service'
 import { Band, BandGenre } from '../models/band.models';
 import { BandService } from '../services/band.service';
 import { GenreService } from '../services/genre.service';
+import { DaisyBadgeComponent, DaisyTypeaheadComponent, DaisyTypeaheadItem } from '../../../shared/ui/daisyui';
 
 @Component({
   selector: 'app-band-create',
@@ -46,6 +47,8 @@ import { GenreService } from '../services/genre.service';
     IonTextarea,
     IonTitle,
     IonToolbar,
+    DaisyTypeaheadComponent,
+    DaisyBadgeComponent,
   ],
   templateUrl: './band-create.page.html',
   styleUrls: ['./band-create.page.scss'],
@@ -130,6 +133,10 @@ export class BandCreatePage implements OnDestroy {
       .slice(0, BandCreatePage.GENRE_RESULT_LIMIT);
   }
 
+  get genreTypeaheadItems(): DaisyTypeaheadItem[] {
+    return this.filteredGenres.map((genre) => ({ id: genre.id as number, label: genre.name as string, data: genre }));
+  }
+
   loadGenres(): void {
     console.log('[BandCreatePage] Caricamento generi avviato');
     this.genresLoading.set(true);
@@ -165,6 +172,15 @@ export class BandCreatePage implements OnDestroy {
       selected.includes(id) ? selected.filter((selectedId) => selectedId !== id) : [...selected, id],
     );
     this.form.controls.genres.markAsDirty();
+  }
+
+  onGenreSearchChange(value: string): void {
+    this.form.controls.genreSearch.setValue(value);
+  }
+
+  onGenreSelected(item: DaisyTypeaheadItem): void {
+    this.toggleGenre(Number(item.id));
+    this.form.controls.genreSearch.setValue('');
   }
 
   isGenreSelected(genreId: number | undefined): boolean {

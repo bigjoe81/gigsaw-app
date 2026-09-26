@@ -14,16 +14,16 @@
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
   @if (loading) {
-    <ion-list>
+    <app-daisy-list>
       @for (item of [1,2,3]; track item) {
-        <ion-item>
-          <ion-label>
+        <app-daisy-list-item>
+          <div class="list-col-grow">
             <ion-skeleton-text [animated]="true" style="width: 55%" />
             <ion-skeleton-text [animated]="true" style="width: 35%" />
-          </ion-label>
-        </ion-item>
+          </div>
+        </app-daisy-list-item>
       }
-    </ion-list>
+    </app-daisy-list>
   } @else if (error) {
     <div class="state">
       <ion-icon name="alert-circle" />
@@ -37,15 +37,15 @@
       <ion-button [routerLink]="['nuova']">Crea {{ config.singular }}</ion-button>
     </div>
   } @else {
-    <ion-list inset>
+    <app-daisy-list>
       @for (item of items; track item) {
-        <ion-item button detail [routerLink]="[item.id]">
-          <ion-label>
+        <app-daisy-list-item [interactive]="true" [routerLink]="[item.id]">
+          <div class="list-col-grow">
             <h2>{{ title(item) }}</h2>
             <p>{{ subtitle(item) }}</p>
-          </ion-label>
-        </ion-item>
+          </div>
+        </app-daisy-list-item>
       }
-    </ion-list>
+    </app-daisy-list>
   }
 </ion-content>

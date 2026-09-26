@@ -59,16 +59,16 @@
       <ion-card>
         <ion-card-header><ion-card-title>Brani collegati</ion-card-title></ion-card-header>
         <ion-card-content>
-          <ion-list [inset]="true">
+          <app-daisy-list>
             @for (linkedSong of linkedSongs(); track linkedSong.id) {
-              <ion-item [detail]="true" [routerLink]="['..', linkedSong.id]">
-                <ion-label>
+              <app-daisy-list-item [interactive]="true" [routerLink]="['..', linkedSong.id]">
+                <div class="list-col-grow">
                   <h2>{{ linkedSong.title }}</h2>
                   <p>{{ linkedSubtitle(linkedSong) }}</p>
-                </ion-label>
-              </ion-item>
+                </div>
+              </app-daisy-list-item>
             }
-          </ion-list>
+          </app-daisy-list>
         </ion-card-content>
       </ion-card>
     }

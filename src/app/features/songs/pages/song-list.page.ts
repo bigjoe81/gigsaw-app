@@ -10,7 +10,6 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
-  IonList,
   IonMenuButton,
   ModalController,
   IonRefresher,
@@ -26,11 +25,14 @@ import { finalize, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';
 import { SongDetailPage } from './song-detail.page';
+import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
+    DaisyListComponent,
+    DaisyListItemComponent,
     IonBadge,
     IonButton,
     IonButtons,
@@ -39,7 +41,6 @@ import { SongDetailPage } from './song-detail.page';
     IonIcon,
     IonItem,
     IonLabel,
-    IonList,
     IonMenuButton,
     IonRefresher,
     IonRefresherContent,

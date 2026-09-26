@@ -68,7 +68,7 @@ export class DaisySelectComponent implements AfterViewInit {
     const host = this.selectElement?.nativeElement;
     if (!host) return;
 
-    const selected = new Set(Array.isArray(value) ? value : []);
+    const selected = new Set((Array.isArray(value) ? value : []).map(String));
     Array.from(host.options).forEach((option) => {
       option.selected = selected.has(option.value);
     });

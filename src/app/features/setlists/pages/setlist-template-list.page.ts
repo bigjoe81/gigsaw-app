@@ -10,7 +10,6 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
-  IonList,
   IonRefresher,
   IonRefresherContent,
   IonSkeletonText,
@@ -22,11 +21,14 @@ import { addIcons } from 'ionicons';
 import { add, alertCircle, library } from 'ionicons/icons';
 import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
+import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
+    DaisyListComponent,
+    DaisyListItemComponent,
     IonBackButton,
     IonButton,
     IonButtons,
@@ -35,7 +37,6 @@ import { SetlistService } from '../services/setlist.service';
     IonIcon,
     IonItem,
     IonLabel,
-    IonList,
     IonRefresher,
     IonRefresherContent,
     IonSkeletonText,

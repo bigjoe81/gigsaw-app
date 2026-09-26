@@ -6,8 +6,9 @@ import { add, alertCircle, calendarOutline } from 'ionicons/icons';
 import { finalize, timeout } from 'rxjs';
 import { RehearsalSession } from '../../../core/models/band-resources.models';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
+import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
 
-@Component({standalone:true,imports:[RouterLink,IonButton,IonButtons,IonContent,IonHeader,IonIcon,IonItem,IonLabel,IonList,IonMenuButton,IonRefresher,IonRefresherContent,IonSkeletonText,IonText,IonTitle,IonToolbar],templateUrl:'./rehearsal-session-list.page.html',styleUrls:['./rehearsal-session-list.page.scss']})
+@Component({standalone:true,imports:[RouterLink,DaisyListComponent,DaisyListItemComponent,IonButton,IonButtons,IonContent,IonHeader,IonIcon,IonMenuButton,IonRefresher,IonRefresherContent,IonSkeletonText,IonText,IonTitle,IonToolbar],templateUrl:'./rehearsal-session-list.page.html',styleUrls:['./rehearsal-session-list.page.scss']})
 export class RehearsalSessionListPage implements OnInit {
  readonly sessions=signal<RehearsalSession[]>([]); readonly loading=signal(true); readonly error=signal('');
  constructor(private readonly api:RehearsalSessionService){addIcons({add,alertCircle,calendarOutline});}
