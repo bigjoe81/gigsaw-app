@@ -14,8 +14,9 @@
 }
 
 .library {
-  width: min(920px, calc(100% - 48px));
-  margin: 36px auto;
+  width: 100%;
+  margin: 0;
+  padding: 34px 24px 56px;
 }
 
 .library-header {
@@ -192,8 +193,7 @@
 
 @media (max-width: 700px) {
   .library {
-    width: auto;
-    margin: 22px 12px;
+    padding: 20px 12px 36px;
   }
 
   .library-header {

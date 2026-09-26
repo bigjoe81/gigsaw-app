@@ -1,6 +1,6 @@
 :host { display: block; height: 100%; }
 ion-content { --background: var(--gigsaw-background); }
-.venue-page { width: min(980px, calc(100% - 48px)); margin: 0 auto; padding: 36px 0 60px; color: var(--gigsaw-text); }
+.venue-page { width: 100%; margin: 0; padding: 34px 24px 56px; color: var(--gigsaw-text); }
 .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .eyebrow { color: var(--ion-color-primary); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .page-heading h1 { margin: 6px 0; font-size: clamp(1.65rem, 3vw, 2.2rem); }
@@ -22,4 +22,4 @@ ion-content { --background: var(--gigsaw-background); }
 .venue-actions { display: flex; gap: 4px; }
 .state { display: flex; min-height: 52vh; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
 .state > ion-icon { color: var(--ion-color-brand-blue); font-size: 48px; }
-@media (max-width: 700px) { .venue-page { width: auto; margin: 0 12px; padding-top: 24px; } .page-heading { align-items: stretch; flex-direction: column; } .venue-tools { grid-template-columns: 1fr; } .venue-row { grid-template-columns: 40px minmax(0, 1fr); padding-inline: 12px; } .venue-actions { grid-column: 2; } }
+@media (max-width: 700px) { .venue-page { padding: 20px 12px 36px; } .page-heading { align-items: stretch; flex-direction: column; } .venue-tools { grid-template-columns: 1fr; } .venue-row { grid-template-columns: 40px minmax(0, 1fr); padding-inline: 12px; } .venue-actions { grid-column: 2; } }
