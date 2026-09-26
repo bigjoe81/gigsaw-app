@@ -10,6 +10,7 @@ import {
   IonMenuToggle,
   IonRouterOutlet,
   IonSplitPane,
+  isPlatform,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -50,6 +51,7 @@ export class BandLayoutPage {
   public environmentInjector = inject(EnvironmentInjector);
   private readonly route = inject(ActivatedRoute);
   private readonly bandContext = inject(BandContextService);
+  readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
   readonly menuCollapsed = signal(false);
 
   readonly sections: Array<{
