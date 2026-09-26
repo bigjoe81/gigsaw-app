@@ -120,13 +120,13 @@
 }
 
 /* Shared form actions: remain in flow on short forms and stick above the safe area
-   while a longer form scrolls. */
+   while a longer form scrolls. Keep a real 16px gap above iPhone's home indicator. */
 .form-action-bar,
 form > ion-button[type='submit'],
 form > app-daisy-button[type='submit'] {
   position: sticky;
   z-index: 20;
-  bottom: max(16px, env(safe-area-inset-bottom));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   margin-top: 1.5rem;
   padding: 0.625rem;
   border-top: 1px solid rgba(127, 144, 168, 0.22);
@@ -141,7 +141,7 @@ form > app-daisy-button[type='submit'] {
    previously supplied its own sticky footer styles. */
 .form-action-bar.form-action-bar {
   position: sticky !important;
-  bottom: max(16px, env(safe-area-inset-bottom)) !important;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
   margin: 1.5rem 0 0 !important;
   padding: 0.625rem !important;
   border: 1px solid var(--gigsaw-border, #243244) !important;
