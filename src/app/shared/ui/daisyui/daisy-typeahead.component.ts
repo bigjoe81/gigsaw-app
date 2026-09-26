@@ -45,28 +45,26 @@ export interface DaisyTypeaheadItem {
             </div>
           } @else if (visibleItems().length) {
             <ul
-              class="menu max-h-72 w-full flex-nowrap overflow-y-auto p-1.5"
+              class="list max-h-72 w-full overflow-y-auto p-1.5"
               role="listbox"
               [id]="listboxId"
             >
               @for (item of visibleItems(); track item.id; let index = $index) {
                 <li
+                  class="list-row cursor-pointer rounded-box px-3 py-2.5 transition-colors hover:bg-base-200"
                   role="option"
                   [id]="optionId(index)"
                   [attr.aria-selected]="index === activeIndex()"
+                  [class.bg-base-200]="index === activeIndex()"
+                  (mousedown)="select(item, $event)"
+                  (mouseenter)="activeIndex.set(index)"
                 >
-                  <button
-                    type="button"
-                    class="flex min-h-0 w-full flex-col items-start gap-0.5 px-3 py-2.5 text-left"
-                    [class.active]="index === activeIndex()"
-                    (mousedown)="select(item, $event)"
-                    (mouseenter)="activeIndex.set(index)"
-                  >
-                    <span class="w-full truncate font-semibold">{{ item.label }}</span>
+                  <div class="min-w-0">
+                    <div class="truncate font-semibold">{{ item.label }}</div>
                     @if (item.description) {
-                      <span class="w-full truncate text-xs font-normal opacity-60">{{ item.description }}</span>
+                      <div class="truncate text-xs opacity-60">{{ item.description }}</div>
                     }
-                  </button>
+                  </div>
                 </li>
               }
             </ul>
