@@ -55,7 +55,6 @@ ion-modal.create-band-modal::part(content) { overflow: hidden; }
 /* Fixed GigSaw night theme. */
 :host { --selection-navy: var(--gigsaw-text); --selection-blue: var(--ion-color-brand-blue); --selection-border: var(--gigsaw-border); --selection-muted: var(--gigsaw-muted); }
   .selection-content { --background: var(--ion-background-color); }
-  .brand-logo { content: url('/assets/logo-hor-dark.png'); }
   .band-card, .new-band-card { background: var(--ion-card-background); }
   .new-band-card:hover { background: color-mix(in srgb, var(--ion-color-brand-blue) 8%, var(--ion-card-background)); }
   .band-logo, .role-badge, .add-icon { background: color-mix(in srgb, var(--ion-color-brand-blue) 12%, var(--ion-card-background)); }
