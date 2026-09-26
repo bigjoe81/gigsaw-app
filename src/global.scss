@@ -109,6 +109,10 @@
     --border-radius: 0.5rem;
   }
 
+  .btn {
+    border-radius: 8px !important;
+  }
+
   ion-button::part(native),
   ion-back-button::part(native) {
     text-transform: none;

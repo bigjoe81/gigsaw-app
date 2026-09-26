@@ -13,7 +13,6 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  albumsOutline,
   arrowBackOutline,
   colorPaletteOutline,
   homeOutline,
@@ -70,7 +69,6 @@ export class BandLayoutPage {
 
   constructor() {
     addIcons({
-      albumsOutline,
       arrowBackOutline,
       colorPaletteOutline,
       homeOutline,

@@ -43,7 +43,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/bands/pages/band-selection.page').then((m) => m.BandSelectionPage),
   },
   {
-    path: 'autenticazione/google/ritorno',
+    path: 'auth/google/callback',
     loadComponent: () => import('./features/auth/google-callback.page').then((m) => m.GoogleCallbackPage),
   },
   {
@@ -121,7 +121,7 @@ export const routes: Routes = [
   { path: 'invite/:joinCode', redirectTo: '/invito/:joinCode', pathMatch: 'full' },
   { path: 'bands/new', redirectTo: '/band/nuova', pathMatch: 'full' },
   { path: 'bands', redirectTo: '/band', pathMatch: 'full' },
-  { path: 'auth/google/callback', redirectTo: '/autenticazione/google/ritorno', pathMatch: 'full' },
+  { path: 'autenticazione/google/ritorno', redirectTo: '/auth/google/callback', pathMatch: 'full' },
   { path: '', redirectTo: '/band', pathMatch: 'full' },
   { path: '**', redirectTo: '/band' },
 ];

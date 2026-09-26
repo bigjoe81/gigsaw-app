@@ -1,30 +1,38 @@
-import { Component, computed, signal } from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import { IonContent } from '@ionic/angular/standalone';
+import {IonContent} from '@ionic/angular/standalone';
 import {AuthService} from '../../core/auth/auth.service';
-import { DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent } from '../../shared/ui/daisyui';
+import {DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent} from '../../shared/ui/daisyui';
 
 @Component({
   standalone: true,
   imports: [RouterLink, DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent, IonContent],
   templateUrl: './login.page.html',
-  styles: [`.login-content {
-    --background: var(--gigsaw-background);
-  }
-
-  .login-content::part(scroll) {
-    min-height: 100%;
-    display: grid;
-    align-items: center;
-    padding-top: max(24px, var(--ion-safe-area-top));
-    padding-bottom: max(24px, var(--ion-safe-area-bottom));
-  }
-
-  @media (max-width: 767px) {
-    .login-content::part(scroll) {
-      align-items: start;
+  styles: [`
+    .login-content {
+      --background: var(--gigsaw-background);
     }
-  }`],
+
+    .login-content::part(scroll) {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding-top: max(24px, var(--ion-safe-area-top));
+      padding-bottom: max(24px, var(--ion-safe-area-bottom));
+    }
+
+    .login-content form > app-daisy-button[type='submit'] {
+      position: static;
+      margin-top: 1rem;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+  `]
 })
 export class LoginPage {
   readonly email = signal('');
@@ -51,8 +59,8 @@ export class LoginPage {
     const email = this.email().trim();
     this.loading = true;
     this.error = '';
-    this.auth.requestOtp({ email, purpose: 'login' }).subscribe({
-      next: ({ challenge }) => void this.router.navigate(['/verifica-codice'], {
+    this.auth.requestOtp({email, purpose: 'login'}).subscribe({
+      next: ({challenge}) => void this.router.navigate(['/verifica-codice'], {
         queryParams: {
           challengeId: challenge.challengeId,
           email: challenge.email,

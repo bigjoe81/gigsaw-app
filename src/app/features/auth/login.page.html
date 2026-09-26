@@ -1,11 +1,14 @@
 <ion-content class="ion-padding login-content" [fullscreen]="true">
-  <div class="mx-auto w-full max-w-full pt-[8vh] md:w-[min(340px,48vw)] md:pt-0">
+  <div class="mx-auto w-full max-w-[340px] px-5">
     <div class="grid justify-items-center gap-3.5 pt-2 pb-6">
-      <img
-        class="block h-auto w-[min(300px,48vw)] object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.12)]"
-        src="assets/logo-hor-dark.png"
-        alt="GigSaw logo"
-      />
+      <picture class="block w-full">
+        <source media="(min-width: 768px)" srcset="assets/logo-hor.png" />
+        <img
+          class="mx-auto block h-auto w-[min(260px,70vw)] object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.12)] md:w-[min(300px,48vw)]"
+          src="assets/logo-vert.png"
+          alt="GigSaw logo"
+        />
+      </picture>
       <p class="max-w-96 text-center text-[0.95rem] text-[var(--ion-color-medium)]">
         La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong>
       </p>
@@ -28,9 +31,12 @@
       @if (error) {
         <app-daisy-message tone="error" messageClass="mt-2">{{ error }}</app-daisy-message>
       }
-      <app-daisy-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Invia codice OTP</app-daisy-button>
+      <app-daisy-button buttonClass="w-full" type="submit" tone="primary" [loading]="loading">Invia codice</app-daisy-button>
     </form>
-    <app-daisy-button buttonClass="mt-3 w-full" tone="outline" type="button" (click)="loginWithGoogle()">Continua con Google</app-daisy-button>
-    <a class="btn btn-ghost mt-2 w-full" routerLink="/registrati" [queryParams]="{ returnUrl }">Crea account</a>
+    <app-daisy-button buttonClass="mt-3 w-full" tone="outline" type="button" (click)="loginWithGoogle()">
+      <img class="h-5 w-5 object-contain" src="assets/google-logo.png" alt="" aria-hidden="true" />
+      Continua con Google
+    </app-daisy-button>
+    <a class="btn btn-ghost mt-2 w-full" routerLink="/registrati" [queryParams]="{ returnUrl }">Non sei registrato? Crea un account</a>
   </div>
 </ion-content>

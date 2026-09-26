@@ -48,12 +48,15 @@ ion-split-pane.menu-collapsed {
 
 ion-split-pane.menu-collapsed .menu-brand {
   justify-content: center;
-  padding-inline: 10px;
+  padding: 16px 8px 10px;
 }
 
-ion-split-pane.menu-collapsed .menu-brand > div:last-child,
 ion-split-pane.menu-collapsed ion-item ion-label {
   display: none;
+}
+
+ion-split-pane.menu-collapsed .menu-brand__logo {
+  width: 56px;
 }
 
 ion-split-pane.menu-collapsed ion-list {
@@ -101,40 +104,15 @@ ion-split-pane.split-pane-visible > .menu-content-open {
 .menu-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 22px 18px 14px;
+  justify-content: center;
+  padding: 18px 18px 10px;
 }
 
-.menu-brand__mark {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  border-radius: 8px;
-  color: var(--ion-color-primary);
-  background: rgba(var(--ion-color-primary-rgb), 0.12);
-}
-
-.menu-brand__mark ion-icon {
-  font-size: 22px;
-}
-
-.menu-brand p,
-.menu-brand h1 {
-  margin: 0;
-}
-
-.menu-brand p {
-  color: var(--ion-color-medium);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.menu-brand h1 {
-  color: var(--ion-color-dark);
-  font-size: 20px;
-  font-weight: 700;
+.menu-brand__logo {
+  display: block;
+  width: 168px;
+  max-width: 100%;
+  height: auto;
 }
 
 ion-list {
