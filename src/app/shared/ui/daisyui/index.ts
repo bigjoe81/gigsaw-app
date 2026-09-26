@@ -10,3 +10,4 @@ export * from './daisy-select.component';
 export * from './daisy-steps.component';
 export * from './daisy-textarea.component';
 export * from './daisy-time-input.component';
+export * from './daisy-typeahead.component';

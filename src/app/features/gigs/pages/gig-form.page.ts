@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -9,9 +9,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
   IonTitle,
   IonToolbar,
   ToastController,
@@ -39,6 +36,8 @@ import {
   DaisyMessageComponent,
   DaisyTextareaComponent,
   DaisyTimeInputComponent,
+  DaisyTypeaheadComponent,
+  DaisyTypeaheadItem,
 } from '../../../shared/ui/daisyui';
 import { Venue } from '../../venues/models/venue.models';
 import { MapboxAddressSuggestion, MapboxGeocodingService } from '../../venues/services/mapbox-geocoding.service';
@@ -67,6 +66,7 @@ import { GigService } from '../services/gig.service';
     DaisyMessageComponent,
     DaisyTextareaComponent,
     DaisyTimeInputComponent,
+    DaisyTypeaheadComponent,
   ],
   templateUrl: './gig-form.page.html',
   styleUrl: './gig-form.page.scss',
@@ -91,6 +91,20 @@ export class GigFormPage implements OnInit {
   readonly mapboxResults = signal<MapboxAddressSuggestion[]>([]);
   readonly selectedVenue = signal<Venue | undefined>(undefined);
   readonly pendingVenue = signal<MapboxAddressSuggestion | undefined>(undefined);
+  readonly venueTypeaheadItems = computed<DaisyTypeaheadItem[]>(() => [
+    ...this.filteredVenues().map((venue) => ({
+      id: `venue:${venue.id}`,
+      label: venue.name,
+      description: this.venueMeta(venue),
+      data: venue,
+    })),
+    ...this.mapboxResults().map((result) => ({
+      id: `mapbox:${result.id}`,
+      label: result.name,
+      description: result.fullAddress,
+      data: result,
+    })),
+  ]);
   private id?: number;
   private bandId?: number;
   private readonly venueQueryChanges = new Subject<string>();
@@ -172,6 +186,14 @@ export class GigFormPage implements OnInit {
     this.pendingVenue.set(undefined);
     this.form.patchValue({ venueId: '' }, { emitEvent: false });
     this.venueQueryChanges.next(value);
+  }
+
+  onVenueTypeaheadSelected(item: DaisyTypeaheadItem): void {
+    if (String(item.id).startsWith('venue:')) {
+      this.selectExistingVenue(item.data as Venue);
+      return;
+    }
+    this.selectMapboxResult(item.data as MapboxAddressSuggestion);
   }
 
   selectExistingVenue(venue: Venue): void {

@@ -55,7 +55,21 @@
           <div><h2 class="m-0 text-base font-extrabold">Venue</h2><p class="mt-0.5 text-sm text-[var(--ion-color-medium)]">Cerca nell’anagrafica o seleziona un nuovo indirizzo.</p></div>
         </div>
 
-        <app-daisy-input name="venueQuery" placeholder="Nome locale, indirizzo o città" [value]="venueQuery()" [valid]="!!selectedVenue() || !!pendingVenue()" [invalid]="!!error() && !selectedVenue() && !pendingVenue()" (valueChange)="onVenueQueryInput($event)" />
+        <app-daisy-typeahead
+          name="venueQuery"
+          placeholder="Nome locale, indirizzo o città"
+          [value]="venueQuery()"
+          [items]="venueTypeaheadItems()"
+          [loading]="searchingMapbox()"
+          [filterLocally]="false"
+          [minChars]="0"
+          [valid]="!!selectedVenue() || !!pendingVenue()"
+          [invalid]="!!error() && !selectedVenue() && !pendingVenue()"
+          loadingText="Ricerca indirizzi…"
+          emptyMessage="Nessuna venue trovata."
+          (valueChange)="onVenueQueryInput($event)"
+          (selected)="onVenueTypeaheadSelected($event)"
+        />
 
         @if (selectedVenue(); as venue) {
           <div class="selection-card success">
@@ -67,32 +81,8 @@
             <div><strong>Nuova venue</strong><span>{{ venue.fullAddress }}</span></div>
             <ion-button size="small" fill="clear" type="button" (click)="clearVenueSelection()">Cambia</ion-button>
           </div>
-        } @else {
-          @if (!mapboxConfigured()) {
-            <app-daisy-message>Ricerca indirizzi esterna non configurata: puoi selezionare una venue esistente.</app-daisy-message>
-          }
-
-          @if (filteredVenues().length) {
-            <ion-list class="venue-results">
-              @for (venue of filteredVenues(); track venue.id) {
-                <ion-item button detail="false" (click)="selectExistingVenue(venue)">
-                  <ion-label><strong>{{ venue.name }}</strong><span>{{ venueMeta(venue) }}</span></ion-label>
-                </ion-item>
-              }
-            </ion-list>
-          }
-
-          @if (searchingMapbox()) { <div class="searching"><app-daisy-loading size="sm" /><span>Ricerca indirizzi…</span></div> }
-
-          @if (mapboxResults().length) {
-            <ion-list class="venue-results map-results">
-              @for (result of mapboxResults(); track result.id) {
-                <ion-item button detail="false" (click)="selectMapboxResult(result)">
-                  <ion-label><strong>{{ result.name }}</strong><span>{{ result.fullAddress }}</span></ion-label>
-                </ion-item>
-              }
-            </ion-list>
-          }
+        } @else if (!mapboxConfigured()) {
+          <app-daisy-message>Ricerca indirizzi esterna non configurata: puoi selezionare una venue esistente.</app-daisy-message>
         }
       </section>
 
