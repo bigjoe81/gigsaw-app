@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
 import { SongDetailPage } from './pages/song-detail.page';
 import { SongFormPage } from './pages/song-form.page';
+import { SongImportPage } from './pages/song-import.page';
 import { SongLinkGroupsPage } from './pages/song-link-groups.page';
 import { SongListPage } from './pages/song-list.page';
 
 export const SONG_ROUTES: Routes = [
   { path: '', component: SongListPage },
   { path: 'nuovo', component: SongFormPage },
+  { path: 'importa', component: SongImportPage },
   { path: 'gruppi-collegati', component: SongLinkGroupsPage },
   { path: 'new', redirectTo: 'nuovo', pathMatch: 'full' },
   { path: 'link-groups', redirectTo: 'gruppi-collegati', pathMatch: 'full' },
