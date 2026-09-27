@@ -13,11 +13,16 @@ ion-content { --background: var(--gigsaw-background); }
 .venue-list { overflow: hidden; border: 1px solid var(--gigsaw-border); border-radius: 16px; background: #101d30; }
 .venue-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; min-height: 88px; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--gigsaw-border); }
 .venue-row:last-child { border-bottom: 0; }
-.venue-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 11px; color: var(--ion-color-primary); background: rgba(var(--ion-color-primary-rgb), .12); font-size: 21px; }
+.venue-icon { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid transparent; border-radius: 11px; font-size: 21px; transition: transform .18s ease; }
+.venue-row:hover .venue-icon { transform: translateY(-1px); }
+.venue-row.is-venue .venue-icon { border-color: rgba(255, 113, 18, .28); color: #ff8a3d; background: rgba(255, 113, 18, .13); }
+.venue-row.is-room .venue-icon { border-color: rgba(96, 165, 250, .28); color: #60a5fa; background: rgba(59, 130, 246, .13); }
 .venue-copy { min-width: 0; }
 .venue-copy h2, .venue-copy p, .state h2 { margin: 0; }
 .venue-copy h2 { overflow: hidden; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
-.location-kind { display: block; margin-bottom: 3px; color: var(--ion-color-primary); font-size: .66rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.location-kind { display: inline-flex; align-items: center; width: fit-content; margin-bottom: 5px; padding: 3px 8px; border: 1px solid transparent; border-radius: 999px; font-size: .63rem; font-weight: 800; letter-spacing: .07em; line-height: 1; text-transform: uppercase; }
+.is-venue .location-kind { border-color: rgba(255, 113, 18, .3); color: #ff9b59; background: rgba(255, 113, 18, .11); }
+.is-room .location-kind { border-color: rgba(96, 165, 250, .3); color: #93c5fd; background: rgba(59, 130, 246, .11); }
 .venue-copy p { margin-top: 5px; color: var(--gigsaw-muted); font-size: .86rem; }
 .venue-actions { display: flex; gap: 4px; }
 .state { display: flex; min-height: 52vh; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }

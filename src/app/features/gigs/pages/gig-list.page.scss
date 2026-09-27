@@ -13,18 +13,22 @@ ion-content { --background: var(--gigsaw-background); }
 .filters { display: flex; gap: 6px; margin-bottom: 18px; padding: 4px; width: fit-content; border: 1px solid var(--gigsaw-border); border-radius: 12px; background: #101d30; }
 .filters button { padding: 8px 14px; border: 0; border-radius: 8px; color: var(--ion-color-medium); background: transparent; font-weight: 750; cursor: pointer; }
 .filters button.active { color: var(--ion-color-primary-contrast); background: var(--ion-color-primary); }
-.gig-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.gig-card { display: flex; gap: 16px; min-height: 150px; padding: 18px; border: 1px solid var(--gigsaw-border); border-radius: 17px; color: inherit; background: #101d30; text-decoration: none; transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; }
-.gig-card:hover { border-color: rgba(var(--ion-color-primary-rgb), .55); transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0, 0, 0, .1); }
+.gig-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.gig-card,
+.gig-card:link,
+.gig-card:visited { display: flex; width: 100%; min-height: 112px; align-items: center; gap: 16px; padding: 16px 18px; border: 1px solid var(--gigsaw-border); border-radius: 15px; color: var(--gigsaw-text); background: #101d30; text-decoration: none; transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease, background .18s ease; }
+.gig-card:hover,
+.gig-card:focus-visible { border-color: color-mix(in srgb, var(--ion-color-primary) 55%, var(--gigsaw-border)); outline: none; background: color-mix(in srgb, var(--ion-color-primary) 7%, #101d30); transform: translateY(-2px); box-shadow: 0 12px 30px rgba(var(--ion-color-primary-rgb), .1); }
 .gig-card.skeleton { display: block; }
-.date-badge { display: flex; flex: 0 0 62px; height: 68px; flex-direction: column; align-items: center; justify-content: center; border-radius: 13px; color: var(--ion-color-primary-contrast); background: var(--ion-color-primary); }
+.date-badge { display: flex; flex: 0 0 62px; height: 68px; flex-direction: column; align-items: center; justify-content: center; border: 1px solid rgba(var(--ion-color-success-rgb), .25); border-radius: 13px; color: var(--ion-color-success); background: rgba(var(--ion-color-success-rgb), .1); }
 .date-badge strong { font-size: 1.55rem; line-height: 1; }
 .date-badge span { margin-top: 5px; font-size: .75rem; font-weight: 800; text-transform: uppercase; }
-.gig-copy { min-width: 0; }
-.status { display: inline-flex; margin-bottom: 7px; padding: 4px 8px; border-radius: 999px; color: var(--ion-color-success); background: rgba(var(--ion-color-success-rgb), .12); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+.date-badge.past { border-color: rgba(var(--ion-color-medium-rgb), .22); color: var(--ion-color-medium); background: rgba(var(--ion-color-medium-rgb), .08); }
+.gig-copy { display: grid; min-width: 0; flex: 1; gap: 5px; }
+.status { display: inline-flex; width: max-content; max-width: 100%; min-height: 26px; align-items: center; justify-content: center; box-sizing: border-box; margin: 0 0 2px; padding: 6px 10px; border: 1px solid rgba(var(--ion-color-success-rgb), .22); border-radius: 999px; color: var(--ion-color-success); background: rgba(var(--ion-color-success-rgb), .1); font-size: .7rem; font-weight: 800; line-height: 1.2; text-transform: uppercase; white-space: nowrap; }
 .status.past { color: var(--ion-color-medium); background: rgba(var(--ion-color-medium-rgb), .12); }
-.gig-copy h2 { overflow: hidden; margin: 0 0 10px; font-size: 1.08rem; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-.gig-copy p { display: flex; align-items: center; gap: 7px; margin: 5px 0 0; color: var(--ion-color-medium); font-size: .84rem; }
+.gig-copy h2 { overflow: hidden; margin: 0 0 3px; font-size: 1.08rem; font-weight: 800; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+.gig-copy p { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--ion-color-medium); font-size: .84rem; line-height: 1.35; }
 .gig-copy ion-icon { flex: 0 0 auto; }
 .state { display: flex; min-height: 45vh; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
 .state ion-icon { color: var(--ion-color-medium); font-size: 50px; }

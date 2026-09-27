@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { SongDetailPage } from './pages/song-detail.page';
 import { SongFormPage } from './pages/song-form.page';
 import { SongLinkGroupsPage } from './pages/song-link-groups.page';
+import { SongImportPage } from './pages/song-import.page';
 import { SongListPage } from './pages/song-list.page';
 
 export const SONG_ROUTES: Routes = [
@@ -9,6 +10,7 @@ export const SONG_ROUTES: Routes = [
   { path: 'nuovo', component: SongFormPage },
   { path: 'importa', redirectTo: '', pathMatch: 'full' },
   { path: 'gruppi-collegati', component: SongLinkGroupsPage },
+  { path: 'importa', component: SongImportPage },
   { path: 'new', redirectTo: 'nuovo', pathMatch: 'full' },
   { path: 'link-groups', redirectTo: 'gruppi-collegati', pathMatch: 'full' },
   { path: ':id/edit', redirectTo: ':id/modifica', pathMatch: 'full' },

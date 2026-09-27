@@ -5,6 +5,7 @@
     </ion-buttons>
     <ion-title>Brani</ion-title>
     <ion-buttons slot="end">
+      <ion-button fill="clear" [routerLink]="['importa']"><ion-icon slot="start" name="cloud-upload-outline" />Importa</ion-button>
       <ion-button fill="clear" color="secondary" [routerLink]="['gruppi-collegati']">Medley</ion-button>
       <ion-button class="create-song" [routerLink]="['nuovo']" aria-label="Crea brano"><ion-icon slot="start" name="add" /> Nuovo</ion-button>
     </ion-buttons>
@@ -36,14 +37,44 @@
         </div>
         <div class="library-actions">
           <span class="song-count">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>
+          <ion-button class="library-import" fill="outline" [routerLink]="['importa']"><ion-icon slot="start" name="cloud-upload-outline" />Importa</ion-button>
           <ion-button class="library-medleys" fill="outline" [routerLink]="['gruppi-collegati']">Gestisci medley</ion-button>
           <ion-button class="library-add" [routerLink]="['nuovo']"><ion-icon slot="start" name="add" />Aggiungi brano</ion-button>
         </div>
       </header>
 
+      <div class="selection-toolbar" [class.has-selection]="selectedCount() > 0">
+        <ion-checkbox
+          aria-label="Seleziona tutti i brani"
+          [checked]="allSelected()"
+          [indeterminate]="selectedCount() > 0 && !allSelected()"
+          [disabled]="deleting()"
+          (ionChange)="toggleAll($event.detail.checked)"
+        >Seleziona tutti</ion-checkbox>
+        <span class="selection-count">{{ selectedCount() }} selezionati</span>
+        <ion-button
+          class="delete-selected"
+          color="danger"
+          fill="outline"
+          size="small"
+          [disabled]="!selectedCount() || deleting()"
+          (click)="confirmDeleteSelected()"
+        >
+          <ion-icon slot="start" name="trash-outline" />
+          {{ deleting() ? 'Eliminazione…' : 'Elimina' }}
+        </ion-button>
+      </div>
+
       <app-daisy-list listClass="song-list">
         @for (song of songs(); track song.id) {
-          <app-daisy-list-item itemClass="song-row" [interactive]="true" (selected)="openSong(song.id)">
+          <app-daisy-list-item itemClass="song-row" [interactive]="true" [disabled]="deleting()" (selected)="openSong(song.id)">
+            <ion-checkbox
+              class="song-selector"
+              aria-label="Seleziona {{ song.title }}"
+              [checked]="selectedIds().has(song.id)"
+              (click)="$event.stopPropagation()"
+              (ionChange)="toggleSong(song.id, $event.detail.checked)"
+            />
             <span class="song-icon"><ion-icon name="musical-notes-outline" /></span>
             <div class="list-col-grow">
               <div class="song-heading">

@@ -12,7 +12,7 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { add, businessOutline, locationOutline, pencilOutline, trashOutline } from 'ionicons/icons';
+import { add, businessOutline, musicalNotesOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { finalize, forkJoin } from 'rxjs';
 import { RehearsalRoom, Venue } from '../../../core/models/band-resources.models';
 import { RehearsalRoomService } from '../../rehearsal-sessions/services/rehearsal-room.service';
@@ -70,7 +70,7 @@ export class VenueListPage implements OnInit {
     private readonly alert: AlertController,
     private readonly toast: ToastController,
   ) {
-    addIcons({ add, businessOutline, locationOutline, pencilOutline, trashOutline });
+    addIcons({ add, businessOutline, musicalNotesOutline, pencilOutline, trashOutline });
   }
 
   ngOnInit(): void {

@@ -40,7 +40,7 @@
       <section class="gig-grid">
         @for (gig of visibleGigs(); track gig.id) {
           <a class="gig-card" [routerLink]="[gig.id]">
-            <div class="date-badge"><strong>{{ day(gig) }}</strong><span>{{ month(gig) }}</span></div>
+            <div class="date-badge" [class.past]="!isUpcoming(gig)"><strong>{{ day(gig) }}</strong><span>{{ month(gig) }}</span></div>
             <div class="gig-copy">
               <span class="status" [class.past]="!isUpcoming(gig)">{{ isUpcoming(gig) ? 'In programma' : 'Concluso' }}</span>
               <h2>{{ gig.title || venue(gig) }}</h2>

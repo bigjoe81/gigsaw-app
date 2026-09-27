@@ -31,8 +31,8 @@
     } @else {
       <section class="venue-list">
         @for (item of visibleLocations(); track item.kind + '-' + item.location.id) {
-          <article class="venue-row">
-            <div class="venue-icon"><ion-icon name="location-outline" /></div>
+          <article class="venue-row" [class.is-venue]="item.kind === 'venue'" [class.is-room]="item.kind === 'room'">
+            <div class="venue-icon"><ion-icon [name]="item.kind === 'venue' ? 'business-outline' : 'musical-notes-outline'" /></div>
             <div class="venue-copy"><span class="location-kind">{{ item.kind === 'venue' ? 'Venue concerto' : 'Sala prove' }}</span><h2>{{ item.location.name }}</h2><p>{{ address(item.location) }}</p></div>
             <div class="venue-actions">
               <app-daisy-button tone="ghost" [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']" aria-label="Modifica luogo"><ion-icon name="pencil-outline" /></app-daisy-button>

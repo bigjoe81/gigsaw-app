@@ -63,6 +63,43 @@
   gap: 12px;
 }
 
+.selection-toolbar {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 14px;
+  margin: 0 4px 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--gigsaw-border);
+  border-radius: 12px;
+  background: #101d30;
+}
+
+.selection-toolbar.has-selection {
+  border-color: color-mix(in srgb, var(--ion-color-primary) 55%, var(--gigsaw-border));
+}
+
+.selection-toolbar ion-checkbox {
+  color: var(--gigsaw-text);
+  font-size: .84rem;
+  font-weight: 700;
+}
+
+.selection-count {
+  color: var(--gigsaw-muted);
+  font-size: .78rem;
+}
+
+.delete-selected {
+  margin-inline-start: auto;
+  font-weight: 750;
+}
+
+.song-selector {
+  flex: 0 0 auto;
+  margin-inline-end: 14px;
+}
+
 .library-add {
   --background: var(--ion-color-primary);
   --color: var(--ion-color-primary-contrast);
@@ -73,6 +110,13 @@
 .library-medleys {
   --border-color: var(--ion-color-brand-blue);
   --color: var(--ion-color-brand-blue);
+  --border-radius: 9px;
+  font-weight: 750;
+}
+
+.library-import {
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
   --border-radius: 9px;
   font-weight: 750;
 }
@@ -217,6 +261,10 @@
     width: 42px;
     height: 42px;
     margin-inline-end: 11px;
+  }
+
+  .song-selector {
+    margin-inline-end: 10px;
   }
 
   .song-heading {
