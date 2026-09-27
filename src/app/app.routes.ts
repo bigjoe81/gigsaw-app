@@ -97,6 +97,11 @@ export const routes: Routes = [
           import('./features/poster-templates/poster-templates.routes').then((m) => m.POSTER_TEMPLATE_ROUTES),
       },
       {
+        path: 'assistenza',
+        loadComponent: () =>
+          import('./features/support/pages/support.page').then((m) => m.SupportPage),
+      },
+      {
         path: 'impostazioni',
         loadComponent: () =>
           import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage),
