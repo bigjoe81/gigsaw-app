@@ -1,0 +1,4 @@
+:host { display: block; height: 100%; }
+ion-content { --background: var(--gigsaw-background); }
+.field-label { display: grid; min-width: 0; gap: 7px; color: var(--gigsaw-text); font-size: .875rem; font-weight: 700; }
+.field-label strong, .field-label small { color: var(--ion-color-danger); }
