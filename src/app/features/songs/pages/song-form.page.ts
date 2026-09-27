@@ -152,6 +152,39 @@ export class SongFormPage implements OnInit, OnDestroy {
     ));
   }
 
+  completeMetadataFromForm(): void {
+    if (this.magicLoading()) return;
+
+    const title = this.form.controls.title.value.trim();
+    const artist = this.form.controls.performedBy.value.trim();
+
+    this.magicError.set('');
+    this.metadataResults.set([]);
+
+    if (!title) {
+      this.magicError.set('Inserisci almeno il titolo del brano.');
+      return;
+    }
+
+    this.magicLoading.set(true);
+    this.songs.searchMetadata(title, artist).pipe(
+      finalize(() => this.magicLoading.set(false)),
+    ).subscribe({
+      next: (results) => {
+        this.metadataResults.set(results);
+        if (!results.length) {
+          this.magicError.set('Nessun risultato trovato.');
+        }
+      },
+      error: (error: { error?: { message?: string }; message?: string; status?: number }) => {
+        const fallback = error.status === 0
+          ? 'Backend non raggiungibile. Controlla che l’API sia avviata.'
+          : 'Ricerca metadati non disponibile.';
+        this.magicError.set(error.error?.message || error.message || fallback);
+      },
+    });
+  }
+
   searchMagicSong(): void {
     if (this.magicForm.invalid || this.magicLoading()) { this.magicForm.markAllAsTouched(); return; }
     const values = this.magicForm.getRawValue();
