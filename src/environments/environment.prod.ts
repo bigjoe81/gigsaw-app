@@ -5,4 +5,5 @@ export const environment = {
   apiPath: '/api/v1',
   googleAuthPath: '/auth/google/redirect',
   mapboxAccessToken: '',
+  zohoFeedbackWidgetUrl: '',
 };

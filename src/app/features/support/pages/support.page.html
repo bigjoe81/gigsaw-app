@@ -3,7 +3,7 @@
     <ion-menu-button slot="start" menu="band-menu" />
     <div class="page-title">
       <span>Feedback e assistenza</span>
-      <small>Parlaci di un problema o di un’idea</small>
+      <small>Segnalazioni e suggerimenti</small>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -14,74 +14,29 @@
       <span class="eyebrow">BETA</span>
       <h1>Aiutaci a migliorare GigSaw.</h1>
       <p>
-        Segnala un bug, proponi una funzione o chiedi assistenza. Alleghiamo automaticamente
-        il contesto tecnico essenziale per capire più velocemente cosa è successo.
+        Segnala un problema, inviaci un suggerimento o chiedi assistenza.
+        La segnalazione viene aperta direttamente nel nostro sistema di supporto.
       </p>
     </section>
 
     <section class="support-card">
-      <div class="category-grid" aria-label="Tipo di segnalazione">
-        @for (item of categories; track item.value) {
-          <button
-            type="button"
-            class="category-card"
-            [class.is-active]="category === item.value"
-            (click)="category = item.value"
-          >
-            <ion-icon [name]="item.icon" aria-hidden="true" />
-            <span>
-              <strong>{{ item.label }}</strong>
-              <small>{{ item.hint }}</small>
-            </span>
-          </button>
-        }
-      </div>
-
-      <label class="field">
-        <span>Oggetto</span>
-        <input
-          class="input input-bordered w-full"
-          type="text"
-          maxlength="200"
-          [(ngModel)]="subject"
-          placeholder="Es. Non riesco ad aggiungere un brano alla scaletta"
-        />
-      </label>
-
-      <label class="field">
-        <span>Descrizione</span>
-        <textarea
-          class="textarea textarea-bordered w-full"
-          rows="8"
-          maxlength="10000"
-          [(ngModel)]="description"
-          placeholder="Raccontaci cosa è successo, cosa ti aspettavi oppure cosa vorresti poter fare…"
-        ></textarea>
-      </label>
-
-      <p class="privacy-note">
-        Invieremo anche pagina corrente, browser e band attiva. Non vengono inviati password o dati di autenticazione.
-      </p>
-
-      @if (successMessage()) {
-        <div class="alert alert-success" role="status">
-          <ion-icon name="checkmark-circle-outline" />
-          <span>{{ successMessage() }}</span>
+      @if (safeWidgetUrl) {
+        <iframe
+          class="zoho-feedback-frame"
+          [src]="safeWidgetUrl"
+          title="Feedback e assistenza GigSaw"
+          loading="eager"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      } @else {
+        <div class="widget-placeholder" role="status">
+          <strong>Feedback non ancora configurato</strong>
+          <p>
+            Imposta l’URL iFrame generato da Zoho Desk in
+            <code>zohoFeedbackWidgetUrl</code>.
+          </p>
         </div>
       }
-
-      @if (errorMessage()) {
-        <div class="alert alert-error" role="alert">
-          <span>{{ errorMessage() }}</span>
-        </div>
-      }
-
-      <div class="actions">
-        <ion-button (click)="submit()" [disabled]="sending() || !subject.trim() || !description.trim()">
-          <ion-icon slot="start" name="send-outline" />
-          {{ sending() ? 'Invio…' : 'Invia segnalazione' }}
-        </ion-button>
-      </div>
     </section>
   </main>
 </ion-content>
