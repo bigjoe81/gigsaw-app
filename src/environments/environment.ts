@@ -13,6 +13,8 @@ export const environment = {
   // Laravel Socialite redirect endpoint; kept outside the API prefix by convention.
   googleAuthPath: '/auth/google/redirect',
   mapboxAccessToken: '',
+  // Paste the src URL from Zoho Desk > Web Forms > Feedback Widget > Display Options > iFrame.
+  zohoFeedbackWidgetUrl: '',
 };
 
 /*
