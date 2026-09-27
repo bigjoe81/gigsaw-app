@@ -84,7 +84,8 @@ export class SongImportPage {
     }))).pipe(finalize(() => this.importing.set(false))).subscribe({
       next: (result) => {
         this.result.set(`${result.created_count} ${result.created_count === 1 ? 'brano importato' : 'brani importati'}.`);
-        setTimeout(() => void this.router.navigate(['/app/brani']), 700);
+        const bandId = this.bandContext.activeBandId;
+        setTimeout(() => void this.router.navigate(bandId ? ['/band', bandId, 'repertorio'] : ['/band']), 700);
       },
       error: (error) => this.error.set(this.apiError(error, 'Importazione non riuscita.')),
     });
