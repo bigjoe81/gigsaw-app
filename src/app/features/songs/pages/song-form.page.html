@@ -67,6 +67,39 @@
               <header><span class="step-kicker">Dettagli musicali</span>
                 <h2>Controlla le informazioni.</h2>
                 <p>I dati trovati restano sempre modificabili.</p></header>
+              <div class="metadata-complete-action">
+                <ion-button type="button" fill="outline" (click)="completeMetadataFromForm()" [disabled]="magicLoading() || !form.controls.title.value.trim()">
+                  @if (magicLoading()) {
+                    <ion-spinner name="crescent"/>
+                  } @else {
+                    <ion-icon slot="start" name="sparkles-outline"/>
+                  }
+                  Completa i metadati
+                </ion-button>
+                <small>Cerca titolo e artista sui servizi musicali e completa i campi trovati.</small>
+              </div>
+              @if (magicError()) {
+                <p class="inline-error">{{ magicError() }}</p>
+              }
+              @if (metadataResults().length) {
+                <div class="metadata-results metadata-results-inline">
+                  @for (result of metadataResults(); track result.externalId) {
+                    <button type="button" class="metadata-card" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
+                      @if (result.artworkUrl) {
+                        <img [src]="result.artworkUrl" alt=""/>
+                      } @else {
+                        <span class="cover-placeholder"><ion-icon name="musical-notes-outline"/></span>
+                      }
+                      <span class="metadata-copy">
+                        <strong>{{ result.title }}</strong>
+                        <small>{{ result.artist || 'Artista sconosciuto' }}</small>
+                        <small>{{ result.album }}</small>
+                      </span>
+                      <span class="provider">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
+                    </button>
+                  }
+                </div>
+              }
               <div class="field-grid two-columns"><label class="wide"><span>Titolo *</span>
                 <ion-input formControlName="title"/>
               </label><label><span>Eseguito da</span>
