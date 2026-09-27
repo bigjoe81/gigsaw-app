@@ -16,6 +16,7 @@ import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
   colorPaletteOutline,
+  helpCircleOutline,
   homeOutline,
   listOutline,
   micOutline,
@@ -28,7 +29,7 @@ import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
 
-type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'luoghi' | 'scalette' | 'locandine' | 'impostazioni';
+type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'luoghi' | 'scalette' | 'locandine' | 'assistenza' | 'impostazioni';
 
 @Component({
   selector: 'app-band-layout',
@@ -71,6 +72,7 @@ export class BandLayoutPage implements OnInit {
     { key: 'luoghi', label: 'Luoghi', icon: 'pin-outline' },
     { key: 'scalette', label: 'Scalette', icon: 'list-outline' },
     { key: 'locandine', label: 'Locandine', icon: 'color-palette-outline' },
+    { key: 'assistenza', label: 'Feedback e assistenza', icon: 'help-circle-outline' },
     { key: 'impostazioni', label: 'Impostazioni', icon: 'settings-outline' },
   ];
 
@@ -78,6 +80,7 @@ export class BandLayoutPage implements OnInit {
     addIcons({
       arrowBackOutline,
       colorPaletteOutline,
+      helpCircleOutline,
       homeOutline,
       listOutline,
       micOutline,
