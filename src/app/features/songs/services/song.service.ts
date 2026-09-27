@@ -9,10 +9,65 @@ import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models
 type ApiEnvelope<T> = T | { data: T };
 const API_BASE_URL = `${environment.apiUrl}${environment.apiPath}`;
 
+export interface SongImportRow {
+  row_number: number;
+  input: {
+    title?: string;
+    performed_by?: string;
+    key?: string;
+    duration?: number | string;
+    bpm?: number | string;
+    [key: string]: unknown;
+  };
+  lookup_status: string;
+  duplicate_existing: boolean;
+  ready: boolean;
+  errors: string[];
+  confidence?: number;
+}
+
+export interface PdfSongImportReview {
+  import_token: string;
+  source: 'pdf_ai';
+  rows: SongImportRow[];
+  summary: {
+    total_rows: number;
+    ready_rows: number;
+    matched_rows: number;
+    duplicate_rows: number;
+  };
+  ai_quota: { limit: number; used: number; remaining: number };
+}
+
+export interface SongImportConfirmResult {
+  created_count: number;
+  skipped_count: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SongService extends BandScopedCrudService<Song> {
   private readonly http = inject(HttpClient);
   protected readonly resource = 'songs';
+
+  reviewPdfImport(file: File, bandId: number): Observable<PdfSongImportReview> {
+    const body = new FormData();
+    body.append('band_id', String(bandId));
+    body.append('file', file, file.name);
+    return this.http.post<ApiEnvelope<PdfSongImportReview>>(`${API_BASE_URL}/songs/imports/pdf/review`, body).pipe(
+      map((response) => this.unwrapMetadata(response)),
+      timeout(120000),
+    );
+  }
+
+  confirmPdfImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean }>): Observable<SongImportConfirmResult> {
+    return this.http.post<ApiEnvelope<SongImportConfirmResult>>(`${API_BASE_URL}/songs/imports/pdf/confirm`, {
+      import_token: importToken,
+      rows,
+    }).pipe(
+      map((response) => this.unwrapMetadata(response)),
+      timeout(120000),
+    );
+  }
 
   searchMetadata(title: string, artist?: string): Observable<SongMetadataCandidate[]> {
     let params = new HttpParams().set('title', title.trim());
