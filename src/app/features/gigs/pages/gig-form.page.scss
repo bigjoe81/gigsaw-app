@@ -1,5 +1,8 @@
 :host { display: block; height: 100%; }
 ion-content { --background: var(--gigsaw-background); }
+.gig-field { --padding-start: 14px; --padding-end: 14px; --padding-top: 12px; --padding-bottom: 12px; --color: var(--gigsaw-text); --placeholder-color: var(--gigsaw-muted); width: 100%; min-height: 52px; border: 1px solid var(--gigsaw-border); border-radius: 12px; background: var(--ion-card-background); font-weight: 400; }
+.gig-field.invalid { border-color: var(--ion-color-danger); }
+.gig-field:focus-within { border-color: var(--ion-color-primary); }
 .venue-results { overflow: hidden; margin: 0; padding: 0; border: 1px solid var(--gigsaw-border, var(--ion-color-step-200)); border-radius: 12px; background: transparent; }
 .venue-results ion-item { --background: transparent; }
 .venue-results ion-label { display: grid; gap: 3px; }

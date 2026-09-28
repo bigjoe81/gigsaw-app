@@ -19,11 +19,11 @@
         <div><strong>{{ upcomingCount() }}</strong><span>date in programma</span></div>
         <div><strong>{{ gigs().length - upcomingCount() }}</strong><span>concerti passati</span></div>
       </section>
-      <nav class="filters" aria-label="Filtra concerti">
-        <button type="button" [class.active]="filter() === 'upcoming'" (click)="setFilter('upcoming')">Prossimi</button>
-        <button type="button" [class.active]="filter() === 'past'" (click)="setFilter('past')">Passati</button>
-        <button type="button" [class.active]="filter() === 'all'" (click)="setFilter('all')">Tutti</button>
-      </nav>
+      <ion-segment class="filters" aria-label="Filtra concerti" [value]="filter()" (ionChange)="setFilter($any($event.detail.value))">
+        <ion-segment-button value="upcoming"><ion-label>Prossimi</ion-label></ion-segment-button>
+        <ion-segment-button value="past"><ion-label>Passati</ion-label></ion-segment-button>
+        <ion-segment-button value="all"><ion-label>Tutti</ion-label></ion-segment-button>
+      </ion-segment>
     }
 
     @if (loading()) {
