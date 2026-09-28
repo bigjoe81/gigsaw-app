@@ -6,9 +6,12 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonLabel,
   IonMenuButton,
   IonRefresher,
   IonRefresherContent,
+  IonSegment,
+  IonSegmentButton,
   IonSkeletonText,
   IonText,
   IonTitle,
@@ -24,7 +27,7 @@ type GigFilter = 'upcoming' | 'past' | 'all';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton, IonRefresher, IonRefresherContent, IonSkeletonText, IonText, IonTitle, IonToolbar],
+  imports: [RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonLabel, IonMenuButton, IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonSkeletonText, IonText, IonTitle, IonToolbar],
   templateUrl: './gig-list.page.html',
   styleUrl: './gig-list.page.scss',
 })
