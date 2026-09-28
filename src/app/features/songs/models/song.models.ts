@@ -9,6 +9,8 @@ export interface SongMetadataCandidate {
   releaseDate?: string | null;
   durationSeconds?: number | null;
   artworkUrl?: string | null;
+  previewUrl?: string | null;
+  externalUrl?: string | null;
   score: number;
   recordingMbid?: string | null;
   variantFlags?: string[];

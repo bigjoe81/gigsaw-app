@@ -1,5 +1,6 @@
 
-import { Component, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, computed, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
@@ -22,7 +23,7 @@ import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models
     .song-shell {
       width: 100%;
       max-width: none;
-      min-height: calc(100vh - 56px);
+      min-height: 100%;
       margin: 0;
       box-shadow: none;
     }
@@ -66,6 +67,14 @@ export class SongFormPage implements OnInit, OnDestroy {
   readonly detailLoading = signal(false);
   readonly metadataResults = signal<SongMetadataCandidate[]>([]);
   readonly selectedMetadata = signal<SongMetadataDetail | null>(null);
+  readonly spotifyEmbedUrl = computed<SafeResourceUrl | null>(() => {
+    const metadata = this.selectedMetadata();
+    if (metadata?.provider !== 'spotify') return null;
+    const source = `${metadata.externalId || ''} ${metadata.externalUrl || ''}`;
+    const trackId = source.match(/(?:spotify:track:|open\.spotify\.com\/track\/)?([A-Za-z0-9]{22})(?:\b|\?)/)?.[1];
+    if (!trackId) return null;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(`https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`);
+  });
   readonly error = signal('');
   readonly magicError = signal('');
   readonly tapCount = signal(0);
@@ -75,7 +84,7 @@ export class SongFormPage implements OnInit, OnDestroy {
   private id?: number;
   private bandId?: number;
 
-  constructor(private readonly fb: FormBuilder, private readonly songs: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastController) {
+  constructor(private readonly fb: FormBuilder, private readonly songs: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastController, private readonly sanitizer: DomSanitizer) {
     addIcons({ arrowBackOutline, checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline });
   }
 
@@ -209,17 +218,27 @@ export class SongFormPage implements OnInit, OnDestroy {
 
   chooseMetadata(candidate: SongMetadataCandidate): void {
     if (this.detailLoading()) return;
+    this.selectedMetadata.set(candidate);
+    this.metadataResults.set([]);
+    this.applyMetadata(candidate);
+    this.step.set(2);
     if (!candidate.recordingMbid) {
-      this.applyMetadata(candidate);
-      this.step.set(2);
       return;
     }
     this.detailLoading.set(true);
     this.songs.metadataDetail(candidate.recordingMbid).pipe(
       finalize(() => this.detailLoading.set(false)),
     ).subscribe({
-      next: (detail) => { this.selectedMetadata.set(detail); this.applyMetadata(detail); this.step.set(2); },
-      error: () => { this.applyMetadata(candidate); this.step.set(2); },
+      next: (detail) => {
+        // Preserve the Spotify source when the extra MusicBrainz detail call
+        // does not carry the original provider identifiers.
+        const selected = candidate.provider === 'spotify'
+          ? { ...candidate, ...detail, provider: candidate.provider, externalId: candidate.externalId }
+          : { ...candidate, ...detail };
+        this.selectedMetadata.set(selected);
+        this.applyMetadata(selected);
+      },
+      error: () => undefined,
     });
   }
 
@@ -238,7 +257,7 @@ export class SongFormPage implements OnInit, OnDestroy {
     this.step.set(Math.max(1, Math.min(3, nextStep)));
   }
 
-  save(): void {
+  save(addAnother = false): void {
     if (this.form.invalid || this.saving()) { this.form.markAllAsTouched(); this.step.set(2); return; }
     this.saving.set(true);
     this.error.set('');
@@ -265,7 +284,36 @@ export class SongFormPage implements OnInit, OnDestroy {
       tags: this.parseTags(values.tagsText),
     };
     const request = this.editing ? this.songs.update(this.id!, payload) : this.songs.create(payload);
-    request.subscribe({ next: async () => { (await this.toast.create({ message: 'Brano salvato.', duration: 1800, color: 'success' })).present(); void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/band'); }, error: (error: Error) => { this.error.set(error.message || 'Salvataggio non riuscito.'); this.saving.set(false); } });
+    request.subscribe({
+      next: async () => {
+        (await this.toast.create({ message: 'Brano salvato.', duration: 1800, color: 'success' })).present();
+        if (addAnother && !this.editing) {
+          this.prepareNextSong();
+          return;
+        }
+        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/band');
+      },
+      error: (error: Error) => {
+        this.error.set(error.message || 'Salvataggio non riuscito.');
+        this.saving.set(false);
+      },
+    });
+  }
+
+  private prepareNextSong(): void {
+    this.form.reset({
+      title: '', album: '', performedBy: '', musicBy: '', lyricsBy: '', key: '', bpm: '', duration: '',
+      linkGroup: '', tagsText: '', status: 'draft', notes: '',
+    });
+    this.magicForm.reset({ title: '', artist: '' });
+    this.metadataResults.set([]);
+    this.selectedMetadata.set(null);
+    this.error.set('');
+    this.magicError.set('');
+    this.creatingLinkGroup = false;
+    this.resetTapTempo();
+    this.saving.set(false);
+    this.step.set(1);
   }
 
   private applyMetadata(metadata: SongMetadataCandidate | SongMetadataDetail): void {

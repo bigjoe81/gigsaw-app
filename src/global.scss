@@ -98,6 +98,7 @@
 @layer components {
   ion-content {
     --background: var(--gigsaw-background);
+    --overflow: auto;
   }
 
   ion-card {
@@ -117,6 +118,17 @@
   ion-back-button::part(native) {
     text-transform: none;
   }
+}
+
+/* Routed Ionic pages keep their own scroll element inside ion-content's shadow
+   DOM. Make vertical scrolling explicit so a restored route or a completed menu
+   gesture cannot leave lists with a stale non-scrollable touch state. */
+ion-content::part(scroll) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Shared form actions: remain in flow on short forms and stick above the safe area

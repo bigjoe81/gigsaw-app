@@ -1,5 +1,5 @@
 
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -56,7 +56,8 @@ import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/d
   templateUrl: './song-list.page.html',
   styleUrls: ['./song-list.page.scss'],
 })
-export class SongListPage implements OnInit {
+export class SongListPage {
+  readonly importEnabled = false;
   readonly songs = signal<Song[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
@@ -76,7 +77,7 @@ export class SongListPage implements OnInit {
     addIcons({ add, alertCircle, chevronForward, cloudUploadOutline, gitNetwork, musicalNotesOutline, trashOutline });
   }
 
-  ngOnInit(): void {
+  ionViewWillEnter(): void {
     this.load();
   }
 
@@ -156,6 +157,7 @@ export class SongListPage implements OnInit {
   subtitle(song: Song): string {
     return [
       song.album,
+      song.key ? `Tonalità: ${song.key}` : '',
       song.linkGroup ? `Link: ${song.linkGroup}` : '',
       song.tags?.length ? `Tag: ${song.tags.join(', ')}` : '',
       song.bpm ? `${song.bpm} bpm` : '',

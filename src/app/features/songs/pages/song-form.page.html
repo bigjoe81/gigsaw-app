@@ -6,7 +6,7 @@
     <ion-title>{{ editing ? 'Modifica brano' : 'Nuovo brano' }}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="song-content">
+<ion-content class="song-content" [scrollY]="true" [forceOverscroll]="true">
   <main class="song-shell">
     <aside class="song-intro"><span class="eyebrow">Repertorio</span>
       <h1>{{ editing ? 'Aggiorna il brano.' : 'Aggiungi un brano.' }}</h1>
@@ -123,6 +123,20 @@
                     <span class="tap-tempo-copy"><strong>{{ tappedBpm() ?? 'Tap tempo' }}</strong><small>@if (tappedBpm()) { BPM rilevati } @else if (tapCount()) { Continua a battere } @else { Tocca a tempo }</small></span>
                   </button>
                   <small class="tap-tempo-help">Desktop: barra spaziatrice · Mobile: tocca il pulsante</small>
+                  @if (spotifyEmbedUrl(); as playerUrl) {
+                    <div class="spotify-tap-player">
+                      <span>Anteprima Spotify per il tap tempo</span>
+                      <iframe
+                        [src]="playerUrl"
+                        title="Player Spotify per il tap tempo"
+                        width="100%"
+                        height="152"
+                        frameborder="0"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy">
+                      </iframe>
+                    </div>
+                  }
                 </div>
               </div></div>@if (error()) {
               <p class="inline-error">{{ error() }}</p>
@@ -170,6 +184,9 @@
             }
               <footer class="step-actions form-action-bar">
                 <ion-button type="button" fill="clear" (click)="goToStep(2)">Indietro</ion-button>
+                @if (!editing) {
+                  <ion-button type="button" fill="outline" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</ion-button>
+                }
                 <ion-button type="submit" [disabled]="saving()">@if (saving()) {
                   <ion-spinner name="crescent"/>
                 } @else {

@@ -14,6 +14,13 @@ ion-split-pane {
   --side-min-width: var(--band-menu-width);
 }
 
+ion-router-outlet#band-content {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 ion-menu {
   --width: var(--band-menu-width);
   --background: var(--gigsaw-background);
@@ -105,7 +112,7 @@ ion-split-pane.split-pane-visible > .split-pane-main {
 }
 
 ion-split-pane.split-pane-visible > .menu-content-open {
-  overflow: visible !important;
+  overflow: hidden !important;
   cursor: auto !important;
   touch-action: auto !important;
   pointer-events: auto !important;
