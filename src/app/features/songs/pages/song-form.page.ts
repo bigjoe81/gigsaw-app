@@ -8,13 +8,13 @@ import { addIcons } from 'ionicons';
 import { arrowBackOutline, checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline } from 'ionicons/icons';
 import { finalize, forkJoin, of } from 'rxjs';
 import { Song, SongStatus } from '../../../core/models/band-resources.models';
-import { DaisyStepsComponent } from '../../../shared/ui/daisyui';
+import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../services/song.service';
 import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, DaisyStepsComponent, IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, FormPageHeaderComponent, IonButton, IonChip, IonContent, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea],
   templateUrl: './song-form.page.html',
   styleUrls: ['./song-form.page.scss'],
   styles: [`
@@ -54,6 +54,7 @@ import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models
   `],
 })
 export class SongFormPage implements OnInit, OnDestroy {
+  readonly songSections: FormPageHeaderSection[] = [{ id: 1, label: 'Cerca' }, { id: 2, label: 'Dettagli' }, { id: 3, label: 'Organizza' }];
   form = this.fb.nonNullable.group({ title: ['', Validators.required], album: '', performedBy: '', musicBy: '', lyricsBy: '', key: ['', Validators.required], bpm: '', duration: ['', Validators.required], linkGroup: '', tagsText: '', status: 'draft' as SongStatus, notes: '' });
   magicForm = this.fb.nonNullable.group({ title: ['', [Validators.required, Validators.minLength(2)]], artist: '' });
   existingLinkGroups: string[] = [];
