@@ -1,62 +1,76 @@
-<ion-header class="selection-header">
-  <ion-toolbar><ion-title>Le tue band</ion-title></ion-toolbar>
+<ion-header>
+  <ion-toolbar>
+    <img class="brand-logo" slot="start" src="assets/logo-hor.png" alt="GigSaw" />
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="openOnboarding()" aria-label="Guida introduttiva">
+        <ion-icon slot="icon-only" name="help-circle-outline" />
+      </ion-button>
+      <ion-button fill="clear" (click)="logout()" aria-label="Esci">
+        <ion-icon slot="icon-only" name="log-out-outline" />
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="selection-content">
   <main class="selection-shell">
-    <header class="topbar">
-      <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
-      <ion-button class="logout-button" type="button" aria-label="Esci" (click)="logout()">
-        <span class="avatar">GP</span><span class="user-name">Giorgio</span>
-        <ion-icon aria-hidden="true" name="log-out-outline" />
-      </ion-button>
-    </header>
-
     <section class="page-heading">
       <div>
-        <span class="eyebrow">Workspace</span>
         <h1>Scegli la tua band</h1>
-        <p>Entra in uno spazio di lavoro oppure creane uno nuovo.</p>
+        <p>Seleziona il workspace in cui vuoi lavorare.</p>
       </div>
-      <ion-button class="create-button" type="button" (click)="openCreateModal()">
-        <ion-icon aria-hidden="true" name="add" /> Crea una band
+      <ion-button (click)="openCreateModal()">
+        <ion-icon slot="start" name="add" /> Crea una band
       </ion-button>
     </section>
 
     @if (loading()) {
-      <section class="state-panel" aria-live="polite">
-        <span class="loading loading-spinner loading-lg text-primary"></span><p>Caricamento band…</p>
-      </section>
+      <div class="state-panel" aria-live="polite">
+        <ion-spinner name="crescent" />
+        <p>Caricamento band…</p>
+      </div>
     } @else if (error()) {
-      <section class="state-panel">
+      <div class="state-panel">
         <app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message>
-        <app-gigsaw-button tone="outline" type="button" (click)="load()">Riprova</app-gigsaw-button>
-      </section>
+        <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+      </div>
     } @else {
       <section class="band-grid" aria-label="Le tue band">
-        @for (band of bands(); track band.id; let first = $first) {
-          <ion-button class="band-card" [class.featured]="first" type="button" (click)="selectBand(band)">
-            <span class="band-logo">
-              @if (band.logo) { <img [src]="band.logo" [alt]="band.name" /> }
-              @else { <ion-icon aria-hidden="true" name="musical-notes" /> }
-            </span>
-            <span class="band-info">
-              <strong>{{ band.name }}</strong><small>{{ formatGenres(band) }}</small>
-              <span class="band-meta">{{ band.membersCount || band.members?.length || 1 }} {{ (band.membersCount || band.members?.length || 1) === 1 ? 'membro' : 'membri' }}</span>
-            </span>
-            <span class="role-badge">{{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}</span>
-            <span class="open-label">Apri workspace <span aria-hidden="true">→</span></span>
-          </ion-button>
+        @for (band of bands(); track band.id) {
+          <ion-card class="band-card" button tabindex="0" role="button"
+                    [attr.aria-label]="'Apri ' + band.name"
+                    (click)="selectBand(band)"
+                    (keydown.enter)="selectBand(band)"
+                    (keydown.space)="$event.preventDefault(); selectBand(band)">
+            <ion-card-content>
+              <div class="band-top">
+                <span class="band-logo">
+                  @if (band.logo) { <img [src]="band.logo" [alt]="band.name" /> }
+                  @else { <ion-icon aria-hidden="true" name="musical-notes" /> }
+                </span>
+                <ion-badge color="medium">{{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}</ion-badge>
+              </div>
+              <h2>{{ band.name }}</h2>
+              <p>{{ formatGenres(band) }}</p>
+              <div class="band-footer">
+                <span>{{ band.membersCount || band.members?.length || 1 }} {{ (band.membersCount || band.members?.length || 1) === 1 ? 'membro' : 'membri' }}</span>
+                <span class="open-label">Apri <ion-icon name="chevron-forward-outline" /></span>
+              </div>
+            </ion-card-content>
+          </ion-card>
         }
-
-        <ion-button class="new-band-card" type="button" (click)="openCreateModal()">
-          <span class="add-icon"><ion-icon aria-hidden="true" name="add" /></span>
-          <span><strong>Crea una nuova band</strong><small>Configura il workspace in pochi passaggi</small></span>
-        </ion-button>
+        <ion-card class="new-band-card" button tabindex="0" role="button" aria-label="Crea una nuova band"
+                  (click)="openCreateModal()"
+                  (keydown.enter)="openCreateModal()"
+                  (keydown.space)="$event.preventDefault(); openCreateModal()">
+          <ion-card-content>
+            <ion-icon name="add" />
+            <h2>Crea una nuova band</h2>
+            <p>Configura un nuovo workspace</p>
+          </ion-card-content>
+        </ion-card>
       </section>
     }
-
-    <ion-button class="help-button" type="button" (click)="openOnboarding()"><ion-icon aria-hidden="true" name="help-circle-outline" /> Guida introduttiva</ion-button>
   </main>
 </ion-content>
 
