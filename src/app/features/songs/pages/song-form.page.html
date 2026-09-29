@@ -1,23 +1,15 @@
-<ion-header class="song-header">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="../" icon="arrow-back-outline" text="Repertorio"/>
-    </ion-buttons>
-    <ion-title>{{ editing ? 'Modifica brano' : 'Nuovo brano' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
 <ion-content class="song-content" [scrollY]="true" [forceOverscroll]="true">
+  <app-form-page-header
+    eyebrow="Repertorio"
+    [title]="editing ? 'Modifica brano' : 'Nuovo brano'"
+    subtitle="Parti dai metadati disponibili oppure inserisci tutto manualmente."
+    backHref="../"
+    [sections]="songSections"
+    [activeSection]="step()"
+    ariaLabel="Creazione brano"
+    (sectionChange)="goToStep($event)"
+  />
   <main class="song-shell">
-    <aside class="song-intro"><span class="eyebrow">Repertorio</span>
-      <h1>{{ editing ? 'Aggiorna il brano.' : 'Aggiungi un brano.' }}</h1>
-      <p>Parti dai metadati disponibili oppure inserisci tutto manualmente.</p>
-      <app-daisy-steps class="desktop-steps" [horizontal]="false"
-                       [steps]="[{ label: 'Cerca', active: step() >= 1 }, { label: 'Dettagli', active: step() >= 2 }, { label: 'Organizza', active: step() >= 3 }]"
-                       ariaLabel="Creazione brano"/>
-      <app-daisy-steps class="mobile-steps"
-                       [steps]="[{ label: 'Cerca', active: step() >= 1 }, { label: 'Dettagli', active: step() >= 2 }, { label: 'Organizza', active: step() >= 3 }]"
-                       ariaLabel="Creazione brano"/>
-    </aside>
     <section class="song-panel">
       @if (loading()) {
         <div class="loading-state">
