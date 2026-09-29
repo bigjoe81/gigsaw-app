@@ -26,11 +26,12 @@ import {
 } from 'ionicons/icons';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { AuthService } from '../../../core/auth/auth.service';
-import { Gig, Song } from '../../../core/models/band-resources.models';
+import { Gig, RehearsalSession, Song } from '../../../core/models/band-resources.models';
 import { Band } from '../../bands/models/band.models';
 import { BandService } from '../../bands/services/band.service';
 import { GigService } from '../../gigs/services/gig.service';
 import { SongService } from '../../songs/services/song.service';
+import { RehearsalSessionService } from '../../rehearsal-sessions/services/rehearsal-session.service';
 
 interface DashboardEvent {
   id: number;
@@ -43,15 +44,6 @@ interface DashboardEvent {
   tone: 'blue' | 'green' | 'amber';
   action: string;
   link: string;
-}
-
-interface DashboardCard {
-  icon: string;
-  label: string;
-  value: string;
-  note: string;
-  noteTone: 'success' | 'default';
-  progress?: number;
 }
 
 interface DashboardActivity {
@@ -83,10 +75,12 @@ export class DashboardPage {
   private readonly bands = inject(BandService);
   private readonly songs = inject(SongService);
   private readonly gigs = inject(GigService);
+  private readonly rehearsals = inject(RehearsalSessionService);
 
   readonly loading = signal(true);
   readonly loadError = signal('');
-  readonly cards = signal<DashboardCard[]>([]);
+  readonly bandName = signal('La tua band');
+  readonly pressKitProgress = signal(0);
   readonly events = signal<DashboardEvent[]>([]);
   readonly activities = signal<DashboardActivity[]>([]);
 
@@ -160,6 +154,7 @@ export class DashboardPage {
       band: this.bands.get(bandId).pipe(timeout(15_000), catchError(() => of(null))),
       songs: this.songs.list().pipe(timeout(15_000), catchError(() => of([] as Song[]))),
       gigs: this.gigs.list().pipe(timeout(15_000), catchError(() => of([] as Gig[]))),
+      rehearsals: this.rehearsals.list().pipe(timeout(15_000), catchError(() => of([] as RehearsalSession[]))),
     }).pipe(
       finalize(() => this.loading.set(false)),
     ).subscribe(({ band, songs, gigs }) => {
@@ -168,36 +163,24 @@ export class DashboardPage {
     });
   }
 
-  private populateDashboard(band: Band | null, songs: Song[], gigs: Gig[]): void {
+  private populateDashboard(band: Band | null, songs: Song[], gigs: Gig[], rehearsals: RehearsalSession[]): void {
     const now = Date.now();
     const upcomingGigs = gigs
       .filter((gig) => this.dateValue(gig.date) >= now)
       .sort((a, b) => this.dateValue(a.date) - this.dateValue(b.date));
-    const nextGig = upcomingGigs[0];
-    const pressKitProgress = this.pressKitProgress(band);
-    const songsThisMonth = songs.filter((song) => this.isCurrentMonth(song.createdAt)).length;
+    const upcomingRehearsals = rehearsals
+      .filter((rehearsal) => rehearsal.status !== 'cancelled' && this.dateValue(rehearsal.date) >= this.startOfToday())
+      .sort((a, b) => this.dateValue(a.date) - this.dateValue(b.date));
 
-    this.cards.set([
-      {
-        icon: 'musical-notes-outline', label: 'Brani in repertorio', value: String(songs.length),
-        note: songsThisMonth ? `+${songsThisMonth} questo mese` : '', noteTone: 'success',
-      },
-      {
-        icon: 'calendar-outline', label: 'Prossima prova', value: '—',
-        note: 'Nessuna prova pianificata', noteTone: 'default',
-      },
-      {
-        icon: 'ticket-outline', label: 'Prossimo concerto',
-        value: nextGig ? this.shortDate(nextGig.date) : '—',
-        note: nextGig?.venue?.name ?? (nextGig ? nextGig.title : 'Nessun concerto pianificato'), noteTone: 'default',
-      },
-      {
-        icon: 'document-text-outline', label: 'Press kit', value: `${pressKitProgress}%`,
-        note: '', noteTone: 'default', progress: pressKitProgress,
-      },
-    ]);
+    this.bandName.set(band?.name || 'La tua band');
+    this.pressKitProgress.set(this.calculatePressKitProgress(band));
 
-    this.events.set(upcomingGigs.slice(0, 3).map((gig) => this.toDashboardEvent(gig)));
+    const agenda = [
+      ...upcomingGigs.map((gig) => ({ date: this.dateValue(gig.date), event: this.toDashboardEvent(gig) })),
+      ...upcomingRehearsals.map((rehearsal) => ({ date: this.dateValue(rehearsal.date), event: this.toRehearsalEvent(rehearsal) })),
+    ].sort((a, b) => a.date - b.date).slice(0, 4);
+    this.events.set(agenda.map((item) => item.event));
+
     this.activities.set(songs
       .filter((song) => Boolean(song.updatedAt))
       .sort((a, b) => this.dateValue(b.updatedAt) - this.dateValue(a.updatedAt))
@@ -231,19 +214,37 @@ export class DashboardPage {
     };
   }
 
-  private pressKitProgress(band: Band | null): number {
+  private toRehearsalEvent(rehearsal: RehearsalSession): DashboardEvent {
+    const date = new Date(rehearsal.date);
+    return {
+      id: -rehearsal.id,
+      badgeTop: date.toLocaleDateString('it-IT', { weekday: 'short' }).replace('.', '').toUpperCase(),
+      badgeMain: date.toLocaleDateString('it-IT', { day: '2-digit' }),
+      badgeBottom: date.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '').toUpperCase(),
+      title: rehearsal.title || 'Prova',
+      meta: ['PROVA', rehearsal.startTime?.slice(0, 5)].filter(Boolean).join(' · '),
+      location: rehearsal.rehearsalRoom?.name ?? undefined,
+      tone: 'blue',
+      action: 'Dettagli',
+      link: `${this.bandBaseUrl}/prove/${rehearsal.id}/modifica`,
+    };
+  }
+
+  private calculatePressKitProgress(band: Band | null): number {
     if (!band) return 0;
     const fields = [band.logo, band.bioShort, band.bio, band.city, band.email, band.phone, band.website, band.genres?.length];
     return Math.round((fields.filter(Boolean).length / fields.length) * 100);
   }
 
-  private shortDate(value: string | undefined): string {
-    return value ? new Date(value).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) : '—';
-  }
-
   private dateTime(value: string | undefined): string {
     if (!value) return '';
     return new Date(value).toLocaleString('it-IT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  }
+
+  private startOfToday(): number {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today.getTime();
   }
 
   private dateValue(value: string | undefined): number {
