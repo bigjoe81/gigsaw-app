@@ -1,19 +1,16 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>{{ editing() ? 'Modifica prova' : 'Nuova prova' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
 <ion-content class="rehearsal-form-content">
-  <main class="grid min-h-full w-full grid-cols-[minmax(260px,32%)_1fr] bg-[var(--gigsaw-background)] max-[800px]:block">
-    <aside class="flex min-h-full flex-col [background:var(--ion-gradient-brand)] px-11 py-16 text-white max-[800px]:min-h-0 max-[800px]:px-6 max-[800px]:py-7">
-      <span class="text-xs font-extrabold uppercase tracking-[.11em] text-white/80">Calendario</span>
-      <h1 class="my-3.5 text-[2.1rem] leading-[1.05] max-[800px]:m-0 max-[800px]:text-[1.8rem]">{{ editing() ? 'Aggiorna la prova.' : 'Pianifica la tua prova.' }}</h1>
-      <p class="leading-[1.55] text-white/85 max-[800px]:hidden">Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro.</p>
-      <app-daisy-steps class="mt-11 block w-full max-[800px]:mt-5" [horizontal]="false" [steps]="[{ label: 'Dettagli', active: step() >= 1 }, { label: 'Brani da provare', active: step() >= 2 }]" ariaLabel="Avanzamento creazione prova" />
-    </aside>
-
-    <section class="px-[clamp(28px,5vw,72px)] py-[58px] max-[800px]:px-5 max-[800px]:py-8">
+  <app-form-page-header
+    eyebrow="Calendario"
+    [title]="editing() ? 'Modifica prova' : 'Nuova prova'"
+    subtitle="Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro."
+    backHref="../"
+    [sections]="rehearsalSections"
+    [activeSection]="step()"
+    ariaLabel="Avanzamento creazione prova"
+    (sectionChange)="onHeaderSectionChange($event)"
+  />
+  <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
+    <section class="px-[clamp(20px,5vw,72px)] py-12 max-[800px]:py-8">
       @if (loading()) {
         <div class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[#9aabc1]"><app-daisy-loading /> Caricamento…</div>
       } @else {

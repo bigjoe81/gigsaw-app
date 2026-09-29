@@ -3,18 +3,18 @@ import { Component, computed, HostListener, OnDestroy, OnInit, signal } from '@a
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
+import { IonButton, IonChip, IonContent, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline } from 'ionicons/icons';
 import { finalize, forkJoin, of } from 'rxjs';
 import { Song, SongStatus } from '../../../core/models/band-resources.models';
-import { DaisyStepsComponent } from '../../../shared/ui/daisyui';
+import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../services/song.service';
 import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, DaisyStepsComponent, IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, FormPageHeaderComponent, IonButton, IonChip, IonContent, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea],
   templateUrl: './song-form.page.html',
   styleUrls: ['./song-form.page.scss'],
   styles: [`
@@ -34,26 +34,10 @@ import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models
       margin: 0;
       transform: translateY(-50%);
     }
-    @media (max-width: 800px) {
-      .steps {
-        grid-template-columns: 1fr;
-        gap: 14px;
-        margin-top: 20px;
-      }
-      .steps li {
-        grid-template-columns: 36px 1fr;
-      }
-      .steps li > span {
-        width: 36px;
-        height: 36px;
-      }
-      .steps small {
-        display: block;
-      }
-    }
   `],
 })
 export class SongFormPage implements OnInit, OnDestroy {
+  readonly songSections: FormPageHeaderSection[] = [{ id: 1, label: 'Cerca' }, { id: 2, label: 'Dettagli' }, { id: 3, label: 'Organizza' }];
   form = this.fb.nonNullable.group({ title: ['', Validators.required], album: '', performedBy: '', musicBy: '', lyricsBy: '', key: ['', Validators.required], bpm: '', duration: ['', Validators.required], linkGroup: '', tagsText: '', status: 'draft' as SongStatus, notes: '' });
   magicForm = this.fb.nonNullable.group({ title: ['', [Validators.required, Validators.minLength(2)]], artist: '' });
   existingLinkGroups: string[] = [];
@@ -85,7 +69,7 @@ export class SongFormPage implements OnInit, OnDestroy {
   private bandId?: number;
 
   constructor(private readonly fb: FormBuilder, private readonly songs: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastController, private readonly sanitizer: DomSanitizer) {
-    addIcons({ arrowBackOutline, checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline });
+    addIcons({ checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline });
   }
 
   ngOnInit(): void {

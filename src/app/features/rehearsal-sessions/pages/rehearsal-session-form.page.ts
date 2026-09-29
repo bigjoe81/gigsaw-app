@@ -4,13 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, forkJoin, of } from 'rxjs';
 import {
-  IonBackButton,
-  IonButtons,
   IonContent,
-  IonHeader,
   IonIcon,
-  IonTitle,
-  IonToolbar,
   ToastController,
 } from '@ionic/angular/standalone';
 import {
@@ -27,21 +22,22 @@ import {
   DaisyLoadingComponent,
   DaisyMessageComponent,
   DaisySelectComponent,
-  DaisyStepsComponent,
   DaisyTextareaComponent,
   DaisyTimeInputComponent,
 } from '../../../shared/ui/daisyui';
+import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DaisyButtonComponent, DaisyCheckboxComponent, DaisyDatepickerComponent, DaisyInputComponent, DaisyLoadingComponent, DaisyMessageComponent, DaisySelectComponent, DaisyStepsComponent, DaisyTextareaComponent, DaisyTimeInputComponent, IonBackButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, RouterLink, DaisyButtonComponent, DaisyCheckboxComponent, DaisyDatepickerComponent, DaisyInputComponent, DaisyLoadingComponent, DaisyMessageComponent, DaisySelectComponent, DaisyTextareaComponent, DaisyTimeInputComponent, FormPageHeaderComponent, IonContent, IonIcon],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })
 export class RehearsalSessionFormPage implements OnInit {
+  readonly rehearsalSections: FormPageHeaderSection[] = [{ id: 1, label: 'Dettagli' }, { id: 2, label: 'Brani da provare' }];
   readonly form = this.fb.nonNullable.group({
     title: ['', Validators.required],
     date: [this.today(), Validators.required],
@@ -103,6 +99,15 @@ export class RehearsalSessionFormPage implements OnInit {
         this.error.set(this.apiErrorMessage(error, 'Impossibile caricare i dati della prova.'));
       },
     });
+  }
+
+  onHeaderSectionChange(section: number): void {
+    if (section === this.step()) return;
+    if (section === 1) {
+      this.step.set(1);
+      return;
+    }
+    this.continueToSongs();
   }
 
   continueToSongs(): void {
