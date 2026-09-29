@@ -1,16 +1,15 @@
-import { IonButton } from '@ionic/angular/standalone';
-
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   AlertController,
-  IonContent, IonHeader,
+  IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonSpinner,
   IonIcon,
   IonModal, IonTitle, IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   add,
+  chevronForwardOutline,
   calendarOutline,
   helpCircleOutline,
   logOutOutline,
@@ -30,7 +29,7 @@ import { BandCreatePage } from './band-create.page';
 
 @Component({
   standalone: true,
-  imports: [IonButton,
+  imports: [IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonSpinner,
     BandCreatePage,
     GigsawButtonComponent,
     GigsawMessageComponent,
@@ -61,6 +60,7 @@ export class BandSelectionPage {
   constructor() {
     addIcons({
       add,
+      chevronForwardOutline,
       calendarOutline,
       helpCircleOutline,
       logOutOutline,
