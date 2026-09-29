@@ -1,5 +1,4 @@
-<ion-content class="song-content" [scrollY]="true" [forceOverscroll]="true">
-  <app-form-page-header
+<app-form-page-header
     eyebrow="Repertorio"
     [title]="editing ? 'Modifica brano' : 'Nuovo brano'"
     subtitle="Parti dai metadati disponibili oppure inserisci tutto manualmente."
@@ -9,6 +8,7 @@
     ariaLabel="Creazione brano"
     (sectionChange)="goToStep($event)"
   />
+<ion-content class="song-content" [scrollY]="true" [forceOverscroll]="true">
   <main class="song-shell">
     <section class="song-panel">
       @if (loading()) {
