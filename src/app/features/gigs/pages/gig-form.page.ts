@@ -36,6 +36,7 @@ import {
   DaisyTypeaheadComponent,
   DaisyTypeaheadItem,
 } from '../../../shared/ui/daisyui';
+import { FormPageHeaderComponent } from '../../../shared/ui/form-page-header.component';
 import { Venue } from '../../venues/models/venue.models';
 import { MapboxAddressSuggestion, MapboxGeocodingService } from '../../venues/services/mapbox-geocoding.service';
 import { VenueService } from '../../venues/services/venue.service';
@@ -45,6 +46,7 @@ import { GigService } from '../services/gig.service';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    FormPageHeaderComponent,
     IonBackButton,
     IonButton,
     IonButtons,
