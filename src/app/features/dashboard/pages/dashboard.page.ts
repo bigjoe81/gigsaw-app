@@ -13,15 +13,12 @@ import { addIcons } from 'ionicons';
 import {
   addOutline,
   calendarOutline,
-  checkmarkCircle,
+  chevronForwardOutline,
   documentTextOutline,
-  homeOutline,
   listOutline,
   locationOutline,
   micOutline,
   musicalNotesOutline,
-  notificationsOutline,
-  searchOutline,
   ticketOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../../../core/services/band-context.service';
@@ -111,15 +108,12 @@ export class DashboardPage {
     addIcons({
       addOutline,
       calendarOutline,
-      checkmarkCircle,
+      chevronForwardOutline,
       documentTextOutline,
-      homeOutline,
       listOutline,
       locationOutline,
       micOutline,
       musicalNotesOutline,
-      notificationsOutline,
-      searchOutline,
       ticketOutline,
     });
     this.loadDashboard();
