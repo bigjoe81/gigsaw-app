@@ -1,19 +1,12 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>{{ editing() ? 'Modifica concerto' : 'Nuovo concerto' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-  <main class="grid min-h-full grid-cols-[minmax(280px,32%)_1fr] bg-[var(--gigsaw-background)] max-[800px]:block">
-    <aside class="flex min-h-full flex-col [background:var(--ion-gradient-brand)] px-11 py-16 text-white max-[800px]:min-h-0 max-[800px]:px-6 max-[800px]:py-7">
-      <span class="text-xs font-extrabold uppercase tracking-[.12em] text-white/60">Calendario live</span>
-      <h1 class="my-3.5 text-[clamp(2rem,3.3vw,2.65rem)] leading-[1.05] max-[800px]:m-0 max-[800px]:text-[1.8rem]">{{ editing() ? 'Aggiorna il concerto.' : 'Pianifica il prossimo live.' }}</h1>
-      <p class="m-0 leading-[1.55] text-white/85 max-[800px]:hidden">Data, venue e dettagli operativi: tutto ciò che serve alla band per arrivare pronta sul palco.</p>
-    </aside>
-
-    <section class="px-[clamp(28px,5vw,72px)] py-[58px] max-[800px]:px-5 max-[800px]:py-8">
+  <app-form-page-header
+    eyebrow="Calendario live"
+    [title]="editing() ? 'Modifica concerto' : 'Nuovo concerto'"
+    subtitle="Data, venue e dettagli operativi: tutto ciò che serve alla band per arrivare pronta sul palco."
+    backHref="../"
+  />
+  <main class="min-h-full bg-[var(--gigsaw-background)]">
+    <section class="px-[clamp(20px,5vw,72px)] py-12 max-[800px]:py-8">
       <form [formGroup]="form" (ngSubmit)="save()" class="mx-auto w-full max-w-[760px] pb-20 text-[var(--gigsaw-text)]">
         <header class="mb-9">
           <span class="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Dettagli concerto</span>
