@@ -24,7 +24,7 @@ ion-router-outlet#band-content {
 ion-menu {
   --width: var(--band-menu-width);
   --background: var(--gigsaw-background);
-  border-right: 0;
+  border-right: 1px solid var(--gigsaw-border);
 }
 
 ion-menu ion-content {
@@ -140,8 +140,8 @@ ion-split-pane.split-pane-visible > .menu-content-open {
   margin: 6px 12px 10px;
   padding: 11px;
   border: 1px solid var(--gigsaw-border);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--gigsaw-input-background) 72%, transparent);
+  border-radius: 8px;
+  background: var(--gigsaw-surface);
 }
 
 .current-band__avatar {
@@ -150,13 +150,13 @@ ion-split-pane.split-pane-visible > .menu-content-open {
   height: 40px;
   flex: 0 0 40px;
   place-items: center;
-  border-radius: 10px;
+  border-radius: 7px;
   object-fit: cover;
 }
 
 .current-band__initials {
   color: #fff;
-  background: var(--ion-gradient-brand);
+  background: color-mix(in srgb, var(--ion-color-primary) 18%, var(--gigsaw-surface));
   font-size: .78rem;
   font-weight: 900;
   letter-spacing: .04em;
@@ -207,8 +207,8 @@ ion-item {
   --padding-start: 20px;
   --inner-padding-end: 12px;
   --background: transparent;
-  --border-radius: 8px;
-  margin: 3px 0;
+  --border-radius: 6px;
+  margin: 2px 0;
   font-weight: 600;
 }
 
@@ -218,13 +218,18 @@ ion-item ion-icon {
 }
 
 ion-item.is-active {
-  --background: var(--ion-gradient-brand-reversed);
-  --border-radius: 8px;
-  --color: #fff;
+  --background: color-mix(in srgb, var(--ion-color-primary) 10%, var(--gigsaw-surface));
+  --border-radius: 6px;
+  --color: var(--gigsaw-text);
+  position: relative;
+}
+
+ion-item.is-active::part(native) {
+  border-left: 2px solid var(--ion-color-primary);
 }
 
 ion-item.is-active ion-icon {
-  color: #fff;
+  color: var(--ion-color-primary);
 }
 
 .menu-footer {

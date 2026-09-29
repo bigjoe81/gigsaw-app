@@ -1,5 +1,4 @@
-<ion-content class="rehearsal-form-content">
-  <app-form-page-header
+<app-form-page-header
     eyebrow="Calendario"
     [title]="editing() ? 'Modifica prova' : 'Nuova prova'"
     subtitle="Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro."
@@ -9,12 +8,13 @@
     ariaLabel="Avanzamento creazione prova"
     (sectionChange)="onHeaderSectionChange($event)"
   />
+<ion-content class="rehearsal-form-content">
   <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
     <section class="px-[clamp(20px,5vw,72px)] py-12 max-[800px]:py-8">
       @if (loading()) {
         <div class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[#9aabc1]"><app-daisy-loading /> Caricamento…</div>
       } @else {
-        <form class="gigsaw-outlined-form mx-auto w-full max-w-[760px] pb-24" [formGroup]="form" (ngSubmit)="save()">
+        <form class="gigsaw-outlined-form w-full pb-24" [formGroup]="form" (ngSubmit)="save()">
           @if (step() === 1) {
             <header class="mb-[34px]">
               <span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Dettagli appuntamento</span>

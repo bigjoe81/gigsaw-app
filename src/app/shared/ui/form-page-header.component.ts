@@ -1,8 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { arrowBackOutline } from 'ionicons/icons';
+import {
+  IonBackButton,
+  IonButtons,
+  IonHeader,
+  IonSegment,
+  IonSegmentButton,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
 
 export interface FormPageHeaderSection {
   id: number;
@@ -13,63 +18,148 @@ export interface FormPageHeaderSection {
 @Component({
   selector: 'app-form-page-header',
   standalone: true,
-  imports: [RouterLink, IonIcon],
+  imports: [IonBackButton, IonButtons, IonHeader, IonSegment, IonSegmentButton, IonTitle, IonToolbar],
   template: `
-    <header class="form-page-header">
-      <div class="form-page-header__inner">
-        <a class="form-page-header__back" [routerLink]="backHref" aria-label="Torna indietro">
-          <ion-icon name="arrow-back-outline" aria-hidden="true" />
-        </a>
-        <div class="form-page-header__copy">
-          <span class="form-page-header__eyebrow">{{ eyebrow }}</span>
-          <h1>{{ title }}</h1>
-          @if (subtitle) { <p>{{ subtitle }}</p> }
-        </div>
-      </div>
-      @if (sections.length > 1) {
-        <nav class="form-page-header__nav" [attr.aria-label]="ariaLabel">
-          <div class="form-page-header__nav-inner">
-            @for (section of sections; track section.id) {
-              <button
-                type="button"
-                [class.active]="section.id === activeSection"
-                [disabled]="section.disabled"
-                [attr.aria-current]="section.id === activeSection ? 'step' : null"
-                (click)="sectionChange.emit(section.id)">
-                <span>{{ section.id }}</span>{{ section.label }}
-              </button>
-            }
+    <ion-header class="form-page-header" mode="md">
+      <ion-toolbar class="form-page-header__toolbar" mode="md">
+        <ion-buttons slot="start">
+          <ion-back-button [defaultHref]="backHref" text="" aria-label="Torna indietro" />
+        </ion-buttons>
+        <ion-title>
+          <div class="form-page-header__copy">
+            <span class="form-page-header__eyebrow">{{ eyebrow }}</span>
+            <strong>{{ title }}</strong>
+            @if (subtitle) { <small>{{ subtitle }}</small> }
           </div>
-        </nav>
+        </ion-title>
+      </ion-toolbar>
+
+      @if (sections.length > 1) {
+        <ion-toolbar class="form-page-header__steps" mode="md">
+          <ion-segment
+            [value]="activeSection"
+            [scrollable]="true"
+            [attr.aria-label]="ariaLabel"
+            (ionChange)="onSectionChange($event.detail.value)">
+            @for (section of sections; track section.id) {
+              <ion-segment-button [value]="section.id" [disabled]="section.disabled">
+                <span class="step-number">{{ section.id }}</span>
+                <span class="step-label">{{ section.label }}</span>
+              </ion-segment-button>
+            }
+          </ion-segment>
+        </ion-toolbar>
       }
-    </header>
+    </ion-header>
   `,
   styles: [`
     :host { display: block; }
-    .form-page-header { color: #fff; background: var(--ion-gradient-brand); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
-    .form-page-header__inner { display: flex; width: min(1180px, 100%); margin: 0 auto; gap: 18px; align-items: flex-start; padding: 30px clamp(20px,5vw,72px) 24px; }
-    .form-page-header__back { display: grid; width: 42px; height: 42px; flex: 0 0 42px; place-items: center; margin-top: 2px; border: 1px solid rgba(255,255,255,.28); border-radius: 12px; color: #fff; background: rgba(255,255,255,.1); text-decoration: none; }
-    .form-page-header__back:hover { background: rgba(255,255,255,.17); }
-    .form-page-header__back ion-icon { font-size: 21px; }
-    .form-page-header__copy { min-width: 0; }
-    .form-page-header__eyebrow { display: block; margin-bottom: 5px; font-size: .72rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
-    h1 { margin: 0; font-size: clamp(1.65rem,3vw,2.35rem); line-height: 1.08; }
-    p { max-width: 720px; margin: 8px 0 0; line-height: 1.45; color: rgba(255,255,255,.82); }
-    .form-page-header__nav { border-top: 1px solid rgba(255,255,255,.14); }
-    .form-page-header__nav-inner { display: flex; width: min(1180px,100%); margin: 0 auto; padding: 0 clamp(20px,5vw,72px); overflow-x: auto; scrollbar-width: none; }
-    .form-page-header__nav-inner::-webkit-scrollbar { display: none; }
-    button { position: relative; display: flex; min-height: 52px; flex: 0 0 auto; align-items: center; gap: 8px; padding: 0 18px; border: 0; color: rgba(255,255,255,.68); background: transparent; font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer; }
-    button span { display: grid; width: 23px; height: 23px; place-items: center; border: 1px solid rgba(255,255,255,.34); border-radius: 50%; font-size: .7rem; }
-    button.active { color: #fff; }
-    button.active::after { position: absolute; right: 14px; bottom: 0; left: 14px; height: 3px; border-radius: 3px 3px 0 0; background: #fff; content: ''; }
-    button.active span { color: var(--ion-color-brand-blue); border-color: #fff; background: #fff; }
-    button:disabled { opacity: .42; cursor: default; }
+    .form-page-header {
+      overflow: hidden;
+      border-radius: 0 0 10px 10px;
+      background: var(--gigsaw-header-background);
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    }
+    .form-page-header::after { display: none; }
+    .form-page-header__toolbar,
+    .form-page-header__steps {
+      --background: var(--gigsaw-header-background);
+      --color: #fff;
+      --border-width: 0;
+    }
+    .form-page-header__toolbar {
+      --min-height: 84px;
+      --padding-start: max(8px, env(safe-area-inset-left));
+      --padding-end: max(12px, env(safe-area-inset-right));
+    }
+    .form-page-header__toolbar ion-title {
+      position: static;
+      width: auto;
+      padding-inline: 4px 12px;
+      text-align: left;
+      transform: none;
+    }
+    .form-page-header__toolbar ion-back-button {
+      --color: #fff;
+      --icon-font-size: 24px;
+      --padding-start: 10px;
+      --padding-end: 10px;
+    }
+    .form-page-header__copy {
+      display: grid;
+      min-width: 0;
+      gap: 2px;
+      text-align: left;
+    }
+    .form-page-header__eyebrow {
+      color: rgba(255,255,255,.68);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .form-page-header__copy strong {
+      overflow: hidden;
+      font-size: clamp(1.3rem,2.2vw,1.8rem);
+      line-height: 1.1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .form-page-header__copy small {
+      overflow: hidden;
+      max-width: 900px;
+      margin-top: 3px;
+      color: rgba(255,255,255,.8);
+      font-size: .8rem;
+      font-weight: 500;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .form-page-header__steps {
+      --min-height: 48px;
+      border-top: 1px solid var(--gigsaw-border);
+    }
+    ion-segment {
+      --background: transparent;
+      width: 100%;
+      padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right));
+    }
+    ion-segment-button {
+      --background: transparent;
+      --background-checked: color-mix(in srgb, var(--ion-color-primary) 8%, transparent);
+      --color: rgba(255,255,255,.64);
+      --color-checked: #fff;
+      --indicator-color: var(--ion-color-primary);
+      --indicator-height: 3px;
+      min-width: max-content;
+      min-height: 48px;
+      text-transform: none;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+    .step-number {
+      display: inline-grid;
+      width: 22px;
+      height: 22px;
+      place-items: center;
+      margin-right: 7px;
+      border: 1px solid var(--gigsaw-border);
+      border-radius: 999px;
+      font-size: .68rem;
+    }
+    ion-segment-button.segment-button-checked .step-number {
+      color: var(--ion-color-primary);
+      border-color: color-mix(in srgb, var(--ion-color-primary) 45%, var(--gigsaw-border));
+      background: color-mix(in srgb, var(--ion-color-primary) 10%, transparent);
+    }
     @media (max-width: 680px) {
-      .form-page-header__inner { gap: 12px; padding-top: 20px; padding-bottom: 18px; }
-      .form-page-header__back { width: 38px; height: 38px; flex-basis: 38px; }
-      p { display: none; }
-      h1 { font-size: 1.55rem; }
-      button { min-height: 48px; padding: 0 13px; }
+      .form-page-header { border-radius: 0 0 8px 8px; }
+      .form-page-header__toolbar { --min-height: 68px; }
+      .form-page-header__copy strong { font-size: 1.35rem; }
+      .form-page-header__copy small { display: none; }
+      ion-segment-button { min-height: 44px; padding-inline: 4px; }
+      .step-label { font-size: .75rem; }
     }
   `],
 })
@@ -77,11 +167,15 @@ export class FormPageHeaderComponent {
   @Input() eyebrow = '';
   @Input({ required: true }) title = '';
   @Input() subtitle = '';
-  @Input() backHref: string | any[] = '../';
+  @Input() backHref = '../';
   @Input() sections: FormPageHeaderSection[] = [];
   @Input() activeSection = 1;
   @Input() ariaLabel = 'Sezioni del form';
   @Output() readonly sectionChange = new EventEmitter<number>();
 
-  constructor() { addIcons({ arrowBackOutline }); }
+  onSectionChange(value: string | number | undefined | null): void {
+    if (value === undefined || value === null) return;
+    const id = Number(value);
+    if (Number.isFinite(id)) this.sectionChange.emit(id);
+  }
 }

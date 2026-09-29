@@ -1,13 +1,13 @@
-<ion-content>
-  <app-form-page-header
+<app-form-page-header
     eyebrow="Calendario live"
     [title]="editing() ? 'Modifica concerto' : 'Nuovo concerto'"
     subtitle="Data, venue e dettagli operativi: tutto ciò che serve alla band per arrivare pronta sul palco."
     backHref="../"
   />
+<ion-content>
   <main class="min-h-full bg-[var(--gigsaw-background)]">
     <section class="px-[clamp(20px,5vw,72px)] py-12 max-[800px]:py-8">
-      <form [formGroup]="form" (ngSubmit)="save()" class="mx-auto w-full max-w-[760px] pb-20 text-[var(--gigsaw-text)]">
+      <form [formGroup]="form" (ngSubmit)="save()" class="w-full pb-20 text-[var(--gigsaw-text)]">
         <header class="mb-9">
           <span class="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Dettagli concerto</span>
           <h1 class="my-2.5 text-[clamp(1.55rem,3vw,2rem)]">{{ editing() ? 'Modifica il concerto' : 'Aggiungi un concerto' }}</h1>
