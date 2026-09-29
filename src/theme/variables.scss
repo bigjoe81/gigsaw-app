@@ -49,15 +49,15 @@
   --ion-color-dark-rgb: 229,237,247;
   --ion-color-dark-contrast: #0B1220;
 
-  --ion-background-color: #121212;
-  --ion-background-color-rgb: 18,18,18;
+  --ion-background-color: #0D1117;
+  --ion-background-color-rgb: 13,17,23;
   --ion-text-color: #E5EDF7;
   --ion-text-color-rgb: 229,237,247;
-  --ion-card-background: #111827;
-  --gigsaw-header-background: #121212;
+  --ion-card-background: #11161D;
+  --gigsaw-header-background: #0D1117;
   --ion-toolbar-background: var(--gigsaw-header-background);
   --gigsaw-toolbar: var(--gigsaw-header-background);
-  --ion-item-background: #111827;
+  --ion-item-background: #11161D;
 
   /* GigSaw brand palette, centralized alongside the Ionic color roles. */
   --ion-color-brand-orange: var(--ion-color-primary);
@@ -74,12 +74,12 @@
   --gigsaw-orange: var(--ion-color-brand-orange);
   --gigsaw-pink: var(--ion-color-brand-pink);
   --gigsaw-navy: var(--ion-color-brand-navy);
-  --gigsaw-background: #121212;
-  --gigsaw-surface: #111827;
-  --gigsaw-input-background: #242424;
-  --gigsaw-input-border: #505050;
-  --gigsaw-input-border-focus: #737373;
-  --gigsaw-border: #243244;
+  --gigsaw-background: #0D1117;
+  --gigsaw-surface: #11161D;
+  --gigsaw-input-background: #151B23;
+  --gigsaw-input-border: #303844;
+  --gigsaw-input-border-focus: #596474;
+  --gigsaw-border: #252D38;
   --gigsaw-text: #E5EDF7;
   --gigsaw-muted: #94A3B8;
 }
