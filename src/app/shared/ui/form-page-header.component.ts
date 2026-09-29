@@ -27,9 +27,7 @@ export interface FormPageHeaderSection {
         </ion-buttons>
         <ion-title>
           <div class="form-page-header__copy">
-            <span class="form-page-header__eyebrow">{{ eyebrow }}</span>
             <strong>{{ title }}</strong>
-            @if (subtitle) { <small>{{ subtitle }}</small> }
           </div>
         </ion-title>
       </ion-toolbar>
@@ -68,7 +66,7 @@ export interface FormPageHeaderSection {
       --border-width: 0;
     }
     .form-page-header__toolbar {
-      --min-height: 84px;
+      --min-height: 56px;
       --padding-start: max(8px, env(safe-area-inset-left));
       --padding-end: max(12px, env(safe-area-inset-right));
     }
@@ -86,38 +84,20 @@ export interface FormPageHeaderSection {
       --padding-end: 10px;
     }
     .form-page-header__copy {
-      display: grid;
+      display: flex;
       min-width: 0;
-      gap: 2px;
+      align-items: center;
       text-align: left;
-    }
-    .form-page-header__eyebrow {
-      color: rgba(255,255,255,.68);
-      font-size: .68rem;
-      font-weight: 900;
-      letter-spacing: .12em;
-      text-transform: uppercase;
     }
     .form-page-header__copy strong {
       overflow: hidden;
-      font-size: clamp(1.3rem,2.2vw,1.8rem);
-      line-height: 1.1;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .form-page-header__copy small {
-      overflow: hidden;
-      max-width: 900px;
-      margin-top: 3px;
-      color: rgba(255,255,255,.8);
-      font-size: .8rem;
-      font-weight: 500;
-      line-height: 1.35;
+      font-size: 1.2rem;
+      line-height: 1.2;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     .form-page-header__steps {
-      --min-height: 48px;
+      --min-height: 42px;
       border-top: 1px solid var(--gigsaw-border);
     }
     ion-segment {
@@ -133,7 +113,7 @@ export interface FormPageHeaderSection {
       --indicator-color: var(--ion-color-primary);
       --indicator-height: 3px;
       min-width: max-content;
-      min-height: 48px;
+      min-height: 42px;
       text-transform: none;
       font-size: .8rem;
       font-weight: 800;
@@ -155,10 +135,9 @@ export interface FormPageHeaderSection {
     }
     @media (max-width: 680px) {
       .form-page-header { border-radius: 0 0 8px 8px; }
-      .form-page-header__toolbar { --min-height: 68px; }
-      .form-page-header__copy strong { font-size: 1.35rem; }
-      .form-page-header__copy small { display: none; }
-      ion-segment-button { min-height: 44px; padding-inline: 4px; }
+      .form-page-header__toolbar { --min-height: 52px; }
+      .form-page-header__copy strong { font-size: 1.1rem; }
+      ion-segment-button { min-height: 42px; padding-inline: 4px; }
       .step-label { font-size: .75rem; }
     }
   `],
