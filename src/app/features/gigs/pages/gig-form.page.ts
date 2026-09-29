@@ -3,18 +3,13 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  IonBackButton,
   IonButton,
-  IonButtons,
   IonContent,
-  IonHeader,
   IonIcon,
   IonInput,
   IonNote,
   IonSpinner,
   IonTextarea,
-  IonTitle,
-  IonToolbar,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -47,18 +42,13 @@ import { GigService } from '../services/gig.service';
   imports: [
     ReactiveFormsModule,
     FormPageHeaderComponent,
-    IonBackButton,
     IonButton,
-    IonButtons,
     IonContent,
-    IonHeader,
     IonIcon,
     IonInput,
     IonNote,
     IonSpinner,
     IonTextarea,
-    IonTitle,
-    IonToolbar,
     DaisyTypeaheadComponent,
   ],
   templateUrl: './gig-form.page.html',
