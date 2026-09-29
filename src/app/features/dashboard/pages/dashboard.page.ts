@@ -151,9 +151,14 @@ export class DashboardPage {
       rehearsals: this.rehearsals.list().pipe(timeout(15_000), catchError(() => of([] as RehearsalSession[]))),
     }).pipe(
       finalize(() => this.loading.set(false)),
-    ).subscribe(({ band, songs, gigs }) => {
+    ).subscribe(({ band, songs, gigs, rehearsals }) => {
       if (!band) this.loadError.set('Alcuni dati della dashboard non sono disponibili.');
-      this.populateDashboard(band, songs, gigs.filter((gig) => gig.bandId === bandId));
+      this.populateDashboard(
+        band,
+        songs,
+        gigs.filter((gig) => !gig.bandId || gig.bandId === bandId),
+        rehearsals.filter((rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId),
+      );
     });
   }
 
