@@ -56,14 +56,14 @@ export interface FormPageHeaderSection {
     :host { display: block; }
     .form-page-header {
       overflow: hidden;
-      border-radius: 0 0 20px 20px;
-      background: var(--ion-gradient-brand);
-      box-shadow: 0 10px 28px rgba(0,0,0,.24);
+      border-radius: 0 0 10px 10px;
+      background: var(--gigsaw-header-background);
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
     }
     .form-page-header::after { display: none; }
     .form-page-header__toolbar,
     .form-page-header__steps {
-      --background: var(--ion-gradient-brand);
+      --background: var(--gigsaw-header-background);
       --color: #fff;
       --border-width: 0;
     }
@@ -118,7 +118,7 @@ export interface FormPageHeaderSection {
     }
     .form-page-header__steps {
       --min-height: 48px;
-      border-top: 1px solid rgba(255,255,255,.13);
+      border-top: 1px solid var(--gigsaw-border);
     }
     ion-segment {
       --background: transparent;
@@ -127,10 +127,10 @@ export interface FormPageHeaderSection {
     }
     ion-segment-button {
       --background: transparent;
-      --background-checked: rgba(255,255,255,.12);
+      --background-checked: color-mix(in srgb, var(--ion-color-primary) 8%, transparent);
       --color: rgba(255,255,255,.64);
       --color-checked: #fff;
-      --indicator-color: #fff;
+      --indicator-color: var(--ion-color-primary);
       --indicator-height: 3px;
       min-width: max-content;
       min-height: 48px;
@@ -144,17 +144,17 @@ export interface FormPageHeaderSection {
       height: 22px;
       place-items: center;
       margin-right: 7px;
-      border: 1px solid rgba(255,255,255,.34);
+      border: 1px solid var(--gigsaw-border);
       border-radius: 999px;
       font-size: .68rem;
     }
     ion-segment-button.segment-button-checked .step-number {
-      color: var(--ion-color-brand-blue);
-      border-color: #fff;
-      background: #fff;
+      color: var(--ion-color-primary);
+      border-color: color-mix(in srgb, var(--ion-color-primary) 45%, var(--gigsaw-border));
+      background: color-mix(in srgb, var(--ion-color-primary) 10%, transparent);
     }
     @media (max-width: 680px) {
-      .form-page-header { border-radius: 0 0 16px 16px; }
+      .form-page-header { border-radius: 0 0 8px 8px; }
       .form-page-header__toolbar { --min-height: 68px; }
       .form-page-header__copy strong { font-size: 1.35rem; }
       .form-page-header__copy small { display: none; }
