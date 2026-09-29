@@ -1,157 +1,79 @@
-<ion-header class="dashboard-shell">
+<ion-header class="dashboard-header">
   <ion-toolbar>
     <ion-menu-button slot="start" menu="band-menu" />
-
-    <nav class="breadcrumbs" aria-label="Percorso">
-      <ion-icon aria-hidden="true" name="home-outline" />
-      <span>/</span>
-      <strong>Dashboard</strong>
-    </nav>
-
-    <label class="search-box">
-      <ion-icon aria-hidden="true" name="search-outline" />
-      <input type="search" placeholder="Cerca brani, concerti, persone..." />
-    </label>
-
-    <div class="top-actions" slot="end">
-      <button class="icon-button" type="button" aria-label="Notifiche">
-        <ion-icon aria-hidden="true" name="notifications-outline" />
-        <span></span>
-      </button>
-      <div class="user-avatar" [attr.aria-label]="userName">{{ userInitial }}</div>
-      <ion-button [routerLink]="[bandBaseUrl, 'repertorio', 'nuovo']">
-        <ion-icon slot="start" name="add-outline" />
-        Nuovo
-      </ion-button>
+    <div class="header-copy">
+      <span>Panoramica</span>
+      <strong>{{ bandName() }}</strong>
     </div>
+    <ion-button slot="end" fill="clear" class="header-action" [routerLink]="[bandBaseUrl, 'repertorio', 'nuovo']">
+      <ion-icon slot="start" name="add-outline" />
+      <span>Nuovo brano</span>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="dashboard-content">
   <main class="dashboard">
-    <section class="hero">
-      <h1>Buon pomeriggio, {{ userName }}</h1>
-      <p>Ecco cosa succede nella tua band.</p>
+    <section class="welcome">
+      <div>
+        <span class="eyebrow">Oggi nella tua band</span>
+        <h1>Ciao {{ userName }}.</h1>
+        <p>Qui trovi quello che serve per preparare il prossimo impegno.</p>
+      </div>
+      <div class="welcome-actions" aria-label="Azioni rapide">
+        @for (action of quickActions; track action.label) {
+          <a [routerLink]="[bandBaseUrl, ...action.route]"><ion-icon aria-hidden="true" [name]="action.icon" /><span>{{ action.label }}</span></a>
+        }
+      </div>
     </section>
 
     @if (loading()) {
-      <section class="panel" role="status">Caricamento dashboard…</section>
+      <section class="panel loading-panel" role="status">Caricamento dashboard…</section>
     } @else {
-    @if (loadError()) {
-      <section class="panel" role="alert">{{ loadError() }}</section>
-    }
+      @if (loadError()) { <section class="error-panel" role="alert">{{ loadError() }}</section> }
 
-    <section class="stats-grid" aria-label="Statistiche principali">
-      @for (card of cards(); track card.label) {
-        <article class="stat-card">
-          <div class="stat-icon">
-            <ion-icon aria-hidden="true" [name]="card.icon" />
-          </div>
-          <div class="stat-copy">
-            <span>{{ card.label }}</span>
-            <strong>{{ card.value }}</strong>
-            @if (card.note) {
-              <small [class.success]="card.noteTone === 'success'">{{ card.note }}</small>
-            }
-            @if (card.progress) {
-              <div class="progress" aria-label="Completamento press kit">
-                <span [style.width.%]="card.progress"></span>
-              </div>
+      <section class="focus-grid">
+        <article class="panel next-panel">
+          <header><div><span class="eyebrow">Agenda</span><h2>Prossimi impegni</h2></div><a [routerLink]="[bandBaseUrl, 'concerti']">Calendario</a></header>
+          <div class="event-list">
+            @for (event of events(); track event.id) {
+              <a class="event-row" [routerLink]="event.link">
+                <time><strong>{{ event.badgeMain }}</strong><span>{{ event.badgeBottom }}</span></time>
+                <div class="event-main"><span>{{ event.meta }}</span><h3>{{ event.title }}</h3>@if (event.location) { <p><ion-icon name="location-outline" />{{ event.location }}</p> }</div>
+                <ion-icon class="event-arrow" name="chevron-forward-outline" />
+              </a>
+            } @empty {
+              <div class="empty-state"><ion-icon name="calendar-outline" /><strong>Nessun impegno in programma</strong><span>Aggiungi una prova o un concerto quando siete pronti.</span></div>
             }
           </div>
         </article>
-      }
-    </section>
 
-    <div class="dashboard-grid">
-      <section class="panel schedule-panel">
-        <header>
-          <h2>Prossimi impegni</h2>
-        </header>
-        <div class="event-list">
-          @for (event of events(); track event.id) {
-            <article class="event-row" [class]="'event-row ' + event.tone">
-              <time>
-                <span>{{ event.badgeTop }}</span>
-                <strong>{{ event.badgeMain }}</strong>
-                <span>{{ event.badgeBottom }}</span>
-              </time>
-              <span class="timeline-dot"></span>
-              <div class="event-main">
-                <h3>{{ event.title }}</h3>
-                <p>{{ event.meta }}</p>
-                @if (event.location) {
-                  <small><ion-icon aria-hidden="true" name="location-outline" />{{ event.location }}</small>
-                }
-              </div>
-              <a class="outline-action" [routerLink]="event.link">{{ event.action }}</a>
-            </article>
-          } @empty {
-            <p>Nessun impegno pianificato.</p>
-          }
-        </div>
-        <a class="panel-link" [routerLink]="[bandBaseUrl, 'prove']">Vedi tutti gli impegni</a>
+        <aside class="summary-column">
+          <article class="panel repertoire-summary">
+            <header><div><span class="eyebrow">Repertorio</span><h2>{{ repertoireTotal() }} brani</h2></div><a [routerLink]="[bandBaseUrl, 'repertorio']">Apri</a></header>
+            <div class="repertoire-progress" aria-label="Stato repertorio">
+              @for (item of repertoire(); track item.label) {
+                <div><span>{{ item.label }}</span><strong>{{ item.value }}</strong><progress [value]="item.value" [max]="repertoireTotal() || 1"></progress></div>
+              }
+            </div>
+          </article>
+          <article class="panel kit-summary">
+            <div class="kit-icon"><ion-icon name="document-text-outline" /></div>
+            <div><span class="eyebrow">Press kit</span><strong>{{ pressKitProgress() }}% completo</strong><progress [value]="pressKitProgress()" max="100"></progress></div>
+          </article>
+        </aside>
       </section>
 
-      <section class="panel quick-panel">
-        <header>
-          <h2>Azioni rapide</h2>
-        </header>
-        <div class="quick-grid">
-          @for (action of quickActions; track action.label) {
-            <a class="quick-action" [routerLink]="[bandBaseUrl, ...action.route]">
-              <ion-icon aria-hidden="true" [name]="action.icon" />
-              <span>{{ action.label }}</span>
-            </a>
-          }
-        </div>
-      </section>
-
-      <section class="panel activity-panel">
-        <header>
-          <h2>Attività recente</h2>
-        </header>
-        <div class="activity-list">
-          @for (activity of activities(); track activity.id) {
-            <article>
-              <span class="activity-avatar">{{ activity.avatar }}</span>
-              <p>
-                {{ activity.text }}
-                @if (activity.target) {
-                  <a [routerLink]="[bandBaseUrl, 'repertorio']">{{ activity.target }}</a>
-                }
-              </p>
-              <time>{{ activity.time }}</time>
-            </article>
-          } @empty {
-            <p>Nessuna attività recente.</p>
-          }
-        </div>
-        <a class="panel-link" [routerLink]="[bandBaseUrl]">Vedi tutte le attività</a>
-      </section>
-
-      <section class="panel repertoire-panel">
-        <header>
-          <h2>Repertorio</h2>
-        </header>
-        <div class="repertoire-body">
-          <div class="donut" aria-label="Stato repertorio" [style.background]="repertoireChartBackground"></div>
-          <div class="legend">
-            @for (item of repertoire(); track item.label) {
-              <div>
-                <span [class]="item.color"></span>
-                <p>{{ item.label }}</p>
-                <strong>{{ item.value }}</strong>
-              </div>
-            }
-            <footer>
-              <p>Totale brani</p>
-              <strong>{{ repertoireTotal() }}</strong>
-            </footer>
+      <section class="bottom-grid">
+        <article class="panel activity-panel">
+          <header><div><span class="eyebrow">Ultimi aggiornamenti</span><h2>Attività recente</h2></div></header>
+          <div class="activity-list">
+            @for (activity of activities(); track activity.id) {
+              <article><span class="activity-avatar">{{ activity.avatar }}</span><p>{{ activity.text }} @if (activity.target) { <a [routerLink]="[bandBaseUrl, 'repertorio']">{{ activity.target }}</a> }</p><time>{{ activity.time }}</time></article>
+            } @empty { <p class="empty-copy">Nessuna attività recente.</p> }
           </div>
-        </div>
+        </article>
       </section>
-    </div>
     }
   </main>
 </ion-content>
