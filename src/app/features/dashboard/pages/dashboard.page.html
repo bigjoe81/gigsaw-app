@@ -2,7 +2,6 @@
   <ion-toolbar>
     <ion-menu-button slot="start" menu="band-menu" />
     <div class="header-copy">
-      <span>Panoramica</span>
       <strong>{{ bandName() }}</strong>
     </div>
     <ion-button slot="end" fill="clear" class="header-action" [routerLink]="[bandBaseUrl, 'repertorio', 'nuovo']">
@@ -16,9 +15,7 @@
   <main class="dashboard">
     <section class="welcome">
       <div>
-        <span class="eyebrow">Oggi nella tua band</span>
         <h1>Ciao {{ userName }}.</h1>
-        <p>Qui trovi quello che serve per preparare il prossimo impegno.</p>
       </div>
       <div class="welcome-actions" aria-label="Azioni rapide">
         @for (action of quickActions; track action.label) {
