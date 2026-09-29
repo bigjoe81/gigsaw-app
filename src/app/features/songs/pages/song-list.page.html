@@ -74,20 +74,21 @@
           <app-gigsaw-list-item itemClass="song-row" [interactive]="true" [disabled]="deleting()" (selected)="openSong(song.id)">
             <ion-checkbox
               class="song-selector"
+              slot="start"
               aria-label="Seleziona {{ song.title }}"
               [checked]="selectedIds().has(song.id)"
               (click)="$event.stopPropagation()"
               (ionChange)="toggleSong(song.id, $event.detail.checked)"
             />
-            <span class="song-icon"><ion-icon name="musical-notes-outline" /></span>
-            <div class="list-col-grow">
+            <span class="song-icon" slot="start"><ion-icon name="musical-notes-outline" /></span>
+            <ion-label class="song-copy">
               <div class="song-heading">
                 <h2>{{ song.title }}</h2>
               </div>
               @if (song.performedBy) { <p class="artist">{{ song.performedBy }}</p> }
               <p class="metadata">{{ subtitle(song) }}</p>
-            </div>
-            <div class="song-actions">
+            </ion-label>
+            <div class="song-actions" slot="end">
               <ion-badge [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
               <span class="open-song" aria-hidden="true"><ion-icon name="chevron-forward" /></span>
             </div>
