@@ -54,9 +54,9 @@ export interface FormPageHeaderSection {
     :host { display: block; }
     .form-page-header {
       overflow: hidden;
-      border-radius: 0 0 10px 10px;
+      border-radius: 0 0 8px 8px;
       background: var(--gigsaw-header-background);
-      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+      box-shadow: 0 4px 14px rgba(0,0,0,.14);
     }
     .form-page-header::after { display: none; }
     .form-page-header__toolbar,
@@ -67,6 +67,7 @@ export interface FormPageHeaderSection {
     }
     .form-page-header__toolbar {
       --min-height: 56px;
+      --background: linear-gradient(105deg, color-mix(in srgb, var(--ion-color-primary) 12%, var(--gigsaw-header-background)), var(--gigsaw-header-background) 58%);
       --padding-start: max(8px, env(safe-area-inset-left));
       --padding-end: max(12px, env(safe-area-inset-right));
     }
@@ -87,7 +88,16 @@ export interface FormPageHeaderSection {
       display: flex;
       min-width: 0;
       align-items: center;
+      gap: 10px;
       text-align: left;
+    }
+    .form-page-header__copy::before {
+      flex: none;
+      width: 3px;
+      height: 22px;
+      border-radius: 2px;
+      background: var(--ion-color-primary);
+      content: '';
     }
     .form-page-header__copy strong {
       overflow: hidden;
@@ -98,7 +108,7 @@ export interface FormPageHeaderSection {
     }
     .form-page-header__steps {
       --min-height: 42px;
-      border-top: 1px solid var(--gigsaw-border);
+      border-top: 1px solid rgba(255,255,255,.08);
     }
     ion-segment {
       --background: transparent;
@@ -120,18 +130,15 @@ export interface FormPageHeaderSection {
     }
     .step-number {
       display: inline-grid;
-      width: 22px;
-      height: 22px;
+      width: 18px;
+      height: 18px;
       place-items: center;
       margin-right: 7px;
-      border: 1px solid var(--gigsaw-border);
-      border-radius: 999px;
-      font-size: .68rem;
+      color: rgba(255,255,255,.48);
+      font-size: .7rem;
     }
     ion-segment-button.segment-button-checked .step-number {
       color: var(--ion-color-primary);
-      border-color: color-mix(in srgb, var(--ion-color-primary) 45%, var(--gigsaw-border));
-      background: color-mix(in srgb, var(--ion-color-primary) 10%, transparent);
     }
     @media (max-width: 680px) {
       .form-page-header { border-radius: 0 0 8px 8px; }
