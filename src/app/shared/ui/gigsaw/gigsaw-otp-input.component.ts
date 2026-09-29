@@ -1,0 +1,4 @@
+import { Component, input, output } from '@angular/core';
+import { IonInput } from '@ionic/angular/standalone';
+@Component({selector:'app-gigsaw-otp-input',standalone:true,imports:[IonInput],template:`<ion-input type="text" inputmode="numeric" autocomplete="one-time-code" fill="outline" [label]="label()" labelPlacement="stacked" maxlength="6" [value]="value()" [disabled]="disabled()" [class.ion-invalid]="invalid()" [class.ion-touched]="invalid()" (ionInput)="onInput($event.detail.value ?? '')" />`})
+export class GigsawOtpInputComponent { readonly value=input(''); readonly disabled=input(false); readonly label=input('Codice OTP'); readonly valid=input(false); readonly invalid=input(false); readonly valueChange=output<string>(); readonly complete=output<string>(); onInput(raw:string):void { const digits=raw.replace(/\D/g,'').slice(0,6); this.valueChange.emit(digits); if(digits.length===6)this.complete.emit(digits); } }

@@ -9,7 +9,7 @@
         @for (template of templates; track template.id) {
           <a class="card border border-base-300 bg-base-100 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg" [routerLink]="[template.id, 'modifica']">
             <figure class="aspect-video bg-neutral" [style.background-image]="template.document.backgroundDataUrl ? 'url(' + template.document.backgroundDataUrl + ')' : ''" style="background-size:cover;background-position:center"></figure>
-            <div class="card-body p-5"><h2 class="card-title">{{ template.name }}</h2><p>{{ template.document.format.label }} · {{ template.document.fields.length }} campi</p><div class="card-actions items-center justify-between"><span class="text-xs opacity-60">{{ template.updatedAt | date:'short' }}</span><button class="btn btn-ghost btn-sm text-error" type="button" (click)="remove(template, $event)"><ion-icon name="trash-outline" /> Elimina</button></div></div>
+            <div class="card-body p-5"><h2 class="card-title">{{ template.name }}</h2><p>{{ template.document.format.label }} · {{ template.document.fields.length }} campi</p><div class="card-actions items-center justify-between"><span class="text-xs opacity-60">{{ template.updatedAt | date:'short' }}</span><ion-button class="btn btn-ghost btn-sm text-error" type="button" (click)="remove(template, $event)"><ion-icon name="trash-outline" /> Elimina</ion-button></div></div>
           </a>
         }
       </div>

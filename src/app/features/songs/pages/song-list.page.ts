@@ -28,14 +28,14 @@ import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';
 import { SongDetailPage } from './song-detail.page';
-import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
+import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
-    DaisyListComponent,
-    DaisyListItemComponent,
+    GigsawListComponent,
+    GigsawListItemComponent,
     IonBadge,
     IonButton,
     IonButtons,

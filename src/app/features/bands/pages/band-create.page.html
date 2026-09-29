@@ -67,9 +67,9 @@
             <div class="logo-preview" [class.has-image]="logoPreviewUrl">
               @if (logoPreviewUrl) {
                 <img [src]="logoPreviewUrl" alt="Anteprima del logo selezionato" />
-                <button class="remove-logo" type="button" aria-label="Rimuovi logo" (click)="removeLogo()">
+                <ion-button class="remove-logo" type="button" aria-label="Rimuovi logo" (click)="removeLogo()">
                   <ion-icon name="close" aria-hidden="true" />
-                </button>
+                </ion-button>
               } @else {
                 <ion-icon name="image-outline" aria-hidden="true" />
               }
@@ -149,7 +149,7 @@
                 <span class="selected-genres-label">Selezionati</span>
                 <div class="genre-list">
                   @for (genre of selectedGenres; track genre.id) {
-                    <app-daisy-badge
+                    <app-gigsaw-badge
                       tone="primary"
                       appearance="outline"
                       size="lg"
@@ -158,13 +158,13 @@
                       (dismissed)="toggleGenre(genre.id)"
                     >
                       {{ genre.name }}
-                    </app-daisy-badge>
+                    </app-gigsaw-badge>
                   }
                 </div>
               </div>
             }
 
-            <app-daisy-typeahead
+            <app-gigsaw-typeahead
               controlClass="genre-search"
               [value]="form.controls.genreSearch.value || ''"
               [items]="genreTypeaheadItems"
@@ -184,7 +184,7 @@
           @if (genresError) {
             <div class="inline-notice" role="status">
               <span>{{ genresError }}</span>
-              <button type="button" (click)="loadGenres()">Riprova</button>
+              <ion-button type="button" (click)="loadGenres()">Riprova</ion-button>
             </div>
           }
         </div>

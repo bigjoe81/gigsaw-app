@@ -20,11 +20,11 @@ import {
 } from '@ionic/angular/standalone';
 import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
-import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
+import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, DaisyListComponent, DaisyListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './setlist-template-detail.page.html',
 })
 export class SetlistTemplateDetailPage implements OnInit {

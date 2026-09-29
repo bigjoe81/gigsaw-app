@@ -22,7 +22,7 @@
         </header>
 
         @if (loading) {
-          <div class="flex min-h-[240px] items-center justify-center gap-2.5 text-[var(--ion-color-medium)]"><app-daisy-loading /><span>Caricamento luogo…</span></div>
+          <div class="flex min-h-[240px] items-center justify-center gap-2.5 text-[var(--ion-color-medium)]"><app-gigsaw-loading /><span>Caricamento luogo…</span></div>
         } @else {
           <section class="grid gap-5 pb-[30px]">
             <div class="flex items-start gap-3">
@@ -32,19 +32,19 @@
 
             <label class="field-label">
               <span>Nome <strong>*</strong></span>
-              <app-daisy-input name="name" [placeholder]="kind === 'venue' ? 'Es. Bloom' : 'Es. Sound Factory'" [value]="form.controls.name.value" [valid]="form.controls.name.touched && form.controls.name.valid" [invalid]="form.controls.name.touched && form.controls.name.invalid" (valueChange)="form.controls.name.setValue($event)" (blurred)="form.controls.name.markAsTouched()" />
+              <app-gigsaw-input name="name" [placeholder]="kind === 'venue' ? 'Es. Bloom' : 'Es. Sound Factory'" [value]="form.controls.name.value" [valid]="form.controls.name.touched && form.controls.name.valid" [invalid]="form.controls.name.touched && form.controls.name.invalid" (valueChange)="form.controls.name.setValue($event)" (blurred)="form.controls.name.markAsTouched()" />
               @if (form.controls.name.touched && form.controls.name.invalid) { <small>Inserisci il nome del luogo.</small> }
             </label>
 
             <label class="field-label">
               <span>Indirizzo <strong>*</strong></span>
-              <app-daisy-input name="address" placeholder="Es. Via Giuseppe Verdi 12" autocomplete="street-address" [value]="form.controls.address.value" [valid]="form.controls.address.touched && form.controls.address.valid" [invalid]="form.controls.address.touched && form.controls.address.invalid" (valueChange)="form.controls.address.setValue($event)" (blurred)="form.controls.address.markAsTouched()" />
+              <app-gigsaw-input name="address" placeholder="Es. Via Giuseppe Verdi 12" autocomplete="street-address" [value]="form.controls.address.value" [valid]="form.controls.address.touched && form.controls.address.valid" [invalid]="form.controls.address.touched && form.controls.address.invalid" (valueChange)="form.controls.address.setValue($event)" (blurred)="form.controls.address.markAsTouched()" />
               @if (form.controls.address.touched && form.controls.address.invalid) { <small>Inserisci l’indirizzo.</small> }
             </label>
 
             <label class="field-label">
               <span>Città <strong>*</strong></span>
-              <app-daisy-input name="city" placeholder="Es. Milano" autocomplete="address-level2" [value]="form.controls.city.value" [valid]="form.controls.city.touched && form.controls.city.valid" [invalid]="form.controls.city.touched && form.controls.city.invalid" (valueChange)="form.controls.city.setValue($event)" (blurred)="form.controls.city.markAsTouched()" />
+              <app-gigsaw-input name="city" placeholder="Es. Milano" autocomplete="address-level2" [value]="form.controls.city.value" [valid]="form.controls.city.touched && form.controls.city.valid" [invalid]="form.controls.city.touched && form.controls.city.invalid" (valueChange)="form.controls.city.setValue($event)" (blurred)="form.controls.city.markAsTouched()" />
               @if (form.controls.city.touched && form.controls.city.invalid) { <small>Inserisci la città.</small> }
             </label>
           </section>
@@ -55,21 +55,21 @@
               <div><h2 class="m-0 text-base font-extrabold">Coordinate</h2><p class="mt-0.5 text-sm text-[var(--ion-color-medium)]">Facoltative, utili per localizzare con precisione il luogo.</p></div>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-              <app-daisy-button tone="outline" [loading]="geocoding" (click)="geocodeAddress()">Ricava dall’indirizzo</app-daisy-button>
+              <app-gigsaw-button tone="outline" [loading]="geocoding" (click)="geocodeAddress()">Ricava dall’indirizzo</app-gigsaw-button>
               @if (geocodeMessage) {
-                <app-daisy-message [tone]="form.controls.latitude.value && form.controls.longitude.value ? 'success' : 'warning'" messageClass="m-0">{{ geocodeMessage }}</app-daisy-message>
+                <app-gigsaw-message [tone]="form.controls.latitude.value && form.controls.longitude.value ? 'success' : 'warning'" messageClass="m-0">{{ geocodeMessage }}</app-gigsaw-message>
               }
             </div>
             <div class="grid grid-cols-2 gap-3.5 max-[680px]:grid-cols-1">
-              <label class="field-label"><span>Latitudine</span><app-daisy-input type="number" name="latitude" inputMode="decimal" placeholder="Es. 45.4642" [value]="form.controls.latitude.value" (valueChange)="form.controls.latitude.setValue($event)" (blurred)="form.controls.latitude.markAsTouched()" /></label>
-              <label class="field-label"><span>Longitudine</span><app-daisy-input type="number" name="longitude" inputMode="decimal" placeholder="Es. 9.1900" [value]="form.controls.longitude.value" (valueChange)="form.controls.longitude.setValue($event)" (blurred)="form.controls.longitude.markAsTouched()" /></label>
+              <label class="field-label"><span>Latitudine</span><app-gigsaw-input type="number" name="latitude" inputMode="decimal" placeholder="Es. 45.4642" [value]="form.controls.latitude.value" (valueChange)="form.controls.latitude.setValue($event)" (blurred)="form.controls.latitude.markAsTouched()" /></label>
+              <label class="field-label"><span>Longitudine</span><app-gigsaw-input type="number" name="longitude" inputMode="decimal" placeholder="Es. 9.1900" [value]="form.controls.longitude.value" (valueChange)="form.controls.longitude.setValue($event)" (blurred)="form.controls.longitude.markAsTouched()" /></label>
             </div>
           </section>
 
-          @if (error) { <app-daisy-message tone="error">{{ error }}</app-daisy-message> }
+          @if (error) { <app-gigsaw-message tone="error">{{ error }}</app-gigsaw-message> }
           <div class="mt-8 flex justify-end gap-2.5 max-[680px]:grid max-[680px]:grid-cols-2">
-            <app-daisy-button tone="outline" buttonClass="font-bold" (click)="cancel()">Annulla</app-daisy-button>
-            <app-daisy-button type="submit" tone="primary" [loading]="saving" buttonClass="min-w-48 font-bold max-[680px]:min-w-0">{{ editing ? 'Salva modifiche' : 'Crea ' + locationLabel }}</app-daisy-button>
+            <app-gigsaw-button tone="outline" buttonClass="font-bold" (click)="cancel()">Annulla</app-gigsaw-button>
+            <app-gigsaw-button type="submit" tone="primary" [loading]="saving" buttonClass="min-w-48 font-bold max-[680px]:min-w-0">{{ editing ? 'Salva modifiche' : 'Crea ' + locationLabel }}</app-gigsaw-button>
           </div>
         }
       </form>

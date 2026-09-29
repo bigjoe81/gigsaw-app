@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
+import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonCheckbox, IonTextarea, IonSelect, IonSelectOption, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { Subscription, debounceTime, finalize, forkJoin, Subject, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { GigService } from '../../gigs/services/gig.service';
@@ -13,7 +13,7 @@ import { cloneWorkspace, createMedley, LocalSetlistRepository, moveItem, setDura
 import { SetlistValidationService } from '../services/setlist-validation.service';
 import { SetlistService } from '../services/setlist.service';
 
-@Component({ standalone: true, imports: [CommonModule, FormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
+@Component({ standalone: true, imports: [CommonModule, FormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonCheckbox, IonTextarea, IonSelect, IonSelectOption, IonTitle, IonToolbar], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
 export class SetlistFormPage implements OnInit, OnDestroy {
   mode: 'manual' | 'magic' = 'manual'; mobileTab: 'repertoire' | 'setlist' | 'inspector' = 'setlist'; readonly loading = signal(true); readonly repertoireLoading = signal(true); readonly loadError = signal(''); readonly repertoireError = signal(''); saveState: 'dirty' | 'saving' | 'saved' = 'saved';
   songs: Song[] = []; search = ''; genre = ''; key = ''; status = ''; sort = 'title'; selected?: SetlistItem; selectedIds = new Set<string>(); proposal?: MagicProposal; snapshot?: SetlistSnapshot; compare = false;

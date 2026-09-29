@@ -17,10 +17,10 @@
       <section class="group-grid">
         @for (group of groupedSongs(); track group.name) {
           <article class="group-card" [class.expanded]="expandedGroup === group.name">
-            <button class="group-header" type="button" (click)="toggleGroup(group.name)">
+            <ion-button class="group-header" type="button" (click)="toggleGroup(group.name)">
               <span class="group-icon">♪</span><span class="group-copy"><strong>{{ group.name }}</strong><small>{{ group.songs.length }} {{ group.songs.length === 1 ? 'brano' : 'brani' }}</small></span><span class="group-chevron">{{ expandedGroup === group.name ? '⌃' : '⌄' }}</span>
-            </button>
-            <div class="group-actions"><button type="button" (click)="$event.stopPropagation(); editGroupSongs(group.name)">Modifica brani</button><button type="button" (click)="$event.stopPropagation(); renameGroup(group.name)">Rinomina</button><button type="button" class="danger" (click)="$event.stopPropagation(); removeGroup(group.name)">Rimuovi</button></div>
+            </ion-button>
+            <div class="group-actions"><ion-button type="button" (click)="$event.stopPropagation(); editGroupSongs(group.name)">Modifica brani</ion-button><ion-button type="button" (click)="$event.stopPropagation(); renameGroup(group.name)">Rinomina</ion-button><ion-button type="button" class="danger" (click)="$event.stopPropagation(); removeGroup(group.name)">Rimuovi</ion-button></div>
             @if (expandedGroup === group.name) {
               <ion-reorder-group class="group-songs" [disabled]="false" (ionItemReorder)="reorder($event, group.name)">
                 @for (song of group.songs; track song.id; let index = $index) {

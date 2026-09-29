@@ -20,7 +20,7 @@
     <form class="w-full" (submit)="submit(); $event.preventDefault()">
       <label class="block">
         <span class="mb-2 block text-sm font-bold">Nome</span>
-        <app-daisy-input
+        <app-gigsaw-input
           name="name"
           autocomplete="name"
           [value]="name()"
@@ -28,12 +28,12 @@
         />
       </label>
       @if (touched() && !nameValid()) {
-        <app-daisy-message tone="error" messageClass="mt-2">Inserisci il nome.</app-daisy-message>
+        <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci il nome.</app-gigsaw-message>
       }
 
       <label class="mt-4 block">
         <span class="mb-2 block text-sm font-bold">Email</span>
-        <app-daisy-input
+        <app-gigsaw-input
           type="email"
           name="email"
           autocomplete="email"
@@ -42,14 +42,14 @@
         />
       </label>
       @if (touched() && !emailValid()) {
-        <app-daisy-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-daisy-message>
+        <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-gigsaw-message>
       }
 
       @if (error) {
-        <app-daisy-message tone="error" messageClass="mt-2">{{ error }}</app-daisy-message>
+        <app-gigsaw-message tone="error" messageClass="mt-2">{{ error }}</app-gigsaw-message>
       }
 
-      <app-daisy-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Invia codice OTP</app-daisy-button>
+      <app-gigsaw-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Invia codice OTP</app-gigsaw-button>
     </form>
     <a class="btn btn-ghost mt-2 w-full" routerLink="/accedi" [queryParams]="{ returnUrl }">Hai già un account? Accedi</a>
   </div>

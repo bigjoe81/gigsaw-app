@@ -6,6 +6,7 @@ import { finalize, forkJoin, of } from 'rxjs';
 import {
   IonContent,
   IonIcon,
+  IonSelectOption,
   ToastController,
 } from '@ionic/angular/standalone';
 import {
@@ -15,16 +16,16 @@ import {
   Song,
 } from '../../../core/models/band-resources.models';
 import {
-  DaisyButtonComponent,
-  DaisyCheckboxComponent,
-  DaisyDatepickerComponent,
-  DaisyInputComponent,
-  DaisyLoadingComponent,
-  DaisyMessageComponent,
-  DaisySelectComponent,
-  DaisyTextareaComponent,
-  DaisyTimeInputComponent,
-} from '../../../shared/ui/daisyui';
+  GigsawButtonComponent,
+  GigsawCheckboxComponent,
+  GigsawDatepickerComponent,
+  GigsawInputComponent,
+  GigsawLoadingComponent,
+  GigsawMessageComponent,
+  GigsawSelectComponent,
+  GigsawTextareaComponent,
+  GigsawTimeInputComponent,
+} from '../../../shared/ui/gigsaw';
 import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
@@ -32,7 +33,7 @@ import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DaisyButtonComponent, DaisyCheckboxComponent, DaisyDatepickerComponent, DaisyInputComponent, DaisyLoadingComponent, DaisyMessageComponent, DaisySelectComponent, DaisyTextareaComponent, DaisyTimeInputComponent, FormPageHeaderComponent, IonContent, IonIcon],
+  imports: [ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawCheckboxComponent, GigsawDatepickerComponent, GigsawInputComponent, GigsawLoadingComponent, GigsawMessageComponent, GigsawSelectComponent, GigsawTextareaComponent, GigsawTimeInputComponent, FormPageHeaderComponent, IonContent, IonIcon, IonSelectOption],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })

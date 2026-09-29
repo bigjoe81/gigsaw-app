@@ -3,11 +3,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
 import { OtpPurpose } from '../../core/auth/auth.models';
-import { DaisyAlertComponent, DaisyButtonComponent, DaisyMessageComponent, DaisyOtpInputComponent } from '../../shared/ui/daisyui';
+import { GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent } from '../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, DaisyAlertComponent, DaisyButtonComponent, DaisyMessageComponent, DaisyOtpInputComponent, IonContent],
+  imports: [RouterLink, GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent, IonContent],
   templateUrl: './verify-otp.page.html',
   styles: [`.otp-content {
     --background: var(--gigsaw-background);

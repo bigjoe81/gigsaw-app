@@ -17,21 +17,21 @@ import { finalize, forkJoin } from 'rxjs';
 import { RehearsalRoom, Venue } from '../../../core/models/band-resources.models';
 import { RehearsalRoomService } from '../../rehearsal-sessions/services/rehearsal-room.service';
 import {
-  DaisyButtonComponent,
-  DaisyInputComponent,
-  DaisyLoadingComponent,
-  DaisyMessageComponent,
-} from '../../../shared/ui/daisyui';
+  GigsawButtonComponent,
+  GigsawInputComponent,
+  GigsawLoadingComponent,
+  GigsawMessageComponent,
+} from '../../../shared/ui/gigsaw';
 import { VenueService } from '../services/venue.service';
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
-    DaisyButtonComponent,
-    DaisyInputComponent,
-    DaisyLoadingComponent,
-    DaisyMessageComponent,
+    GigsawButtonComponent,
+    GigsawInputComponent,
+    GigsawLoadingComponent,
+    GigsawMessageComponent,
     IonButtons,
     IonContent,
     IonHeader,

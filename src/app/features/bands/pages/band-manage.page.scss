@@ -26,8 +26,8 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .action-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 8px; }
 .profile-logo { width: 96px; height: 96px; border-radius: 20px; object-fit: cover; display: block; margin: 0 auto 16px; }
 .profile-form { display: grid; gap: 18px; }
-.profile-form app-daisy-input, .profile-form app-daisy-select, .profile-form app-daisy-textarea, .profile-form app-daisy-file-input,
-.channel-row app-daisy-input, .stage-editor app-daisy-input, .notes-grid app-daisy-textarea { display: block; min-width: 0; }
+.profile-form app-gigsaw-input, .profile-form app-gigsaw-select, .profile-form app-gigsaw-textarea, .profile-form app-gigsaw-file-input,
+.channel-row app-gigsaw-input, .stage-editor app-gigsaw-input, .notes-grid app-gigsaw-textarea { display: block; min-width: 0; }
 .profile-identity { display: grid; grid-template-columns: minmax(190px, .55fr) minmax(0, 1.8fr); gap: 22px; padding: 20px; border: 1px solid var(--gigsaw-border); border-radius: 16px; background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb),.07), transparent 42%), #0d1624; }
 .profile-logo-panel { display: flex; flex-direction: column; justify-content: center; padding: 12px; border-right: 1px solid var(--gigsaw-border); }
 .profile-logo { width: 116px; height: 116px; margin-bottom: 18px; }
@@ -78,7 +78,7 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .channel-list { overflow: hidden; border: 1px solid var(--gigsaw-border); border-radius: 13px; }
 .channel-row { display: grid; grid-template-columns: 58px minmax(150px, 1.2fr) minmax(135px, .8fr) minmax(160px, 1fr) 48px; align-items: center; gap: 8px; padding: 8px; border-bottom: 1px solid var(--gigsaw-border); }
 .channel-row:last-child { border-bottom: 0; }
-.channel-row app-daisy-input { min-height: 46px; }
+.channel-row app-gigsaw-input { min-height: 46px; }
 .channel-handle { display: flex; align-items: center; gap: 7px; color: var(--gigsaw-muted); }
 .channel-handle strong { color: var(--gigsaw-text); font-variant-numeric: tabular-nums; }
 .empty-state { padding: 26px; border: 1px dashed var(--gigsaw-border); border-radius: 12px; color: var(--gigsaw-muted); text-align: center; }
@@ -99,7 +99,7 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .stage-plot-item[data-kind='drums'] { background: #7b2529; }.stage-plot-item[data-kind='vocal'] { background: #126a58; }.stage-plot-item[data-kind='bass'] { background: #185a83; }.stage-plot-item[data-kind='guitar'] { background: #87521c; }.stage-plot-item[data-kind='keys'] { background: #59378a; }
 .stage-grid-note { color: var(--gigsaw-muted); font-size: .75rem; }
 .stage-editor { min-height: 220px; padding: 16px; border: 1px solid var(--gigsaw-border); border-radius: 14px; background: #0d1624; }
-.stage-editor app-daisy-input, .notes-grid app-daisy-textarea { margin: 8px 0; }
+.stage-editor app-gigsaw-input, .notes-grid app-gigsaw-textarea { margin: 8px 0; }
 .editor-field { display: grid; gap: 6px; margin: 10px 0; color: var(--gigsaw-text); font-size: .78rem; font-weight: 700; }
 .coordinate-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; }

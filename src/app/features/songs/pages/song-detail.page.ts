@@ -28,12 +28,12 @@ import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';
 import { addIcons } from 'ionicons';
 import { close, musicalNotesOutline } from 'ionicons/icons';
-import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
+import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
   host: { class: 'ion-page' },
-  imports: [RouterLink, DaisyListComponent, DaisyListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './song-detail.page.html',
   styleUrls: ['./song-detail.page.scss'],
 })

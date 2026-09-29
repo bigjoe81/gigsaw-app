@@ -1,0 +1,4 @@
+import { Component, input, output } from '@angular/core';
+import { IonSelect } from '@ionic/angular/standalone';
+@Component({selector:'app-gigsaw-select',standalone:true,imports:[IonSelect],template:`<ion-select fill="outline" interface="popover" [multiple]="multiple()" [value]="value()" [disabled]="disabled()" [class.ion-invalid]="invalid()" [class.ion-touched]="invalid()" (ionChange)="valueChange.emit($event.detail.value)" (ionBlur)="blurred.emit()"><ng-content /></ion-select>`})
+export class GigsawSelectComponent { readonly multiple=input(false); readonly controlClass=input(''); readonly value=input<string|string[]>(''); readonly disabled=input(false); readonly valid=input(false); readonly invalid=input(false); readonly valueChange=output<string|string[]>(); readonly blurred=output<void>(); }

@@ -7,12 +7,12 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
-import { DaisyButtonComponent, DaisyMessageComponent } from '../../../shared/ui/daisyui';
+import { GigsawButtonComponent, GigsawMessageComponent } from '../../../shared/ui/gigsaw';
 import { BandService } from '../services/band.service';
 
 @Component({
   standalone: true,
-  imports: [DaisyButtonComponent, DaisyMessageComponent, IonContent, IonIcon],
+  imports: [GigsawButtonComponent, GigsawMessageComponent, IonContent, IonIcon],
   templateUrl: './band-invitation.page.html',
   styleUrls: ['./band-invitation.page.scss'],
 })

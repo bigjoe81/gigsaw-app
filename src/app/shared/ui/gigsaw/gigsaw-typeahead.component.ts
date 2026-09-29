@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, computed, input, output, signal } from '@angular/core';
+import { IonInput, IonItem, IonLabel, IonList, IonSpinner, IonNote } from '@ionic/angular/standalone';
 
-export interface DaisyTypeaheadItem {
+export interface GigsawTypeaheadItem {
   id: string | number;
   label: string;
   description?: string;
@@ -8,75 +9,28 @@ export interface DaisyTypeaheadItem {
 }
 
 @Component({
-  selector: 'app-daisy-typeahead',
+  selector: 'app-gigsaw-typeahead',
   standalone: true,
+  imports: [IonInput, IonItem, IonLabel, IonList, IonSpinner, IonNote],
   template: `
-    <div class="relative w-full">
-      <input
-        class="gigsaw-control input w-full border border-solid border-[#3b5273] bg-[#0f172a] text-[#e5edf7] placeholder:text-[#64748b] focus:outline-none {{ controlClass() }}"
-        role="combobox"
-        aria-autocomplete="list"
-        [attr.aria-expanded]="open()"
-        [attr.aria-controls]="listboxId"
-        [attr.aria-activedescendant]="activeDescendant()"
-        [class.input-error]="invalid()"
-        [class.input-success]="valid() && !invalid()"
-        [style.border-color]="invalid() ? 'var(--color-error)' : valid() ? 'var(--color-success)' : 'var(--gigsaw-input-border)'"
-        type="text"
-        [name]="name()"
-        [placeholder]="placeholder()"
-        [autocomplete]="autocomplete()"
-        [disabled]="disabled()"
-        [value]="value()"
-        (input)="onInput($event)"
-        (focus)="onFocus()"
-        (keydown)="onKeydown($event)"
-        (blur)="blurred.emit()"
-      />
-
+    <div class="gigsaw-typeahead">
+      <ion-input fill="outline" [name]="name()" [placeholder]="placeholder()" [autocomplete]="autocomplete()" [disabled]="disabled()" [value]="value()" [class.ion-invalid]="invalid()" [class.ion-touched]="invalid()" role="combobox" [attr.aria-expanded]="open()" [attr.aria-controls]="listboxId" (ionInput)="onInput($event.detail.value ?? '')" (ionFocus)="onFocus()" (keydown)="onKeydown($event)" (ionBlur)="blurred.emit()" />
       @if (open()) {
-        <div
-          class="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-box border border-[var(--gigsaw-border)] bg-base-100 shadow-xl"
-        >
-          @if (loading()) {
-            <div class="flex items-center gap-2 px-4 py-3 text-sm text-base-content/70">
-              <span class="loading loading-spinner loading-sm"></span>
-              <span>{{ loadingText() }}</span>
-            </div>
-          } @else if (visibleItems().length) {
-            <ul
-              class="list max-h-72 w-full overflow-y-auto p-1.5"
-              role="listbox"
-              [id]="listboxId"
-            >
-              @for (item of visibleItems(); track item.id; let index = $index) {
-                <li
-                  class="list-row cursor-pointer rounded-box px-3 py-2.5 transition-colors hover:bg-base-200"
-                  role="option"
-                  [id]="optionId(index)"
-                  [attr.aria-selected]="index === activeIndex()"
-                  [class.bg-base-200]="index === activeIndex()"
-                  (mousedown)="select(item, $event)"
-                  (mouseenter)="activeIndex.set(index)"
-                >
-                  <div class="min-w-0">
-                    <div class="truncate font-semibold">{{ item.label }}</div>
-                    @if (item.description) {
-                      <div class="truncate text-xs opacity-60">{{ item.description }}</div>
-                    }
-                  </div>
-                </li>
-              }
-            </ul>
-          } @else if (value().trim().length >= minChars()) {
-            <div class="px-4 py-3 text-sm text-base-content/60">{{ emptyMessage() }}</div>
-          }
-        </div>
+        <ion-list [id]="listboxId" role="listbox">
+          @if (loading()) { <ion-item><ion-spinner slot="start" /><ion-label>{{ loadingText() }}</ion-label></ion-item> }
+          @else if (visibleItems().length) {
+            @for (item of visibleItems(); track item.id; let index = $index) {
+              <ion-item button role="option" [attr.aria-selected]="index === activeIndex()" (pointerdown)="select(item, $event)">
+                <ion-label><h2>{{ item.label }}</h2>@if (item.description) { <p>{{ item.description }}</p> }</ion-label>
+              </ion-item>
+            }
+          } @else if (value().trim().length >= minChars()) { <ion-item><ion-note>{{ emptyMessage() }}</ion-note></ion-item> }
+        </ion-list>
       }
     </div>
   `,
 })
-export class DaisyTypeaheadComponent {
+export class GigsawTypeaheadComponent {
   private static nextId = 0;
 
   readonly name = input('');
@@ -84,7 +38,7 @@ export class DaisyTypeaheadComponent {
   readonly autocomplete = input('off');
   readonly controlClass = input('');
   readonly value = input('');
-  readonly items = input<readonly DaisyTypeaheadItem[]>([]);
+  readonly items = input<readonly GigsawTypeaheadItem[]>([]);
   readonly disabled = input(false);
   readonly valid = input(false);
   readonly invalid = input(false);
@@ -96,13 +50,13 @@ export class DaisyTypeaheadComponent {
   readonly filterLocally = input(true);
 
   readonly valueChange = output<string>();
-  readonly selected = output<DaisyTypeaheadItem>();
+  readonly selected = output<GigsawTypeaheadItem>();
   readonly blurred = output<void>();
 
   readonly open = signal(false);
   readonly activeIndex = signal(-1);
 
-  readonly listboxId = `daisy-typeahead-${DaisyTypeaheadComponent.nextId++}`;
+  readonly listboxId = `gigsaw-typeahead-${GigsawTypeaheadComponent.nextId++}`;
 
   readonly visibleItems = computed(() => {
     const max = Math.max(1, this.maxResults());
@@ -127,8 +81,7 @@ export class DaisyTypeaheadComponent {
 
   constructor(private readonly elementRef: ElementRef<HTMLElement>) {}
 
-  onInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  onInput(value: string): void {
     this.valueChange.emit(value);
     this.open.set(value.trim().length >= this.minChars());
     this.activeIndex.set(-1);
@@ -172,7 +125,7 @@ export class DaisyTypeaheadComponent {
     }
   }
 
-  select(item: DaisyTypeaheadItem, event?: Event): void {
+  select(item: GigsawTypeaheadItem, event?: Event): void {
     event?.preventDefault();
     this.selected.emit(item);
     this.close();

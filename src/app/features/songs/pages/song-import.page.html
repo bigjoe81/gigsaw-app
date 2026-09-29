@@ -1,87 +1,37 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button routerLink=".."><ion-icon slot="icon-only" name="arrow-back" /></ion-button>
-    </ion-buttons>
-    <ion-title>Importa brani</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <main class="mx-auto flex w-full max-w-5xl flex-col gap-5 p-4 pb-28 md:p-6">
-    <section class="card bg-base-100 shadow-sm">
-      <div class="card-body">
-        <div class="flex items-start gap-3">
-          <div class="rounded-box bg-primary/10 p-3 text-primary"><ion-icon class="text-2xl" name="document-text-outline" /></div>
-          <div class="min-w-0">
-            <h1 class="card-title">Importa repertorio da PDF</h1>
-            <p class="text-sm opacity-70">GigSaw analizza il documento e ti mostra i brani prima di salvarli. Controlla sempre l'anteprima.</p>
-          </div>
-        </div>
-        <input #pdfInput class="hidden" type="file" accept="application/pdf,.pdf" (change)="onFileSelected($event)" />
-        <div class="card-actions mt-2">
-          <button class="btn btn-primary" type="button" [disabled]="analyzing() || importing()" (click)="chooseFile(pdfInput)">
-            @if (analyzing()) { <span class="loading loading-spinner loading-sm"></span> Analisi in corso… }
-            @else { <ion-icon name="cloud-upload-outline" /> Scegli PDF }
-          </button>
-        </div>
-      </div>
-    </section>
-
-    @if (error()) {
-      <div class="alert alert-error"><span>{{ error() }}</span></div>
-    }
-    @if (result()) {
-      <div class="alert alert-success"><span>{{ result() }}</span></div>
-    }
-
-    @if (review(); as data) {
-      <section class="flex flex-col gap-3">
-        <div class="flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <h2 class="text-xl font-bold">Anteprima</h2>
-            <p class="text-sm opacity-70">{{ data.summary.total_rows }} righe trovate · {{ data.summary.ready_rows }} pronte · {{ data.summary.duplicate_rows }} duplicate</p>
-          </div>
-          <div class="badge badge-outline">AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti</div>
-        </div>
-
-        <div class="flex flex-col gap-2">
-          @for (row of data.rows; track row.row_number) {
-            <label class="card border border-base-300 bg-base-100" [class.opacity-60]="row.duplicate_existing || !row.ready">
-              <div class="card-body flex-row items-start gap-3 p-4">
-                <input class="checkbox checkbox-primary mt-1" type="checkbox"
-                  [checked]="isSelected(row)" [disabled]="row.duplicate_existing || !row.ready"
-                  (change)="toggle(row)" />
-                <div class="min-w-0 flex-1">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <strong>{{ row.input.title || 'Titolo mancante' }}</strong>
-                    @if (row.duplicate_existing) { <span class="badge badge-warning badge-sm">Già presente</span> }
-                    @if (!row.ready && !row.duplicate_existing) { <span class="badge badge-error badge-sm">Da verificare</span> }
-                    @if (row.confidence !== undefined) { <span class="badge badge-ghost badge-sm">{{ (row.confidence * 100).toFixed(0) }}%</span> }
-                  </div>
-                  <p class="mt-1 text-sm opacity-70">
-                    {{ row.input.performed_by || 'Artista non indicato' }}
-                    @if (row.input.key) { · {{ row.input.key }} }
-                    @if (row.input.bpm) { · {{ row.input.bpm }} BPM }
-                    @if (row.input.duration) { · {{ row.input.duration }} s }
-                  </p>
-                  @if (row.errors?.length) { <p class="mt-1 text-xs text-error">{{ row.errors.join(' · ') }}</p> }
-                </div>
-              </div>
-            </label>
-          }
-        </div>
-
-        <div class="fixed inset-x-0 bottom-0 z-20 border-t border-base-300 bg-base-100/95 p-3 backdrop-blur">
-          <div class="mx-auto flex max-w-5xl items-center justify-between gap-3">
-            <span class="text-sm">{{ selectedRows().size }} selezionati</span>
-            <button class="btn btn-primary" type="button" [disabled]="!selectedRows().size || importing()" (click)="confirm()">
-              @if (importing()) { <span class="loading loading-spinner loading-sm"></span> Importazione… }
-              @else { Importa brani }
-            </button>
-          </div>
-        </div>
-      </section>
-    }
-  </main>
+<ion-header><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons><ion-title>Importa brani</ion-title></ion-toolbar></ion-header>
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header><ion-card-title>Importa repertorio da PDF</ion-card-title></ion-card-header>
+    <ion-card-content>
+      <p>Controlla i brani trovati prima di salvarli.</p>
+      <input #pdfInput hidden type="file" accept="application/pdf,.pdf" (change)="onFileSelected($event)" />
+      <ion-button [disabled]="analyzing() || importing()" (click)="chooseFile(pdfInput)">
+        @if (analyzing()) { <ion-spinner slot="start" /> Analisi in corso… }
+        @else { <ion-icon slot="start" name="cloud-upload-outline" /> Scegli PDF }
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+  @if (error()) { <ion-note color="danger">{{ error() }}</ion-note> }
+  @if (result()) { <ion-note color="success">{{ result() }}</ion-note> }
+  @if (review(); as data) {
+    <ion-list>
+      <ion-list-header><ion-label>Anteprima · {{ data.summary.total_rows }} righe, {{ data.summary.ready_rows }} pronte</ion-label></ion-list-header>
+      <ion-item><ion-label>AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti</ion-label></ion-item>
+      @for (row of data.rows; track row.row_number) {
+        <ion-item>
+          <ion-checkbox slot="start" [checked]="isSelected(row)" [disabled]="row.duplicate_existing || !row.ready" (ionChange)="toggle(row)" />
+          <ion-label>
+            <h2>{{ row.input.title || 'Titolo mancante' }}</h2>
+            <p>{{ row.input.performed_by || 'Artista non indicato' }} · {{ row.input.key || '—' }} · {{ row.input.bpm || '—' }} BPM</p>
+            @if (row.duplicate_existing) { <ion-note color="warning">Già presente</ion-note> }
+            @if (!row.ready && !row.duplicate_existing) { <ion-note color="danger">Da verificare</ion-note> }
+            @if (row.errors?.length) { <p><ion-note color="danger">{{ row.errors.join(' · ') }}</ion-note></p> }
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+    <ion-button expand="block" [disabled]="!selectedRows().size || importing()" (click)="confirm()">
+      @if (importing()) { <ion-spinner slot="start" /> Importazione… } @else { Importa {{ selectedRows().size }} brani }
+    </ion-button>
+  }
 </ion-content>
