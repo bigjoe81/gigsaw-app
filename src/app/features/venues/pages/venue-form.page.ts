@@ -7,14 +7,14 @@ import { addIcons } from 'ionicons';
 import { businessOutline, musicalNotesOutline, navigateOutline } from 'ionicons/icons';
 import { finalize, Observable } from 'rxjs';
 import { RehearsalRoom, Venue } from '../../../core/models/band-resources.models';
-import { DaisyButtonComponent, DaisyInputComponent, DaisyLoadingComponent, DaisyMessageComponent } from '../../../shared/ui/daisyui';
+import { GigsawButtonComponent, GigsawInputComponent, GigsawLoadingComponent, GigsawMessageComponent } from '../../../shared/ui/gigsaw';
 import { RehearsalRoomService } from '../../rehearsal-sessions/services/rehearsal-room.service';
 import { VenueService } from '../services/venue.service';
 import { MapboxGeocodingService } from '../services/mapbox-geocoding.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, DaisyButtonComponent, DaisyInputComponent, DaisyLoadingComponent, DaisyMessageComponent, IonBackButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, GigsawButtonComponent, GigsawInputComponent, GigsawLoadingComponent, GigsawMessageComponent, IonBackButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar],
   templateUrl: './venue-form.page.html',
   styleUrls: ['./venue-form.page.scss'],
 })

@@ -7,11 +7,11 @@ import { add, alertCircle, musicalNotes } from 'ionicons/icons';
 import { ResourceConfig } from '../models/resource-form.models';
 import { ActivatedRoute } from '@angular/router';
 import { BandResource } from '../../core/models/band-resources.models';
-import { DaisyListComponent, DaisyListItemComponent } from './daisyui';
+import { GigsawListComponent, GigsawListItemComponent } from './gigsaw';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, DaisyListComponent, DaisyListItemComponent, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonMenuButton, IonRefresher, IonRefresherContent, IonSkeletonText, IonText, IonTitle, IonToolbar],
+  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonMenuButton, IonRefresher, IonRefresherContent, IonSkeletonText, IonText, IonTitle, IonToolbar],
   templateUrl: './resource-list.page.html',
   styles: ['.state{min-height:55%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}.state ion-icon{font-size:44px;color:var(--ion-color-medium)}'],
 })

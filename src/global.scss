@@ -10,7 +10,6 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
-@import "flatpickr/dist/themes/dark.css";
 @import "@ionic/angular/css/core.css";
 
 /* Basic CSS for apps built with Ionic */
@@ -53,48 +52,6 @@
 /* Tailwind for utility classes only. Avoid preflight so Ionic keeps its base layout styles. */
 @import 'tailwindcss/theme.css';
 @import 'tailwindcss/utilities.css';
-@plugin "daisyui" {
-  themes: false;
-}
-@plugin "daisyui/theme" {
-  name: "gigsaw";
-  default: true;
-  prefersdark: false;
-  color-scheme: dark;
-
-  --color-base-100: var(--ion-card-background);
-  --color-base-200: var(--ion-background-color);
-  --color-base-300: var(--ion-color-light);
-  --color-base-content: var(--ion-text-color);
-
-  --color-primary: var(--ion-color-primary);
-  --color-primary-content: var(--ion-color-primary-contrast);
-  --color-secondary: var(--ion-color-secondary);
-  --color-secondary-content: var(--ion-color-secondary-contrast);
-  --color-accent: var(--ion-color-tertiary);
-  --color-accent-content: var(--ion-color-tertiary-contrast);
-
-  --color-neutral: var(--ion-color-dark);
-  --color-neutral-content: var(--ion-color-dark-contrast);
-  --color-info: var(--ion-color-secondary);
-  --color-info-content: var(--ion-color-secondary-contrast);
-  --color-success: var(--ion-color-success);
-  --color-success-content: var(--ion-color-success-contrast);
-  --color-warning: var(--ion-color-warning);
-  --color-warning-content: var(--ion-color-warning-contrast);
-  --color-error: var(--ion-color-danger);
-  --color-error-content: var(--ion-color-danger-contrast);
-
-  --radius-selector: 0.375rem;
-  --radius-field: 0.375rem;
-  --radius-box: 0.5rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 0;
-}
-
 @layer components {
   ion-content {
     --background: var(--gigsaw-background);
@@ -131,50 +88,6 @@ ion-content::part(scroll) {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Shared form actions: remain in flow on short forms and stick above the safe area
-   while a longer form scrolls. Keep a real 16px gap above iPhone's home indicator. */
-.form-action-bar,
-form > ion-button[type='submit'],
-form > app-daisy-button[type='submit'] {
-  position: sticky;
-  z-index: 20;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  margin-top: 1.5rem;
-  padding: 0.625rem;
-  border-top: 1px solid rgba(127, 144, 168, 0.22);
-  border: 1px solid var(--gigsaw-border, #243244);
-  border-radius: 0.625rem;
-  background: color-mix(in srgb, var(--ion-background-color, #0D1117) 96%, transparent);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(12px);
-}
-
-/* Keep every multi-action form bar visually consistent even when a feature
-   previously supplied its own sticky footer styles. */
-.form-action-bar.form-action-bar {
-  position: sticky !important;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
-  margin: 1.5rem 0 0 !important;
-  padding: 0.625rem !important;
-  border: 1px solid var(--gigsaw-border, #243244) !important;
-  border-radius: 0.625rem !important;
-  background: color-mix(in srgb, var(--ion-background-color, #0D1117) 96%, transparent) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22) !important;
-  backdrop-filter: blur(12px) !important;
-}
-
-form > ion-button[type='submit'],
-form > app-daisy-button[type='submit'] {
-  display: block;
-  width: 100%;
-  margin-inline: 0;
-}
-
-.form-action-bar > ion-button:only-child,
-.form-action-bar > app-daisy-button:only-child {
-  width: 100%;
-  margin: 0;
-}
 ion-modal.song-detail-modal {
   --width: min(720px, calc(100% - 32px));
   --height: min(760px, calc(100% - 48px));
@@ -186,76 +99,6 @@ ion-modal.song-detail-modal {
    actions), instead of inheriting the secondary accent token. */
 ion-button ion-icon {
   color: currentColor !important;
-}
-
-/* Opt-in outlined controls shared by every GigSaw form. */
-.gigsaw-outlined-form :is(ion-input, ion-select, ion-textarea, ion-datetime-button) {
-  --background: var(--gigsaw-input-background);
-  --color: #e5edf7;
-  --placeholder-color: #7f90a8;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --border-radius: 7px;
-  --border-width: 0;
-  --highlight-height: 0;
-  --highlight-color-focused: transparent;
-  box-sizing: border-box;
-  border: 1px solid var(--gigsaw-input-border);
-  border-radius: 7px;
-  background: var(--gigsaw-input-background);
-}
-
-.gigsaw-outlined-form :is(ion-input, ion-select, ion-textarea, ion-datetime-button):focus-within {
-  border-color: var(--gigsaw-input-border-focus);
-  box-shadow: none;
-}
-
-.gigsaw-outlined-form :is(ion-input, ion-select, ion-textarea).ion-touched.ion-invalid {
-  border-color: var(--ion-color-danger);
-}
-
-.gigsaw-outlined-form :is(ion-input, ion-textarea):focus { outline: none; }
-
-.gigsaw-outlined-form ion-datetime-button {
-  display: flex;
-  width: 100%;
-  min-height: 56px;
-  overflow: hidden;
-}
-
-.gigsaw-outlined-form ion-datetime-button.control-invalid {
-  border-color: var(--ion-color-danger);
-}
-
-.gigsaw-outlined-form ion-datetime-button::part(native) {
-  width: 100%;
-  min-height: 54px;
-  margin: 0;
-  padding: 0 48px 0 16px;
-  border-radius: 0;
-  background: transparent;
-  color: #e5edf7;
-  text-align: left;
-}
-
-.gigsaw-date-control {
-  position: relative;
-}
-
-.gigsaw-date-control > ion-icon {
-  position: absolute;
-  top: 50%;
-  right: 16px;
-  z-index: 1;
-  color: var(--gigsaw-muted);
-  font-size: 20px;
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
-.gigsaw-outlined-form :is(ion-input, ion-textarea)::part(native) {
-  border-radius: 7px;
-  outline: none;
 }
 
 /* One canonical application header. Keep this rule last so feature styles and

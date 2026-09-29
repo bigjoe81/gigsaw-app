@@ -1,3 +1,4 @@
+import { IonButton } from '@ionic/angular/standalone';
 
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
@@ -20,19 +21,19 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import {
-  DaisyButtonComponent,
-  DaisyMessageComponent,
-} from '../../../shared/ui/daisyui';
+  GigsawButtonComponent,
+  GigsawMessageComponent,
+} from '../../../shared/ui/gigsaw';
 import { Band } from '../models/band.models';
 import { BandService } from '../services/band.service';
 import { BandCreatePage } from './band-create.page';
 
 @Component({
   standalone: true,
-  imports: [
+  imports: [IonButton,
     BandCreatePage,
-    DaisyButtonComponent,
-    DaisyMessageComponent,
+    GigsawButtonComponent,
+    GigsawMessageComponent,
     IonContent,
     IonHeader,
     IonIcon,

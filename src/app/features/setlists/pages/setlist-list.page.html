@@ -45,14 +45,14 @@
             <div class="card-copy"><h2>{{ setlist.title }}</h2>@if (setlist.notes) { <p>{{ setlist.notes }}</p> }</div>
             <div class="metrics"><span><strong>{{ songCount(setlist) }}</strong> brani</span><span><strong>{{ setCount(setlist) || '—' }}</strong> set</span></div>
             <div class="card-actions">
-              <button type="button" (click)="downloadPdf(setlist, $event)" [disabled]="pdfAction() !== null">
+              <ion-button type="button" (click)="downloadPdf(setlist, $event)" [disabled]="pdfAction() !== null">
                 @if (pdfAction() === 'download-' + setlist.id) { <span class="loading loading-spinner loading-xs"></span> } @else { <ion-icon name="download-outline" /> }
                 Scarica PDF
-              </button>
-              <button type="button" (click)="sharePdf(setlist, $event)" [disabled]="pdfAction() !== null">
+              </ion-button>
+              <ion-button type="button" (click)="sharePdf(setlist, $event)" [disabled]="pdfAction() !== null">
                 @if (pdfAction() === 'share-' + setlist.id) { <span class="loading loading-spinner loading-xs"></span> } @else { <ion-icon name="share-social-outline" /> }
                 Condividi
-              </button>
+              </ion-button>
             </div>
           </a>
         }

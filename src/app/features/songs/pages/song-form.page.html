@@ -36,13 +36,13 @@
                   <ion-icon slot="start" name="search-outline"/>
                 } Cerca brano
                 </ion-button>
-                <button type="button" class="text-action" (click)="continueManually()">Inserisci manualmente</button>
+                <ion-button type="button" class="text-action" (click)="continueManually()">Inserisci manualmente</ion-button>
               </div>@if (magicError()) {
               <p class="inline-error">{{ magicError() }}</p>
             }
               @if (metadataResults().length) {
                 <div class="metadata-results">@for (result of metadataResults(); track result.externalId) {
-                  <button type="button" class="metadata-card" (click)="chooseMetadata(result)"
+                  <ion-button type="button" class="metadata-card" (click)="chooseMetadata(result)"
                           [disabled]="detailLoading()">@if (result.artworkUrl) {
                     <img [src]="result.artworkUrl" alt=""/>
                   } @else {
@@ -50,7 +50,7 @@
                   }<span
                     class="metadata-copy"><strong>{{ result.title }}</strong><small>{{ result.artist || 'Artista sconosciuto' }}</small><small>{{ result.album }}</small></span><span
                     class="provider">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
-                  </button>
+                  </ion-button>
                 }</div>
               }</section>
           }
@@ -76,7 +76,7 @@
               @if (metadataResults().length) {
                 <div class="metadata-results metadata-results-inline">
                   @for (result of metadataResults(); track result.externalId) {
-                    <button type="button" class="metadata-card" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
+                    <ion-button type="button" class="metadata-card" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
                       @if (result.artworkUrl) {
                         <img [src]="result.artworkUrl" alt=""/>
                       } @else {
@@ -88,7 +88,7 @@
                         <small>{{ result.album }}</small>
                       </span>
                       <span class="provider">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
-                    </button>
+                    </ion-button>
                   }
                 </div>
               }
@@ -109,11 +109,11 @@
                 </div>
                 <div class="bpm-control">
                   <label><span>BPM</span><ion-input type="number" formControlName="bpm"/></label>
-                  <button type="button" class="tap-tempo-button" (click)="tapTempo()" [class.is-active]="tapCount() > 0"
+                  <ion-button type="button" class="tap-tempo-button" (click)="tapTempo()" [class.is-active]="tapCount() > 0"
                           aria-label="Batti il tempo per calcolare i BPM">
                     <span class="tap-tempo-beat" aria-hidden="true">TAP</span>
                     <span class="tap-tempo-copy"><strong>{{ tappedBpm() ?? 'Tap tempo' }}</strong><small>@if (tappedBpm()) { BPM rilevati } @else if (tapCount()) { Continua a battere } @else { Tocca a tempo }</small></span>
-                  </button>
+                  </ion-button>
                   <small class="tap-tempo-help">Desktop: barra spaziatrice · Mobile: tocca il pulsante</small>
                   @if (spotifyEmbedUrl(); as playerUrl) {
                     <div class="spotify-tap-player">

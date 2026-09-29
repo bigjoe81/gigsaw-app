@@ -26,14 +26,14 @@ import { BandService } from '../../bands/services/band.service';
 import { Setlist } from '../../../core/models/band-resources.models';
 import { SetlistPdfService } from '../services/setlist-pdf.service';
 import { SetlistService } from '../services/setlist.service';
-import { DaisyListComponent, DaisyListItemComponent } from '../../../shared/ui/daisyui';
+import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
-    DaisyListComponent,
-    DaisyListItemComponent,
+    GigsawListComponent,
+    GigsawListItemComponent,
     IonBackButton,
     IonButton,
     IonButtons,

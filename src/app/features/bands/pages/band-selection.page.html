@@ -6,10 +6,10 @@
   <main class="selection-shell">
     <header class="topbar">
       <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
-      <button class="logout-button" type="button" aria-label="Esci" (click)="logout()">
+      <ion-button class="logout-button" type="button" aria-label="Esci" (click)="logout()">
         <span class="avatar">GP</span><span class="user-name">Giorgio</span>
         <ion-icon aria-hidden="true" name="log-out-outline" />
-      </button>
+      </ion-button>
     </header>
 
     <section class="page-heading">
@@ -18,9 +18,9 @@
         <h1>Scegli la tua band</h1>
         <p>Entra in uno spazio di lavoro oppure creane uno nuovo.</p>
       </div>
-      <button class="create-button" type="button" (click)="openCreateModal()">
+      <ion-button class="create-button" type="button" (click)="openCreateModal()">
         <ion-icon aria-hidden="true" name="add" /> Crea una band
-      </button>
+      </ion-button>
     </section>
 
     @if (loading()) {
@@ -29,13 +29,13 @@
       </section>
     } @else if (error()) {
       <section class="state-panel">
-        <app-daisy-message tone="error">{{ error() }}</app-daisy-message>
-        <app-daisy-button tone="outline" type="button" (click)="load()">Riprova</app-daisy-button>
+        <app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message>
+        <app-gigsaw-button tone="outline" type="button" (click)="load()">Riprova</app-gigsaw-button>
       </section>
     } @else {
       <section class="band-grid" aria-label="Le tue band">
         @for (band of bands(); track band.id; let first = $first) {
-          <button class="band-card" [class.featured]="first" type="button" (click)="selectBand(band)">
+          <ion-button class="band-card" [class.featured]="first" type="button" (click)="selectBand(band)">
             <span class="band-logo">
               @if (band.logo) { <img [src]="band.logo" [alt]="band.name" /> }
               @else { <ion-icon aria-hidden="true" name="musical-notes" /> }
@@ -46,17 +46,17 @@
             </span>
             <span class="role-badge">{{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}</span>
             <span class="open-label">Apri workspace <span aria-hidden="true">→</span></span>
-          </button>
+          </ion-button>
         }
 
-        <button class="new-band-card" type="button" (click)="openCreateModal()">
+        <ion-button class="new-band-card" type="button" (click)="openCreateModal()">
           <span class="add-icon"><ion-icon aria-hidden="true" name="add" /></span>
           <span><strong>Crea una nuova band</strong><small>Configura il workspace in pochi passaggi</small></span>
-        </button>
+        </ion-button>
       </section>
     }
 
-    <button class="help-button" type="button" (click)="openOnboarding()"><ion-icon aria-hidden="true" name="help-circle-outline" /> Guida introduttiva</button>
+    <ion-button class="help-button" type="button" (click)="openOnboarding()"><ion-icon aria-hidden="true" name="help-circle-outline" /> Guida introduttiva</ion-button>
   </main>
 </ion-content>
 

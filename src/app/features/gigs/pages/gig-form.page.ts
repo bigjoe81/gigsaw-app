@@ -28,9 +28,9 @@ import {
 } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
 import {
-  DaisyTypeaheadComponent,
-  DaisyTypeaheadItem,
-} from '../../../shared/ui/daisyui';
+  GigsawTypeaheadComponent,
+  GigsawTypeaheadItem,
+} from '../../../shared/ui/gigsaw';
 import { FormPageHeaderComponent } from '../../../shared/ui/form-page-header.component';
 import { Venue } from '../../venues/models/venue.models';
 import { MapboxAddressSuggestion, MapboxGeocodingService } from '../../venues/services/mapbox-geocoding.service';
@@ -49,7 +49,7 @@ import { GigService } from '../services/gig.service';
     IonNote,
     IonSpinner,
     IonTextarea,
-    DaisyTypeaheadComponent,
+    GigsawTypeaheadComponent,
   ],
   templateUrl: './gig-form.page.html',
   styleUrl: './gig-form.page.scss',
@@ -74,7 +74,7 @@ export class GigFormPage implements OnInit {
   readonly mapboxResults = signal<MapboxAddressSuggestion[]>([]);
   readonly selectedVenue = signal<Venue | undefined>(undefined);
   readonly pendingVenue = signal<MapboxAddressSuggestion | undefined>(undefined);
-  readonly venueTypeaheadItems = computed<DaisyTypeaheadItem[]>(() => [
+  readonly venueTypeaheadItems = computed<GigsawTypeaheadItem[]>(() => [
     ...this.filteredVenues().map((venue) => ({
       id: `venue:${venue.id}`,
       label: venue.name,
@@ -171,7 +171,7 @@ export class GigFormPage implements OnInit {
     this.venueQueryChanges.next(value);
   }
 
-  onVenueTypeaheadSelected(item: DaisyTypeaheadItem): void {
+  onVenueTypeaheadSelected(item: GigsawTypeaheadItem): void {
     if (String(item.id).startsWith('venue:')) {
       this.selectExistingVenue(item.data as Venue);
       return;

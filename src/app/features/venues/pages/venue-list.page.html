@@ -10,22 +10,22 @@
     <header class="page-heading">
       <div><span class="eyebrow">Anagrafica luoghi</span><h1>I luoghi della band</h1><p>Gestisci venue dei concerti e sale utilizzate per le prove.</p></div>
       <div class="create-actions">
-        <app-daisy-button tone="outline" [routerLink]="['sala', 'nuova']"><ion-icon name="add" /> Sala prove</app-daisy-button>
-        <app-daisy-button tone="primary" [routerLink]="['locale', 'nuovo']"><ion-icon name="add" /> Venue concerto</app-daisy-button>
+        <app-gigsaw-button tone="outline" [routerLink]="['sala', 'nuova']"><ion-icon name="add" /> Sala prove</app-gigsaw-button>
+        <app-gigsaw-button tone="primary" [routerLink]="['locale', 'nuovo']"><ion-icon name="add" /> Venue concerto</app-gigsaw-button>
       </div>
     </header>
 
     @if (!loading() && !error() && locationCount()) {
       <section class="venue-tools">
         <div class="summary"><span><strong>{{ venues().length }}</strong> venue</span><span><strong>{{ rehearsalRooms().length }}</strong> sale prove</span><span><strong>{{ cityCount() }}</strong> città</span></div>
-        <app-daisy-input name="locationSearch" placeholder="Cerca per nome, indirizzo o città" [value]="query()" (valueChange)="query.set($event)" />
+        <app-gigsaw-input name="locationSearch" placeholder="Cerca per nome, indirizzo o città" [value]="query()" (valueChange)="query.set($event)" />
       </section>
     }
 
     @if (loading()) {
-      <section class="state"><app-daisy-loading size="lg" /><span>Caricamento luoghi…</span></section>
+      <section class="state"><app-gigsaw-loading size="lg" /><span>Caricamento luoghi…</span></section>
     } @else if (error()) {
-      <section class="state"><app-daisy-message tone="error">{{ error() }}</app-daisy-message><app-daisy-button tone="outline" (click)="load()">Riprova</app-daisy-button></section>
+      <section class="state"><app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message><app-gigsaw-button tone="outline" (click)="load()">Riprova</app-gigsaw-button></section>
     } @else if (!visibleLocations().length) {
       <section class="state"><ion-icon name="business-outline" /><h2>{{ locationCount() ? 'Nessun risultato' : 'Nessun luogo salvato' }}</h2><p>{{ locationCount() ? 'Modifica i termini della ricerca.' : 'Aggiungi una venue o una sala prove.' }}</p></section>
     } @else {
@@ -35,8 +35,8 @@
             <div class="venue-icon"><ion-icon [name]="item.kind === 'venue' ? 'business-outline' : 'musical-notes-outline'" /></div>
             <div class="venue-copy"><span class="location-kind">{{ item.kind === 'venue' ? 'Venue concerto' : 'Sala prove' }}</span><h2>{{ item.location.name }}</h2><p>{{ address(item.location) }}</p></div>
             <div class="venue-actions">
-              <app-daisy-button tone="ghost" [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']" aria-label="Modifica luogo"><ion-icon name="pencil-outline" /></app-daisy-button>
-              <app-daisy-button tone="ghost" [loading]="deletingKey() === item.kind + '-' + item.location.id" (click)="confirmDelete(item.kind, item.location)" aria-label="Elimina luogo"><ion-icon name="trash-outline" /></app-daisy-button>
+              <app-gigsaw-button tone="ghost" [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']" aria-label="Modifica luogo"><ion-icon name="pencil-outline" /></app-gigsaw-button>
+              <app-gigsaw-button tone="ghost" [loading]="deletingKey() === item.kind + '-' + item.location.id" (click)="confirmDelete(item.kind, item.location)" aria-label="Elimina luogo"><ion-icon name="trash-outline" /></app-gigsaw-button>
             </div>
           </article>
         }

@@ -24,32 +24,32 @@
     <ion-note class="block p-4">Setlist non trovata.</ion-note>
   } @else {
     <div class="grid gap-4 p-4">
-      <app-daisy-list>
-        <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Titolo</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.title }}</h2></div></app-daisy-list-item>
-        <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Data</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.date || '—' }}</h2></div></app-daisy-list-item>
-        <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Gig</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.gigId || '—' }}</h2></div></app-daisy-list-item>
-        <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Venue</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.venueId || '—' }}</h2></div></app-daisy-list-item>
-        <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Note</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.notes || '—' }}</h2></div></app-daisy-list-item>
-      </app-daisy-list>
+      <app-gigsaw-list>
+        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Titolo</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.title }}</h2></div></app-gigsaw-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Data</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.date || '—' }}</h2></div></app-gigsaw-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Gig</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.gigId || '—' }}</h2></div></app-gigsaw-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Venue</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.venueId || '—' }}</h2></div></app-gigsaw-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Note</p><h2 class="m-0 mt-1 text-base font-bold">{{ setlist.notes || '—' }}</h2></div></app-gigsaw-list-item>
+      </app-gigsaw-list>
 
       @if (setlist.songs?.length) {
         <ion-card>
           <ion-card-header><ion-card-title>Brani</ion-card-title></ion-card-header>
           <ion-card-content>
             @if (openingSongs().length) {
-              <app-daisy-list>
-                <app-daisy-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Opening</h2></div></app-daisy-list-item>
+              <app-gigsaw-list>
+                <app-gigsaw-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Opening</h2></div></app-gigsaw-list-item>
                 @for (song of openingSongs(); track song.id; let index = $index) {
-                  <app-daisy-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</div></app-daisy-list-item>
+                  <app-gigsaw-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</div></app-gigsaw-list-item>
                 }
-              </app-daisy-list>
+              </app-gigsaw-list>
             }
 
             @if (mainSongs().length) {
-              <app-daisy-list>
-                <app-daisy-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Scaletta</h2></div></app-daisy-list-item>
+              <app-gigsaw-list>
+                <app-gigsaw-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Scaletta</h2></div></app-gigsaw-list-item>
                 @for (song of mainSongs(); track song.id; let index = $index) {
-                  <app-daisy-list-item>
+                  <app-gigsaw-list-item>
                     <div class="list-col-grow">
                       <h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2>
                       <p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>
@@ -59,27 +59,27 @@
                         }
                       }
                     </div>
-                  </app-daisy-list-item>
+                  </app-gigsaw-list-item>
                 }
-              </app-daisy-list>
+              </app-gigsaw-list>
             }
 
             @if (closingSongs().length) {
-              <app-daisy-list>
-                <app-daisy-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Closing</h2></div></app-daisy-list-item>
+              <app-gigsaw-list>
+                <app-gigsaw-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Closing</h2></div></app-gigsaw-list-item>
                 @for (song of closingSongs(); track song.id; let index = $index) {
-                  <app-daisy-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</div></app-daisy-list-item>
+                  <app-gigsaw-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</div></app-gigsaw-list-item>
                 }
-              </app-daisy-list>
+              </app-gigsaw-list>
             }
 
             @if (encoreSongs().length) {
-              <app-daisy-list>
-                <app-daisy-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Encore</h2></div></app-daisy-list-item>
+              <app-gigsaw-list>
+                <app-gigsaw-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Encore</h2></div></app-gigsaw-list-item>
                 @for (song of encoreSongs(); track song.id; let index = $index) {
-                  <app-daisy-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</div></app-daisy-list-item>
+                  <app-gigsaw-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2><p class="m-0 mt-1 text-[0.92rem] leading-6">{{ songSubtitle(song) }}</p>@if (songNotes(song).length) {@for (note of songNotes(song); track note) {<p class="m-0 mt-1 text-[0.92rem] leading-6">{{ note }}</p>}}</div></app-gigsaw-list-item>
                 }
-              </app-daisy-list>
+              </app-gigsaw-list>
             }
           </ion-card-content>
         </ion-card>
@@ -89,9 +89,9 @@
         <ion-card>
           <ion-card-header><ion-card-title>Divisione set</ion-card-title></ion-card-header>
           <ion-card-content>
-            <app-daisy-list>
+            <app-gigsaw-list>
               @for (set of setlist.sets; track set.index) {
-                <app-daisy-list-item>
+                <app-gigsaw-list-item>
                   <div class="list-col-grow">
                     <h2 class="m-0 text-base font-bold">Set {{ set.index }}</h2>
                     <p class="m-0 mt-1 text-[0.92rem] leading-6">{{ set.songIds.length }} brani · {{ formatSeconds(set.durationSeconds) }}</p>
@@ -99,9 +99,9 @@
                       <p class="m-0 mt-1 text-[0.92rem] leading-6">Target: {{ formatSeconds(set.targetDurationSeconds) }}</p>
                     }
                   </div>
-                </app-daisy-list-item>
+                </app-gigsaw-list-item>
               }
-            </app-daisy-list>
+            </app-gigsaw-list>
           </ion-card-content>
         </ion-card>
       }
@@ -110,14 +110,14 @@
         <ion-card>
           <ion-card-header><ion-card-title>Generazione</ion-card-title></ion-card-header>
           <ion-card-content>
-            <app-daisy-list>
-              <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Durata brani</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedDurationSeconds) }}</h2></div></app-daisy-list-item>
-              <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Pausa totale</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedBreakDurationSeconds) }}</h2></div></app-daisy-list-item>
-              <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Show completo</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedFullShowDurationSeconds) }}</h2></div></app-daisy-list-item>
-              <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Target show</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.totalShowDurationSeconds) }}</h2></div></app-daisy-list-item>
-              <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Diff. venue</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatRatio(setlist.generation.venueDifferenceRatio) }}</h2></div></app-daisy-list-item>
-              <app-daisy-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Diff. ultima setlist</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatRatio(setlist.generation.chronologicalDifferenceRatio) }}</h2></div></app-daisy-list-item>
-            </app-daisy-list>
+            <app-gigsaw-list>
+              <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Durata brani</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedDurationSeconds) }}</h2></div></app-gigsaw-list-item>
+              <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Pausa totale</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedBreakDurationSeconds) }}</h2></div></app-gigsaw-list-item>
+              <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Show completo</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.generatedFullShowDurationSeconds) }}</h2></div></app-gigsaw-list-item>
+              <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Target show</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatSeconds(setlist.generation.totalShowDurationSeconds) }}</h2></div></app-gigsaw-list-item>
+              <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Diff. venue</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatRatio(setlist.generation.venueDifferenceRatio) }}</h2></div></app-gigsaw-list-item>
+              <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ion-color-medium)]">Diff. ultima setlist</p><h2 class="m-0 mt-1 text-base font-bold">{{ formatRatio(setlist.generation.chronologicalDifferenceRatio) }}</h2></div></app-gigsaw-list-item>
+            </app-gigsaw-list>
           </ion-card-content>
         </ion-card>
       }

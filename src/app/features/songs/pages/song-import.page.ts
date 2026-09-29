@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack, cloudUploadOutline, documentTextOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
@@ -9,7 +9,7 @@ import { PdfSongImportReview, SongImportRow, SongService } from '../services/son
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar],
+  imports: [RouterLink, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSpinner, IonTitle, IonToolbar],
   templateUrl: './song-import.page.html',
 })
 export class SongImportPage {

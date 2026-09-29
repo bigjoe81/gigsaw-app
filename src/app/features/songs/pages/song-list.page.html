@@ -16,11 +16,11 @@
 <ion-content class="repertoire-content">
   <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
   @if (loading()) {
-    <app-daisy-list>
+    <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {
-        <app-daisy-list-item><div class="list-col-grow"><ion-skeleton-text [animated]="true" style="width:55%" /><ion-skeleton-text [animated]="true" style="width:35%" /></div></app-daisy-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><ion-skeleton-text [animated]="true" style="width:55%" /><ion-skeleton-text [animated]="true" style="width:35%" /></div></app-gigsaw-list-item>
       }
-    </app-daisy-list>
+    </app-gigsaw-list>
   } @else if (error()) {
     <div class="state"><ion-icon name="alert-circle" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
   } @else if (!songs().length) {
@@ -69,9 +69,9 @@
         </ion-button>
       </div>
 
-      <app-daisy-list listClass="song-list">
+      <app-gigsaw-list listClass="song-list">
         @for (song of songs(); track song.id) {
-          <app-daisy-list-item itemClass="song-row" [interactive]="true" [disabled]="deleting()" (selected)="openSong(song.id)">
+          <app-gigsaw-list-item itemClass="song-row" [interactive]="true" [disabled]="deleting()" (selected)="openSong(song.id)">
             <ion-checkbox
               class="song-selector"
               aria-label="Seleziona {{ song.title }}"
@@ -91,9 +91,9 @@
               <ion-badge [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
               <span class="open-song" aria-hidden="true"><ion-icon name="chevron-forward" /></span>
             </div>
-          </app-daisy-list-item>
+          </app-gigsaw-list-item>
         }
-      </app-daisy-list>
+      </app-gigsaw-list>
     </section>
   }
 </ion-content>

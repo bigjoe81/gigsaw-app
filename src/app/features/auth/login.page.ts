@@ -2,11 +2,11 @@ import {Component, computed, signal} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {IonContent} from '@ionic/angular/standalone';
 import {AuthService} from '../../core/auth/auth.service';
-import {DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent} from '../../shared/ui/daisyui';
+import {GigsawButtonComponent, GigsawInputComponent, GigsawMessageComponent} from '../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent, IonContent],
+  imports: [RouterLink, GigsawButtonComponent, GigsawInputComponent, GigsawMessageComponent, IonContent],
   templateUrl: './login.page.html',
   styles: [`
     .login-content {
@@ -21,7 +21,7 @@ import {DaisyButtonComponent, DaisyInputComponent, DaisyMessageComponent} from '
       padding-bottom: max(24px, var(--ion-safe-area-bottom));
     }
 
-    .login-content form > app-daisy-button[type='submit'] {
+    .login-content form > app-gigsaw-button[type='submit'] {
       position: static;
       margin-top: 1rem;
       padding: 0;

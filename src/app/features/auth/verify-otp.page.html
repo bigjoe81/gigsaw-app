@@ -8,7 +8,7 @@
     <form (submit)="verify(); $event.preventDefault()">
       <label class="block">
         <span class="mb-2 block text-sm font-bold">Codice OTP</span>
-        <app-daisy-otp-input
+        <app-gigsaw-otp-input
           [value]="code()"
           [disabled]="loading"
           [valid]="touched() && codeValid()"
@@ -18,24 +18,24 @@
         />
       </label>
     @if (touched() && !codeValid()) {
-      <app-daisy-message tone="error" messageClass="mt-2">Inserisci il codice a 6 cifre.</app-daisy-message>
+      <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci il codice a 6 cifre.</app-gigsaw-message>
     }
 
     @if (success) {
-      <app-daisy-message tone="success" messageClass="mt-2">{{ success }}</app-daisy-message>
+      <app-gigsaw-message tone="success" messageClass="mt-2">{{ success }}</app-gigsaw-message>
     }
     @if (isExpiredCodeError()) {
-      <app-daisy-alert tone="warning" alertClass="mt-3">
+      <app-gigsaw-alert tone="warning" alertClass="mt-3">
         Il codice è scaduto. Richiedi un nuovo codice OTP per continuare.
-      </app-daisy-alert>
+      </app-gigsaw-alert>
     } @else if (error()) {
-      <app-daisy-message tone="error" messageClass="mt-2">{{ error() }}</app-daisy-message>
+      <app-gigsaw-message tone="error" messageClass="mt-2">{{ error() }}</app-gigsaw-message>
     }
 
-      <app-daisy-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Verifica e continua</app-daisy-button>
+      <app-gigsaw-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Verifica e continua</app-gigsaw-button>
     </form>
 
-    <app-daisy-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending || !challengeId" [loading]="resending">Invia un nuovo codice</app-daisy-button>
+    <app-gigsaw-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending || !challengeId" [loading]="resending">Invia un nuovo codice</app-gigsaw-button>
     <a class="btn btn-ghost mt-2 w-full" [routerLink]="purpose === 'register' ? '/registrati' : '/accedi'">Torna indietro</a>
   </div>
 </ion-content>

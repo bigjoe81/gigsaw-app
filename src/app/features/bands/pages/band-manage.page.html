@@ -38,19 +38,19 @@
 
     <nav class="settings-nav" aria-label="Sezioni impostazioni band">
       @if (isAdmin) {
-        <button type="button" [class.active]="settingsSection() === 'profile'" (click)="selectSettingsSection('profile')">
+        <ion-button type="button" [class.active]="settingsSection() === 'profile'" (click)="selectSettingsSection('profile')">
           <span class="settings-nav-icon">◎</span><span>Profilo<small>Identità e contatti</small></span>
-        </button>
-        <button type="button" [class.active]="settingsSection() === 'tech'" (click)="selectSettingsSection('tech')">
+        </ion-button>
+        <ion-button type="button" [class.active]="settingsSection() === 'tech'" (click)="selectSettingsSection('tech')">
           <span class="settings-nav-icon">⌁</span><span>Tech kit<small>Canali e palco</small></span>
-        </button>
-        <button type="button" [class.active]="settingsSection() === 'media'" (click)="selectSettingsSection('media')">
+        </ion-button>
+        <ion-button type="button" [class.active]="settingsSection() === 'media'" (click)="selectSettingsSection('media')">
           <span class="settings-nav-icon">▣</span><span>Media<small>Foto e press kit</small></span>
-        </button>
+        </ion-button>
       }
-      <button type="button" [class.active]="settingsSection() === 'team'" (click)="selectSettingsSection('team')">
+      <ion-button type="button" [class.active]="settingsSection() === 'team'" (click)="selectSettingsSection('team')">
         <span class="settings-nav-icon">♢</span><span>Membri<small>Ruoli e inviti</small></span>
-      </button>
+      </ion-button>
     </nav>
 
     @if (isAdmin) {
@@ -62,7 +62,7 @@
           <ion-note color="medium">Condividi questo link: chi lo apre trova subito il pulsante “Partecipa”.</ion-note>
           <ion-item class="ion-margin-top">
             <ion-label position="stacked">Link d’invito</ion-label>
-            <app-daisy-input [value]="bandInviteLink" [disabled]="true" />
+            <app-gigsaw-input [value]="bandInviteLink" [disabled]="true" />
           </ion-item>
           <div class="action-row">
             <ion-button type="button" (click)="copyBandInviteLink()" [disabled]="!bandInviteLink">
@@ -90,15 +90,15 @@
               <div class="profile-logo-panel">
                 @if (band.logo) { <img [src]="band.logo" alt="Logo band" class="profile-logo" /> }
                 @else { <div class="profile-logo profile-logo-placeholder">{{ band.name.slice(0, 2).toUpperCase() }}</div> }
-                <app-daisy-file-input label="Cambia logo" accept="image/*" (filesChange)="onLogoFilesSelected($event)" />
+                <app-gigsaw-file-input label="Cambia logo" accept="image/*" (filesChange)="onLogoFilesSelected($event)" />
               </div>
               <div class="profile-primary-fields">
-                <div class="field full"><label>Nome band</label><app-daisy-input [value]="profileForm.controls.name.value" [invalid]="profileForm.controls.name.touched && profileForm.controls.name.invalid" (valueChange)="profileForm.controls.name.setValue($event)" (blurred)="profileForm.controls.name.markAsTouched()" /></div>
-                <div class="field"><label>Città</label><app-daisy-input [value]="profileForm.controls.city.value" placeholder="Es. Milano" (valueChange)="profileForm.controls.city.setValue($event)" /></div>
-                <div class="field"><label>Paese</label><app-daisy-input [value]="profileForm.controls.country.value" placeholder="Es. Italia" (valueChange)="profileForm.controls.country.setValue($event)" /></div>
+                <div class="field full"><label>Nome band</label><app-gigsaw-input [value]="profileForm.controls.name.value" [invalid]="profileForm.controls.name.touched && profileForm.controls.name.invalid" (valueChange)="profileForm.controls.name.setValue($event)" (blurred)="profileForm.controls.name.markAsTouched()" /></div>
+                <div class="field"><label>Città</label><app-gigsaw-input [value]="profileForm.controls.city.value" placeholder="Es. Milano" (valueChange)="profileForm.controls.city.setValue($event)" /></div>
+                <div class="field"><label>Paese</label><app-gigsaw-input [value]="profileForm.controls.country.value" placeholder="Es. Italia" (valueChange)="profileForm.controls.country.setValue($event)" /></div>
                 <div class="field full">
                   <label>Generi</label>
-                  <app-daisy-typeahead
+                  <app-gigsaw-typeahead
                     name="genreQuery"
                     [value]="genreQuery()"
                     [items]="genreTypeaheadItems"
@@ -112,7 +112,7 @@
                   @if (selectedGenres.length) {
                     <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Generi selezionati">
                       @for (genre of selectedGenres; track genre.id) {
-                        <app-daisy-badge
+                        <app-gigsaw-badge
                           tone="primary"
                           appearance="outline"
                           size="lg"
@@ -121,7 +121,7 @@
                           (dismissed)="removeGenre(genre.id)"
                         >
                           {{ genre.name }}
-                        </app-daisy-badge>
+                        </app-gigsaw-badge>
                       }
                     </div>
                   }
@@ -132,28 +132,28 @@
             <section class="profile-section">
               <div class="profile-section-title"><span>01</span><div><h3>Presentazione</h3><p>Il testo che vedranno promoter e venue.</p></div></div>
               <div class="profile-bio-grid">
-                <div class="field"><label>Bio breve</label><app-daisy-textarea [rows]="4" [value]="profileForm.controls.bioShort.value" placeholder="Descrivi la band in poche righe" (valueChange)="profileForm.controls.bioShort.setValue($event)" /></div>
-                <div class="field"><label>Bio completa</label><app-daisy-textarea [rows]="7" [value]="profileForm.controls.bio.value" placeholder="Storia, influenze e progetto artistico" (valueChange)="profileForm.controls.bio.setValue($event)" /></div>
+                <div class="field"><label>Bio breve</label><app-gigsaw-textarea [rows]="4" [value]="profileForm.controls.bioShort.value" placeholder="Descrivi la band in poche righe" (valueChange)="profileForm.controls.bioShort.setValue($event)" /></div>
+                <div class="field"><label>Bio completa</label><app-gigsaw-textarea [rows]="7" [value]="profileForm.controls.bio.value" placeholder="Storia, influenze e progetto artistico" (valueChange)="profileForm.controls.bio.setValue($event)" /></div>
               </div>
             </section>
 
             <section class="profile-section">
               <div class="profile-section-title"><span>02</span><div><h3>Contatti</h3><p>Riferimenti pubblici per richieste e booking.</p></div></div>
               <div class="profile-fields-grid three">
-                <div class="field"><label>Email</label><app-daisy-input type="email" [value]="profileForm.controls.email.value" [invalid]="profileForm.controls.email.touched && profileForm.controls.email.invalid" placeholder="booking@band.it" (valueChange)="profileForm.controls.email.setValue($event)" (blurred)="profileForm.controls.email.markAsTouched()" /></div>
-                <div class="field"><label>Telefono</label><app-daisy-input type="tel" [value]="profileForm.controls.phone.value" placeholder="+39..." (valueChange)="profileForm.controls.phone.setValue($event)" /></div>
-                <div class="field"><label>Sito web</label><app-daisy-input type="url" [value]="profileForm.controls.website.value" placeholder="https://" (valueChange)="profileForm.controls.website.setValue($event)" /></div>
+                <div class="field"><label>Email</label><app-gigsaw-input type="email" [value]="profileForm.controls.email.value" [invalid]="profileForm.controls.email.touched && profileForm.controls.email.invalid" placeholder="booking@band.it" (valueChange)="profileForm.controls.email.setValue($event)" (blurred)="profileForm.controls.email.markAsTouched()" /></div>
+                <div class="field"><label>Telefono</label><app-gigsaw-input type="tel" [value]="profileForm.controls.phone.value" placeholder="+39..." (valueChange)="profileForm.controls.phone.setValue($event)" /></div>
+                <div class="field"><label>Sito web</label><app-gigsaw-input type="url" [value]="profileForm.controls.website.value" placeholder="https://" (valueChange)="profileForm.controls.website.setValue($event)" /></div>
               </div>
             </section>
 
             <section class="profile-section">
               <div class="profile-section-title"><span>03</span><div><h3>Social e streaming</h3><p>Collega i canali ufficiali della band.</p></div></div>
               <div class="profile-fields-grid">
-                <div class="field"><label>Instagram</label><app-daisy-input type="url" [value]="profileForm.controls.instagramUrl.value" placeholder="https://instagram.com/..." (valueChange)="profileForm.controls.instagramUrl.setValue($event)" /></div>
-                <div class="field"><label>Facebook</label><app-daisy-input type="url" [value]="profileForm.controls.facebookUrl.value" placeholder="https://facebook.com/..." (valueChange)="profileForm.controls.facebookUrl.setValue($event)" /></div>
-                <div class="field"><label>YouTube</label><app-daisy-input type="url" [value]="profileForm.controls.youtubeUrl.value" placeholder="https://youtube.com/..." (valueChange)="profileForm.controls.youtubeUrl.setValue($event)" /></div>
-                <div class="field"><label>Spotify</label><app-daisy-input type="url" [value]="profileForm.controls.spotifyUrl.value" placeholder="https://open.spotify.com/..." (valueChange)="profileForm.controls.spotifyUrl.setValue($event)" /></div>
-                <div class="field"><label>TikTok</label><app-daisy-input type="url" [value]="profileForm.controls.tiktokUrl.value" placeholder="https://tiktok.com/..." (valueChange)="profileForm.controls.tiktokUrl.setValue($event)" /></div>
+                <div class="field"><label>Instagram</label><app-gigsaw-input type="url" [value]="profileForm.controls.instagramUrl.value" placeholder="https://instagram.com/..." (valueChange)="profileForm.controls.instagramUrl.setValue($event)" /></div>
+                <div class="field"><label>Facebook</label><app-gigsaw-input type="url" [value]="profileForm.controls.facebookUrl.value" placeholder="https://facebook.com/..." (valueChange)="profileForm.controls.facebookUrl.setValue($event)" /></div>
+                <div class="field"><label>YouTube</label><app-gigsaw-input type="url" [value]="profileForm.controls.youtubeUrl.value" placeholder="https://youtube.com/..." (valueChange)="profileForm.controls.youtubeUrl.setValue($event)" /></div>
+                <div class="field"><label>Spotify</label><app-gigsaw-input type="url" [value]="profileForm.controls.spotifyUrl.value" placeholder="https://open.spotify.com/..." (valueChange)="profileForm.controls.spotifyUrl.setValue($event)" /></div>
+                <div class="field"><label>TikTok</label><app-gigsaw-input type="url" [value]="profileForm.controls.tiktokUrl.value" placeholder="https://tiktok.com/..." (valueChange)="profileForm.controls.tiktokUrl.setValue($event)" /></div>
               </div>
             </section>
 
@@ -185,7 +185,7 @@
           </div>
           <ion-item>
             <ion-label position="stacked">Foto promo</ion-label>
-            <app-daisy-file-input accept="image/*" [multiple]="true" (filesChange)="onPressPhotoFilesSelected($event)" />
+            <app-gigsaw-file-input accept="image/*" [multiple]="true" (filesChange)="onPressPhotoFilesSelected($event)" />
           </ion-item>
           @if (selectedPressPhotos.length) {
             <ion-note class="ion-padding-horizontal ion-padding-top" color="medium">
@@ -264,21 +264,21 @@
               <span>Parti da un setup:</span>
               <div class="chip-row">
                 @for (preset of techPresets; track preset.id) {
-                  <button type="button" class="preset-chip" (click)="applyTechPreset(preset.id)">{{ preset.label }}</button>
+                  <ion-button type="button" class="preset-chip" (click)="applyTechPreset(preset.id)">{{ preset.label }}</ion-button>
                 }
               </div>
             </div>
 
             <nav class="tech-tabs" aria-label="Sezioni scheda tecnica">
-              <button type="button" [class.active]="techSection() === 'channels'" (click)="techSection.set('channels')">
+              <ion-button type="button" [class.active]="techSection() === 'channels'" (click)="techSection.set('channels')">
                 <span>01</span> Canali <b>{{ inputChannels.length }}</b>
-              </button>
-              <button type="button" [class.active]="techSection() === 'stage'" (click)="techSection.set('stage')">
+              </ion-button>
+              <ion-button type="button" [class.active]="techSection() === 'stage'" (click)="techSection.set('stage')">
                 <span>02</span> Palco <b>{{ stagePlotLayout.length }}</b>
-              </button>
-              <button type="button" [class.active]="techSection() === 'notes'" (click)="techSection.set('notes')">
+              </ion-button>
+              <ion-button type="button" [class.active]="techSection() === 'notes'" (click)="techSection.set('notes')">
                 <span>03</span> Note
-              </button>
+              </ion-button>
             </nav>
 
             @if (techSection() === 'channels') {
@@ -289,17 +289,17 @@
                 </div>
                 <div class="quick-add" aria-label="Aggiunta rapida canali">
                   @for (channel of quickChannels; track channel.name) {
-                    <button type="button" (click)="addInputChannel(channel)"><span>+</span>{{ channel.name }} <small>{{ channel.source }}</small></button>
+                    <ion-button type="button" (click)="addInputChannel(channel)"><span>+</span>{{ channel.name }} <small>{{ channel.source }}</small></ion-button>
                   }
                 </div>
                 <details class="preset-details">
                   <summary>Usa un preset canali</summary>
                   <div class="chip-row">
                     @for (preset of inputChannelPresets; track preset.id) {
-                      <button type="button" class="preset-chip" (click)="applyInputChannelPreset(preset.id)">{{ preset.label }}</button>
+                      <ion-button type="button" class="preset-chip" (click)="applyInputChannelPreset(preset.id)">{{ preset.label }}</ion-button>
                     }
                     @for (preset of drumMergePresets; track preset.id) {
-                      <button type="button" class="preset-chip secondary" (click)="mergeDrumMikingPreset(preset.id)">+ {{ preset.label }}</button>
+                      <ion-button type="button" class="preset-chip secondary" (click)="mergeDrumMikingPreset(preset.id)">+ {{ preset.label }}</ion-button>
                     }
                   </div>
                 </details>
@@ -308,9 +308,9 @@
                 @for (channel of inputChannels.controls; track $index) {
                   <div class="channel-row" [formGroupName]="$index">
                     <div class="channel-handle"><ion-reorder></ion-reorder><strong>{{ $index + 1 }}</strong></div>
-                    <app-daisy-input [value]="channel.get('name')?.value" placeholder="Nome canale" (valueChange)="channel.get('name')?.setValue($event)" />
-                    <app-daisy-input [value]="channel.get('source')?.value" placeholder="Mic / DI / Wireless" (valueChange)="channel.get('source')?.setValue($event)" />
-                    <app-daisy-input [value]="channel.get('notes')?.value" placeholder="Note opzionali" (valueChange)="channel.get('notes')?.setValue($event)" />
+                    <app-gigsaw-input [value]="channel.get('name')?.value" placeholder="Nome canale" (valueChange)="channel.get('name')?.setValue($event)" />
+                    <app-gigsaw-input [value]="channel.get('source')?.value" placeholder="Mic / DI / Wireless" (valueChange)="channel.get('source')?.setValue($event)" />
+                    <app-gigsaw-input [value]="channel.get('notes')?.value" placeholder="Note opzionali" (valueChange)="channel.get('notes')?.setValue($event)" />
                     <ion-button aria-label="Rimuovi canale" size="small" color="danger" fill="clear" type="button" (click)="removeInputChannel($index)">
                       <ion-icon slot="icon-only" name="trash-outline" />
                     </ion-button>
@@ -329,15 +329,15 @@
                 </div>
                 <div class="stage-palette">
                   @for (item of stageItems; track item.label) {
-                    <button type="button" (click)="addStageItem(item.label, item.instrument)"><span>{{ stagePlotIcon(item.instrument) }}</span>{{ item.label }}</button>
+                    <ion-button type="button" (click)="addStageItem(item.label, item.instrument)"><span>{{ stagePlotIcon(item.instrument) }}</span>{{ item.label }}</ion-button>
                   }
-                  <button type="button" (click)="addStagePlotItem()"><span>+</span>Altro</button>
+                  <ion-button type="button" (click)="addStagePlotItem()"><span>+</span>Altro</ion-button>
                 </div>
                 <details class="preset-details">
                   <summary>Usa un layout pronto</summary>
                   <div class="chip-row">
                     @for (preset of stagePlotPresets; track preset.id) {
-                      <button type="button" class="preset-chip" (click)="applyStagePlotPreset(preset.id)">{{ preset.label }}</button>
+                      <ion-button type="button" class="preset-chip" (click)="applyStagePlotPreset(preset.id)">{{ preset.label }}</ion-button>
                     }
                   </div>
                 </details>
@@ -367,11 +367,11 @@
                       @if (selectedStageItem() === $index) {
                         <div [formGroupName]="$index">
                           <span class="eyebrow">Elemento selezionato</span>
-                          <label class="editor-field">Etichetta<app-daisy-input [value]="item.get('label')?.value" (valueChange)="item.get('label')?.setValue($event)" /></label>
-                          <label class="editor-field">Strumento / ruolo<app-daisy-input [value]="item.get('instrument')?.value" (valueChange)="item.get('instrument')?.setValue($event)" /></label>
+                          <label class="editor-field">Etichetta<app-gigsaw-input [value]="item.get('label')?.value" (valueChange)="item.get('label')?.setValue($event)" /></label>
+                          <label class="editor-field">Strumento / ruolo<app-gigsaw-input [value]="item.get('instrument')?.value" (valueChange)="item.get('instrument')?.setValue($event)" /></label>
                           <div class="coordinate-row">
-                            <label class="editor-field">X %<app-daisy-input type="number" [value]="item.get('x')?.value" (valueChange)="item.get('x')?.setValue(+$event)" /></label>
-                            <label class="editor-field">Y %<app-daisy-input type="number" [value]="item.get('y')?.value" (valueChange)="item.get('y')?.setValue(+$event)" /></label>
+                            <label class="editor-field">X %<app-gigsaw-input type="number" [value]="item.get('x')?.value" (valueChange)="item.get('x')?.setValue(+$event)" /></label>
+                            <label class="editor-field">Y %<app-gigsaw-input type="number" [value]="item.get('y')?.value" (valueChange)="item.get('y')?.setValue(+$event)" /></label>
                           </div>
                           <ion-button expand="block" color="danger" fill="outline" type="button" (click)="removeStagePlotItem($index)"><ion-icon slot="start" name="trash-outline" /> Rimuovi</ion-button>
                         </div>
@@ -388,11 +388,11 @@
             @if (techSection() === 'notes') {
               <section class="tech-panel notes-grid">
                 <div class="section-heading full"><div><h3>Note di produzione</h3><p>Tutto ciò che serve a fonico, palco e venue.</p></div></div>
-                <label class="field">Note per il fonico<app-daisy-textarea [value]="techForm.controls.soundEngineerNotes.value" placeholder="Indicazioni generali, PA, patch..." (valueChange)="techForm.controls.soundEngineerNotes.setValue($event)" /></label>
-                <label class="field">Monitor mix<app-daisy-textarea [value]="techForm.controls.monitorMixNotes.value" placeholder="Mix richiesti e preferenze..." (valueChange)="techForm.controls.monitorMixNotes.setValue($event)" /></label>
-                <label class="field">Backline<app-daisy-textarea [value]="techForm.controls.backlineNotes.value" (valueChange)="techForm.controls.backlineNotes.setValue($event)" /></label>
-                <label class="field">Note stage plot<app-daisy-textarea [value]="techForm.controls.stagePlotNotes.value" (valueChange)="techForm.controls.stagePlotNotes.setValue($event)" /></label>
-                <label class="field full">Hospitality<app-daisy-textarea [value]="techForm.controls.hospitalityNotes.value" (valueChange)="techForm.controls.hospitalityNotes.setValue($event)" /></label>
+                <label class="field">Note per il fonico<app-gigsaw-textarea [value]="techForm.controls.soundEngineerNotes.value" placeholder="Indicazioni generali, PA, patch..." (valueChange)="techForm.controls.soundEngineerNotes.setValue($event)" /></label>
+                <label class="field">Monitor mix<app-gigsaw-textarea [value]="techForm.controls.monitorMixNotes.value" placeholder="Mix richiesti e preferenze..." (valueChange)="techForm.controls.monitorMixNotes.setValue($event)" /></label>
+                <label class="field">Backline<app-gigsaw-textarea [value]="techForm.controls.backlineNotes.value" (valueChange)="techForm.controls.backlineNotes.setValue($event)" /></label>
+                <label class="field">Note stage plot<app-gigsaw-textarea [value]="techForm.controls.stagePlotNotes.value" (valueChange)="techForm.controls.stagePlotNotes.setValue($event)" /></label>
+                <label class="field full">Hospitality<app-gigsaw-textarea [value]="techForm.controls.hospitalityNotes.value" (valueChange)="techForm.controls.hospitalityNotes.setValue($event)" /></label>
               </section>
             }
 
@@ -434,18 +434,18 @@
           <form [formGroup]="inviteForm" (ngSubmit)="invite()">
             <ion-item>
               <ion-label position="stacked">Nome</ion-label>
-              <app-daisy-input [value]="inviteForm.controls.name.value" (valueChange)="inviteForm.controls.name.setValue($event)" />
+              <app-gigsaw-input [value]="inviteForm.controls.name.value" (valueChange)="inviteForm.controls.name.setValue($event)" />
             </ion-item>
             <ion-item>
               <ion-label position="stacked">Email</ion-label>
-              <app-daisy-input type="email" [value]="inviteForm.controls.email.value" [invalid]="inviteForm.controls.email.touched && inviteForm.controls.email.invalid" (valueChange)="inviteForm.controls.email.setValue($event)" />
+              <app-gigsaw-input type="email" [value]="inviteForm.controls.email.value" [invalid]="inviteForm.controls.email.touched && inviteForm.controls.email.invalid" (valueChange)="inviteForm.controls.email.setValue($event)" />
             </ion-item>
             <ion-item>
               <ion-label position="stacked">Ruolo</ion-label>
-              <app-daisy-select [value]="inviteForm.controls.role.value" (valueChange)="inviteForm.controls.role.setValue($any($event))">
-                <option value="BAND_MEMBER">Membro band</option>
-                <option value="ADMIN">Admin</option>
-              </app-daisy-select>
+              <app-gigsaw-select [value]="inviteForm.controls.role.value" (valueChange)="inviteForm.controls.role.setValue($any($event))">
+                <ion-select-option value="BAND_MEMBER">Membro band</ion-select-option>
+                <ion-select-option value="ADMIN">Admin</ion-select-option>
+              </app-gigsaw-select>
             </ion-item>
             <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="inviting || !band.joinCode">
               @if (inviting) { <ion-spinner name="crescent" /> } @else { Prepara invito }
@@ -484,9 +484,9 @@
             <ion-card-title>Inviti pendenti</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <app-daisy-list>
+            <app-gigsaw-list>
               @for (invitation of band.invitations; track invitation.id) {
-                <app-daisy-list-item>
+                <app-gigsaw-list-item>
                   <div class="list-col-grow">
                     <h2>{{ invitation.name }}</h2>
                     <p>{{ invitation.email }} · {{ roleLabel(invitation.role) }}</p>
@@ -504,9 +504,9 @@
                       <ion-icon slot="icon-only" name="copy-outline" />
                     </ion-button>
                   </div>
-                </app-daisy-list-item>
+                </app-gigsaw-list-item>
               }
-            </app-daisy-list>
+            </app-gigsaw-list>
           </ion-card-content>
         </ion-card>
       }
@@ -517,9 +517,9 @@
         <ion-card-title>Membri</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <app-daisy-list>
+        <app-gigsaw-list>
           @for (member of band.members ?? []; track member.id) {
-            <app-daisy-list-item>
+            <app-gigsaw-list-item>
               <div class="list-col-grow">
                 <h2>{{ member.name }}</h2>
                 <p>{{ roleLabel(member.role) }} · {{ member.status || 'ACTIVE' }}</p>
@@ -528,18 +528,18 @@
                 }
               </div>
               @if (isAdmin && canEditRole(member)) {
-                <app-daisy-select
+                <app-gigsaw-select
                   [value]="member.role || 'BAND_MEMBER'"
                   (valueChange)="changeRoleValue(member, $event)"
                 >
-                  <option value="BAND_MEMBER">Membro band</option>
-                  <option value="ADMIN">Admin</option>
-                </app-daisy-select>
+                  <ion-select-option value="BAND_MEMBER">Membro band</ion-select-option>
+                  <ion-select-option value="ADMIN">Admin</ion-select-option>
+                </app-gigsaw-select>
               }
-            </app-daisy-list-item>
+            </app-gigsaw-list-item>
             @if (canEditInstruments(member)) {
-              <app-daisy-list-item>
-                <app-daisy-input
+              <app-gigsaw-list-item>
+                <app-gigsaw-input
                   placeholder="Es. voce, chitarra, tastiere"
                   [value]="memberInstrumentsDraft(member)"
                   [maxLength]="500"
@@ -548,11 +548,11 @@
                 <ion-button slot="end" type="button" size="small" (click)="saveMemberInstruments(member)" [disabled]="savingMemberInstruments() !== null">
                   @if (savingMemberInstruments() === member.id) { <ion-spinner name="crescent" /> } @else { Salva }
                 </ion-button>
-              </app-daisy-list-item>
+              </app-gigsaw-list-item>
               <ion-note class="ion-padding-horizontal" color="medium">Separa più strumenti con una virgola.</ion-note>
             }
           }
-        </app-daisy-list>
+        </app-gigsaw-list>
       </ion-card-content>
     </ion-card>
   }

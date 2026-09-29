@@ -21,16 +21,16 @@
           <h1>Benvenuto in GigSaw</h1>
           <p class="lead">Metti in ordine repertorio, prove, concerti e scalette della tua band.</p>
           <div class="choice-grid">
-            <button class="choice-card" type="button" (click)="chooseMode('create')">
+            <ion-button class="choice-card" type="button" (click)="chooseMode('create')">
               <span class="choice-icon"><ion-icon name="people-outline" /></span>
               <span><strong>Crea la mia band</strong><small>Configura un nuovo spazio condiviso</small></span>
               <ion-icon name="chevron-forward-outline" />
-            </button>
-            <button class="choice-card" type="button" (click)="chooseMode('invite')">
+            </ion-button>
+            <ion-button class="choice-card" type="button" (click)="chooseMode('invite')">
               <span class="choice-icon"><ion-icon name="person-add-outline" /></span>
               <span><strong>Ho ricevuto un invito</strong><small>Entra in una band esistente</small></span>
               <ion-icon name="chevron-forward-outline" />
-            </button>
+            </ion-button>
           </div>
         } @else if (step() === 'invite') {
           <span class="feature-icon"><ion-icon name="person-add-outline" /></span>

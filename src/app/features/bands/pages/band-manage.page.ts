@@ -20,6 +20,7 @@ import {
   IonReorderGroup,
   IonSkeletonText,
   IonSpinner,
+  IonSelectOption,
   IonTitle,
   IonToolbar,
   ToastController,
@@ -36,20 +37,20 @@ import { BandService } from '../services/band.service';
 import { GenreService } from '../services/genre.service';
 import { BandMediaPackService } from '../services/band-media-pack.service';
 import { BandTechRiderService } from '../services/band-tech-rider.service';
-import { DaisyBadgeComponent, DaisyFileInputComponent, DaisyInputComponent, DaisyListComponent, DaisyListItemComponent, DaisySelectComponent, DaisyTextareaComponent, DaisyTypeaheadComponent, DaisyTypeaheadItem } from '../../../shared/ui/daisyui';
+import { GigsawBadgeComponent, GigsawFileInputComponent, GigsawInputComponent, GigsawListComponent, GigsawListItemComponent, GigsawSelectComponent, GigsawTextareaComponent, GigsawTypeaheadComponent, GigsawTypeaheadItem } from '../../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    DaisyFileInputComponent,
-    DaisyBadgeComponent,
-    DaisyInputComponent,
-    DaisyListComponent,
-    DaisyListItemComponent,
-    DaisyTypeaheadComponent,
-    DaisySelectComponent,
-    DaisyTextareaComponent,
+    GigsawFileInputComponent,
+    GigsawBadgeComponent,
+    GigsawInputComponent,
+    GigsawListComponent,
+    GigsawListItemComponent,
+    GigsawTypeaheadComponent,
+    GigsawSelectComponent,
+    GigsawTextareaComponent,
     IonButton,
     IonButtons,
     IonCard,
@@ -67,6 +68,7 @@ import { DaisyBadgeComponent, DaisyFileInputComponent, DaisyInputComponent, Dais
     IonReorderGroup,
     IonSkeletonText,
     IonSpinner,
+    IonSelectOption,
     IonTitle,
     IonToolbar
 ],
@@ -80,7 +82,7 @@ export class BandManagePage implements OnInit {
   readonly selectedStageItem = signal<number | null>(null);
   readonly genreQuery = signal('');
 
-  get genreTypeaheadItems(): DaisyTypeaheadItem[] {
+  get genreTypeaheadItems(): GigsawTypeaheadItem[] {
     const selected = new Set(this.profileForm.controls.genres.value);
     return this.availableGenres
       .filter((genre): genre is BandGenre & { id: number; name: string } => Number.isInteger(genre.id) && !!genre.name)
@@ -339,7 +341,7 @@ export class BandManagePage implements OnInit {
     this.profileForm.controls.genres.setValue(values.map(Number).filter(Number.isInteger));
   }
 
-  selectGenre(item: DaisyTypeaheadItem): void {
+  selectGenre(item: GigsawTypeaheadItem): void {
     const genreId = Number(item.id);
     if (!Number.isInteger(genreId) || this.profileForm.controls.genres.value.includes(genreId)) return;
     this.profileForm.controls.genres.setValue([...this.profileForm.controls.genres.value, genreId]);

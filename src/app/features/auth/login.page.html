@@ -16,7 +16,7 @@
     <form class="w-full" (submit)="submit(); $event.preventDefault()">
       <label class="block">
         <span class="mb-2 block text-sm font-bold">Email</span>
-        <app-daisy-input
+        <app-gigsaw-input
           type="email"
           name="email"
           placeholder="es. mario.rossi@gmail.com"
@@ -26,17 +26,17 @@
         />
       </label>
       @if (touched() && !emailValid()) {
-        <app-daisy-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-daisy-message>
+        <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-gigsaw-message>
       }
       @if (error) {
-        <app-daisy-message tone="error" messageClass="mt-2">{{ error }}</app-daisy-message>
+        <app-gigsaw-message tone="error" messageClass="mt-2">{{ error }}</app-gigsaw-message>
       }
-      <app-daisy-button buttonClass="w-full" type="submit" tone="primary" [loading]="loading">Invia codice</app-daisy-button>
+      <app-gigsaw-button buttonClass="w-full" type="submit" tone="primary" [loading]="loading">Invia codice</app-gigsaw-button>
     </form>
-    <app-daisy-button buttonClass="mt-3 w-full" tone="outline" type="button" (click)="loginWithGoogle()">
+    <app-gigsaw-button buttonClass="mt-3 w-full" tone="outline" type="button" (click)="loginWithGoogle()">
       <img class="h-5 w-5 object-contain" src="assets/google-logo.png" alt="" aria-hidden="true" />
       Continua con Google
-    </app-daisy-button>
+    </app-gigsaw-button>
     <a class="btn btn-ghost mt-2 w-full" routerLink="/registrati" [queryParams]="{ returnUrl }">Non sei registrato? Crea un account</a>
   </div>
 </ion-content>
