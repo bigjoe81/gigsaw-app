@@ -22,6 +22,7 @@
           placeholder="es. mario.rossi@gmail.com"
           autocomplete="email"
           [value]="email()"
+          [invalid]="touched() && !emailValid()"
           (valueChange)="updateEmail($event)"
         />
       </label>
