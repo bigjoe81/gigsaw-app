@@ -9,7 +9,7 @@ import { GigService } from '../../gigs/services/gig.service';
 import { SongService } from '../../songs/services/song.service';
 import { MagicConstraints, MagicProposal, SetlistItem, SetlistSnapshot, SetlistWorkspace, WorkspaceSet } from '../models/setlist-workspace.models';
 import { MagicSetService } from '../services/magic-set.service';
-import { cloneWorkspace, createMedley, LocalSetlistRepository, moveItemBefore, setDuration, SetlistHistoryService, splitMedley, uid } from '../services/setlist-workspace.service';
+import { cloneWorkspace, LocalSetlistRepository, moveItemBefore, setDuration, SetlistHistoryService, splitMedley, uid } from '../services/setlist-workspace.service';
 import { SetlistValidationService } from '../services/setlist-validation.service';
 import { SetlistService } from '../services/setlist.service';
 
@@ -19,7 +19,7 @@ export class SetlistFormPage implements OnInit, OnDestroy {
   readonly savedToServer = signal(false);
   readonly serverSaveError = signal('');
   mode: 'manual' | 'magic' = 'manual'; mobileTab: 'repertoire' | 'setlist' | 'inspector' = 'setlist'; readonly loading = signal(true); readonly repertoireLoading = signal(true); readonly loadError = signal(''); readonly repertoireError = signal(''); saveState: 'dirty' | 'saving' | 'saved' = 'saved';
-  songs: Song[] = []; search = ''; genre = ''; key = ''; status = ''; sort = 'title'; selected?: SetlistItem; selectedIds = new Set<string>(); proposal?: MagicProposal; snapshot?: SetlistSnapshot; compare = false;
+  songs: Song[] = []; search = ''; selected?: SetlistItem; proposal?: MagicProposal; snapshot?: SetlistSnapshot; compare = false;
   private readonly workspaceState = signal<SetlistWorkspace>({ id: 'new', title: 'Nuova scaletta', sets: [{ id: uid('set'), name: 'Set 1', targetSeconds: 2700, items: [] }], updatedAt: new Date().toISOString() });
   get workspace(): SetlistWorkspace { return this.workspaceState(); }
   set workspace(value: SetlistWorkspace) { this.workspaceState.set(value); }
@@ -98,7 +98,7 @@ export class SetlistFormPage implements OnInit, OnDestroy {
     });
   }
   ngOnDestroy() { this.sub.unsubscribe(); }
-  get filteredSongs() { const q = this.search.toLowerCase(); return this.songs.filter(s => (!q || [s.title, s.performedBy, s.key, ...(s.tags ?? [])].join(' ').toLowerCase().includes(q)) && (!this.key || s.key === this.key) && (!this.status || s.status === this.status)).sort((a,b) => this.sort === 'duration' ? (a.duration ?? 0)-(b.duration ?? 0) : a.title.localeCompare(b.title)); }
+  get filteredSongs() { const q = this.search.trim().toLowerCase(); return this.songs.filter(s => !q || [s.title, s.performedBy, s.key, ...(s.tags ?? [])].join(' ').toLowerCase().includes(q)).sort((a,b) => a.title.localeCompare(b.title)); }
   get issues() { return this.validator.validate(this.workspace, this.constraints); } get duration() { return this.workspace.sets.reduce((n,s) => n + setDuration(s), 0); } get songCount() { return this.workspace.sets.reduce((n, s) => n + s.items.filter(i => i.type === 'song').length, 0); }
   format(n: number) { return `${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`; } setDuration(set: WorkspaceSet, type?: SetlistItem['type']) { return setDuration(set,type); }
   touch() { this.workspace = { ...this.workspace }; this.savedToServer.set(false); this.serverSaveError.set(''); this.saveState='dirty'; this.changes.next(); }
@@ -122,8 +122,6 @@ export class SetlistFormPage implements OnInit, OnDestroy {
   }
   moveTo(item: SetlistItem, target: WorkspaceSet) { this.mutate(() => this.workspace = moveItemBefore(this.workspace, item.id, target.id)); }
   duplicate(item: SetlistItem, set: WorkspaceSet) { this.mutate(() => set.items.splice(set.items.indexOf(item)+1,0,{...structuredClone(item),id:uid(item.type)})); }
-  toggleSelect(item:SetlistItem) { this.selectedIds.has(item.id)?this.selectedIds.delete(item.id):this.selectedIds.add(item.id); }
-  medley(set:WorkspaceSet) { const ids=set.items.filter(i=>this.selectedIds.has(i.id)).map(i=>i.id); if(ids.length>1)this.mutate(()=>Object.assign(set,createMedley(set,ids))); }
   split(set:WorkspaceSet,item:SetlistItem){if(item.medleyId)this.mutate(()=>Object.assign(set,splitMedley(set,item.medleyId!)));}
   generate() { this.proposal=this.magic.generate(this.songs,this.constraints,'',this.proposal); }
   regenerateSet(index: number) {
@@ -195,5 +193,5 @@ export class SetlistFormPage implements OnInit, OnDestroy {
     const id = event.dataTransfer?.getData('text/plain');
     if (id) this.mutate(() => this.workspace = moveItemBefore(this.workspace, id, set.id, beforeId));
   }
-  private songItem(song:Song):SetlistItem{return {id:uid('song'),type:'song',song,title:song.title,durationSeconds:song.duration??240,concertKey:song.key??undefined};}
+  private songItem(song:Song):SetlistItem{return {id:uid('song'),type:'song',song,title:song.title,durationSeconds:song.duration??240,concertKey:song.key??undefined,medleyId:song.linkGroup??undefined};}
 }
