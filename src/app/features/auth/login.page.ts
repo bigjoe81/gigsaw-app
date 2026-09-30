@@ -1,12 +1,12 @@
 import {Component, computed, signal} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {IonContent} from '@ionic/angular/standalone';
+import {IonContent, IonInput} from '@ionic/angular/standalone';
 import {AuthService} from '../../core/auth/auth.service';
-import {GigsawButtonComponent, GigsawInputComponent, GigsawMessageComponent} from '../../shared/ui/gigsaw';
+import {GigsawButtonComponent, GigsawMessageComponent} from '../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, GigsawButtonComponent, GigsawInputComponent, GigsawMessageComponent, IonContent],
+  imports: [RouterLink, GigsawButtonComponent, GigsawMessageComponent, IonContent, IonInput],
   templateUrl: './login.page.html',
   styles: [`
     .login-content {
