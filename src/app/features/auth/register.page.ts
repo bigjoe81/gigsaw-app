@@ -8,23 +8,7 @@ import { GigsawButtonComponent, GigsawMessageComponent } from '../../shared/ui/g
   standalone: true,
   imports: [RouterLink, GigsawButtonComponent, GigsawMessageComponent, IonContent, IonInput],
   templateUrl: './register.page.html',
-  styles: [`.register-content {
-    --background: var(--gigsaw-background);
-  }
-
-  .register-content::part(scroll) {
-    min-height: 100%;
-    display: grid;
-    align-items: center;
-    padding-top: max(24px, var(--ion-safe-area-top));
-    padding-bottom: max(24px, var(--ion-safe-area-bottom));
-  }
-
-  @media (max-width: 767px) {
-    .register-content::part(scroll) {
-      align-items: start;
-    }
-  }`],
+  styleUrls: ['./auth-layout.scss'],
 })
 export class RegisterPage {
   readonly name = signal('');

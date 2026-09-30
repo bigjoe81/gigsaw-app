@@ -103,8 +103,10 @@ export const routes: Routes = [
       },
       {
         path: 'impostazioni',
-        loadComponent: () =>
-          import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage),
+        children: [
+          { path: '', pathMatch: 'full', loadComponent: () => import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage) },
+          { path: ':section', loadComponent: () => import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage) },
+        ],
       },
       {
         path: 'band',

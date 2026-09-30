@@ -1,7 +1,7 @@
 
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -11,6 +11,9 @@ import {
   IonCardTitle,
   IonContent,
   IonHeader,
+  IonInput,
+  IonSelect,
+  IonTextarea,
   IonItem,
   IonLabel,
   IonMenuButton,
@@ -27,7 +30,9 @@ import {
 } from '@ionic/angular/standalone';
 import type { ItemReorderCustomEvent } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline } from 'ionicons/icons';
+import { personCircleOutline, optionsOutline, imagesOutline, peopleOutline, addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline } from 'ionicons/icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DestroyRef } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
@@ -37,20 +42,17 @@ import { BandService } from '../services/band.service';
 import { GenreService } from '../services/genre.service';
 import { BandMediaPackService } from '../services/band-media-pack.service';
 import { BandTechRiderService } from '../services/band-tech-rider.service';
-import { GigsawBadgeComponent, GigsawFileInputComponent, GigsawInputComponent, GigsawListComponent, GigsawListItemComponent, GigsawSelectComponent, GigsawTextareaComponent, GigsawTypeaheadComponent, GigsawTypeaheadItem } from '../../../shared/ui/gigsaw';
+import { GigsawBadgeComponent, GigsawListComponent, GigsawListItemComponent, GigsawTypeaheadComponent, GigsawTypeaheadItem } from '../../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    GigsawFileInputComponent,
+    RouterLink,
     GigsawBadgeComponent,
-    GigsawInputComponent,
     GigsawListComponent,
     GigsawListItemComponent,
     GigsawTypeaheadComponent,
-    GigsawSelectComponent,
-    GigsawTextareaComponent,
     IonButton,
     IonButtons,
     IonCard,
@@ -59,7 +61,10 @@ import { GigsawBadgeComponent, GigsawFileInputComponent, GigsawInputComponent, G
     IonCardTitle,
     IonContent,
     IonHeader,
-    IonItem,
+    IonInput,
+  IonSelect,
+  IonTextarea,
+  IonItem,
     IonIcon,
     IonLabel,
     IonMenuButton,
@@ -74,10 +79,10 @@ import { GigsawBadgeComponent, GigsawFileInputComponent, GigsawInputComponent, G
 ],
   templateUrl: './band-manage.page.html',
   styleUrl: './band-manage.page.scss',
-  styles: ['.action-row{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0 8px;}.profile-logo{width:96px;height:96px;border-radius:20px;object-fit:cover;display:block;margin:0 auto 16px;box-shadow:0 10px 24px rgba(0,0,0,.12);}.press-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;margin-top:16px;}.press-photo-card{display:grid;gap:8px;}.press-photo-thumb{width:100%;aspect-ratio:1;border-radius:16px;object-fit:cover;background:var(--ion-color-light);}.channel-row{display:grid;gap:10px;padding:12px 0;border-bottom:1px solid var(--ion-color-light);}.stage-plot-grid{display:grid;gap:12px;margin-top:16px;}.stage-preview-shell{display:grid;gap:10px;}.stage-preview-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--ion-color-medium);letter-spacing:.05em;text-transform:uppercase;}.stage-preview{position:relative;min-height:280px;border-radius:22px;background:radial-gradient(circle at top,rgba(var(--ion-color-primary-rgb),0.14),transparent 35%),linear-gradient(180deg,rgba(10,23,35,.96) 0%,rgba(19,38,54,.95) 58%,rgba(11,18,27,.98) 100%);border:1px solid rgba(140,190,222,.28);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),0 18px 42px rgba(4,9,15,.26);}.stage-preview::before{content:\"\";position:absolute;inset:18px;background:repeating-linear-gradient(90deg,rgba(120,168,194,.12) 0 1px,transparent 1px 20%),repeating-linear-gradient(180deg,rgba(120,168,194,.12) 0 1px,transparent 1px 20%);border-radius:18px;}.stage-preview::after{content:\"AUDIENCE / FOH\";position:absolute;left:24px;right:24px;bottom:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);font-size:.74rem;letter-spacing:.14em;color:rgba(235,245,255,.7);text-align:center;}.stage-frame-label{position:absolute;font-size:.72rem;letter-spacing:.16em;color:rgba(231,242,251,.58);text-transform:uppercase;pointer-events:none;}.stage-frame-label.top{top:10px;left:50%;transform:translateX(-50%);}.stage-frame-label.left{left:6px;top:50%;transform:translateY(-50%) rotate(-90deg);}.stage-frame-label.right{right:6px;top:50%;transform:translateY(-50%) rotate(90deg);}.stage-grid-note{font-size:.78rem;color:var(--ion-color-medium);}.stage-plot-item{position:absolute;transform:translate(-50%,-50%);display:grid;gap:4px;align-items:center;justify-items:center;padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.16);background:rgba(18,29,40,.9);color:#f3f7fa;font-size:.78rem;line-height:1.2;min-width:92px;max-width:120px;text-align:center;box-shadow:0 12px 26px rgba(0,0,0,.28);cursor:grab;touch-action:none;user-select:none;}.stage-plot-item:active{cursor:grabbing;}.stage-plot-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,.08);font-size:1.05rem;font-weight:700;letter-spacing:.05em;}.stage-plot-badge{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(236,244,250,.72);}.stage-plot-name{font-weight:600;}.stage-plot-role{font-size:.7rem;color:rgba(236,244,250,.8);}.stage-plot-item[data-kind=\"drums\"]{background:rgba(139,31,31,.9);}.stage-plot-item[data-kind=\"drums\"] .stage-plot-icon{background:rgba(255,234,234,.14);}.stage-plot-item[data-kind=\"vocal\"]{background:rgba(17,103,84,.92);}.stage-plot-item[data-kind=\"bass\"]{background:rgba(18,82,128,.92);}.stage-plot-item[data-kind=\"guitar\"]{background:rgba(140,82,20,.92);}.stage-plot-item[data-kind=\"keys\"]{background:rgba(79,45,130,.92);}.stage-plot-item[data-kind=\"other\"]{background:rgba(48,61,76,.92);}'],
+
 })
-export class BandManagePage implements OnInit {
-  readonly settingsSection = signal<'profile' | 'tech' | 'media' | 'team'>('profile');
+export class BandManagePage implements OnInit, OnDestroy {
+  readonly settingsSection = signal<'overview' | 'profile' | 'tech' | 'media' | 'team' | 'invites'>('overview');
   readonly techSection = signal<'channels' | 'stage' | 'notes'>('channels');
   readonly selectedStageItem = signal<number | null>(null);
   readonly genreQuery = signal('');
@@ -191,6 +196,11 @@ export class BandManagePage implements OnInit {
   readonly canShareOnWhatsApp = this.isMobileDevice();
   private bandId!: number;
   private dragCleanup?: () => void;
+  private readonly zone = inject(NgZone);
+
+  ngOnDestroy(): void {
+    this.dragCleanup?.();
+  }
   private readonly memberInstrumentDrafts = new Map<number, string>();
 
   get isAdmin(): boolean {
@@ -218,12 +228,38 @@ export class BandManagePage implements OnInit {
     void this.router.navigate(['/inizia'], { queryParams: { ripeti: 1 } });
   }
 
-  selectSettingsSection(section: 'profile' | 'tech' | 'media' | 'team'): void {
-    this.settingsSection.set(section);
+  readonly sections = [
+    { key: 'profile', path: 'profilo', title: 'Profilo', description: 'Identità, biografia e contatti della band.', icon: 'person-circle-outline', admin: true },
+    { key: 'tech', path: 'scheda-tecnica', title: 'Scheda tecnica', description: 'Canali audio, disposizione palco e note per il live.', icon: 'options-outline', admin: true },
+    { key: 'media', path: 'media', title: 'Media e press kit', description: 'Foto promozionali e materiali da condividere.', icon: 'images-outline', admin: true },
+    { key: 'team', path: 'membri', title: 'Membri', description: 'Musicisti, strumenti e ruoli nella band.', icon: 'people-outline', admin: false },
+    { key: 'invites', path: 'inviti', title: 'Inviti', description: 'Link di accesso, inviti personalizzati e richieste pendenti.', icon: 'mail-outline', admin: true },
+  ] as const;
+  private readonly destroyRef = inject(DestroyRef);
+
+  get visibleSections() {
+    return this.sections.filter((section) => !section.admin || this.isAdmin);
+  }
+
+  get currentSection() {
+    return this.sections.find((section) => section.key === this.settingsSection());
+  }
+
+  settingsUrl(path = ''): string {
+    return `/band/${this.bandId}/impostazioni${path ? '/' + path : ''}`;
+  }
+
+  private syncSection(path: string | null): void {
+    const section = this.sections.find((item) => item.path === path);
+    if (path && (!section || (this.band && section.admin && !this.isAdmin))) {
+      void this.router.navigateByUrl(this.settingsUrl(), { replaceUrl: true });
+      return;
+    }
+    this.settingsSection.set(section?.key ?? 'overview');
   }
 
   constructor() {
-    addIcons({ addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline });
+    addIcons({ personCircleOutline, optionsOutline, imagesOutline, peopleOutline, addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline });
   }
 
   ngOnInit(): void {
@@ -235,6 +271,9 @@ export class BandManagePage implements OnInit {
     }
 
     this.bandId = bandId;
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      this.syncSection(params.get('section'));
+    });
     this.genreService.list().subscribe({
       next: (genres) => {
         this.availableGenres = genres;
@@ -252,7 +291,7 @@ export class BandManagePage implements OnInit {
     ).subscribe({
       next: (band) => {
         this.band = band;
-        if (band.currentUserRole !== 'ADMIN') this.settingsSection.set('team');
+        this.syncSection(this.route.snapshot.paramMap.get('section'));
         this.syncMemberInstrumentDrafts(band.members ?? []);
         this.patchProfileForm(band);
         this.patchTechForm(band);
@@ -623,35 +662,83 @@ export class BandManagePage implements OnInit {
     })).present();
   }
 
+  onSettingsFilesSelected(event: Event, kind: 'logo' | 'photos'): void {
+    const picker = event.target as HTMLInputElement;
+    const files = Array.from(picker.files ?? []);
+    if (!files.length) return;
+    if (kind === 'logo') this.onLogoFilesSelected(files);
+    else this.onPressPhotoFilesSelected(files);
+    picker.value = '';
+  }
+
   startStagePlotDrag(index: number, event: PointerEvent): void {
+    if (!event.isPrimary || event.button !== 0) return;
     const target = event.currentTarget as HTMLElement | null;
     const container = target?.parentElement;
-    if (!target || !container) return;
+    const group = this.stagePlotLayout.at(index);
+    if (!target || !container || !group) return;
 
+    this.dragCleanup?.();
     event.preventDefault();
-    target.setPointerCapture?.(event.pointerId);
+    const itemRect = target.getBoundingClientRect();
+    const offsetX = event.clientX - (itemRect.left + itemRect.width / 2);
+    const offsetY = event.clientY - (itemRect.top + itemRect.height / 2);
+    const pointerId = event.pointerId;
+    let position = { x: Number(group.get('x')?.value ?? 50), y: Number(group.get('y')?.value ?? 50) };
+    let frame: number | undefined;
+    let finished = false;
 
-    const move = (moveEvent: PointerEvent) => {
+    const updatePosition = (pointer: PointerEvent) => {
       const rect = container.getBoundingClientRect();
-      const x = ((moveEvent.clientX - rect.left) / rect.width) * 100;
-      const y = ((moveEvent.clientY - rect.top) / rect.height) * 100;
-      const group = this.stagePlotLayout.at(index);
-      group.patchValue({
-        x: this.snapToGrid(x, 5, 8, 92),
-        y: this.snapToGrid(y, 5, 14, 82),
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      if (!width || !height) return;
+      const minX = Math.min(width / 2, itemRect.width / 2 + 8);
+      const minY = Math.min(height / 2, itemRect.height / 2 + 24);
+      const maxX = Math.max(minX, width - itemRect.width / 2 - 8);
+      const maxY = Math.max(minY, height - itemRect.height / 2 - 36);
+      const x = Math.max(minX, Math.min(maxX, pointer.clientX - rect.left - container.clientLeft - offsetX));
+      const y = Math.max(minY, Math.min(maxY, pointer.clientY - rect.top - container.clientTop - offsetY));
+      position = { x: x / width * 100, y: y / height * 100 };
+    };
+    const render = () => {
+      frame = undefined;
+      target.style.left = `${position.x}%`;
+      target.style.top = `${position.y}%`;
+    };
+    const move = (pointer: PointerEvent) => {
+      if (pointer.pointerId !== pointerId) return;
+      updatePosition(pointer);
+      if (frame === undefined) frame = requestAnimationFrame(render);
+    };
+    const finish = (pointer?: PointerEvent) => {
+      if (finished || (pointer && pointer.pointerId !== pointerId)) return;
+      finished = true;
+      if (pointer?.type === 'pointerup') updatePosition(pointer);
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      render();
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', finish);
+      window.removeEventListener('pointercancel', finish);
+      target.removeEventListener('lostpointercapture', finish);
+      if (target.hasPointerCapture(pointerId)) target.releasePointerCapture(pointerId);
+      target.classList.remove('dragging');
+      this.dragCleanup = undefined;
+      this.zone.run(() => {
+        group.patchValue(position);
+        group.markAsDirty();
       });
     };
 
-    const up = () => {
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', up);
-      this.dragCleanup = undefined;
-    };
-
-    this.dragCleanup?.();
-    this.dragCleanup = up;
-    window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', up);
+    this.dragCleanup = finish;
+    target.classList.add('dragging');
+    target.setPointerCapture(pointerId);
+    this.zone.runOutsideAngular(() => {
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', finish);
+      window.addEventListener('pointercancel', finish);
+      target.addEventListener('lostpointercapture', finish);
+    });
   }
 
   saveTech(): void {
@@ -725,29 +812,6 @@ export class BandManagePage implements OnInit {
   async shareTechRider(): Promise<void> {
     if (!this.band) return;
     await this.techRiderService.sharePdf(this.bandId, `${this.band.name} tech rider`);
-  }
-
-  async copyJoinCode(): Promise<void> {
-    const code = this.band?.joinCode?.trim();
-    if (!code) return;
-
-    await navigator.clipboard?.writeText(code);
-    (await this.toast.create({ message: 'Codice band copiato.', duration: 1600, color: 'success' })).present();
-  }
-
-  async shareJoinCode(): Promise<void> {
-    const code = this.band?.joinCode?.trim();
-    if (!code) return;
-
-    const text = `Usa questo codice per entrare nella band "${this.band?.name}": ${code}`;
-    const nav = navigator as Navigator & { share?: (data: { title?: string; text?: string }) => Promise<void> };
-    if (nav.share) {
-      await nav.share({ title: this.band?.name, text });
-      return;
-    }
-
-    await navigator.clipboard?.writeText(text);
-    (await this.toast.create({ message: 'Messaggio invito copiato.', duration: 1800, color: 'success' })).present();
   }
 
   invite(): void {
@@ -1226,9 +1290,8 @@ export class BandManagePage implements OnInit {
     }
   }
 
-  private snapToGrid(value: number, step: number, min: number, max: number): number {
-    const snapped = Math.round(value / step) * step;
-    return Math.max(min, Math.min(max, snapped));
+  private clampStagePosition(value: number): number {
+    return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 50;
   }
 
   private createInputChannelGroup(channel?: Partial<BandInputChannel>) {
@@ -1245,8 +1308,8 @@ export class BandManagePage implements OnInit {
       id: [item?.id ?? ''],
       label: [item?.label ?? '', [Validators.required]],
       instrument: [item?.instrument ?? ''],
-      x: [this.snapToGrid(item?.x ?? 50, 5, 8, 92), [Validators.required]],
-      y: [this.snapToGrid(item?.y ?? 50, 5, 14, 82), [Validators.required]],
+      x: [this.clampStagePosition(item?.x ?? 50), [Validators.required]],
+      y: [this.clampStagePosition(item?.y ?? 50), [Validators.required]],
     });
   }
 }

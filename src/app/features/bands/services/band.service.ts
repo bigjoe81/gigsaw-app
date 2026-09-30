@@ -30,9 +30,12 @@ export class BandService {
   }
 
   update(bandId: number, payload: UpdateBandRequest): Observable<Band> {
-    return this.http.put<ApiEnvelope<Band>>(
+    // PHP parses multipart uploads on POST; Laravel applies the method override.
+    const formData = this.toFormData(payload);
+    formData.append('_method', 'PUT');
+    return this.http.post<ApiEnvelope<Band>>(
       `${API_BASE_URL}/bands/${bandId}`,
-      this.toFormData(payload),
+      formData,
     ).pipe(
       map((response) => this.normalizeBand(this.unwrap(response))),
     );

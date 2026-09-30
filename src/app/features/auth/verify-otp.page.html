@@ -1,13 +1,12 @@
 <ion-content class="ion-padding otp-content" [fullscreen]="true">
-  <div class="otp-shell">
-    <div class="otp-brand">
+  <div class="auth-shell">
+    <div class="auth-brand">
       <img src="assets/logo-hor.png" alt="GigSaw" />
       <p class="otp-brand-note">Inserisci il codice inviato a<br /><strong>{{ email || 'la tua email' }}</strong></p>
     </div>
 
-    <form (submit)="verify(); $event.preventDefault()">
-      <label class="block">
-        <span class="mb-2 block text-sm font-bold">Codice OTP</span>
+    <form class="auth-form" (submit)="verify(); $event.preventDefault()">
+      <div>
         <app-gigsaw-otp-input
           [value]="code()"
           [disabled]="loading"
@@ -16,7 +15,7 @@
           (valueChange)="updateCode($event)"
           (complete)="verify()"
         />
-      </label>
+      </div>
     @if (touched() && !codeValid()) {
       <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci il codice a 6 cifre.</app-gigsaw-message>
     }
@@ -36,6 +35,6 @@
     </form>
 
     <app-gigsaw-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending || !challengeId" [loading]="resending">Invia un nuovo codice</app-gigsaw-button>
-    <a class="btn btn-ghost mt-2 w-full" [routerLink]="purpose === 'register' ? '/registrati' : '/accedi'">Torna indietro</a>
+    <a class="btn btn-ghost auth-link" [routerLink]="purpose === 'register' ? '/registrati' : '/accedi'">Torna indietro</a>
   </div>
 </ion-content>

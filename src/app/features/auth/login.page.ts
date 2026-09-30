@@ -8,31 +8,7 @@ import {GigsawButtonComponent, GigsawMessageComponent} from '../../shared/ui/gig
   standalone: true,
   imports: [RouterLink, GigsawButtonComponent, GigsawMessageComponent, IonContent, IonInput],
   templateUrl: './login.page.html',
-  styles: [`
-    .login-content {
-      --background: var(--gigsaw-background);
-    }
-
-    .login-content::part(scroll) {
-      min-height: 100%;
-      display: grid;
-      place-items: center;
-      padding-top: max(24px, var(--ion-safe-area-top));
-      padding-bottom: max(24px, var(--ion-safe-area-bottom));
-    }
-
-    .login-content form > app-gigsaw-button[type='submit'] {
-      position: static;
-      margin-top: 1rem;
-      padding: 0;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-      backdrop-filter: none;
-    }
-
-  `]
+  styleUrls: ['./auth-layout.scss'],
 })
 export class LoginPage {
   readonly email = signal('');

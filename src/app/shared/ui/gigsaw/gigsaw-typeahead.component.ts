@@ -14,7 +14,7 @@ export interface GigsawTypeaheadItem {
   imports: [IonInput, IonItem, IonLabel, IonList, IonSpinner, IonNote],
   template: `
     <div class="gigsaw-typeahead">
-      <ion-input fill="outline" [name]="name()" [placeholder]="placeholder()" [autocomplete]="autocomplete()" [disabled]="disabled()" [value]="value()" [class.ion-invalid]="invalid()" [class.ion-touched]="invalid()" role="combobox" [attr.aria-expanded]="open()" [attr.aria-controls]="listboxId" (ionInput)="onInput($event.detail.value ?? '')" (ionFocus)="onFocus()" (keydown)="onKeydown($event)" (ionBlur)="blurred.emit()" />
+      <ion-input [fill]="fill()" [class]="controlClass()" [attr.aria-label]="ariaLabel() || placeholder()" [name]="name()" [placeholder]="placeholder()" [autocomplete]="autocomplete()" [disabled]="disabled()" [value]="value()" [class.ion-invalid]="invalid()" [class.ion-touched]="invalid()" role="combobox" [attr.aria-expanded]="open()" [attr.aria-controls]="listboxId" (ionInput)="onInput($event.detail.value ?? '')" (ionFocus)="onFocus()" (keydown)="onKeydown($event)" (ionBlur)="blurred.emit()" />
       @if (open()) {
         <ion-list [id]="listboxId" role="listbox">
           @if (loading()) { <ion-item><ion-spinner slot="start" /><ion-label>{{ loadingText() }}</ion-label></ion-item> }
@@ -34,6 +34,8 @@ export class GigsawTypeaheadComponent {
   private static nextId = 0;
 
   readonly name = input('');
+  readonly fill = input<'outline' | undefined>('outline');
+  readonly ariaLabel = input('');
   readonly placeholder = input('');
   readonly autocomplete = input('off');
   readonly controlClass = input('');

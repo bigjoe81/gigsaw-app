@@ -1,8 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, of, timeout } from 'rxjs';
 import {
-  IonButton,
   IonButtons,
   IonContent,
   IonHeader,
@@ -22,6 +21,7 @@ import {
   locationOutline,
   micOutline,
   musicalNotesOutline,
+  peopleOutline,
   ticketOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../../../core/services/band-context.service';
@@ -58,8 +58,7 @@ interface DashboardActivity {
   standalone: true,
   imports: [
     RouterLink,
-    IonButton,
-    IonButtons,
+      IonButtons,
     IonContent,
     IonHeader,
     IonIcon,
@@ -86,7 +85,13 @@ export class DashboardPage {
   readonly pressKitProgress = signal(0);
   readonly events = signal<DashboardEvent[]>([]);
   readonly activities = signal<DashboardActivity[]>([]);
-
+  readonly band = signal<Band | null>(null);
+  readonly canInviteToSoloBand = computed(() => {
+    const band = this.band();
+    return band?.currentUserRole === 'ADMIN'
+      && (band.membersCount ?? band.members?.length) === 1
+      && Boolean(band.joinCode?.trim());
+  });
   readonly quickActions = [
     { icon: 'musical-notes-outline', label: 'Aggiungi brano', route: ['repertorio', 'nuovo'] },
     { icon: 'list-outline', label: 'Crea scaletta', route: ['scalette', 'nuova'] },
@@ -120,6 +125,7 @@ export class DashboardPage {
       locationOutline,
       micOutline,
       musicalNotesOutline,
+      peopleOutline,
       ticketOutline,
     });
     this.loadDashboard();
@@ -169,6 +175,7 @@ export class DashboardPage {
   }
 
   private populateDashboard(band: Band | null, songs: Song[], gigs: Gig[], rehearsals: RehearsalSession[]): void {
+    this.band.set(band);
     const now = Date.now();
     const upcomingGigs = gigs
       .filter((gig) => this.dateValue(gig.date) >= now)

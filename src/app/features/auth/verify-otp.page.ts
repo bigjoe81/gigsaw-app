@@ -9,63 +9,7 @@ import { GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, Gi
   standalone: true,
   imports: [RouterLink, GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent, IonContent],
   templateUrl: './verify-otp.page.html',
-  styles: [`.otp-content {
-    --background: var(--gigsaw-background);
-  }
-
-  .otp-content::part(scroll) {
-    min-height: 100%;
-    display: grid;
-    align-items: center;
-    padding-top: max(24px, var(--ion-safe-area-top));
-    padding-bottom: max(24px, var(--ion-safe-area-bottom));
-  }
-
-  .otp-shell {
-    width: min(340px, 48vw);
-    max-width: 100%;
-    margin: 0 auto;
-  }
-
-  .otp-brand {
-    display: grid;
-    justify-items: center;
-    gap: 14px;
-    padding: 8px 0 24px;
-  }
-
-  .otp-brand img {
-    width: min(300px, 48vw);
-    height: auto;
-    display: block;
-  }
-
-  .otp-brand img {
-    object-fit: contain;
-    filter: drop-shadow(0 14px 28px rgba(0, 0, 0, .12));
-  }
-
-  .otp-brand-note {
-    font-size: .95rem;
-    color: var(--ion-color-medium);
-    text-align: center;
-    max-width: 24rem;
-  }
-
-  .otp-shell form {
-    width: 100%;
-  }
-
-  @media (max-width: 767px) {
-    .otp-content::part(scroll) {
-      align-items: start;
-    }
-
-    .otp-shell {
-      width: 100%;
-      padding-top: 8vh;
-    }
-  }`],
+  styleUrls: ['./auth-layout.scss'],
 })
 export class VerifyOtpPage {
   readonly code = signal('');

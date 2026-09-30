@@ -1,6 +1,6 @@
 <ion-content class="ion-padding login-content" [fullscreen]="true">
-  <div class="mx-auto w-full max-w-[340px] px-5">
-    <div class="grid justify-items-center gap-3.5 pt-2 pb-6">
+  <div class="auth-shell">
+    <div class="auth-brand">
       <picture class="block w-full">
         <source media="(min-width: 768px)" srcset="assets/logo-hor.png" />
         <img
@@ -13,11 +13,11 @@
         La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong>
       </p>
     </div>
-    <form class="w-full" (submit)="submit(); $event.preventDefault()">
-      <ion-input
-          label="Email"
-          labelPlacement="stacked"
-          fill="outline"
+    <form class="auth-form" (submit)="submit(); $event.preventDefault()">
+      <label class="grid min-w-0 gap-[7px] text-sm font-bold">
+        <span>Email</span>
+      <ion-input class="font-normal"
+          aria-label="Email"
           inputmode="email"
           autocapitalize="off"
           [spellcheck]="false"
@@ -31,6 +31,7 @@
           [class.ion-invalid]="touched() && !emailValid()"
           (ionInput)="updateEmail($event.detail.value ?? '')"
       />
+      </label>
       @if (touched() && !emailValid()) {
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-gigsaw-message>
       }
@@ -43,6 +44,6 @@
       <img class="h-5 w-5 object-contain" src="assets/google-logo.png" alt="" aria-hidden="true" />
       Continua con Google
     </app-gigsaw-button>
-    <a class="btn btn-ghost mt-2 w-full" routerLink="/registrati" [queryParams]="{ returnUrl }">Non sei registrato? Crea un account</a>
+    <a class="btn btn-ghost auth-link" routerLink="/registrati" [queryParams]="{ returnUrl }">Non sei registrato? Crea un account</a>
   </div>
 </ion-content>
