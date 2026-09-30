@@ -1,20 +1,14 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>{{ editing ? 'Modifica ' + locationLabel : 'Nuova ' + locationLabel }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-form-page-header
+  eyebrow="Anagrafica luoghi"
+  [title]="editing ? 'Modifica ' + locationLabel : 'Nuova ' + locationLabel"
+  subtitle="Gestisci i luoghi dei concerti e le sale utilizzate per le prove."
+  backHref="../"
+/>
 
 <ion-content>
-  <main class="grid min-h-full grid-cols-[minmax(280px,32%)_1fr] bg-[var(--gigsaw-background)] max-[800px]:block">
-    <aside class="flex min-h-full flex-col [background:var(--ion-gradient-brand)] px-11 py-16 text-white max-[800px]:min-h-0 max-[800px]:px-6 max-[800px]:py-7">
-      <span class="text-xs font-extrabold uppercase tracking-[.12em] text-white/60">Anagrafica luoghi</span>
-      <h1 class="my-3.5 text-[clamp(2rem,3.3vw,2.65rem)] leading-[1.05] max-[800px]:m-0 max-[800px]:text-[1.8rem]">{{ editing ? 'Aggiorna il luogo.' : kind === 'venue' ? 'Aggiungi una venue.' : 'Aggiungi una sala prove.' }}</h1>
-      <p class="m-0 leading-[1.55] text-white/85 max-[800px]:hidden">{{ kind === 'venue' ? 'Salva i locali in cui la band si esibisce per riutilizzarli nei prossimi concerti.' : 'Salva le sale che utilizzate più spesso per organizzare le prossime prove.' }}</p>
-    </aside>
-
-    <section class="px-[clamp(28px,5vw,72px)] py-[58px] max-[800px]:px-5 max-[800px]:py-8">
-      <form [formGroup]="form" (ngSubmit)="save()" class="mx-auto w-full max-w-[760px] pb-20 text-[var(--gigsaw-text)]">
+  <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
+    <section class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
+      <form id="location-form" [formGroup]="form" (ngSubmit)="save()" class="w-full pb-28 text-[var(--gigsaw-text)]">
         <header class="mb-9">
           <span class="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Dettagli {{ locationLabel }}</span>
           <h1 class="my-2.5 text-[clamp(1.55rem,3vw,2rem)]">{{ editing ? 'Modifica ' + locationLabel : 'Nuova ' + locationLabel }}</h1>
@@ -32,19 +26,19 @@
 
             <label class="field-label">
               <span>Nome <strong>*</strong></span>
-              <app-gigsaw-input name="name" [placeholder]="kind === 'venue' ? 'Es. Bloom' : 'Es. Sound Factory'" [value]="form.controls.name.value" [valid]="form.controls.name.touched && form.controls.name.valid" [invalid]="form.controls.name.touched && form.controls.name.invalid" (valueChange)="form.controls.name.setValue($event)" (blurred)="form.controls.name.markAsTouched()" />
+              <ion-input formControlName="name" aria-label="Nome" [placeholder]="kind === 'venue' ? 'Es. Bloom' : 'Es. Sound Factory'" />
               @if (form.controls.name.touched && form.controls.name.invalid) { <small>Inserisci il nome del luogo.</small> }
             </label>
 
             <label class="field-label">
               <span>Indirizzo <strong>*</strong></span>
-              <app-gigsaw-input name="address" placeholder="Es. Via Giuseppe Verdi 12" autocomplete="street-address" [value]="form.controls.address.value" [valid]="form.controls.address.touched && form.controls.address.valid" [invalid]="form.controls.address.touched && form.controls.address.invalid" (valueChange)="form.controls.address.setValue($event)" (blurred)="form.controls.address.markAsTouched()" />
+              <ion-input formControlName="address" aria-label="Indirizzo" placeholder="Es. Via Giuseppe Verdi 12" autocomplete="street-address" />
               @if (form.controls.address.touched && form.controls.address.invalid) { <small>Inserisci l’indirizzo.</small> }
             </label>
 
             <label class="field-label">
               <span>Città <strong>*</strong></span>
-              <app-gigsaw-input name="city" placeholder="Es. Milano" autocomplete="address-level2" [value]="form.controls.city.value" [valid]="form.controls.city.touched && form.controls.city.valid" [invalid]="form.controls.city.touched && form.controls.city.invalid" (valueChange)="form.controls.city.setValue($event)" (blurred)="form.controls.city.markAsTouched()" />
+              <ion-input formControlName="city" aria-label="Città" placeholder="Es. Milano" autocomplete="address-level2" />
               @if (form.controls.city.touched && form.controls.city.invalid) { <small>Inserisci la città.</small> }
             </label>
           </section>
@@ -61,18 +55,26 @@
               }
             </div>
             <div class="grid grid-cols-2 gap-3.5 max-[680px]:grid-cols-1">
-              <label class="field-label"><span>Latitudine</span><app-gigsaw-input type="number" name="latitude" inputMode="decimal" placeholder="Es. 45.4642" [value]="form.controls.latitude.value" (valueChange)="form.controls.latitude.setValue($event)" (blurred)="form.controls.latitude.markAsTouched()" /></label>
-              <label class="field-label"><span>Longitudine</span><app-gigsaw-input type="number" name="longitude" inputMode="decimal" placeholder="Es. 9.1900" [value]="form.controls.longitude.value" (valueChange)="form.controls.longitude.setValue($event)" (blurred)="form.controls.longitude.markAsTouched()" /></label>
+              <label class="field-label"><span>Latitudine</span><ion-input formControlName="latitude" aria-label="Latitudine" type="number" placeholder="Es. 45.4642" inputmode="decimal" /></label>
+              <label class="field-label"><span>Longitudine</span><ion-input formControlName="longitude" aria-label="Longitudine" type="number" placeholder="Es. 9.1900" inputmode="decimal" /></label>
             </div>
           </section>
 
           @if (error) { <app-gigsaw-message tone="error">{{ error }}</app-gigsaw-message> }
-          <div class="mt-8 flex justify-end gap-2.5 max-[680px]:grid max-[680px]:grid-cols-2">
-            <app-gigsaw-button tone="outline" buttonClass="font-bold" (click)="cancel()">Annulla</app-gigsaw-button>
-            <app-gigsaw-button type="submit" tone="primary" [loading]="saving" buttonClass="min-w-48 font-bold max-[680px]:min-w-0">{{ editing ? 'Salva modifiche' : 'Crea ' + locationLabel }}</app-gigsaw-button>
-          </div>
+
         }
       </form>
     </section>
   </main>
+  @if (!loading) {
+    <div slot="fixed" class="floating-action-toolbar" role="toolbar" aria-label="Azioni del form">
+      <div class="flex items-center justify-between gap-2.5 p-2.5">
+        <ion-button type="button" fill="outline" [disabled]="saving" (click)="cancel()">Annulla</ion-button>
+        <ion-button type="submit" form="location-form" [disabled]="saving">
+          @if (saving) { <ion-spinner slot="start" name="crescent" /> }
+          {{ editing ? 'Salva modifiche' : 'Crea ' + locationLabel }}
+        </ion-button>
+      </div>
+    </div>
+  }
 </ion-content>

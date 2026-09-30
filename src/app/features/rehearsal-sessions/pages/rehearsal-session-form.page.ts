@@ -6,6 +6,9 @@ import { finalize, forkJoin, of } from 'rxjs';
 import {
   IonContent,
   IonIcon,
+  IonInput,
+  IonSelect,
+  IonTextarea,
   IonSelectOption,
   ToastController,
 } from '@ionic/angular/standalone';
@@ -18,13 +21,8 @@ import {
 import {
   GigsawButtonComponent,
   GigsawCheckboxComponent,
-  GigsawDatepickerComponent,
-  GigsawInputComponent,
   GigsawLoadingComponent,
   GigsawMessageComponent,
-  GigsawSelectComponent,
-  GigsawTextareaComponent,
-  GigsawTimeInputComponent,
 } from '../../../shared/ui/gigsaw';
 import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../../songs/services/song.service';
@@ -33,7 +31,7 @@ import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawCheckboxComponent, GigsawDatepickerComponent, GigsawInputComponent, GigsawLoadingComponent, GigsawMessageComponent, GigsawSelectComponent, GigsawTextareaComponent, GigsawTimeInputComponent, FormPageHeaderComponent, IonContent, IonIcon, IonSelectOption],
+  imports: [ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawCheckboxComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, IonContent, IonIcon, IonInput, IonSelect, IonTextarea, IonSelectOption],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })

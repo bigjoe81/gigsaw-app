@@ -3,23 +3,26 @@
     <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
     <ion-title>Setlist</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="openPdf()" [disabled]="pdfLoading">
-        @if (pdfLoading) { <ion-spinner name="crescent" /> } @else { PDF }
+      <ion-button (click)="pdfRequest.set('download')" [disabled]="pdfLoading()">
+        @if (pdfLoading()) { <ion-spinner name="crescent" /> } @else { Scarica PDF }
       </ion-button>
-      <ion-button (click)="sharePdf()" [disabled]="pdfLoading">Condividi</ion-button>
+      <ion-button (click)="pdfRequest.set('share')" [disabled]="pdfLoading()">Condividi</ion-button>
       <ion-button [routerLink]="['modifica']">Modifica</ion-button>
       <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  @if (loading) {
+
+  @if (loading()) {
     <ion-card class="m-4">
       <ion-card-content>
         <ion-skeleton-text [animated]="true" style="width: 70%" />
         <ion-skeleton-text [animated]="true" style="width: 90%" />
       </ion-card-content>
     </ion-card>
+  } @else if (loadError()) {
+    <div class="p-4" role="alert"><p>{{ loadError() }}</p><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
   } @else if (!setlist) {
     <ion-note class="block p-4">Setlist non trovata.</ion-note>
   } @else {
@@ -36,6 +39,20 @@
         <ion-card>
           <ion-card-header><ion-card-title>Brani</ion-card-title></ion-card-header>
           <ion-card-content>
+            @if (setlist.sections?.length) {
+              @for (section of setlist.sections; track $index) {
+                <h2 class="mb-3 mt-5 text-lg font-bold">{{ section.name }}</h2>
+                <app-gigsaw-list>
+                  @for (song of sectionSongs(section.songIds); track song.id; let index = $index) {
+                    <app-gigsaw-list-item><div class="list-col-grow">
+                      <h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2>
+                      <p class="m-0 mt-1 text-sm">{{ songSubtitle(song) }}</p>
+                      @for (note of songNotes(song); track $index) { <p class="m-0 mt-1 text-sm">{{ note }}</p> }
+                    </div></app-gigsaw-list-item>
+                  }
+                </app-gigsaw-list>
+              }
+            } @else {
             @if (openingSongs().length) {
               <app-gigsaw-list>
                 <app-gigsaw-list-item><div class="list-col-grow"><h2 class="m-0 text-base font-bold">Opening</h2></div></app-gigsaw-list-item>
@@ -81,6 +98,7 @@
                 }
               </app-gigsaw-list>
             }
+            }
           </ion-card-content>
         </ion-card>
       }
@@ -124,3 +142,7 @@
     </div>
   }
 </ion-content>
+
+<app-setlist-pdf-modal [isOpen]="pdfRequest() !== null" [format]="pdfFormat()" [options]="pdfOptions()"
+  [actionLabel]="pdfRequest() === 'share' ? 'Condividi PDF' : 'Scarica PDF'" (formatChange)="pdfFormat.set($event)" (optionsChange)="pdfOptions.set($event)"
+  (closed)="pdfRequest.set(null)" (confirmed)="confirmPdf()" />

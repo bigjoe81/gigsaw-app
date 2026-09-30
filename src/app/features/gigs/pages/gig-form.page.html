@@ -5,9 +5,9 @@
     backHref="../"
   />
 <ion-content>
-  <main class="min-h-full bg-[var(--gigsaw-background)]">
-    <section class="px-[clamp(20px,5vw,72px)] py-12 max-[800px]:py-8">
-      <form [formGroup]="form" (ngSubmit)="save()" class="w-full pb-20 text-[var(--gigsaw-text)]">
+  <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
+    <section class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
+      <form id="gig-form" [formGroup]="form" (ngSubmit)="save()" class="w-full pb-28 text-[var(--gigsaw-text)]">
         <header class="mb-9">
           <span class="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Dettagli concerto</span>
           <h1 class="my-2.5 text-[clamp(1.55rem,3vw,2rem)]">{{ editing() ? 'Modifica il concerto' : 'Aggiungi un concerto' }}</h1>
@@ -25,18 +25,18 @@
 
         <label class="grid min-w-0 gap-[7px] text-sm font-bold">
           <span>Titolo <strong class="text-[var(--ion-color-danger)]">*</strong></span>
-          <ion-input class="gig-field" formControlName="title" placeholder="Es. Crossroads Blues Trio — Live al Bloom" [class.invalid]="form.controls.title.touched && form.controls.title.invalid" />
+          <ion-input class="gig-field" formControlName="title" aria-label="Titolo" placeholder="Es. Crossroads Blues Trio — Live al Bloom" [class.invalid]="form.controls.title.touched && form.controls.title.invalid" />
           @if (form.controls.title.touched && form.controls.title.invalid) { <small class="text-[var(--ion-color-danger)]">Inserisci un titolo.</small> }
         </label>
 
         <div class="grid grid-cols-2 gap-3.5 max-[680px]:grid-cols-1">
           <label class="grid min-w-0 gap-[7px] text-sm font-bold">
             <span>Data <strong class="text-[var(--ion-color-danger)]">*</strong></span>
-            <ion-input class="gig-field" type="date" formControlName="date" [class.invalid]="form.controls.date.touched && form.controls.date.invalid" />
+            <ion-input class="gig-field" type="date" formControlName="date" aria-label="Data" [class.invalid]="form.controls.date.touched && form.controls.date.invalid" />
           </label>
           <label class="grid min-w-0 gap-[7px] text-sm font-bold">
             <span>Ora inizio</span>
-            <ion-input class="gig-field" type="time" formControlName="time" />
+            <ion-input class="gig-field" type="time" formControlName="time" aria-label="Ora inizio" />
           </label>
         </div>
 
@@ -82,17 +82,26 @@
       <section class="grid gap-5 border-t border-[var(--gigsaw-border)] pt-[30px] pb-[30px]">
         <label class="grid min-w-0 gap-[7px] text-sm font-bold">
           <span>Note organizzative</span>
-          <ion-textarea class="gig-field" formControlName="notes" placeholder="Orari, contatti, parcheggio, indicazioni per il palco…" [autoGrow]="true" [rows]="4" />
+          <ion-textarea class="gig-field" formControlName="notes" aria-label="Note organizzative" placeholder="Orari, contatti, parcheggio, indicazioni per il palco…" [autoGrow]="true" [rows]="4" />
         </label>
       </section>
 
       @if (error()) { <ion-note class="error-banner" color="danger" role="alert">{{ error() }}</ion-note> }
 
-      <div class="form-actions form-action-bar">
-        <ion-button type="submit" class="min-w-48 max-[680px]:w-full" [disabled]="saving()">@if (saving()) { <ion-spinner slot="start" name="crescent" /> } Salva concerto</ion-button>
-      </div>
+
         }
       </form>
     </section>
   </main>
+  @if (!loading()) {
+    <div slot="fixed" class="floating-action-toolbar" role="toolbar" aria-label="Azioni del form">
+      <div class="flex items-center justify-between gap-2.5 p-2.5">
+        <ion-button type="button" fill="outline" [routerLink]="['../']" [disabled]="saving()">Annulla</ion-button>
+        <ion-button type="submit" form="gig-form" [disabled]="saving()">
+          @if (saving()) { <ion-spinner slot="start" name="crescent" /> }
+          {{ editing() ? 'Salva modifiche' : 'Crea concerto' }}
+        </ion-button>
+      </div>
+    </div>
+  }
 </ion-content>

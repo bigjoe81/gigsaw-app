@@ -2,19 +2,20 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonIcon, IonInput, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { businessOutline, musicalNotesOutline, navigateOutline } from 'ionicons/icons';
 import { finalize, Observable } from 'rxjs';
 import { RehearsalRoom, Venue } from '../../../core/models/band-resources.models';
-import { GigsawButtonComponent, GigsawInputComponent, GigsawLoadingComponent, GigsawMessageComponent } from '../../../shared/ui/gigsaw';
+import { GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent } from '../../../shared/ui/gigsaw';
 import { RehearsalRoomService } from '../../rehearsal-sessions/services/rehearsal-room.service';
+import { FormPageHeaderComponent } from '../../../shared/ui/form-page-header.component';
 import { VenueService } from '../services/venue.service';
 import { MapboxGeocodingService } from '../services/mapbox-geocoding.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, GigsawButtonComponent, GigsawInputComponent, GigsawLoadingComponent, GigsawMessageComponent, IonBackButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar],
+  imports: [ReactiveFormsModule, FormPageHeaderComponent, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, IonButton, IonContent, IonIcon, IonInput, IonSpinner],
   templateUrl: './venue-form.page.html',
   styleUrls: ['./venue-form.page.scss'],
 })
@@ -145,8 +146,8 @@ export class VenueFormPage implements OnInit {
     return this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/luoghi` : '/band');
   }
 
-  private toNumber(value: string): number | null {
-    if (!value.trim()) return null;
+  private toNumber(value: string | number | null): number | null {
+    if (value === null || String(value).trim() === '') return null;
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
   }

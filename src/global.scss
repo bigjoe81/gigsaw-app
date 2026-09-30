@@ -29,6 +29,39 @@
 :is(ion-input, ion-select, ion-textarea, ion-datetime-button) {
   --background: var(--gigsaw-input-background);
   --border-color: var(--gigsaw-input-border);
+  --highlight-color-focused: var(--gigsaw-input-border-focus);
+}
+
+/* Unfilled controls and Ionic's iOS mode need an explicit field boundary.
+   Material filled/outlined controls already draw their own border. */
+:is(ion-input, ion-select, ion-textarea):not([fill]),
+:is(ion-input, ion-select, ion-textarea).ios {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--gigsaw-input-border);
+  border-radius: 8px;
+  background: var(--gigsaw-input-background);
+  color: var(--gigsaw-text);
+  --background: var(--gigsaw-input-background);
+  --border-radius: 7px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --placeholder-color: var(--gigsaw-muted);
+  --placeholder-opacity: 1;
+
+  &:focus-within {
+    border-color: var(--gigsaw-input-border-focus);
+    outline: 2px solid color-mix(in srgb, var(--gigsaw-input-border-focus) 25%, transparent);
+    outline-offset: 1px;
+  }
+
+  &.ion-invalid.ion-touched {
+    border-color: var(--ion-color-danger);
+    --highlight-color-focused: var(--ion-color-danger);
+  }
 }
 
 /* Optional CSS utils that can be commented out */

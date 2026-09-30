@@ -1,17 +1,19 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { SetlistPdfModalComponent } from '../components/setlist-pdf-modal.component';
+import { Component, OnDestroy, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton, IonRefresher,
-  IonRefresherContent, IonSkeletonText, IonText, IonTitle, IonToolbar, ToastController,
+  IonRefresherContent, IonSpinner, IonSkeletonText, IonText, IonTitle, IonToolbar, ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   add, alertCircleOutline, calendarOutline, downloadOutline, libraryOutline, listOutline,
   musicalNotesOutline, shareSocialOutline,
 } from 'ionicons/icons';
-import { finalize, timeout } from 'rxjs';
+import { finalize, Subscription, timeout } from 'rxjs';
 import { Setlist } from '../../../core/models/band-resources.models';
-import { SetlistPdfService } from '../services/setlist-pdf.service';
+import { SetlistPdfOptions } from '../models/setlist.models';
+import { SetlistPdfService, SetlistPdfFormat } from '../services/setlist-pdf.service';
 import { SetlistService } from '../services/setlist.service';
 
 type PdfAction = `download-${number}` | `share-${number}` | null;
@@ -19,13 +21,31 @@ type PdfAction = `download-${number}` | `share-${number}` | null;
 @Component({
   standalone: true,
   imports: [
+    SetlistPdfModalComponent,
     RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton,
-    IonRefresher, IonRefresherContent, IonSkeletonText, IonText, IonTitle, IonToolbar,
+    IonRefresher, IonRefresherContent, IonSpinner, IonSkeletonText, IonText, IonTitle, IonToolbar,
   ],
   templateUrl: './setlist-list.page.html',
   styleUrl: './setlist-list.page.scss',
 })
-export class SetlistListPage implements OnInit {
+export class SetlistListPage implements OnDestroy {
+  readonly pdfOptions = signal<SetlistPdfOptions>({ includePerformedBy: true, includeKey: true, includeBpm: true });
+  readonly pdfRequest = signal<{ setlist: Setlist; action: 'download' | 'share' } | null>(null);
+
+  requestPdf(setlist: Setlist, action: 'download' | 'share', event: Event): void {
+    this.stopCardNavigation(event);
+    this.pdfRequest.set({ setlist, action });
+  }
+
+  confirmPdf(): void {
+    const request = this.pdfRequest();
+    if (!request) return;
+    this.pdfRequest.set(null);
+    if (request.action === 'download') void this.downloadPdf(request.setlist);
+    else void this.sharePdf(request.setlist);
+  }
+
+  readonly pdfFormat = signal<SetlistPdfFormat>('a4');
   readonly setlists = signal<Setlist[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
@@ -43,16 +63,20 @@ export class SetlistListPage implements OnInit {
     });
   }
 
-  ngOnInit(): void { this.load(); }
+  private listRequest?: Subscription;
+
+  ionViewWillEnter(): void { this.load(); }
+  ngOnDestroy(): void { this.listRequest?.unsubscribe(); }
 
   load(event?: CustomEvent): void {
+    this.listRequest?.unsubscribe();
     if (!event) this.loading.set(true);
     this.error.set('');
-    this.setlistsApi.list().pipe(
+    this.listRequest = this.setlistsApi.list().pipe(
       timeout(15000),
       finalize(() => {
         this.loading.set(false);
-        event?.detail.complete();
+        void event?.detail?.complete?.();
       }),
     ).subscribe({
       next: (setlists) => this.setlists.set([...setlists].sort((left, right) => this.sortDate(right) - this.sortDate(left))),
@@ -67,7 +91,7 @@ export class SetlistListPage implements OnInit {
   }
 
   setCount(setlist: Setlist): number {
-    return setlist.sets?.length ?? setlist.generation?.setCount ?? 0;
+    return setlist.sections?.length || (setlist.sets?.length ?? setlist.generation?.setCount ?? 0);
   }
 
   date(setlist: Setlist): string {
@@ -77,25 +101,27 @@ export class SetlistListPage implements OnInit {
     return new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }).format(value);
   }
 
-  async downloadPdf(setlist: Setlist, event: Event): Promise<void> {
-    this.stopCardNavigation(event);
+  async downloadPdf(setlist: Setlist, event?: Event): Promise<void> {
+    if (event) this.stopCardNavigation(event);
     this.pdfAction.set(`download-${setlist.id}`);
     try {
-      const uri = await this.setlistPdf.download(setlist.id, setlist.title);
+      const uri = await this.setlistPdf.download(setlist.id, setlist.title, this.pdfFormat(), this.pdfOptions());
       if (uri) await this.showToast('PDF salvato sul dispositivo.', 'success');
     } catch (error) {
+      this.pdfAction.set(null);
       await this.showToast(this.errorMessage(error, 'Impossibile scaricare il PDF.'), 'danger');
     } finally {
       this.pdfAction.set(null);
     }
   }
 
-  async sharePdf(setlist: Setlist, event: Event): Promise<void> {
-    this.stopCardNavigation(event);
+  async sharePdf(setlist: Setlist, event?: Event): Promise<void> {
+    if (event) this.stopCardNavigation(event);
     this.pdfAction.set(`share-${setlist.id}`);
     try {
-      await this.setlistPdf.share(setlist.id, setlist.title);
+      await this.setlistPdf.share(setlist.id, setlist.title, this.pdfFormat(), this.pdfOptions());
     } catch (error) {
+      this.pdfAction.set(null);
       await this.showToast(this.errorMessage(error, 'Impossibile condividere il PDF.'), 'danger');
     } finally {
       this.pdfAction.set(null);

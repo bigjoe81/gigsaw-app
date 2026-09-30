@@ -20,6 +20,8 @@
       </div>
     </section>
 
+  
+
     @if (!loading() && !error() && setlists().length) {
       <section class="summary-card" aria-label="Riepilogo scalette">
         <div><strong>{{ setlists().length }}</strong><span>scalette salvate</span></div>
@@ -45,12 +47,12 @@
             <div class="card-copy"><h2>{{ setlist.title }}</h2>@if (setlist.notes) { <p>{{ setlist.notes }}</p> }</div>
             <div class="metrics"><span><strong>{{ songCount(setlist) }}</strong> brani</span><span><strong>{{ setCount(setlist) || '—' }}</strong> set</span></div>
             <div class="card-actions">
-              <ion-button type="button" (click)="downloadPdf(setlist, $event)" [disabled]="pdfAction() !== null">
-                @if (pdfAction() === 'download-' + setlist.id) { <span class="loading loading-spinner loading-xs"></span> } @else { <ion-icon name="download-outline" /> }
+              <ion-button type="button" (click)="requestPdf(setlist, 'download', $event)" [disabled]="pdfAction() !== null">
+                @if (pdfAction() === 'download-' + setlist.id) { <ion-spinner name="crescent" slot="start" aria-label="Preparazione PDF" /> } @else { <ion-icon name="download-outline" /> }
                 Scarica PDF
               </ion-button>
-              <ion-button type="button" (click)="sharePdf(setlist, $event)" [disabled]="pdfAction() !== null">
-                @if (pdfAction() === 'share-' + setlist.id) { <span class="loading loading-spinner loading-xs"></span> } @else { <ion-icon name="share-social-outline" /> }
+              <ion-button type="button" (click)="requestPdf(setlist, 'share', $event)" [disabled]="pdfAction() !== null">
+                @if (pdfAction() === 'share-' + setlist.id) { <ion-spinner name="crescent" slot="start" aria-label="Preparazione PDF" /> } @else { <ion-icon name="share-social-outline" /> }
                 Condividi
               </ion-button>
             </div>
@@ -60,3 +62,7 @@
     }
   </main>
 </ion-content>
+
+<app-setlist-pdf-modal [isOpen]="pdfRequest() !== null" [format]="pdfFormat()" [options]="pdfOptions()"
+  [actionLabel]="pdfRequest()?.action === 'share' ? 'Condividi PDF' : 'Scarica PDF'" (formatChange)="pdfFormat.set($event)" (optionsChange)="pdfOptions.set($event)"
+  (closed)="pdfRequest.set(null)" (confirmed)="confirmPdf()" />

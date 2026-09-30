@@ -3,16 +3,19 @@ import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { FileOpener } from '@capacitor-community/file-opener';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
+import { SetlistPdfOptions } from '../models/setlist.models';
 import { SetlistService } from './setlist.service';
+
+export type SetlistPdfFormat = 'a4' | 'a3' | 'large-print' | 'a3-large-print';
 
 @Injectable({ providedIn: 'root' })
 export class SetlistPdfService {
   constructor(private readonly setlistsApi: SetlistService) {}
 
-  async open(id: number, title?: string | null): Promise<void> {
-    const blob = await this.fetchPdf(id);
-    const fileName = this.fileName(title);
+  async open(id: number, title?: string | null, format: SetlistPdfFormat = 'a4', options?: SetlistPdfOptions): Promise<void> {
+    const blob = await this.fetchPdf(id, format, options);
+    const fileName = this.fileName(format === 'a3-large-print' ? `${title ?? 'scaletta'}-a3-alta-leggibilita` : format === 'large-print' ? `${title ?? 'scaletta'}-alta-leggibilita` : title);
 
     if (Capacitor.isNativePlatform()) {
       const uri = await this.writeNativeFile(blob, fileName, Directory.Cache);
@@ -29,9 +32,9 @@ export class SetlistPdfService {
     window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
   }
 
-  async download(id: number, title?: string | null): Promise<string | void> {
-    const blob = await this.fetchPdf(id);
-    const fileName = this.fileName(title);
+  async download(id: number, title?: string | null, format: SetlistPdfFormat = 'a4', options?: SetlistPdfOptions): Promise<string | void> {
+    const blob = await this.fetchPdf(id, format, options);
+    const fileName = this.fileName(format === 'a3-large-print' ? `${title ?? 'scaletta'}-a3-alta-leggibilita` : format === 'large-print' ? `${title ?? 'scaletta'}-alta-leggibilita` : title);
 
     if (Capacitor.isNativePlatform()) {
       return this.writeNativeFile(blob, fileName, Directory.Documents);
@@ -45,9 +48,9 @@ export class SetlistPdfService {
     window.setTimeout(() => URL.revokeObjectURL(url), 5_000);
   }
 
-  async share(id: number, title?: string | null): Promise<void> {
-    const blob = await this.fetchPdf(id);
-    const fileName = this.fileName(title);
+  async share(id: number, title?: string | null, format: SetlistPdfFormat = 'a4', options?: SetlistPdfOptions): Promise<void> {
+    const blob = await this.fetchPdf(id, format, options);
+    const fileName = this.fileName(format === 'a3-large-print' ? `${title ?? 'scaletta'}-a3-alta-leggibilita` : format === 'large-print' ? `${title ?? 'scaletta'}-alta-leggibilita` : title);
 
     if (Capacitor.isNativePlatform()) {
       const uri = await this.writeNativeFile(blob, fileName, Directory.Cache);
@@ -75,11 +78,18 @@ export class SetlistPdfService {
       return;
     }
 
-    await this.download(id, title);
+    await this.download(id, title, format, options);
   }
 
-  private async fetchPdf(id: number): Promise<Blob> {
-    return firstValueFrom(this.setlistsApi.pdf(id));
+  private async fetchPdf(id: number, format: SetlistPdfFormat, options?: SetlistPdfOptions): Promise<Blob> {
+    try {
+      return await firstValueFrom(this.setlistsApi.pdf(id, format, options).pipe(timeout(20_000)));
+    } catch (error) {
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        throw new Error('Il PDF non è arrivato entro 20 secondi. Riprova tra poco.');
+      }
+      throw error;
+    }
   }
 
   private async writeNativeFile(blob: Blob, fileName: string, directory: Directory): Promise<string> {

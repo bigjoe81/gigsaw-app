@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   IonButton,
   IonContent,
@@ -41,6 +41,7 @@ import { GigService } from '../services/gig.service';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     FormPageHeaderComponent,
     IonButton,
     IonContent,

@@ -1,4 +1,4 @@
-import { Setlist, SetlistMemberNote, Song } from '../../../core/models/band-resources.models';
+import { Setlist, SetlistMemberNote, SetlistSection, Song } from '../../../core/models/band-resources.models';
 
 export interface SetlistSongEntryPayload {
   songId: number;
@@ -30,6 +30,8 @@ export interface SetlistTemplate {
 }
 
 export interface SetlistUpsertPayload {
+  sections?: SetlistSection[];
+  encoreSongIds?: number[];
   title: string;
   date?: string | null;
   gigId?: number | null;
@@ -69,3 +71,9 @@ export interface SetlistSongOption extends Song {
 }
 
 export type SetlistPreview = Setlist;
+
+export interface SetlistPdfOptions {
+  includePerformedBy: boolean;
+  includeKey: boolean;
+  includeBpm: boolean;
+}

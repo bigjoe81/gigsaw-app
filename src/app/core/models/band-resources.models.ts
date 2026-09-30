@@ -86,7 +86,15 @@ export interface Venue {
   updatedAt?: string;
 }
 
+export interface SetlistSection {
+  name: string;
+  encore?: boolean;
+  songIds: number[];
+}
+
 export interface Setlist extends BandScopedEntity {
+  sections?: SetlistSection[];
+  encoreSongIds?: number[];
   bandId?: number;
   gigId?: number | null;
   venueId?: number | null;

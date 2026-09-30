@@ -2,7 +2,12 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AlertController,
+  IonBadge,
+  IonLabel,
   IonButtons,
+  IonButton,
+  IonInput,
+  IonSpinner,
   IonContent,
   IonHeader,
   IonIcon,
@@ -17,8 +22,8 @@ import { finalize, forkJoin } from 'rxjs';
 import { RehearsalRoom, Venue } from '../../../core/models/band-resources.models';
 import { RehearsalRoomService } from '../../rehearsal-sessions/services/rehearsal-room.service';
 import {
-  GigsawButtonComponent,
-  GigsawInputComponent,
+  GigsawListComponent,
+  GigsawListItemComponent,
   GigsawLoadingComponent,
   GigsawMessageComponent,
 } from '../../../shared/ui/gigsaw';
@@ -28,11 +33,16 @@ import { VenueService } from '../services/venue.service';
   standalone: true,
   imports: [
     RouterLink,
-    GigsawButtonComponent,
-    GigsawInputComponent,
+    IonBadge,
+    IonLabel,
+    GigsawListComponent,
+    GigsawListItemComponent,
     GigsawLoadingComponent,
     GigsawMessageComponent,
     IonButtons,
+    IonButton,
+    IonInput,
+    IonSpinner,
     IonContent,
     IonHeader,
     IonIcon,

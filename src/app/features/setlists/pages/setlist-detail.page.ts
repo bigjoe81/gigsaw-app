@@ -1,5 +1,7 @@
+import { SetlistPdfModalComponent } from '../components/setlist-pdf-modal.component';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { finalize, timeout } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   AlertController,
@@ -24,13 +26,15 @@ import {
 import { BandMember } from '../../bands/models/band.models';
 import { BandService } from '../../bands/services/band.service';
 import { Setlist } from '../../../core/models/band-resources.models';
-import { SetlistPdfService } from '../services/setlist-pdf.service';
+import { SetlistPdfOptions } from '../models/setlist.models';
+import { SetlistPdfService, SetlistPdfFormat } from '../services/setlist-pdf.service';
 import { SetlistService } from '../services/setlist.service';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
   imports: [
+    SetlistPdfModalComponent,
     RouterLink,
     GigsawListComponent,
     GigsawListItemComponent,
@@ -54,9 +58,36 @@ import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui
   templateUrl: './setlist-detail.page.html',
 })
 export class SetlistDetailPage implements OnInit {
+  readonly pdfOptions = signal<SetlistPdfOptions>({ includePerformedBy: true, includeKey: true, includeBpm: true });
+  readonly pdfRequest = signal<'download' | 'share' | null>(null);
+
+  confirmPdf(): void {
+    const action = this.pdfRequest();
+    this.pdfRequest.set(null);
+    if (action === 'download') void this.downloadPdf();
+    else if (action === 'share') this.sharePdf();
+  }
+
+  async downloadPdf(): Promise<void> {
+    this.pdfLoading.set(true);
+    try {
+      await this.setlistPdf.download(this.id, this.setlist?.title, this.pdfFormat(), this.pdfOptions());
+    } catch (error) {
+      await (await this.toast.create({
+        message: error instanceof Error ? error.message : 'Impossibile scaricare il PDF.',
+        duration: 2200,
+        color: 'danger',
+      })).present();
+    } finally {
+      this.pdfLoading.set(false);
+    }
+  }
+
+  readonly pdfFormat = signal<SetlistPdfFormat>('a4');
   setlist?: Setlist;
-  loading = true;
-  pdfLoading = false;
+  readonly loading = signal(true);
+  readonly loadError = signal('');
+  readonly pdfLoading = signal(false);
   bandMembers: BandMember[] = [];
   private id!: number;
   private bandId?: number;
@@ -85,14 +116,18 @@ export class SetlistDetailPage implements OnInit {
   }
 
   load(): void {
-    this.loading = true;
-    this.setlistsApi.get(this.id).subscribe({
+    this.loading.set(true);
+    this.loadError.set('');
+    this.setlistsApi.get(this.id).pipe(
+      timeout(15000),
+      finalize(() => this.loading.set(false)),
+    ).subscribe({
       next: (setlist) => {
         this.setlist = setlist;
-        this.loading = false;
+        this.loading.set(false);
       },
-      error: () => {
-        this.loading = false;
+      error: (error: Error) => {
+        this.loadError.set(error.name === 'TimeoutError' ? 'Il server non risponde. Riprova.' : 'Impossibile caricare la scaletta.');
       },
     });
   }
@@ -109,6 +144,11 @@ export class SetlistDetailPage implements OnInit {
       song.setlistNotes ? `Note scaletta: ${song.setlistNotes}` : '',
       ...(song.memberNotes ?? []).map((memberNote) => `${this.memberName(memberNote.userId)}: ${memberNote.notes}`),
     ].filter(Boolean);
+  }
+
+  sectionSongs(ids: number[]): NonNullable<Setlist['songs']> {
+    const songs = new Map((this.setlist?.songs ?? []).map(song => [song.id, song]));
+    return ids.map(id => songs.get(id)).filter((song): song is NonNullable<typeof song> => !!song);
   }
 
   openingSongs(): NonNullable<Setlist['songs']> {
@@ -151,12 +191,12 @@ export class SetlistDetailPage implements OnInit {
   }
 
   openPdf(): void {
-    this.pdfLoading = true;
+    this.pdfLoading.set(true);
 
-    this.setlistPdf.open(this.id, this.setlist?.title).then(async () => {
-        this.pdfLoading = false;
+    this.setlistPdf.open(this.id, this.setlist?.title, this.pdfFormat(), this.pdfOptions()).then(async () => {
+        this.pdfLoading.set(false);
       }).catch(async (error: Error) => {
-        this.pdfLoading = false;
+        this.pdfLoading.set(false);
         (await this.toast.create({
           message: error.message || 'Impossibile aprire il PDF.',
           duration: 2200,
@@ -166,12 +206,12 @@ export class SetlistDetailPage implements OnInit {
   }
 
   sharePdf(): void {
-    this.pdfLoading = true;
+    this.pdfLoading.set(true);
 
-    this.setlistPdf.share(this.id, this.setlist?.title).then(async () => {
-      this.pdfLoading = false;
+    this.setlistPdf.share(this.id, this.setlist?.title, this.pdfFormat(), this.pdfOptions()).then(async () => {
+      this.pdfLoading.set(false);
       }).catch(async (error: Error) => {
-        this.pdfLoading = false;
+        this.pdfLoading.set(false);
         (await this.toast.create({
           message: error.message || 'Impossibile condividere il PDF.',
           duration: 2200,

@@ -12,11 +12,11 @@ export interface SetlistWorkspace { id: string; title: string; gigLabel?: string
 export interface MagicConstraints {
   totalSeconds: number; setCount: number; setSeconds: number; breakSeconds: number;
   minSongs?: number; maxSongs?: number; openingSongId?: number; closingSongId?: number;
-  requiredSongIds: number[]; excludedSongIds: number[]; encoreSongIds: number[];
+  requiredSongIds: number[]; excludedSongIds: number[]; encoreSongIds: number[]; weWantMoreSongIds?: number[];
   consecutiveGroups: number[][]; separatedPairs: number[][]; mandatoryMedleys: number[][];
   balanceSingers: boolean; energyCurve: 'rising' | 'wave' | 'balanced'; alternateGenres: boolean;
   separateSameKeys: boolean; maxDraftSongs: number; preferLiveReady: boolean;
 }
 export interface ValidationIssue { id: string; severity: 'error' | 'warning' | 'suggestion'; message: string; setId?: string; itemId?: string; }
-export interface MagicProposal { id: string; prompt: string; sets: WorkspaceSet[]; respected: string[]; unmet: string[]; reasons: string[]; createdAt: string; }
+export interface MagicProposal { id: string; prompt: string; sets: WorkspaceSet[]; respected: string[]; unmet: string[]; blockingErrors?: string[]; reasons: string[]; createdAt: string; }
 export interface SetlistSnapshot { id: string; label: string; workspace: SetlistWorkspace; createdAt: string; }

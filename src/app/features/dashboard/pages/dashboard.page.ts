@@ -2,26 +2,14 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, of, timeout } from 'rxjs';
 import {
-  IonBadge,
   IonButton,
   IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
   IonContent,
   IonHeader,
   IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonListHeader,
-  IonNote,
-  IonProgressBar,
-  IonSpinner,
-  IonText,
-  IonTitle,
   IonMenuButton,
+  IonSpinner,
+  IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -70,26 +58,14 @@ interface DashboardActivity {
   standalone: true,
   imports: [
     RouterLink,
-    IonBadge,
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
+    IonButton,
+    IonButtons,
     IonContent,
     IonHeader,
     IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonListHeader,
-  IonNote,
-  IonProgressBar,
-  IonSpinner,
-  IonText,
-  IonTitle,
     IonMenuButton,
+    IonSpinner,
+    IonTitle,
     IonToolbar,
   ],
   templateUrl: './dashboard.page.html',
@@ -127,11 +103,11 @@ export class DashboardPage {
 
   get repertoireChartBackground(): string {
     const total = this.repertoireTotal();
-    if (!total) return 'conic-gradient(#e6ebf2 0 100%)';
+    if (!total) return 'conic-gradient(var(--gigsaw-border) 0 100%)';
     const values = this.repertoire();
     const readyEnd = (values[0].value / total) * 100;
     const rehearsalEnd = readyEnd + (values[1].value / total) * 100;
-    return `conic-gradient(var(--p) 0 ${readyEnd}%, var(--g) ${readyEnd}% ${rehearsalEnd}%, var(--a) ${rehearsalEnd}% 100%)`;
+    return `conic-gradient(var(--ion-color-secondary) 0 ${readyEnd}%, var(--ion-color-success) ${readyEnd}% ${rehearsalEnd}%, var(--ion-color-warning) ${rehearsalEnd}% 100%)`;
   }
 
   constructor() {

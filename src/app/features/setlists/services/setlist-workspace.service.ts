@@ -5,10 +5,31 @@ export const uid = (prefix = 'item') => `${prefix}-${Date.now()}-${Math.random()
 export const cloneWorkspace = (value: SetlistWorkspace): SetlistWorkspace => JSON.parse(JSON.stringify(value)) as SetlistWorkspace;
 export const setDuration = (set: WorkspaceSet, type?: SetlistItem['type']) => set.items.filter(i => !type || i.type === type).reduce((sum, i) => sum + i.durationSeconds, 0);
 export const moveItem = (workspace: SetlistWorkspace, itemId: string, targetSetId: string, targetIndex: number) => {
-  const next = cloneWorkspace(workspace); let moved: SetlistItem | undefined;
-  for (const set of next.sets) { const index = set.items.findIndex(i => i.id === itemId); if (index >= 0) moved = set.items.splice(index, 1)[0]; }
-  if (moved) next.sets.find(s => s.id === targetSetId)?.items.splice(targetIndex, 0, moved);
+  const next = cloneWorkspace(workspace);
+  const source = next.sets.find(set => set.items.some(item => item.id === itemId));
+  const target = next.sets.find(set => set.id === targetSetId);
+  const item = source?.items.find(candidate => candidate.id === itemId);
+  if (!source || !target || !item) return next;
+  const moved = source.items.filter(candidate => item.medleyId ? candidate.medleyId === item.medleyId : candidate.id === itemId);
+  source.items = source.items.filter(candidate => !moved.includes(candidate));
+  let index = Math.max(0, Math.min(target.items.length, targetIndex));
+  const destination = target.items[index];
+  if (destination?.medleyId) index = target.items.findIndex(candidate => candidate.medleyId === destination.medleyId);
+  target.items.splice(index, 0, ...moved);
   return next;
+};
+
+export const moveItemBefore = (workspace: SetlistWorkspace, itemId: string, targetSetId: string, beforeId?: string) => {
+  const source = workspace.sets.find(set => set.items.some(item => item.id === itemId));
+  const target = workspace.sets.find(set => set.id === targetSetId);
+  const item = source?.items.find(candidate => candidate.id === itemId);
+  if (!source || !target || !item) return cloneWorkspace(workspace);
+  const moving = (candidate: SetlistItem) => item.medleyId ? candidate.medleyId === item.medleyId : candidate.id === itemId;
+  const anchor = target.items.find(candidate => candidate.id === beforeId);
+  if (anchor && source === target && moving(anchor)) return cloneWorkspace(workspace);
+  let index = anchor ? target.items.findIndex(candidate => anchor.medleyId ? candidate.medleyId === anchor.medleyId : candidate.id === anchor.id) : target.items.length;
+  if (source === target) index -= source.items.slice(0, index).filter(moving).length;
+  return moveItem(workspace, itemId, targetSetId, index);
 };
 export const createMedley = (set: WorkspaceSet, ids: string[], duration?: number) => {
   const next = structuredClone(set); const medleyId = uid('medley');
