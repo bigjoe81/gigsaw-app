@@ -18,33 +18,41 @@
       Il nome della band potrai inserirlo successivamente.
     </p>
     <form class="w-full" (submit)="submit(); $event.preventDefault()">
-      <label class="block">
-        <span class="mb-2 block text-sm font-bold">Nome</span>
-        <app-gigsaw-input
+      <ion-input
+          label="Nome e cognome"
+          labelPlacement="stacked"
+          fill="outline"
+          autocapitalize="words"
+          [class.ion-touched]="touched()"
+          [disabled]="loading"
           name="name"
           autocomplete="name"
           placeholder="Nome e cognome"
           [value]="name()"
-          [invalid]="touched() && !nameValid()"
-          (valueChange)="updateName($event)"
-        />
-      </label>
+          [class.ion-invalid]="touched() && !nameValid()"
+          (ionInput)="updateName($event.detail.value ?? '')"
+      />
       @if (touched() && !nameValid()) {
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci il nome.</app-gigsaw-message>
       }
 
-      <label class="mt-4 block">
-        <span class="mb-2 block text-sm font-bold">Email</span>
-        <app-gigsaw-input
+      <ion-input class="mt-4"
+          label="Email"
+          labelPlacement="stacked"
+          fill="outline"
+          inputmode="email"
+          autocapitalize="off"
+          [spellcheck]="false"
+          [class.ion-touched]="touched()"
+          [disabled]="loading"
           type="email"
           name="email"
           autocomplete="email"
           placeholder="es. mario.rossi@gmail.com"
           [value]="email()"
-          [invalid]="touched() && !emailValid()"
-          (valueChange)="updateEmail($event)"
-        />
-      </label>
+          [class.ion-invalid]="touched() && !emailValid()"
+          (ionInput)="updateEmail($event.detail.value ?? '')"
+      />
       @if (touched() && !emailValid()) {
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-gigsaw-message>
       }
