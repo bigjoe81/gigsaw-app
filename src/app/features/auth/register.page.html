@@ -23,7 +23,9 @@
         <app-gigsaw-input
           name="name"
           autocomplete="name"
+          placeholder="Nome e cognome"
           [value]="name()"
+          [invalid]="touched() && !nameValid()"
           (valueChange)="updateName($event)"
         />
       </label>
@@ -37,7 +39,9 @@
           type="email"
           name="email"
           autocomplete="email"
+          placeholder="es. mario.rossi@gmail.com"
           [value]="email()"
+          [invalid]="touched() && !emailValid()"
           (valueChange)="updateEmail($event)"
         />
       </label>
