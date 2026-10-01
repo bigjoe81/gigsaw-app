@@ -13,7 +13,7 @@ export interface GigsawTypeaheadItem {
   standalone: true,
   imports: [IonInput, IonItem, IonLabel, IonList, IonSpinner, IonNote],
   template: `
-    <div class="gigsaw-typeahead">
+    <div class="gigsaw-typeahead" [class.dropdown-overlay]="dropdownOverlay()">
       <ion-input [fill]="fill()" [class]="controlClass()" [attr.aria-label]="ariaLabel() || placeholder()" [name]="name()" [placeholder]="placeholder()" [autocomplete]="autocomplete()" [disabled]="disabled()" [value]="value()" [class.ion-invalid]="invalid()" [class.ion-touched]="invalid()" role="combobox" [attr.aria-expanded]="open()" [attr.aria-controls]="listboxId" (ionInput)="onInput($event.detail.value ?? '')" (ionFocus)="onFocus()" (keydown)="onKeydown($event)" (ionBlur)="blurred.emit()" />
       @if (open()) {
         <ion-list [id]="listboxId" role="listbox">
@@ -28,6 +28,24 @@ export interface GigsawTypeaheadItem {
         </ion-list>
       }
     </div>
+  `,
+  styles: `
+    .dropdown-overlay {
+      position: relative;
+    }
+
+    .dropdown-overlay ion-list {
+      position: absolute;
+      top: 100%;
+      inset-inline: 0;
+      z-index: 20;
+      max-height: 280px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      border: 1px solid var(--gigsaw-border);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
   `,
 })
 export class GigsawTypeaheadComponent {
@@ -47,6 +65,7 @@ export class GigsawTypeaheadComponent {
   readonly loading = input(false);
   readonly minChars = input(0);
   readonly maxResults = input(8);
+  readonly dropdownOverlay = input(false);
   readonly loadingText = input('Ricerca…');
   readonly emptyMessage = input('Nessun risultato.');
   readonly filterLocally = input(true);
