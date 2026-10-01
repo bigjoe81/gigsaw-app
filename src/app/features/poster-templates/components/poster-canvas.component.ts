@@ -6,6 +6,7 @@ type Interaction = { id: string; mode: 'move' | 'resize'; startX: number; startY
 @Component({
   selector: 'app-poster-canvas',
   standalone: true,
+  styles: [':host(.poster-thumbnail) canvas { width: auto; height: auto; max-height: 240px; max-width: 100%; margin: auto; border-radius: 4px; }'],
   template: `<canvas #canvas class="block h-auto max-h-[72vh] max-w-full touch-none rounded-lg shadow-2xl"
     (pointerdown)="pointerDown($event)" (pointermove)="pointerMove($event)" (pointerup)="pointerUp()"
     (pointercancel)="pointerUp()" aria-label="Editor visuale della locandina"></canvas>`,

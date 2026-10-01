@@ -1,18 +1,83 @@
-<ion-header><ion-toolbar><ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons><ion-title>Locandine</ion-title><ion-buttons slot="end"><ion-button routerLink="nuova"><ion-icon slot="start" name="add" />Nuovo</ion-button></ion-buttons></ion-toolbar></ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
+    <ion-title>Locandine</ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content>
-  <main class="w-full px-3 py-5 md:px-6 md:py-[34px]">
-    <div class="mb-6"><h1 class="text-2xl font-bold">Template della band</h1><p class="text-base-content/65">Crea layout riutilizzabili ed esporta locandine pronte per i social.</p></div>
-    @if (!templates.length) {
-      <section class="hero min-h-[55vh] rounded-box border border-base-300 bg-base-100"><div class="hero-content text-center"><div><ion-icon name="color-palette-outline" class="text-6xl text-primary" /><h2 class="mt-3 text-xl font-bold">Nessun template</h2><p class="mb-5 text-base-content/60">Inizia scegliendo un formato e caricando lo sfondo.</p><ion-button routerLink="nuova">Crea il primo template</ion-button></div></div></section>
-    } @else {
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        @for (template of templates; track template.id) {
-          <a class="card border border-base-300 bg-base-100 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg" [routerLink]="[template.id, 'modifica']">
-            <figure class="aspect-video bg-neutral" [style.background-image]="template.document.backgroundDataUrl ? 'url(' + template.document.backgroundDataUrl + ')' : ''" style="background-size:cover;background-position:center"></figure>
-            <div class="card-body p-5"><h2 class="card-title">{{ template.name }}</h2><p>{{ template.document.format.label }} · {{ template.document.fields.length }} campi</p><div class="card-actions items-center justify-between"><span class="text-xs opacity-60">{{ template.updatedAt | date:'short' }}</span><ion-button class="btn btn-ghost btn-sm text-error" type="button" (click)="remove(template, $event)"><ion-icon name="trash-outline" /> Elimina</ion-button></div></div>
-          </a>
-        }
+  <main class="posters-page">
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">La tua band, il tuo stile</p>
+        <h1>Locandine</h1>
+        <p>Crea il tuo layout una volta. Riutilizzalo per ogni concerto.</p>
       </div>
+      <ion-button routerLink="nuova"><ion-icon slot="start" name="add" />Nuovo template</ion-button>
+    </header>
+
+    @if (!templates.length) {
+      <section class="empty-state">
+        <div class="state-icon"><ion-icon name="color-palette-outline" aria-hidden="true" /></div>
+        <p class="eyebrow">Il prossimo live comincia qui</p>
+        <h2>Dai una veste ai tuoi concerti</h2>
+        <p>Uno sfondo, i dettagli dell’evento e lo stile della tua band.<br>Crea il primo template e prepara locandine pronte per i social.</p>
+        <ion-button routerLink="nuova"><ion-icon slot="start" name="add" />Crea il primo template</ion-button>
+        <div class="format-guide" aria-label="Formati disponibili">
+          @for (item of formats; track item.id) {
+            <div class="format-example">
+              <span class="format-shape" [style.aspect-ratio]="item.width + ' / ' + item.height" aria-hidden="true"></span>
+              <strong>{{ item.label }}</strong>
+              <span>{{ item.width }} × {{ item.height }} px</span>
+            </div>
+          }
+        </div>
+      </section>
+    } @else {
+      <section class="library" aria-label="Template della band">
+        <div class="library-toolbar">
+          <h2>I tuoi template <span class="count">{{ templates.length }}</span></h2>
+          <label class="search-field">
+            <ion-icon name="search-outline" aria-hidden="true" />
+            <input type="search" [(ngModel)]="search" placeholder="Cerca un template…" aria-label="Cerca un template" />
+          </label>
+        </div>
+        <div class="format-filters" aria-label="Filtra per formato">
+          <button type="button" [class.active]="format === ''" [attr.aria-pressed]="format === ''" (click)="format = ''">Tutti</button>
+          @for (item of formats; track item.id) {
+            <button type="button" [class.active]="format === item.id" [attr.aria-pressed]="format === item.id" (click)="format = item.id">{{ item.label }}</button>
+          }
+        </div>
+        <p class="result-count" aria-live="polite">{{ filteredTemplates.length }} {{ filteredTemplates.length === 1 ? 'template disponibile' : 'template disponibili' }}</p>
+        <div class="poster-grid">
+          @for (template of filteredTemplates; track template.id) {
+            <article class="poster-card">
+              <a class="poster-link" [routerLink]="[template.id, 'modifica']" [attr.aria-label]="'Modifica ' + template.name">
+                <div class="poster-preview">
+                  <app-poster-canvas class="poster-thumbnail" [document]="template.document" [interactive]="false" />
+                  <span class="preview-action">Apri nell’editor <ion-icon name="arrow-forward-outline" aria-hidden="true" /></span>
+                </div>
+                <div class="card-copy">
+                  <span class="format-badge">{{ template.document.format.label }}</span>
+                  <h3>{{ template.name }}</h3>
+                  <p>{{ template.document.format.width }} × {{ template.document.format.height }} px · {{ template.document.fields.length }} campi</p>
+                </div>
+              </a>
+              <footer class="card-footer">
+                <span>Aggiornato il {{ template.updatedAt | date:'dd/MM/yyyy' }}</span>
+                <button type="button" class="delete-button" (click)="remove(template, $event)" [attr.aria-label]="'Elimina ' + template.name" title="Elimina template"><ion-icon name="trash-outline" aria-hidden="true" /></button>
+              </footer>
+            </article>
+          } @empty {
+            <section class="no-results">
+              <ion-icon name="search-outline" aria-hidden="true" />
+              <h3>Nessun template trovato</h3>
+              <p>Prova un altro nome oppure visualizza tutti i formati.</p>
+              <ion-button fill="outline" (click)="search = ''; format = ''">Mostra tutti i template</ion-button>
+            </section>
+          }
+        </div>
+      </section>
     }
+    <p class="storage-note">I template sono salvati in questo browser. Usa lo stesso dispositivo per ritrovarli.</p>
   </main>
 </ion-content>
