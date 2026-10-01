@@ -71,7 +71,7 @@ export class BandLayoutPage implements OnInit {
     { key: 'concerti', label: 'Concerti', icon: 'radio-outline' },
     { key: 'luoghi', label: 'Luoghi', icon: 'pin-outline' },
     { key: 'scalette', label: 'Scalette', icon: 'list-outline' },
-    { key: 'locandine', label: 'Locandine', icon: 'color-palette-outline' },
+    { key: 'locandine', label: 'Modelli di locandina', icon: 'color-palette-outline' },
     { key: 'assistenza', label: 'Feedback e assistenza', icon: 'help-circle-outline' },
     { key: 'impostazioni', label: 'Impostazioni', icon: 'settings-outline' },
   ];

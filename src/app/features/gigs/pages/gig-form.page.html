@@ -86,6 +86,12 @@
         </label>
       </section>
 
+      <label class="grid min-w-0 gap-[7px] text-sm font-bold">
+        <span>Prezzo o ingresso per la locandina</span>
+        <ion-input class="gig-field" formControlName="admission" aria-label="Prezzo o ingresso per la locandina" placeholder="Es. Ingresso gratuito oppure € 10" />
+      </label>
+      <app-gig-posters [bandId]="bandId ? '' + bandId : ''" [gigId]="id" [values]="posterValues" />
+
       @if (error()) { <ion-note class="error-banner" color="danger" role="alert">{{ error() }}</ion-note> }
 
 

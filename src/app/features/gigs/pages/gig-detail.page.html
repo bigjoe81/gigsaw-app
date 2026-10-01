@@ -32,6 +32,7 @@
           <div><p>Note organizzative</p><h2>{{ currentGig.notes || 'Nessuna nota inserita.' }}</h2></div>
         </article>
       </section>
+      <app-gig-posters [readOnly]="true" [bandId]="posterBandId" [gigId]="currentGig.id" [values]="posterValues" />
     }
   </main>
 </ion-content>

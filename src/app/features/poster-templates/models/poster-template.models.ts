@@ -1,4 +1,4 @@
-export type PosterFormatId = 'instagram-post' | 'instagram-story' | 'square';
+export type PosterFormatId = 'instagram-post' | 'instagram-story' | 'square' | 'a4';
 
 export type PosterFieldKey =
   | 'eventName' | 'date' | 'time' | 'venue' | 'city' | 'address' | 'admission';
@@ -45,6 +45,7 @@ export const POSTER_FORMATS: readonly PosterFormat[] = [
   { id: 'instagram-post', label: 'Instagram post', width: 1080, height: 1350 },
   { id: 'instagram-story', label: 'Instagram Story', width: 1080, height: 1920 },
   { id: 'square', label: 'Quadrato', width: 1080, height: 1080 },
+  { id: 'a4', label: 'A4 stampa (210 × 297 mm)', width: 2480, height: 3508 },
 ];
 
 export const POSTER_FIELD_PRESETS: ReadonlyArray<Pick<PosterField, 'key' | 'label' | 'sampleValue'>> = [

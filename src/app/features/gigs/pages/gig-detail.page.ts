@@ -18,11 +18,12 @@ import { addIcons } from 'ionicons';
 import { calendarOutline, locationOutline, pencilOutline, timeOutline, trashOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
+import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
 import { GigService } from '../services/gig.service';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [GigPostersComponent, RouterLink, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './gig-detail.page.html',
   styleUrl: './gig-detail.page.scss',
 })
@@ -62,6 +63,22 @@ export class GigDetailPage implements OnInit {
 
   venueAddress(gig: Gig): string {
     return [gig.venue?.address, gig.venue?.city].filter(Boolean).join(' · ');
+  }
+
+  get posterBandId(): string {
+    let route: ActivatedRoute | null = this.route;
+    while (route) {
+      const id = route.snapshot.paramMap.get('bandId');
+      if (id) return id;
+      route = route.parent;
+    }
+    return String(this.gig()?.bandId ?? '');
+  }
+
+  get posterValues(): GigPosterValues {
+    const gig = this.gig();
+    return { title: gig?.title ?? '', date: gig?.date.slice(0, 10) ?? '', time: gig ? this.time(gig.date) ?? '' : '',
+      venue: gig?.venue?.name ?? '', city: gig?.venue?.city ?? '', address: gig?.venue?.address ?? '', admission: '' };
   }
 
   async confirmDelete(): Promise<void> {

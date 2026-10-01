@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -36,10 +36,12 @@ import { Venue } from '../../venues/models/venue.models';
 import { MapboxAddressSuggestion, MapboxGeocodingService } from '../../venues/services/mapbox-geocoding.service';
 import { VenueService } from '../../venues/services/venue.service';
 import { GigService } from '../services/gig.service';
+import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
 
 @Component({
   standalone: true,
   imports: [
+    GigPostersComponent,
     ReactiveFormsModule,
     RouterLink,
     FormPageHeaderComponent,
@@ -56,12 +58,14 @@ import { GigService } from '../services/gig.service';
   styleUrl: './gig-form.page.scss',
 })
 export class GigFormPage implements OnInit {
+  @ViewChild(GigPostersComponent) posterEditor?: GigPostersComponent;
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(255)]],
     date: ['', Validators.required],
     time: '',
     venueId: '',
     notes: '',
+    admission: '',
   });
 
   readonly editing = signal(false);
@@ -89,8 +93,8 @@ export class GigFormPage implements OnInit {
       data: result,
     })),
   ]);
-  private id?: number;
-  private bandId?: number;
+  id?: number;
+  bandId?: number;
   private readonly venueQueryChanges = new Subject<string>();
 
   constructor(
@@ -154,7 +158,15 @@ export class GigFormPage implements OnInit {
       }),
       finalize(() => this.saving.set(false)),
     ).subscribe({
-      next: async () => {
+      next: async (gig) => {
+        try {
+          this.posterEditor?.persist(gig.id);
+        } catch {
+          this.error.set('Concerto salvato, ma le locandine non sono state assegnate: spazio nel browser insufficiente. Riprova con sfondi più piccoli.');
+          this.id = gig.id;
+          this.editing.set(true);
+          return;
+        }
         (await this.toast.create({ message: 'Concerto salvato.', duration: 1800, color: 'success' })).present();
         void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/concerti` : '/band');
       },
@@ -222,6 +234,13 @@ export class GigFormPage implements OnInit {
 
   mapboxConfigured(): boolean {
     return this.mapbox.isConfigured();
+  }
+
+  get posterValues(): GigPosterValues {
+    const values = this.form.getRawValue();
+    const venue = this.selectedVenue() ?? this.pendingVenue();
+    return { title: values.title, date: values.date, time: values.time,
+      venue: venue?.name ?? '', city: venue?.city ?? '', address: venue?.address ?? '', admission: values.admission };
   }
 
   private patchGig(gig: Gig): void {

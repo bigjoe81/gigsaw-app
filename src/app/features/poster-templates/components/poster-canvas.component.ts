@@ -41,6 +41,24 @@ export class PosterCanvasComponent implements AfterViewInit, OnChanges {
     return result;
   }
 
+  async exportBlob(type: 'image/png' | 'image/jpeg'): Promise<Blob> {
+    await document.fonts.ready;
+    if (this.document.backgroundDataUrl) {
+      const image = new Image();
+      image.src = this.document.backgroundDataUrl;
+      await image.decode();
+      this.background = image;
+    } else this.background = null;
+    const selected = this.selectedId;
+    this.selectedId = null;
+    this.draw();
+    try {
+      return await new Promise<Blob>((resolve, reject) => {
+        this.canvasRef.nativeElement.toBlob(blob => blob ? resolve(blob) : reject(new Error('Impossibile generare la locandina.')), type, 0.98);
+      });
+    } finally { this.selectedId = selected; this.draw(); }
+  }
+
   pointerDown(event: PointerEvent): void {
     if (!this.interactive) return;
     const point = this.toDocumentPoint(event);
