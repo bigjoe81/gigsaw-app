@@ -255,10 +255,10 @@
               <p>Prepara input list e disposizione palco in modo visuale.</p>
             </div>
             <div class="tech-heading-actions">
-              <ion-button size="small" type="button" (click)="exportTechRider()">
+              <ion-button size="small" fill="clear" type="button" (click)="exportTechRider()">
                 <ion-icon slot="start" name="download-outline" /> PDF
               </ion-button>
-              <ion-button size="small" fill="outline" type="button" (click)="shareTechRider()">
+              <ion-button size="small" fill="clear" type="button" (click)="shareTechRider()">
                 <ion-icon slot="start" name="share-outline" /> Condividi
               </ion-button>
             </div>
@@ -266,50 +266,50 @@
         </ion-card-header>
         <ion-card-content>
           <form class="tech-form" [formGroup]="techForm" (ngSubmit)="saveTech()">
-            <div class="preset-strip">
-              <span>Parti da un setup:</span>
+            <details class="preset-strip">
+              <summary>Parti da un setup pronto <small>Canali e palco già configurati</small></summary>
               <div class="chip-row">
                 @for (preset of techPresets; track preset.id) {
-                  <ion-button type="button" class="preset-chip" (click)="applyTechPreset(preset.id)">{{ preset.label }}</ion-button>
+                  <button type="button" class="preset-chip" (click)="applyTechPreset(preset.id)">{{ preset.label }}</button>
                 }
               </div>
-            </div>
+            </details>
 
             <nav class="tech-tabs" aria-label="Sezioni scheda tecnica">
-              <ion-button type="button" [class.active]="techSection() === 'channels'" (click)="techSection.set('channels')">
+              <button type="button" [class.active]="techSection() === 'channels'" [attr.aria-pressed]="techSection() === 'channels'" (click)="techSection.set('channels')">
                 <span>01</span> Canali <b>{{ inputChannels.length }}</b>
-              </ion-button>
-              <ion-button type="button" [class.active]="techSection() === 'stage'" (click)="techSection.set('stage')">
+              </button>
+              <button type="button" [class.active]="techSection() === 'stage'" [attr.aria-pressed]="techSection() === 'stage'" (click)="techSection.set('stage')">
                 <span>02</span> Palco <b>{{ stagePlotLayout.length }}</b>
-              </ion-button>
-              <ion-button type="button" [class.active]="techSection() === 'notes'" (click)="techSection.set('notes')">
+              </button>
+              <button type="button" [class.active]="techSection() === 'notes'" [attr.aria-pressed]="techSection() === 'notes'" (click)="techSection.set('notes')">
                 <span>03</span> Note
-              </ion-button>
+              </button>
             </nav>
 
             @if (techSection() === 'channels') {
               <section class="tech-panel">
                 <div class="section-heading">
                   <div><h3>Input list</h3><p>Aggiungi i canali più usati con un tap, poi rifinisci i dettagli.</p></div>
-                  <ion-button size="small" type="button" (click)="addInputChannel()"><ion-icon slot="start" name="add-circle-outline" /> Vuoto</ion-button>
+                  <ion-button size="small" fill="outline" type="button" (click)="addInputChannel()"><ion-icon slot="start" name="add-circle-outline" /> Nuovo canale</ion-button>
                 </div>
                 <div class="quick-add" aria-label="Aggiunta rapida canali">
                   @for (channel of quickChannels; track channel.name) {
-                    <ion-button type="button" (click)="addInputChannel(channel)"><span>+</span>{{ channel.name }} <small>{{ channel.source }}</small></ion-button>
+                    <button type="button" (click)="addInputChannel(channel)"><span>+</span><strong>{{ channel.name }}</strong><small>{{ channel.source }}</small></button>
                   }
                 </div>
                 <details class="preset-details">
                   <summary>Usa un preset canali</summary>
                   <div class="chip-row">
                     @for (preset of inputChannelPresets; track preset.id) {
-                      <ion-button type="button" class="preset-chip" (click)="applyInputChannelPreset(preset.id)">{{ preset.label }}</ion-button>
+                      <button type="button" class="preset-chip" (click)="applyInputChannelPreset(preset.id)">{{ preset.label }}</button>
                     }
                     @for (preset of drumMergePresets; track preset.id) {
-                      <ion-button type="button" class="preset-chip secondary" (click)="mergeDrumMikingPreset(preset.id)">+ {{ preset.label }}</ion-button>
+                      <button type="button" class="preset-chip secondary" (click)="mergeDrumMikingPreset(preset.id)">+ {{ preset.label }}</button>
                     }
                   </div>
                 </details>
-                <div formArrayName="inputChannels" class="channel-list">
+                <div formArrayName="inputChannels" class="channel-list" [class.is-empty]="!inputChannels.length">
               <ion-reorder-group [disabled]="false" (ionItemReorder)="reorderInputChannels($event)">
                 @for (channel of inputChannels.controls; track $index) {
                   <div class="channel-row" [formGroupName]="$index">
@@ -335,15 +335,15 @@
                 </div>
                 <div class="stage-palette">
                   @for (item of stageItems; track item.label) {
-                    <ion-button type="button" (click)="addStageItem(item.label, item.instrument)"><span>{{ stagePlotIcon(item.instrument) }}</span>{{ item.label }}</ion-button>
+                    <button type="button" (click)="addStageItem(item.label, item.instrument)"><span>{{ stagePlotIcon(item.instrument) }}</span>{{ item.label }}</button>
                   }
-                  <ion-button type="button" (click)="addStagePlotItem()"><span>+</span>Altro</ion-button>
+                  <button type="button" (click)="addStagePlotItem()"><span>+</span>Altro</button>
                 </div>
                 <details class="preset-details">
                   <summary>Usa un layout pronto</summary>
                   <div class="chip-row">
                     @for (preset of stagePlotPresets; track preset.id) {
-                      <ion-button type="button" class="preset-chip" (click)="applyStagePlotPreset(preset.id)">{{ preset.label }}</ion-button>
+                      <button type="button" class="preset-chip" (click)="applyStagePlotPreset(preset.id)">{{ preset.label }}</button>
                     }
                   </div>
                 </details>
@@ -406,9 +406,11 @@
               <ion-note color="danger">{{ techError }}</ion-note>
             }
 
-            <ion-button class="tech-save" expand="block" type="submit" [disabled]="savingTech">
-              @if (savingTech) { <ion-spinner name="crescent" /> } @else { Salva scheda tecnica }
-            </ion-button>
+            <div class="tech-footer">
+              <ion-button class="tech-save" type="submit" [disabled]="savingTech">
+                @if (savingTech) { <ion-spinner name="crescent" /> } @else { Salva scheda tecnica }
+              </ion-button>
+            </div>
           </form>
         </ion-card-content>
       </ion-card>
