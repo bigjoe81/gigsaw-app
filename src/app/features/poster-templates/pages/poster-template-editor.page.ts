@@ -2,10 +2,11 @@ import { JsonPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonSelect, IonSelectOption, IonCheckbox, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { PosterCanvasComponent } from '../components/poster-canvas.component';
 import { POSTER_FIELD_PRESETS, POSTER_FORMATS, PosterField, PosterFieldKey, PosterFormatId, PosterTemplateDocument } from '../models/poster-template.models';
-import { PosterTemplateService } from '../services/poster-template.service';
+import { AiPosterSafeArea, AiPosterStyle, PosterTemplateService } from '../services/poster-template.service';
 
 @Component({
   standalone: true,
@@ -20,6 +21,17 @@ export class PosterTemplateEditorPage {
   readonly fonts = ['Arial', 'Helvetica', 'Georgia', 'Times New Roman', 'Courier New', 'Impact'];
   readonly bandId: string;
   readonly templateId: string | null;
+  readonly gigId: number | null;
+  readonly aiStyles: ReadonlyArray<{ id: AiPosterStyle; label: string }> = [
+    { id: 'vintage', label: 'Vintage' },
+    { id: 'rock', label: 'Rock' },
+    { id: 'blues', label: 'Blues' },
+    { id: 'modern', label: 'Moderno' },
+    { id: 'elegant', label: 'Elegante' },
+  ];
+  aiStyle: AiPosterStyle = 'rock';
+  generatingAi = false;
+  aiRemaining: number | null = null;
   name = 'Nuova locandina';
   selectedId: string | null = null;
   document: PosterTemplateDocument = this.emptyDocument('instagram-post');
@@ -27,6 +39,8 @@ export class PosterTemplateEditorPage {
   constructor(route: ActivatedRoute, private readonly router: Router, private readonly storage: PosterTemplateService, private readonly toast: ToastController) {
     this.bandId = route.snapshot.parent?.parent?.paramMap.get('bandId') ?? '';
     this.templateId = route.snapshot.paramMap.get('templateId');
+    const gigId = Number(route.snapshot.queryParamMap.get('gigId'));
+    this.gigId = Number.isFinite(gigId) && gigId > 0 ? gigId : null;
     const stored = this.templateId ? storage.get(this.bandId, this.templateId) : undefined;
     if (stored) { this.name = stored.name; this.document = structuredClone(stored.document); }
   }
@@ -66,6 +80,76 @@ export class PosterTemplateEditorPage {
   }
 
   updateSelected(): void { if (this.selected) this.document = { ...this.document, fields: [...this.document.fields] }; }
+
+  async generateAiBackground(): Promise<void> {
+    if (!this.gigId || this.generatingAi) return;
+
+    this.generatingAi = true;
+    try {
+      const format = this.document.format.id === 'instagram-story'
+        ? 'story'
+        : this.document.format.id === 'square'
+          ? 'square'
+          : 'poster';
+
+      const result = await firstValueFrom(this.storage.generateAi(this.gigId, this.aiStyle, format));
+      const backgroundDataUrl = await this.storage.imageUrlToDataUrl(result.template.image_url);
+      this.document = {
+        ...this.document,
+        backgroundDataUrl,
+        fields: this.aiFields(result.template.safe_areas),
+      };
+      this.aiRemaining = result.ai_quota.remaining;
+      this.selectedId = null;
+      await this.message(`Template AI generato. Restano ${result.ai_quota.remaining} generazioni beta.`, 'success');
+    } catch (error: unknown) {
+      const remainingMessage = this.aiRemaining === 0 ? ' Hai raggiunto il limite beta.' : '';
+      await this.message(`Generazione AI non riuscita.${remainingMessage}`, 'warning');
+    } finally {
+      this.generatingAi = false;
+    }
+  }
+
+  private aiFields(areas: AiPosterSafeArea[]): PosterField[] {
+    const width = this.document.format.width;
+    const height = this.document.format.height;
+    const title = areas.find((area) => area.name === 'title');
+    const details = areas.find((area) => area.name === 'details');
+    const fields: PosterField[] = [];
+
+    if (title) {
+      fields.push({
+        id: `eventName-${Date.now()}`,
+        key: 'eventName',
+        label: 'Nome evento',
+        sampleValue: 'NOME BAND / EVENTO',
+        x: width * title.x / 100,
+        y: height * title.y / 100,
+        width: width * title.w / 100,
+        fontFamily: 'Impact',
+        fontSize: Math.round(width * 0.075),
+        color: '#ffffff',
+        textAlign: 'center',
+        uppercase: true,
+      });
+    }
+
+    if (details) {
+      const x = width * details.x / 100;
+      const y = height * details.y / 100;
+      const fieldWidth = width * details.w / 100;
+      const line = Math.max(42, Math.round(width * 0.045));
+      const base = Date.now();
+
+      fields.push(
+        { id: `date-${base}`, key: 'date', label: 'Data', sampleValue: 'DATA', x, y, width: fieldWidth, fontFamily: 'Arial', fontSize: line, color: '#ffffff', textAlign: 'center', uppercase: true },
+        { id: `time-${base}`, key: 'time', label: 'Ora', sampleValue: 'ORA', x, y: y + line * 1.3, width: fieldWidth, fontFamily: 'Arial', fontSize: line, color: '#ffffff', textAlign: 'center', uppercase: true },
+        { id: `venue-${base}`, key: 'venue', label: 'Locale', sampleValue: 'VENUE · CITTÀ', x, y: y + line * 2.6, width: fieldWidth, fontFamily: 'Arial', fontSize: line, color: '#ffffff', textAlign: 'center', uppercase: true },
+      );
+    }
+
+    return fields;
+  }
 
   async save(): Promise<void> {
     if (!this.name.trim()) { await this.message('Inserisci un nome per il template.', 'warning'); return; }
