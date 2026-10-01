@@ -3,40 +3,140 @@
     <ion-menu-button slot="start" menu="band-menu" />
     <div class="page-title">
       <span>Feedback e assistenza</span>
-      <small>Segnalazioni e suggerimenti</small>
+      <small>Parla direttamente con il team GigSaw</small>
     </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <main class="support-page">
-    <section class="intro">
-      <span class="eyebrow">BETA</span>
-      <h1>Aiutaci a migliorare GigSaw.</h1>
-      <p>
-        Segnala un problema, inviaci un suggerimento o chiedi assistenza.
-        La segnalazione viene aperta direttamente nel nostro sistema di supporto.
-      </p>
+    <section class="support-hero">
+      <div>
+        <span class="eyebrow">BETA</span>
+        <h1>Come possiamo aiutarti?</h1>
+        <p>Segnala un problema, proponi una funzione o chiedi assistenza. Qui trovi anche tutte le risposte del team.</p>
+      </div>
+      <ion-button (click)="startNewTicket()">Nuovo ticket</ion-button>
     </section>
 
-    <section class="support-card">
-      @if (safeWidgetUrl) {
-        <iframe
-          class="zoho-feedback-frame"
-          [src]="safeWidgetUrl"
-          title="Feedback e assistenza GigSaw"
-          loading="eager"
-          referrerpolicy="strict-origin-when-cross-origin"
-        ></iframe>
-      } @else {
-        <div class="widget-placeholder" role="status">
-          <strong>Feedback non ancora configurato</strong>
-          <p>
-            Imposta l’URL iFrame generato da Zoho Desk in
-            <code>zohoFeedbackWidgetUrl</code>.
-          </p>
+    @if (error()) {
+      <div class="error-box">{{ error() }}</div>
+    }
+
+    <div class="support-grid">
+      <section class="ticket-list-card">
+        <div class="section-heading">
+          <h2>I miei ticket</h2>
+          <span>{{ tickets().length }}</span>
         </div>
-      }
-    </section>
+
+        @if (loading()) {
+          <div class="loading-state"><ion-spinner name="crescent" /></div>
+        } @else if (!tickets().length) {
+          <div class="empty-state">
+            <strong>Nessun ticket aperto</strong>
+            <p>Quando hai bisogno di noi, aprine uno da qui.</p>
+          </div>
+        } @else {
+          <ion-list lines="none">
+            @for (ticket of tickets(); track ticket.id) {
+              <ion-item button [detail]="false" (click)="openTicket(ticket)" [class.is-selected]="selectedTicket()?.id === ticket.id">
+                <ion-label>
+                  <div class="ticket-row-title">
+                    <strong>#{{ ticket.id }} · {{ ticket.subject }}</strong>
+                    <ion-badge>{{ statusLabel(ticket.status) }}</ion-badge>
+                  </div>
+                  <p>{{ categoryLabel(ticket.category) }} · {{ ticket.updated_at | date:'dd/MM/yyyy HH:mm' }}</p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        }
+      </section>
+
+      <section class="ticket-detail-card">
+        @if (creating()) {
+          <div class="section-heading">
+            <div>
+              <h2>Nuovo ticket</h2>
+              <p>Scrivici cosa è successo o cosa ti serve.</p>
+            </div>
+          </div>
+
+          <div class="ticket-form">
+            <ion-input
+              label="Oggetto"
+              labelPlacement="stacked"
+              fill="outline"
+              [(ngModel)]="subject"
+              placeholder="Es. Import PDF bloccato"
+            />
+
+            <ion-select label="Categoria" labelPlacement="stacked" fill="outline" [(ngModel)]="category">
+              <ion-select-option value="bug">Bug</ion-select-option>
+              <ion-select-option value="question">Domanda</ion-select-option>
+              <ion-select-option value="feature">Suggerimento</ion-select-option>
+              <ion-select-option value="billing">Pagamenti</ion-select-option>
+              <ion-select-option value="other">Altro</ion-select-option>
+            </ion-select>
+
+            <ion-textarea
+              label="Messaggio"
+              labelPlacement="stacked"
+              fill="outline"
+              autoGrow="true"
+              rows="7"
+              [(ngModel)]="message"
+              placeholder="Descrivi il problema con più dettagli possibile"
+            />
+
+            <ion-button expand="block" (click)="createTicket()" [disabled]="saving() || !subject.trim() || !message.trim()">
+              @if (saving()) { <ion-spinner name="crescent" /> } @else { Apri ticket }
+            </ion-button>
+          </div>
+        } @else if (selectedTicket(); as ticket) {
+          <div class="ticket-detail-header">
+            <div>
+              <small>#{{ ticket.id }} · {{ categoryLabel(ticket.category) }}</small>
+              <h2>{{ ticket.subject }}</h2>
+            </div>
+            <ion-badge>{{ statusLabel(ticket.status) }}</ion-badge>
+          </div>
+
+          <div class="conversation">
+            @for (item of ticket.messages ?? []; track item.id) {
+              <article class="message" [class.message--admin]="item.author_type === 'admin'">
+                <div class="message-meta">
+                  <strong>{{ item.author_type === 'admin' ? 'GigSaw' : 'Tu' }}</strong>
+                  <span>{{ item.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <p>{{ item.message }}</p>
+              </article>
+            }
+          </div>
+
+          <div class="reply-box">
+            <ion-textarea
+              label="Rispondi"
+              labelPlacement="stacked"
+              fill="outline"
+              autoGrow="true"
+              rows="4"
+              [(ngModel)]="replyMessage"
+              placeholder="Scrivi una risposta"
+            />
+            <ion-button (click)="sendReply()" [disabled]="saving() || !replyMessage.trim()">
+              @if (saving()) { <ion-spinner name="crescent" /> } @else { Invia risposta }
+            </ion-button>
+          </div>
+        } @else {
+          <div class="detail-placeholder">
+            <strong>Seleziona un ticket</strong>
+            <p>Oppure aprine uno nuovo per contattarci.</p>
+            <ion-button fill="outline" (click)="startNewTicket()">Nuovo ticket</ion-button>
+          </div>
+        }
+      </section>
+    </div>
   </main>
 </ion-content>
