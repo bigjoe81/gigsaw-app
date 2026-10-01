@@ -2,15 +2,10 @@
 app-form-page-header { flex-shrink: 0; }
 main, main * { box-sizing: border-box; }
 ion-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background); --padding-bottom: var(--ion-safe-area-bottom, 0px); }
-.venue-results { overflow: hidden; margin: 0; padding: 0; border: 1px solid var(--gigsaw-border, var(--ion-color-step-200)); border-radius: 12px; background: transparent; }
-.venue-results ion-item { --background: transparent; }
-.venue-results ion-label { display: grid; gap: 3px; }
-.venue-results span, .selection-card span { color: var(--ion-color-medium); font-size: .84rem; }
-.map-results { border-color: rgba(var(--ion-color-primary-rgb), .35); }
+.selection-card span { color: var(--ion-color-medium); font-size: .84rem; }
 .selection-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 10px 13px 15px; border: 1px solid rgba(var(--ion-color-success-rgb), .4); border-radius: 12px; background: rgba(var(--ion-color-success-rgb), .08); }
 .selection-card.pending { border-color: rgba(var(--ion-color-primary-rgb), .4); background: rgba(var(--ion-color-primary-rgb), .08); }
 .selection-card div { display: grid; gap: 4px; }
-.searching { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--ion-color-medium); }
 .error-banner { display: block; padding: 13px 15px; border: 1px solid rgba(var(--ion-color-danger-rgb), .35); border-radius: 12px; background: rgba(var(--ion-color-danger-rgb), .08); }
 .gig-field { font-weight: 400; }
 .floating-action-toolbar { position: absolute; z-index: 100; bottom: max(16px, env(safe-area-inset-bottom)); left: clamp(20px, 5vw, 72px); right: clamp(20px, 5vw, 72px); display: block; width: auto; overflow: hidden; border: 1px solid #243244; border-radius: 16px; background: color-mix(in srgb, var(--gigsaw-background) 94%, transparent); box-shadow: 0 14px 38px rgba(0, 0, 0, .34); backdrop-filter: blur(14px); }

@@ -1,16 +1,10 @@
 :host {
   display: block;
   height: 100%;
-  --create-navy: #071434;
-  --create-blue: var(--ion-color-brand-blue);
-  --create-blue-soft: #eaf3ff;
   --create-yellow: #f5b942;
-  --create-border: #d8e1ee;
-  --create-muted: #5f6d85;
 }
 
 .create-header { display: none; }
-.create-content { --background: #f4f7fb; }
 
 .create-shell {
   min-height: 100%;
@@ -28,7 +22,6 @@
   flex-direction: column;
   padding: clamp(36px, 5vw, 72px);
   overflow: hidden;
-  color: #fff;
   background: var(--ion-gradient-brand);
 }
 
@@ -49,7 +42,6 @@
   z-index: 1;
   display: block;
   width: 148px;
-  filter: brightness(0) invert(1);
 }
 
 .intro-copy {
@@ -196,7 +188,6 @@
   bottom: 0;
   margin: 0 -42px;
   padding: 16px 42px;
-  background: rgba(244, 247, 251, 0.96);
   box-shadow: 0 -12px 28px rgba(30, 48, 79, 0.08);
   backdrop-filter: blur(12px);
 }
@@ -333,8 +324,6 @@
 }
 
 .text-control {
-  --background: #fff;
-  --border-color: #cbd6e6;
   --border-radius: 12px;
   --highlight-color-focused: var(--create-blue);
   --padding-start: 16px;
@@ -381,31 +370,6 @@
 
 .genre-search + .genre-list { margin-top: 12px; }
 
-.genre-chip {
-  display: inline-flex;
-  min-height: 39px;
-  align-items: center;
-  gap: 6px;
-  padding: 0 14px;
-  border: 1px solid #cbd6e6;
-  border-radius: 999px;
-  color: #34425d;
-  background: #fff;
-  font-size: 0.82rem;
-  font-weight: 750;
-  cursor: pointer;
-  transition: 140ms ease;
-}
-
-.genre-chip:hover { border-color: var(--create-blue); }
-
-.genre-chip.selected {
-  border-color: var(--create-blue);
-  color: var(--create-blue);
-  background: var(--create-blue-soft);
-  box-shadow: inset 0 0 0 1px rgba(7, 91, 216, 0.12);
-}
-
 .genre-skeleton span {
   width: 92px;
   height: 39px;
@@ -427,18 +391,14 @@
   justify-content: space-between;
   gap: 16px;
   padding: 12px 14px;
-  color: #7a5711;
-  background: #fff7df;
 }
 
-.inline-notice button { border: 0; color: #654300; background: transparent; font-weight: 800; cursor: pointer; }
+.inline-notice button { border: 0; background: transparent; font-weight: 800; cursor: pointer; }
 
 .error-banner {
   margin: 8px 0 18px;
   padding: 14px 16px;
-  color: #922c39;
   border: 1px solid #f0bdc4;
-  background: #fff0f2;
   font-weight: 700;
 }
 
@@ -524,9 +484,7 @@
   .optional-label,
   .genre-skeleton span { background: #1b293d; }
   .logo-preview,
-  .upload-button,
-  .genre-chip { background: #111827; }
-  .genre-chip { color: #d7e1ee; }
+  .upload-button { background: #111827; }
   .inline-notice { color: #f6d887; background: #3b3015; }
   .inline-notice button { color: #ffe8a8; }
   .error-banner { color: #ffbbc3; border-color: #6f3440; background: #351a21; }

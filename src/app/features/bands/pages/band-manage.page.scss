@@ -10,7 +10,7 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .settings-nav a.active { background: color-mix(in srgb, var(--ion-color-primary) 12%, var(--gigsaw-surface)); color: var(--ion-color-primary); border-color: var(--ion-color-primary); }
 .settings-nav a:hover { background: var(--gigsaw-input-background); color: var(--gigsaw-text); }
 .settings-nav a:focus-visible, .settings-back:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: 3px; }
-.settings-nav-icon { display: grid; place-items: center; font-size: 20px; }
+.settings-nav-icon { font-size: 20px; }
 .settings-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 0; gap: 16px; }
 .settings-index a { padding: 24px; border: 1px solid var(--gigsaw-border); background: var(--gigsaw-surface); color: var(--gigsaw-text); }
 .settings-index .settings-nav-icon { flex: 0 0 44px; height: 44px; border-radius: 12px; background: color-mix(in srgb, var(--ion-color-primary) 12%, transparent); color: var(--ion-color-primary); }
@@ -19,18 +19,19 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .settings-arrow { margin-left: auto; color: var(--gigsaw-muted); }
 
 .action-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 8px; }
-.profile-logo { width: 96px; height: 96px; border-radius: 20px; object-fit: cover; display: block; margin: 0 auto 16px; }
+.profile-logo { width: 116px; height: 116px; border-radius: 20px; object-fit: cover; display: block; margin: 0 auto 18px; }
+.settings-nav-icon, .profile-logo-placeholder, .tech-tabs button b, .stage-palette button span, .stage-plot-icon { display: grid; place-items: center; }
 .profile-form { display: grid; gap: 18px; }
-.profile-form ion-input, .profile-form ion-select, .profile-form ion-textarea,
+.profile-form :is(ion-input, ion-textarea),
 .channel-row ion-input, .stage-editor ion-input, .notes-grid ion-textarea { display: block; min-width: 0; }
-.profile-identity { display: grid; grid-template-columns: minmax(190px, .55fr) minmax(0, 1.8fr); gap: 22px; padding: 20px; border: 1px solid var(--gigsaw-border); border-radius: 16px; background: transparent; }
+.profile-identity, .profile-section, .tech-panel { border: 1px solid var(--gigsaw-border); border-radius: 16px; background: transparent; }
+.profile-identity { display: grid; grid-template-columns: minmax(190px, .55fr) minmax(0, 1.8fr); gap: 22px; padding: 20px; }
 .profile-logo-panel { display: flex; flex-direction: column; justify-content: center; padding: 12px; border-right: 1px solid var(--gigsaw-border); }
-.profile-logo { width: 116px; height: 116px; margin-bottom: 18px; }
-.profile-logo-placeholder { display: grid; place-items: center; background: rgba(var(--ion-color-primary-rgb),.13); color: var(--ion-color-primary); font-size: 2rem; font-weight: 900; }
+.profile-logo-placeholder { background: rgba(var(--ion-color-primary-rgb),.13); color: var(--ion-color-primary); font-size: 2rem; font-weight: 900; }
 .profile-primary-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-content: center; }
 .field { display: grid; min-width: 0; gap: 7px; color: var(--gigsaw-text); font-size: .82rem; font-weight: 700; }
 .field.full { grid-column: 1 / -1; }
-.profile-section { display: grid; grid-template-columns: minmax(160px, .5fr) minmax(0, 1.7fr); gap: 24px; padding: 22px; border: 1px solid var(--gigsaw-border); border-radius: 16px; background: transparent; }
+.profile-section { display: grid; grid-template-columns: minmax(160px, .5fr) minmax(0, 1.7fr); gap: 24px; padding: 22px; }
 .profile-section-title { display: flex; gap: 12px; align-items: flex-start; }
 .profile-section-title > span { color: var(--ion-color-primary); font-size: .7rem; font-weight: 900; letter-spacing: .12em; }
 .profile-section-title h3 { margin: 0; font-size: 1rem; }
@@ -45,7 +46,7 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .tech-card ion-card-header { padding: 24px 24px 14px; }
 .tech-card ion-card-content { padding: 0 24px 24px; }
 .tech-heading, .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-.tech-heading p, .section-heading p { margin: 6px 0 0; color: var(--gigsaw-muted); line-height: 1.45; }
+:is(.tech-heading, .section-heading) p { margin: 6px 0 0; color: var(--gigsaw-muted); line-height: 1.45; }
 .tech-heading-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; }
 .eyebrow { display: block; margin-bottom: 5px; color: var(--ion-color-primary); font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
 .preset-strip { margin: 8px 0 20px; padding: 14px 16px; border: 1px solid var(--gigsaw-border); border-radius: 10px; color: var(--gigsaw-text); font-size: .85rem; }
@@ -59,16 +60,16 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .tech-tabs { display: grid; grid-template-columns: repeat(3, 1fr); padding: 5px; border: 1px solid var(--gigsaw-border); border-radius: 14px; background: var(--gigsaw-input-background); }
 .tech-tabs button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border: 0; border-radius: 10px; background: transparent; color: var(--gigsaw-muted); font-weight: 700; cursor: pointer; }
 .tech-tabs button span { color: #66758b; font-size: .7rem; }
-.tech-tabs button b { display: grid; place-items: center; min-width: 22px; height: 22px; border-radius: 99px; background: var(--gigsaw-input-background); font-size: .7rem; }
+.tech-tabs button b { min-width: 22px; height: 22px; border-radius: 99px; background: var(--gigsaw-input-background); font-size: .7rem; }
 .tech-tabs button.active { background: var(--gigsaw-surface); color: var(--ion-color-primary); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
 .tech-tabs button.active span { color: var(--ion-color-primary); }
 
-.tech-panel { margin-top: 18px; padding: 22px; border: 1px solid var(--gigsaw-border); border-radius: 16px; background: transparent; }
+.tech-panel { margin-top: 18px; padding: 22px; }
 .section-heading h3 { margin: 0; font-size: 1.15rem; }
 .quick-add, .stage-palette { display: flex; gap: 9px; margin: 18px 0 12px; flex-wrap: wrap; padding-bottom: 6px; }
-.quick-add button, .stage-palette button { flex: 0 0 auto; min-height: 46px; padding: 8px 13px; border: 1px solid var(--gigsaw-border); border-radius: 11px; background: var(--gigsaw-input-background); color: var(--gigsaw-text); font-weight: 700; cursor: pointer; }
-.quick-add button span { margin-right: 7px; color: var(--ion-color-primary); font-size: 1.15rem; }
-.quick-add button small { display: block; margin-top: 2px; color: var(--gigsaw-muted); font-weight: 500; }
+:is(.quick-add, .stage-palette) button { flex: 0 0 auto; min-height: 46px; padding: 8px 13px; border: 1px solid var(--gigsaw-border); border-radius: 11px; background: var(--gigsaw-input-background); color: var(--gigsaw-text); font-weight: 700; cursor: pointer; }
+.quick-add button span { grid-row: 1 / 3; align-self: center; margin: 0; color: var(--ion-color-primary); font-size: 1.15rem; }
+.quick-add button small { display: block; margin-top: 2px; color: var(--gigsaw-muted); font-weight: 500; grid-column: 2; font-size: .7rem; }
 .preset-details { margin: 10px 0 18px; color: var(--gigsaw-muted); font-size: .85rem; }
 .preset-details summary { width: fit-content; padding: 6px 0; cursor: pointer; }
 .preset-details .chip-row { margin-top: 8px; }
@@ -82,7 +83,7 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .empty-state { padding: 26px; border: 1px dashed var(--gigsaw-border); border-radius: 12px; color: var(--gigsaw-muted); text-align: center; }
 
 .stage-palette button { display: grid; min-width: 82px; place-items: center; gap: 6px; }
-.stage-palette button span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: #26344a; color: var(--ion-color-primary); }
+.stage-palette button span { width: 30px; height: 30px; border-radius: 9px; background: #26344a; color: var(--ion-color-primary); }
 .stage-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
 .stage-preview-shell { display: grid; gap: 9px; min-width: 0; }
 .stage-preview-meta { display: flex; justify-content: space-between; color: var(--gigsaw-muted); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
@@ -94,7 +95,7 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .stage-plot-item.selected { outline: 2px solid var(--ion-color-primary); outline-offset: 3px; }
 .stage-plot-item.dragging { z-index: 10; cursor: grabbing; will-change: left, top; }
 .stage-preview::before, .stage-preview::after { pointer-events: none; }
-.stage-plot-icon { display: grid; width: 29px; height: 29px; place-items: center; border-radius: 8px; background: rgba(255,255,255,.1); font-weight: 800; }
+.stage-plot-icon { width: 29px; height: 29px; border-radius: 8px; background: rgba(255,255,255,.1); font-weight: 800; }
 .stage-plot-name { font-weight: 700; }
 .stage-plot-item[data-kind='drums'] { background: #7b2529; }.stage-plot-item[data-kind='vocal'] { background: #126a58; }.stage-plot-item[data-kind='bass'] { background: #185a83; }.stage-plot-item[data-kind='guitar'] { background: #87521c; }.stage-plot-item[data-kind='keys'] { background: #59378a; }
 .stage-grid-note { color: var(--gigsaw-muted); font-size: .75rem; }
@@ -109,11 +110,9 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .channel-list.is-empty { display: none; }
 .tech-card button { font: inherit; font-size: .85rem; transition: background .15s, border-color .15s; }
 .tech-card button:hover { border-color: var(--ion-color-primary); background: color-mix(in srgb, var(--ion-color-primary) 8%, var(--gigsaw-input-background)); }
-.tech-card button:focus-visible, .tech-card summary:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: 3px; }
+.tech-card :is(button, summary):focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: 3px; }
 .quick-add button { display: grid; grid-template-columns: auto auto; column-gap: 7px; text-align: left; font-weight: 500; }
-.quick-add button span { grid-row: 1 / 3; align-self: center; margin: 0; }
 .quick-add button strong { font-weight: 600; }
-.quick-add button small { grid-column: 2; font-size: .7rem; }
 
 @media (max-width: 760px) {
   ion-content::part(scroll) { padding-inline: 0; }
@@ -126,7 +125,6 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
   .tech-card ion-card-content { padding: 0 12px 18px; }
   .tech-heading { display: grid; }
   .tech-heading-actions { justify-content: flex-start; }
-  .preset-strip { display: block; }
   .preset-strip summary small { display: block; margin: 6px 0 0 16px; }
   .tech-footer .tech-save { width: 100%; }
   .tech-tabs button { gap: 5px; font-size: .78rem; }

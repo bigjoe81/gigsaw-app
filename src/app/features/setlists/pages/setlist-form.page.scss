@@ -14,7 +14,6 @@ ion-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background)
 .panel, .set-panel, .magic-config, .proposal { padding: 1rem; border: 1px solid var(--border); border-radius: 16px; background: var(--panel); }
 .panel { position: sticky; top: 6rem; overflow: auto; max-height: calc(100vh - 8rem); }
 .panel h2, .magic-workspace h2 { margin: .3rem 0 .8rem; font-size: 1rem; font-weight: 800; }
-.filters { display: grid; grid-template-columns: repeat(3, 1fr); gap: .35rem; margin: .5rem 0; }
 .catalog-card, .set-item { display: flex; align-items: center; gap: .6rem; padding: .7rem .65rem; border-bottom: 1px solid var(--border); }
 .catalog-card:hover, .set-item:hover { background: var(--panel-soft); }
 .catalog-card > div, .item-main { display: grid; min-width: 0; flex: 1; }
@@ -22,7 +21,7 @@ ion-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background)
 .catalog-card small, .item-main small { color: var(--ion-color-medium); font-size: .7rem; }
 .song-catalog { margin-top: .5rem; }
 .catalog-state { display: grid; min-height: 180px; place-items: center; align-content: center; gap: .75rem; padding: 1rem; color: var(--ion-color-medium); text-align: center; }
-.set-actions, .set-toolbar, .row-actions, .hints, .proposal-status { display: flex; flex-wrap: wrap; gap: .35rem; }
+.set-actions, .set-toolbar, .row-actions, .proposal-status { display: flex; flex-wrap: wrap; gap: .35rem; }
 .set-actions { margin-bottom: .6rem; }
 .set-panel { overflow: hidden; margin-bottom: .75rem; padding: 0; }
 .set-panel > header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; border-bottom: 1px solid var(--border); background: var(--panel-soft); }
@@ -45,7 +44,6 @@ ion-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background)
 .magic-workspace > header > p:last-child { color: var(--ion-color-medium); }
 .eyebrow { color: var(--ion-color-secondary); font-size: .7rem; letter-spacing: .15em; }
 .magic-grid { display: grid; grid-template-columns: minmax(320px, 40%) 1fr; gap: 1rem; }
-.prompt { width: 100%; min-height: 140px; }
 .constraint-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
 .collapse { margin: 1rem 0; border: 1px solid var(--border); background: var(--panel-soft); }
 .large { min-height: 350px; }
