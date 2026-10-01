@@ -38,7 +38,7 @@ import { RehearsalSessionService } from '../services/rehearsal-session.service';
 export class RehearsalSessionFormPage implements OnInit {
   readonly rehearsalSections: FormPageHeaderSection[] = [{ id: 1, label: 'Dettagli' }, { id: 2, label: 'Brani da provare' }];
   readonly form = this.fb.nonNullable.group({
-    title: ['', Validators.required],
+    title: ['', Validators.maxLength(255)],
     date: [this.today(), Validators.required],
     startTime: '',
     endTime: '',
@@ -83,7 +83,7 @@ export class RehearsalSessionFormPage implements OnInit {
         this.songs.set(songs.filter((song) => song.status !== 'archived'));
         if (session) {
           this.form.patchValue({
-            title: session.title,
+            title: session.title ?? '',
             date: this.normalizeDate(session.date),
             startTime: this.normalizeTime(session.startTime),
             endTime: this.normalizeTime(session.endTime),
@@ -115,7 +115,7 @@ export class RehearsalSessionFormPage implements OnInit {
     this.form.controls.date.markAsTouched();
     this.form.controls.rehearsalRoomId.markAsTouched();
     if (this.form.controls.title.invalid || this.form.controls.date.invalid || this.form.controls.rehearsalRoomId.invalid) {
-      this.error.set('Completa titolo, data e sala prove prima di continuare.');
+      this.error.set('Controlla il titolo (massimo 255 caratteri) e completa data e sala prove prima di continuare.');
       return;
     }
     if (!this.timeRangeValid()) return;

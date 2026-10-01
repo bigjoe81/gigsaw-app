@@ -9,14 +9,17 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="resource-detail-content">
-  @if(loading){
+  @if(loading()){
     <ion-card>
       <ion-card-content>
         <ion-skeleton-text [animated]="true" style="width:70%"/>
         <ion-skeleton-text [animated]="true" style="width:90%"/>
       </ion-card-content>
     </ion-card>
-  } @else if(item){
+  } @else if(error()){
+    <ion-note class="ion-padding" color="danger" role="alert">{{ error() }}</ion-note>
+    <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+  } @else if(item()){
     <app-gigsaw-list listClass="detail-list">
       @for (field of config.fields; track field) {
         <app-gigsaw-list-item>
