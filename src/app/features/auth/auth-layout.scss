@@ -1,0 +1,80 @@
+:host ion-content {
+  --background: var(--gigsaw-background);
+}
+
+:host ion-content::part(scroll) {
+  min-height: 100%;
+  display: grid;
+  align-items: center;
+  padding-top: max(24px, var(--ion-safe-area-top));
+  padding-bottom: max(24px, var(--ion-safe-area-bottom));
+}
+
+.auth-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+  min-width: 0;
+  margin: auto;
+}
+
+.auth-brand {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 8px 0;
+  text-align: center;
+
+  img {
+    display: block;
+    width: min(260px, 70vw);
+    max-width: 100%;
+    height: auto;
+    margin: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 28px rgba(0, 0, 0, .12));
+  }
+
+  p {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: .95rem;
+    color: var(--ion-color-medium);
+  }
+}
+
+.auth-shell > p {
+  margin: 0;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.auth-shell app-gigsaw-button {
+  display: block;
+  width: 100%;
+}
+
+:host ::ng-deep .auth-shell app-gigsaw-button ion-button {
+  display: flex;
+  width: 100%;
+  margin: 0;
+}
+
+.auth-link {
+  width: 100%;
+  text-align: center;
+  white-space: normal;
+}
+
+@media (min-width: 768px) {
+  .auth-brand img {
+    width: 300px;
+  }
+}
