@@ -63,32 +63,41 @@
             </div>
           </div>
 
-          <div class="ticket-form">
-            <ion-input
-              label="Oggetto"
-              labelPlacement="stacked"
-              fill="outline"
-              [(ngModel)]="subject"
-              placeholder="Es. Import PDF bloccato"
-            />
+          <div class="grid min-w-0 gap-5 pt-2.5">
+            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
+              <span>Oggetto <strong class="text-[var(--ion-color-danger)]">*</strong></span>
+              <ion-input
+                aria-label="Oggetto"
+                class="font-normal"
+                [(ngModel)]="subject"
+                placeholder="Es. Import PDF bloccato"
+                [required]="true"
+              />
+            </label>
 
-            <ion-select label="Categoria" labelPlacement="stacked" fill="outline" [(ngModel)]="category">
-              <ion-select-option value="bug">Bug</ion-select-option>
-              <ion-select-option value="question">Domanda</ion-select-option>
-              <ion-select-option value="feature">Suggerimento</ion-select-option>
-              <ion-select-option value="billing">Pagamenti</ion-select-option>
-              <ion-select-option value="other">Altro</ion-select-option>
-            </ion-select>
+            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
+              <span>Categoria</span>
+              <ion-select aria-label="Categoria" class="font-normal" interface="popover" [(ngModel)]="category">
+                <ion-select-option value="bug">Bug</ion-select-option>
+                <ion-select-option value="question">Domanda</ion-select-option>
+                <ion-select-option value="feature">Suggerimento</ion-select-option>
+                <ion-select-option value="billing">Pagamenti</ion-select-option>
+                <ion-select-option value="other">Altro</ion-select-option>
+              </ion-select>
+            </label>
 
-            <ion-textarea
-              label="Messaggio"
-              labelPlacement="stacked"
-              fill="outline"
-              autoGrow="true"
-              rows="7"
-              [(ngModel)]="message"
-              placeholder="Descrivi il problema con più dettagli possibile"
-            />
+            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
+              <span>Messaggio <strong class="text-[var(--ion-color-danger)]">*</strong></span>
+              <ion-textarea
+                aria-label="Messaggio"
+                class="font-normal"
+                [autoGrow]="true"
+                [rows]="7"
+                [(ngModel)]="message"
+                placeholder="Descrivi il problema con più dettagli possibile"
+                [required]="true"
+              />
+            </label>
 
             <ion-button expand="block" (click)="createTicket()" [disabled]="saving() || !subject.trim() || !message.trim()">
               @if (saving()) { <ion-spinner name="crescent" /> } @else { Apri ticket }
@@ -116,15 +125,17 @@
           </div>
 
           <div class="reply-box">
-            <ion-textarea
-              label="Rispondi"
-              labelPlacement="stacked"
-              fill="outline"
-              autoGrow="true"
-              rows="4"
-              [(ngModel)]="replyMessage"
-              placeholder="Scrivi una risposta"
-            />
+            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
+              <span>Rispondi</span>
+              <ion-textarea
+                aria-label="Rispondi"
+                class="font-normal"
+                [autoGrow]="true"
+                [rows]="4"
+                [(ngModel)]="replyMessage"
+                placeholder="Scrivi una risposta"
+              />
+            </label>
             <ion-button (click)="sendReply()" [disabled]="saving() || !replyMessage.trim()">
               @if (saving()) { <ion-spinner name="crescent" /> } @else { Invia risposta }
             </ion-button>
