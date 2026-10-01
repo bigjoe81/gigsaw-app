@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -26,6 +27,7 @@ import { SupportTicketService } from '../services/support-ticket.service';
 @Component({
   standalone: true,
   imports: [
+    DatePipe,
     FormsModule,
     IonBadge,
     IonButton,
