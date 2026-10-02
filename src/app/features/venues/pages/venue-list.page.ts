@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AlertController,
@@ -53,7 +53,7 @@ import { VenueService } from '../services/venue.service';
   templateUrl: './venue-list.page.html',
   styleUrl: './venue-list.page.scss',
 })
-export class VenueListPage implements OnInit {
+export class VenueListPage {
   readonly venues = signal<Venue[]>([]);
   readonly rehearsalRooms = signal<RehearsalRoom[]>([]);
   readonly query = signal('');
@@ -83,7 +83,7 @@ export class VenueListPage implements OnInit {
     addIcons({ add, businessOutline, musicalNotesOutline, pencilOutline, trashOutline });
   }
 
-  ngOnInit(): void {
+  ionViewWillEnter(): void {
     this.load();
   }
 
