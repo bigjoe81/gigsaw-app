@@ -88,7 +88,7 @@ export class SetlistFormPage implements OnInit, OnDestroy {
                     title: item.title,
                     durationSeconds: item.durationSeconds,
                     sharedNotes: item.notes ?? undefined,
-                  }).filter(item => item.type !== 'song' || !!item.song),
+                  }),
             }));
           } else if (setlist.sections?.length) {
             this.workspace.sets[0].items = (setlist.songs ?? []).map(s => this.songItem(s));
