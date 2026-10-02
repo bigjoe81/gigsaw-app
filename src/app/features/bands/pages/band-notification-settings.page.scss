@@ -1,6 +1,19 @@
-:host { display: block; }
+:host {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+ion-content {
+  width: 100%;
+  max-width: none;
+  --padding-start: 0;
+  --padding-end: 0;
+}
 
 ion-content::part(scroll) {
+  box-sizing: border-box;
   width: 100%;
   max-width: none;
   margin: 0;
