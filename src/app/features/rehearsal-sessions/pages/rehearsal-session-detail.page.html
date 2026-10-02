@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-title>Riepilogo prova</ion-title>
+    <ion-buttons slot="end"><ion-button [routerLink]="['modifica']">Modifica</ion-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <main class="rehearsal-detail">
+    @if (loading()) {
+      <section class="hero skeleton" aria-label="Caricamento prova">
+        <ion-skeleton-text [animated]="true" style="width:35%" />
+        <ion-skeleton-text [animated]="true" style="width:70%;height:36px" />
+        <ion-skeleton-text [animated]="true" style="width:50%" />
+      </section>
+    } @else if (error() || !session) {
+      <section class="state">
+        <h1>Prova non disponibile</h1>
+        <ion-note color="danger" role="alert">{{ error() || 'La prova non è stata trovata.' }}</ion-note>
+        <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+      </section>
+    } @else {
+      @let current = session!;
+      <section class="hero">
+        <div class="hero-top"><p class="eyebrow">Il prossimo incontro, tutti i dettagli</p><span class="status" [class.cancelled]="current.status.toLowerCase() === 'cancelled'">{{ status(current.status) }}</span></div>
+        <div class="hero-body">
+          <div class="date-tile" aria-hidden="true"><span>{{ month(current.date) }}</span><strong>{{ day(current.date) }}</strong></div>
+          <div><h1>{{ current.title || 'Prova della band' }}</h1><p class="date">{{ date(current.date) }}</p></div>
+        </div>
+        <div class="schedule">
+          <div><span class="label">Orario</span><strong>{{ time(current) }}</strong></div>
+          @if (duration(current)) { <div><span class="label">Durata</span><strong>{{ duration(current) }}</strong></div> }
+        </div>
+      </section>
+      <div class="detail-grid">
+        <section class="detail-card room">
+          <p class="eyebrow">Dove ci troviamo</p>
+          <h2>{{ current.rehearsalRoom?.name || 'Sala prove' }}</h2>
+          @if (current.rehearsalRoom; as room) {
+            <p class="address">{{ room.address }}@if (room.address && room.city) {<br/>}{{ room.city }}</p>
+            @if (room.phone) { <a class="contact" [href]="'tel:' + room.phone">{{ room.phone }}</a> }
+          } @else { <p class="muted">Dettagli della sala non disponibili.</p> }
+        </section>
+        <section class="detail-card">
+          <p class="eyebrow">Preparazione</p>
+          <h2>Note organizzative</h2>
+          <p class="notes" [class.muted]="!current.notes">{{ current.notes || 'Nessuna nota aggiunta per questa prova.' }}</p>
+        </section>
+      </div>
+      @if (current.songIds?.length || current.songs?.length) {
+        <section class="detail-card repertoire">
+          <div><p class="eyebrow">Il repertorio della prova</p><h2>Brani da provare <span class="count">{{ current.songs?.length || current.songIds?.length }}</span></h2></div>
+          @if (current.songs?.length) {
+            <ol>@for (song of current.songs; track song.id) { <li>{{ song.title }}</li> }</ol>
+          } @else { <p class="muted">Apri la modifica per consultare i brani selezionati.</p> }
+          <ion-button fill="outline" size="small" [routerLink]="['modifica']">Gestisci brani</ion-button>
+        </section>
+      }
+      <footer class="detail-footer"><span>Vuoi aggiornare i dettagli della prova?</span><div><ion-button fill="clear" color="danger" (click)="confirmDelete()">Elimina prova</ion-button><ion-button [routerLink]="['modifica']">Modifica prova</ion-button></div></footer>
+    }
+  </main>
+</ion-content>
