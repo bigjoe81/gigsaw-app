@@ -82,18 +82,12 @@
 
 .auth-ion-input {
   width: 100%;
-  min-height: 54px;
-  --background: var(--gigsaw-input-background);
-  --border-color: var(--gigsaw-input-border);
-  --border-radius: 12px;
-  --color: var(--gigsaw-text);
-  --placeholder-color: var(--gigsaw-muted);
-  --highlight-color-focused: var(--ion-color-primary);
-  --padding-start: 14px;
-  --padding-end: 14px;
+  min-height: 48px;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
 .auth-ion-input.ion-invalid.ion-touched {
-  --border-color: var(--ion-color-danger);
+  border-color: var(--ion-color-danger);
   --highlight-color-focused: var(--ion-color-danger);
 }
