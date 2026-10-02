@@ -177,7 +177,7 @@
               <footer class="step-actions form-action-bar">
                 <ion-button type="button" fill="clear" (click)="goToStep(2)">Indietro</ion-button>
                 @if (!editing) {
-                  <ion-button type="button" fill="outline" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</button>
+                  <ion-button type="button" fill="outline" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</ion-button>
                 }
                 <ion-button type="submit" [disabled]="saving()">@if (saving()) {
                   <ion-spinner name="crescent"/>
