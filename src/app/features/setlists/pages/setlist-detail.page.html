@@ -39,7 +39,29 @@
         <ion-card>
           <ion-card-header><ion-card-title>Brani</ion-card-title></ion-card-header>
           <ion-card-content>
-            @if (setlist.sections?.length) {
+            @if (setlist.items?.length) {
+              @for (section of setlist.items; track $index) {
+                <h2 class="mb-3 mt-5 text-lg font-bold">{{ section.name }}</h2>
+                <app-gigsaw-list>
+                  @for (item of section.items; track $index; let index = $index) {
+                    <app-gigsaw-list-item>
+                      <div class="list-col-grow py-1" [style.border-left]="item.medleyId ? '4px solid var(--ion-color-secondary)' : null" [style.padding-left]="item.medleyId ? '12px' : null">
+                        @if (item.type === 'song' && mixedItemSong(item); as song) {
+                          <h2 class="m-0 text-base font-bold">{{ index + 1 }}. {{ song.title }}</h2>
+                          <p class="m-0 mt-1 text-sm">{{ songSubtitle(song) }}</p>
+                          @if (item.medleyId) { <p class="m-0 mt-1 text-xs font-bold uppercase tracking-wider text-[var(--ion-color-secondary)]">Medley</p> }
+                          @if (item.notes) { <p class="m-0 mt-1 text-sm">Note scaletta: {{ item.notes }}</p> }
+                        } @else {
+                          <h2 class="m-0 text-base font-bold">{{ mixedItemLabel(item) }} · {{ item.title }}</h2>
+                          <p class="m-0 mt-1 text-sm">{{ formatSeconds(item.durationSeconds) }}</p>
+                          @if (item.notes) { <p class="m-0 mt-1 text-sm">{{ item.notes }}</p> }
+                        }
+                      </div>
+                    </app-gigsaw-list-item>
+                  }
+                </app-gigsaw-list>
+              }
+            } @else if (setlist.sections?.length) {
               @for (section of setlist.sections; track $index) {
                 <h2 class="mb-3 mt-5 text-lg font-bold">{{ section.name }}</h2>
                 <app-gigsaw-list>

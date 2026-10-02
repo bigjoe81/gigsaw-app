@@ -25,7 +25,7 @@ import {
 } from '@ionic/angular/standalone';
 import { BandMember } from '../../bands/models/band.models';
 import { BandService } from '../../bands/services/band.service';
-import { Setlist } from '../../../core/models/band-resources.models';
+import { Setlist, SetlistItem } from '../../../core/models/band-resources.models';
 import { SetlistPdfOptions } from '../models/setlist.models';
 import { SetlistPdfService, SetlistPdfFormat } from '../services/setlist-pdf.service';
 import { SetlistService } from '../services/setlist.service';
@@ -144,6 +144,14 @@ export class SetlistDetailPage implements OnInit {
       song.setlistNotes ? `Note scaletta: ${song.setlistNotes}` : '',
       ...(song.memberNotes ?? []).map((memberNote) => `${this.memberName(memberNote.userId)}: ${memberNote.notes}`),
     ].filter(Boolean);
+  }
+
+  mixedItemSong(item: SetlistItem) {
+    return item.songId ? this.setlist?.songs?.find(song => song.id === item.songId) : undefined;
+  }
+
+  mixedItemLabel(item: SetlistItem): string {
+    return item.type === 'pause' ? 'Pausa' : item.type === 'speech' ? 'Parlato' : item.type === 'stage-note' ? 'Nota palco' : 'Brano';
   }
 
   sectionSongs(ids: number[]): NonNullable<Setlist['songs']> {

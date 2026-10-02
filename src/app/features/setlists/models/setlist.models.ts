@@ -1,4 +1,4 @@
-import { Setlist, SetlistMemberNote, SetlistSection, Song } from '../../../core/models/band-resources.models';
+import { Setlist, SetlistItemSection, SetlistMemberNote, SetlistSection, Song } from '../../../core/models/band-resources.models';
 
 export interface SetlistSongEntryPayload {
   songId: number;
@@ -31,6 +31,7 @@ export interface SetlistTemplate {
 
 export interface SetlistUpsertPayload {
   sections?: SetlistSection[];
+  items?: SetlistItemSection[];
   encoreSongIds?: number[];
   title: string;
   date?: string | null;
