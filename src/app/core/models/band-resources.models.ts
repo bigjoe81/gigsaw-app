@@ -92,8 +92,28 @@ export interface SetlistSection {
   songIds: number[];
 }
 
+export type SetlistItemType = 'song' | 'pause' | 'speech' | 'stage-note';
+
+export interface SetlistItem {
+  type: SetlistItemType;
+  title: string;
+  durationSeconds: number;
+  notes?: string | null;
+  songId?: number | null;
+  concertKey?: string | null;
+  medleyId?: string | null;
+  segue?: boolean;
+}
+
+export interface SetlistItemSection {
+  name: string;
+  encore?: boolean;
+  items: SetlistItem[];
+}
+
 export interface Setlist extends BandScopedEntity {
   sections?: SetlistSection[];
+  items?: SetlistItemSection[];
   encoreSongIds?: number[];
   bandId?: number;
   gigId?: number | null;
