@@ -42,7 +42,7 @@
             }
               @if (metadataResults().length) {
                 <div class="metadata-results">@for (result of metadataResults(); track result.externalId) {
-                  <ion-button type="button" class="metadata-card" (click)="chooseMetadata(result)"
+                  <button type="button" class="metadata-card" (click)="chooseMetadata(result)"
                           [disabled]="detailLoading()">@if (result.artworkUrl) {
                     <img [src]="result.artworkUrl" alt=""/>
                   } @else {
@@ -50,7 +50,7 @@
                   }<span
                     class="metadata-copy"><strong>{{ result.title }}</strong><small>{{ result.artist || 'Artista sconosciuto' }}</small><small>{{ result.album }}</small></span><span
                     class="provider">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
-                  </ion-button>
+                  </button>
                 }</div>
               }</section>
           }
@@ -76,7 +76,7 @@
               @if (metadataResults().length) {
                 <div class="metadata-results metadata-results-inline">
                   @for (result of metadataResults(); track result.externalId) {
-                    <ion-button type="button" class="metadata-card" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
+                    <button type="button" class="metadata-card" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
                       @if (result.artworkUrl) {
                         <img [src]="result.artworkUrl" alt=""/>
                       } @else {
@@ -88,7 +88,7 @@
                         <small>{{ result.album }}</small>
                       </span>
                       <span class="provider">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
-                    </ion-button>
+                    </button>
                   }
                 </div>
               }
@@ -177,7 +177,7 @@
               <footer class="step-actions form-action-bar">
                 <ion-button type="button" fill="clear" (click)="goToStep(2)">Indietro</ion-button>
                 @if (!editing) {
-                  <ion-button type="button" fill="outline" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</ion-button>
+                  <ion-button type="button" fill="outline" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</button>
                 }
                 <ion-button type="submit" [disabled]="saving()">@if (saving()) {
                   <ion-spinner name="crescent"/>
