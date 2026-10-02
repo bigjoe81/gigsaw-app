@@ -30,7 +30,7 @@ import {
 } from '@ionic/angular/standalone';
 import type { ItemReorderCustomEvent } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, optionsOutline, imagesOutline, peopleOutline, addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline } from 'ionicons/icons';
+import { personCircleOutline, optionsOutline, imagesOutline, peopleOutline, addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, notificationsOutline, removeCircleOutline, shareOutline, trashOutline } from 'ionicons/icons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
@@ -82,7 +82,7 @@ import { GigsawBadgeComponent, GigsawListComponent, GigsawListItemComponent, Gig
 
 })
 export class BandManagePage implements OnInit, OnDestroy {
-  readonly settingsSection = signal<'overview' | 'profile' | 'tech' | 'media' | 'team' | 'invites'>('overview');
+  readonly settingsSection = signal<'overview' | 'profile' | 'tech' | 'media' | 'team' | 'invites' | 'notifications'>('overview');
   readonly techSection = signal<'channels' | 'stage' | 'notes'>('channels');
   readonly selectedStageItem = signal<number | null>(null);
   readonly genreQuery = signal('');
@@ -234,6 +234,7 @@ export class BandManagePage implements OnInit, OnDestroy {
     { key: 'media', path: 'media', title: 'Media e press kit', description: 'Foto promozionali e materiali da condividere.', icon: 'images-outline', admin: true },
     { key: 'team', path: 'membri', title: 'Membri', description: 'Musicisti, strumenti e ruoli nella band.', icon: 'people-outline', admin: false },
     { key: 'invites', path: 'inviti', title: 'Inviti', description: 'Link di accesso, inviti personalizzati e richieste pendenti.', icon: 'mail-outline', admin: true },
+    { key: 'notifications', path: 'notifiche', title: 'Notifiche email', description: 'Decidi quali aggiornamenti importanti inviare ai membri.', icon: 'notifications-outline', admin: true },
   ] as const;
   private readonly destroyRef = inject(DestroyRef);
 
@@ -259,7 +260,7 @@ export class BandManagePage implements OnInit, OnDestroy {
   }
 
   constructor() {
-    addIcons({ personCircleOutline, optionsOutline, imagesOutline, peopleOutline, addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, removeCircleOutline, shareOutline, trashOutline });
+    addIcons({ personCircleOutline, optionsOutline, imagesOutline, peopleOutline, addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, notificationsOutline, removeCircleOutline, shareOutline, trashOutline });
   }
 
   ngOnInit(): void {
