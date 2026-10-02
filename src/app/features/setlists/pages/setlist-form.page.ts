@@ -72,7 +72,7 @@ export class SetlistFormPage implements OnInit, OnDestroy {
               id: uid('set'),
               name: section.name,
               encore: section.encore,
-              items: section.items.map(item => item.type === 'song' && item.songId
+              items: section.items.map(item => item.type === 'song' && item.songId && songsById.get(item.songId)
                 ? {
                     ...this.songItem(songsById.get(item.songId)!),
                     title: item.title,
