@@ -134,3 +134,22 @@ export interface UpdateBandRequest {
   inputChannels?: BandInputChannel[];
   stagePlotLayout?: BandStagePlotItem[];
 }
+
+
+export type BandNotificationAudience = 'all' | 'admins' | 'selected';
+
+export interface BandEmailNotificationSettings {
+  enabled: boolean;
+  recipients: BandNotificationAudience;
+  userIds: number[];
+  events: {
+    rehearsalCreated: boolean;
+    rehearsalUpdated: boolean;
+    rehearsalCancelled: boolean;
+    rehearsalDeleted: boolean;
+    gigCreated: boolean;
+    gigUpdated: boolean;
+    gigDeleted: boolean;
+    memberInvited: boolean;
+  };
+}
