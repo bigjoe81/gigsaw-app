@@ -324,14 +324,16 @@
 }
 
 .text-control {
-  --border-radius: 12px;
-  --highlight-color-focused: var(--create-blue);
-  --padding-start: 16px;
-  --padding-end: 16px;
-  min-height: 54px;
+  width: 100%;
+  min-height: 48px;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
-.text-control.control-invalid { --border-color: #d94a59; --highlight-color-focused: #d94a59; }
+.text-control.control-invalid {
+  border-color: #d94a59;
+  --highlight-color-focused: #d94a59;
+}
 .description-control { min-height: 118px; }
 
 .field-meta {
@@ -373,15 +375,9 @@
 
 :host ::ng-deep app-gigsaw-typeahead ion-input {
   width: 100%;
-  min-height: 54px;
-  --background: var(--gigsaw-input-background);
-  --border-color: var(--gigsaw-input-border);
-  --color: #e5edf7;
-  --placeholder-color: #7f90a8;
-  --border-radius: 12px;
-  --highlight-color-focused: var(--create-blue);
-  --padding-start: 16px;
-  --padding-end: 16px;
+  min-height: 48px;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
 :host ::ng-deep app-gigsaw-typeahead .dropdown-overlay ion-list {
@@ -527,9 +523,4 @@
   .form-actions { background: rgba(18, 18, 18, 0.96); }
   .embedded .form-actions { background: rgba(18, 18, 18, 0.96); }
 
-.text-control {
-  --background: var(--gigsaw-input-background);
-  --border-color: var(--gigsaw-input-border);
-  --color: #E5EDF7;
-  --placeholder-color: #7F90A8;
-}
+.text-control { color: #E5EDF7; }
