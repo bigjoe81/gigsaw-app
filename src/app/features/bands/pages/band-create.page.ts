@@ -55,7 +55,7 @@ import { GigsawBadgeComponent, GigsawTypeaheadComponent, GigsawTypeaheadItem } f
 })
 export class BandCreatePage implements OnDestroy {
   private static readonly GENRE_SEARCH_MIN_LENGTH = 3;
-  private static readonly GENRE_RESULT_LIMIT = 40;
+  private static readonly GENRE_RESULT_LIMIT = 6;
   private readonly fb = inject(FormBuilder);
   private readonly bandService = inject(BandService);
   private readonly genreService = inject(GenreService);
