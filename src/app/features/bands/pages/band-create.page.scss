@@ -524,3 +524,46 @@
   .embedded .form-actions { background: rgba(18, 18, 18, 0.96); }
 
 .text-control { color: #E5EDF7; }
+
+
+/* Keep create-band fields visually identical to the compact auth field. */
+.login-style-field {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--gigsaw-input-border);
+  border-radius: 8px;
+  background: var(--gigsaw-input-background);
+  color: var(--gigsaw-text);
+  --background: transparent;
+  --color: var(--gigsaw-text);
+  --placeholder-color: var(--gigsaw-muted);
+  --placeholder-opacity: 1;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+}
+
+.login-style-field:focus-within {
+  border-color: var(--gigsaw-input-border-focus);
+  outline: 2px solid color-mix(in srgb, var(--gigsaw-input-border-focus) 25%, transparent);
+  outline-offset: 1px;
+}
+
+.login-style-field.control-invalid {
+  border-color: var(--ion-color-danger);
+}
+
+:host ::ng-deep app-gigsaw-typeahead .dropdown-overlay > ion-input {
+  box-sizing: border-box;
+  min-height: 48px;
+  border: 1px solid var(--gigsaw-input-border);
+  border-radius: 8px;
+  background: var(--gigsaw-input-background);
+  --background: transparent;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+}
