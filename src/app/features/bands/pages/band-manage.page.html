@@ -80,12 +80,14 @@
           <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
             <section class="profile-identity">
               <div class="profile-logo-panel">
-                @if (band.logo) { <img [src]="band.logo" alt="Logo band" class="profile-logo" /> }
+                @if (logoPreviewUrl() || band.logo) { <img [src]="logoPreviewUrl() || band.logo" alt="Logo band" class="profile-logo" /> }
                 @else { <div class="profile-logo profile-logo-placeholder">{{ band.name.slice(0, 2).toUpperCase() }}</div> }
                 <div class="grid min-w-0 gap-2 text-sm font-semibold">
                   <label for="band-logo-picker">Cambia logo</label>
-                  <input id="band-logo-picker" class="w-full min-w-0 rounded-lg border border-solid border-[var(--gigsaw-input-border)] bg-[var(--gigsaw-input-background)] p-3 text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-[var(--ion-color-primary)] file:px-3 file:py-2 file:text-[var(--ion-color-primary-contrast)]" type="file" accept="image/*" (change)="onSettingsFilesSelected($event, 'logo')" />
+                  <input id="band-logo-picker" class="w-full min-w-0 rounded-lg border border-solid border-[var(--gigsaw-input-border)] bg-[var(--gigsaw-input-background)] p-3 text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-[var(--ion-color-primary)] file:px-3 file:py-2 file:text-[var(--ion-color-primary-contrast)]" type="file" accept="image/jpeg,image/png,image/webp" (change)="onSettingsFilesSelected($event, 'logo')" />
                 </div>
+                <small>JPG, PNG o WebP · massimo 2 MB</small>
+                @if (logoError()) { <ion-note color="danger" role="alert">{{ logoError() }}</ion-note> }
               </div>
               <div class="profile-primary-fields">
                 <div class="field full grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-nome-band">Nome band</label><ion-input id="band-field-nome-band" aria-label="Nome band" class="min-w-0 w-full font-normal" formControlName="name" [class.ion-invalid]="profileForm.controls.name.touched && profileForm.controls.name.invalid"    [class.ion-touched]="profileForm.controls.name.touched && profileForm.controls.name.invalid"/></div>

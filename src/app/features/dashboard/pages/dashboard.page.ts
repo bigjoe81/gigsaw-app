@@ -47,11 +47,12 @@ interface DashboardEvent {
 }
 
 interface DashboardActivity {
-  id: number;
+  id: string;
   text: string;
   target: string;
   time: string;
-  avatar: string;
+  icon: string;
+  link: string;
 }
 
 @Component({
@@ -128,8 +129,9 @@ export class DashboardPage {
       peopleOutline,
       ticketOutline,
     });
-    this.loadDashboard();
   }
+
+  ionViewWillEnter(): void { this.loadDashboard(); }
 
   get userName(): string {
     return this.auth.currentUser()?.name || 'musicista';
@@ -193,14 +195,19 @@ export class DashboardPage {
     ].sort((a, b) => a.date - b.date).slice(0, 4);
     this.events.set(agenda.map((item) => item.event));
 
-    this.activities.set(songs
-      .filter((song) => Boolean(song.updatedAt))
-      .sort((a, b) => this.dateValue(b.updatedAt) - this.dateValue(a.updatedAt))
-      .slice(0, 3)
-      .map((song) => ({
-        id: song.id, text: 'Brano aggiornato', target: song.title,
-        time: this.dateTime(song.updatedAt), avatar: this.userInitial,
-      })));
+    const recent = [
+      ...songs.map(song => ({ id: `song:${song.id}`, target: song.title, kind: 'Brano', icon: 'musical-notes-outline', link: `${this.bandBaseUrl}/repertorio/${song.id}`, updatedAt: song.updatedAt, createdAt: song.createdAt })),
+      ...gigs.map(gig => ({ id: `gig:${gig.id}`, target: gig.title || 'Concerto', kind: 'Concerto', icon: 'ticket-outline', link: `${this.bandBaseUrl}/concerti/${gig.id}`, updatedAt: gig.updatedAt, createdAt: gig.createdAt })),
+      ...rehearsals.map(rehearsal => ({ id: `rehearsal:${rehearsal.id}`, target: rehearsal.title || 'Prova', kind: 'Prova', icon: 'mic-outline', link: `${this.bandBaseUrl}/prove/${rehearsal.id}`, updatedAt: rehearsal.updatedAt, createdAt: rehearsal.createdAt })),
+    ].filter(item => this.dateValue(item.updatedAt || item.createdAt) > 0)
+      .sort((a, b) => this.dateValue(b.updatedAt || b.createdAt) - this.dateValue(a.updatedAt || a.createdAt))
+      .slice(0, 5);
+    this.activities.set(recent.map(item => ({
+      id: item.id, target: item.target, icon: item.icon, link: item.link,
+      text: `${item.kind} ${item.updatedAt && item.updatedAt !== item.createdAt ? (item.kind === 'Prova' ? 'aggiornata' : 'aggiornato') : (item.kind === 'Prova' ? 'aggiunta' : 'aggiunto')}`,
+      time: this.dateTime(item.updatedAt || item.createdAt),
+    })));
+
 
     const ready = songs.filter((song) => song.status?.toLocaleLowerCase() === 'active').length;
     const archived = songs.filter((song) => song.status?.toLocaleLowerCase() === 'archived').length;
@@ -238,7 +245,7 @@ export class DashboardPage {
       location: rehearsal.rehearsalRoom?.name ?? undefined,
       tone: 'blue',
       action: 'Dettagli',
-      link: `${this.bandBaseUrl}/prove/${rehearsal.id}/modifica`,
+      link: `${this.bandBaseUrl}/prove/${rehearsal.id}`,
     };
   }
 

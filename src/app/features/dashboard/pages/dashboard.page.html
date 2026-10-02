@@ -77,11 +77,11 @@
             <h2 id="activity-title" class="mb-5 mt-0 text-lg font-semibold">Attività recente</h2>
             <div class="flex flex-col gap-5">
               @for (activity of activities(); track activity.id) {
-                <div class="flex items-start gap-3">
-                  <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--gigsaw-input-background)] text-[var(--ion-color-secondary)]"><ion-icon name="musical-notes-outline" aria-hidden="true" /></span>
+                <a [routerLink]="activity.link" class="flex items-start gap-3 rounded-lg text-[var(--gigsaw-text)] no-underline hover:bg-[var(--gigsaw-input-background)]">
+                  <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--gigsaw-input-background)] text-[var(--ion-color-secondary)]"><ion-icon [name]="activity.icon" aria-hidden="true" /></span>
                   <div class="min-w-0 flex-1"><p class="m-0 text-sm">{{ activity.text }} <span class="font-semibold [overflow-wrap:anywhere]">· {{ activity.target }}</span></p><p class="mb-0 mt-1 text-xs text-[var(--gigsaw-muted)]">{{ activity.time }}</p></div>
-                </div>
-              } @empty { <p class="m-0 py-3 text-sm leading-6 text-[var(--gigsaw-muted)]">Nessuna attività recente. Gli aggiornamenti ai brani compariranno qui.</p> }
+                </a>
+              } @empty { <p class="m-0 py-3 text-sm leading-6 text-[var(--gigsaw-muted)]">Nessun aggiornamento recente. Qui trovi le ultime modifiche a brani, prove e concerti.</p> }
             </div>
           </section>
         </div>

@@ -1,5 +1,5 @@
 
-import { Component, NgZone, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -191,6 +191,9 @@ export class BandManagePage implements OnInit, OnDestroy {
   profileError = '';
   techError = '';
   selectedLogoFile: File | null = null;
+  readonly logoPreviewUrl = signal('');
+  readonly logoError = signal('');
+  private readonly changeDetector = inject(ChangeDetectorRef);
   selectedPressPhotos: File[] = [];
   lastInvitation?: PendingBandInvitation;
   readonly canShareOnWhatsApp = this.isMobileDevice();
@@ -200,6 +203,7 @@ export class BandManagePage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.dragCleanup?.();
+    this.clearLogoPreview();
   }
   private readonly memberInstrumentDrafts = new Map<number, string>();
 
@@ -369,11 +373,31 @@ export class BandManagePage implements OnInit, OnDestroy {
 
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement | null;
-    this.selectedLogoFile = input?.files?.[0] ?? null;
+    this.onLogoFilesSelected(Array.from(input?.files ?? []));
   }
 
   onLogoFilesSelected(files: File[]): void {
-    this.selectedLogoFile = files[0] ?? null;
+    const file = files[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      this.logoError.set('Scegli un file JPG, PNG o WebP.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      this.logoError.set('Il logo supera 2 MB. Scegli un file più leggero.');
+      return;
+    }
+    this.clearLogoPreview();
+    this.selectedLogoFile = file;
+    this.logoPreviewUrl.set(URL.createObjectURL(file));
+    this.logoError.set('');
+    this.profileForm.markAsDirty();
+  }
+
+  private clearLogoPreview(): void {
+    const url = this.logoPreviewUrl();
+    if (url) URL.revokeObjectURL(url);
+    this.logoPreviewUrl.set('');
   }
 
   setGenreValues(value: string | string[]): void {
@@ -427,12 +451,15 @@ export class BandManagePage implements OnInit, OnDestroy {
         this.band = band;
         this.patchProfileForm(band);
         this.selectedLogoFile = null;
+        this.clearLogoPreview();
         this.savingProfile = false;
+        this.changeDetector.markForCheck();
         (await this.toast.create({ message: 'Profilo band salvato.', duration: 1800, color: 'success' })).present();
       },
-      error: async (error: { error?: { message?: string } }) => {
+      error: async (error: { error?: { message?: string; errors?: Record<string, string[]> } }) => {
         this.savingProfile = false;
-        this.profileError = error.error?.message || 'Salvataggio profilo non riuscito.';
+        this.profileError = Object.values(error.error?.errors ?? {}).find(messages => messages.length)?.[0] || error.error?.message || 'Salvataggio profilo non riuscito.';
+        this.changeDetector.markForCheck();
         (await this.toast.create({ message: this.profileError, duration: 2200, color: 'danger' })).present();
       },
     });
@@ -680,6 +707,7 @@ export class BandManagePage implements OnInit, OnDestroy {
     if (!target || !container || !group) return;
 
     this.dragCleanup?.();
+    this.clearLogoPreview();
     event.preventDefault();
     const itemRect = target.getBoundingClientRect();
     const offsetX = event.clientX - (itemRect.left + itemRect.width / 2);
