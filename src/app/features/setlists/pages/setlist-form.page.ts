@@ -67,12 +67,30 @@ export class SetlistFormPage implements OnInit, OnDestroy {
           this.workspace.title = setlist.title;
           this.workspace.gigLabel = gigs.find(g => g.id === setlist.gigId)?.title;
           const songsById = new Map((setlist.songs ?? []).map(song => [song.id, song]));
-          if (setlist.sections?.length) {
-            this.workspace.sets = setlist.sections.map(section => ({
-              id: uid('set'), name: section.name, encore: section.encore,
-              items: section.songIds.map(id => songsById.get(id)).filter((song): song is NonNullable<typeof song> => !!song).map(song => this.songItem(song)),
+          if (setlist.items?.length) {
+            this.workspace.sets = setlist.items.map(section => ({
+              id: uid('set'),
+              name: section.name,
+              encore: section.encore,
+              items: section.items.map(item => item.type === 'song' && item.songId
+                ? {
+                    ...this.songItem(songsById.get(item.songId)!),
+                    title: item.title,
+                    durationSeconds: item.durationSeconds,
+                    concertKey: item.concertKey ?? undefined,
+                    medleyId: item.medleyId ?? undefined,
+                    segue: item.segue,
+                    sharedNotes: item.notes ?? undefined,
+                  }
+                : {
+                    id: uid(item.type),
+                    type: item.type,
+                    title: item.title,
+                    durationSeconds: item.durationSeconds,
+                    sharedNotes: item.notes ?? undefined,
+                  }).filter(item => item.type !== 'song' || !!item.song),
             }));
-          } else {
+          } else if (setlist.sections?.length) {
             this.workspace.sets[0].items = (setlist.songs ?? []).map(s => this.songItem(s));
           }
         }
@@ -160,6 +178,20 @@ export class SetlistFormPage implements OnInit, OnDestroy {
       sections: this.workspace.sets.map(set => ({
         name: set.name.trim() || 'Set', encore: !!set.encore,
         songIds: set.items.filter(item => item.type === 'song' && item.song?.id).map(item => item.song!.id),
+      })),
+      items: this.workspace.sets.map(set => ({
+        name: set.name.trim() || 'Set',
+        encore: !!set.encore,
+        items: set.items.map(item => ({
+          type: item.type,
+          title: item.title,
+          durationSeconds: item.durationSeconds,
+          notes: item.sharedNotes || null,
+          songId: item.song?.id ?? null,
+          concertKey: item.concertKey ?? null,
+          medleyId: item.medleyId ?? null,
+          segue: !!item.segue,
+        })),
       })),
       encoreSongIds: this.workspace.sets.filter(set => set.encore).reduce<number[]>((ids, set) => ids.concat(set.items.filter(item => item.type === 'song' && item.song?.id).map(item => item.song!.id)), []),
     };
