@@ -20,34 +20,38 @@ h1 { margin: 0; font-size: clamp(2rem, 7vw, 3rem); font-weight: 850; line-height
 .lead { margin: 14px 0 0; color: var(--onboarding-muted); line-height: 1.55; }
 .choice-grid { display: grid; gap: 13px; margin-top: 30px; }
 .choice-card {
-  width: 100%;
-  min-height: 82px;
-  margin: 0;
-  --background: color-mix(in srgb, var(--onboarding-surface) 88%, var(--ion-color-brand-blue));
-  --background-hover: color-mix(in srgb, var(--onboarding-surface) 82%, var(--ion-color-brand-blue));
-  --background-activated: color-mix(in srgb, var(--onboarding-surface) 78%, var(--ion-color-brand-blue));
-  --color: var(--gigsaw-text);
-  --border-color: var(--onboarding-border);
-  --border-style: solid;
-  --border-width: 1px;
-  --border-radius: 16px;
-  --box-shadow: none;
-  --padding-start: 15px;
-  --padding-end: 15px;
-  text-transform: none;
-}
-.choice-card::part(native) {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 22px;
   align-items: center;
   gap: 14px;
   width: 100%;
-  min-height: 82px;
+  min-height: 88px;
+  padding: 16px;
+  border: 1px solid var(--onboarding-border);
+  border-radius: 16px;
+  color: var(--gigsaw-text);
+  background: color-mix(in srgb, var(--onboarding-surface) 88%, var(--ion-color-brand-blue));
   text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 140ms ease;
 }
-.choice-card:hover { --border-color: var(--ion-color-brand-blue); }
+.choice-card:hover {
+  border-color: var(--ion-color-brand-blue);
+  background: color-mix(in srgb, var(--onboarding-surface) 82%, var(--ion-color-brand-blue));
+}
+.choice-card:active {
+  transform: translateY(1px);
+  background: color-mix(in srgb, var(--onboarding-surface) 78%, var(--ion-color-brand-blue));
+}
+.choice-card:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 3px;
+}
+.choice-copy { min-width: 0; }
+.choice-chevron { color: var(--onboarding-muted); font-size: 1.15rem; }
+
 .choice-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 14px; color: var(--ion-color-primary); background: rgba(var(--ion-color-primary-rgb), .12); font-size: 1.35rem; }
-.choice-card > span:nth-of-type(2) { min-width: 0; }
 .choice-card strong, .choice-card small { display: block; white-space: normal; }
 .choice-card strong { font-size: 1rem; }
 .choice-card small { margin-top: 4px; color: var(--onboarding-muted); line-height: 1.35; }
