@@ -360,7 +360,43 @@
   font-weight: 750;
 }
 
-.genre-search { width: min(100%, 440px); }
+.genre-search {
+  display: block;
+  width: min(100%, 520px);
+  position: relative;
+  z-index: 8;
+}
+
+:host ::ng-deep app-gigsaw-typeahead .gigsaw-typeahead {
+  width: 100%;
+}
+
+:host ::ng-deep app-gigsaw-typeahead ion-input {
+  width: 100%;
+  min-height: 54px;
+  --background: var(--gigsaw-input-background);
+  --border-color: var(--gigsaw-input-border);
+  --color: #e5edf7;
+  --placeholder-color: #7f90a8;
+  --border-radius: 12px;
+  --highlight-color-focused: var(--create-blue);
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+:host ::ng-deep app-gigsaw-typeahead .dropdown-overlay ion-list {
+  max-height: 312px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ion-card-background);
+  border-color: var(--create-border);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, .34);
+}
+
+:host ::ng-deep app-gigsaw-typeahead .dropdown-overlay ion-item {
+  --background: var(--ion-card-background);
+  --color: var(--gigsaw-text);
+}
 
 .genre-search-hint {
   margin: 8px 0 0;
