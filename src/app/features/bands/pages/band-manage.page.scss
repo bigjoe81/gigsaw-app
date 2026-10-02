@@ -1,6 +1,24 @@
-:host { display: block; }
+:host {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
 
-ion-content::part(scroll) { width: 100%; max-width: none; margin: 0; padding: 12px 0 80px; }
+ion-content {
+  width: 100%;
+  max-width: none;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+ion-content::part(scroll) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 12px 0 80px;
+}
 .settings-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 22px 20px; }
 .settings-heading h1 { margin: 0; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; }
 .settings-heading p { margin: 8px 0 0; color: var(--gigsaw-muted); line-height: 1.5; }
