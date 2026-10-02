@@ -109,7 +109,7 @@
 
           <ion-input
             id="band-name"
-            class="text-control"
+            class="text-control w-full"
             formControlName="name"
             fill="outline"
             placeholder="Es. Crossroads Blues Trio"
@@ -169,8 +169,9 @@
               [value]="form.controls.genreSearch.value || ''"
               [items]="genreTypeaheadItems"
               [minChars]="3"
-              [maxResults]="40"
+              [maxResults]="6"
               [filterLocally]="false"
+              [dropdownOverlay]="true"
               placeholder="Cerca un genere musicale"
               emptyMessage="Nessun genere trovato."
               (valueChange)="onGenreSearchChange($event)"
@@ -200,7 +201,7 @@
 
           <ion-textarea
             id="band-description"
-            class="text-control description-control"
+            class="text-control description-control w-full"
             formControlName="bioShort"
             fill="outline"
             placeholder="Es. Blues, rhythm & blues e rock ’n’ roll tra Chicago e New Orleans."
