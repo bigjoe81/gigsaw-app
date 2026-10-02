@@ -1,0 +1,49 @@
+:host { display: block; }
+
+ion-content::part(scroll) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-bottom: 80px;
+}
+
+.notification-settings-page {
+  width: 100%;
+  padding: 20px;
+}
+
+.notification-settings-page form {
+  display: grid;
+  gap: 24px;
+}
+
+ion-card {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  --background: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+ion-card::part(native) {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+ion-card ion-card-header {
+  padding: 8px 0 14px;
+}
+
+ion-card ion-card-content {
+  padding: 0;
+}
+
+@media (max-width: 760px) {
+  .notification-settings-page {
+    padding: 16px;
+  }
+}

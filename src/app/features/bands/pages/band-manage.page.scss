@@ -1,6 +1,6 @@
 :host { display: block; }
 
-ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px 80px; }
+ion-content::part(scroll) { width: 100%; max-width: none; margin: 0; padding: 12px 0 80px; }
 .settings-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 22px 20px; }
 .settings-heading h1 { margin: 0; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; }
 .settings-heading p { margin: 8px 0 0; color: var(--gigsaw-muted); line-height: 1.5; }
@@ -42,7 +42,7 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 .press-photo-card { display: grid; gap: 8px; }
 .press-photo-thumb { width: 100%; aspect-ratio: 1; border-radius: 16px; object-fit: cover; background: var(--ion-color-light); }
 
-.tech-card { border: 1px solid var(--gigsaw-border); box-shadow: none; }
+.tech-card { border: 0; box-shadow: none; }
 .tech-card ion-card-header { padding: 24px 24px 14px; }
 .tech-card ion-card-content { padding: 0 24px 24px; }
 .tech-heading, .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
@@ -145,3 +145,32 @@ ion-content::part(scroll) { max-width: 1180px; margin: 0 auto; padding: 12px 8px
 }
 
 .profile-card { --background: transparent; background: transparent; box-shadow: none; }
+
+ion-card {
+  width: auto;
+  margin: 0 20px 24px;
+  border: 0;
+  border-radius: 0;
+  --background: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+ion-card ion-card-header {
+  padding: 8px 0 14px;
+}
+
+ion-card ion-card-content {
+  padding: 0;
+}
+
+ion-card::part(native) {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  ion-card { margin-inline: 16px; }
+}

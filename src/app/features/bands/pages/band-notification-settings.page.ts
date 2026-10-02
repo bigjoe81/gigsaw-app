@@ -53,6 +53,7 @@ import { BandContextService } from '../../../core/services/band-context.service'
     IonToolbar,
   ],
   templateUrl: './band-notification-settings.page.html',
+  styleUrl: './band-notification-settings.page.scss',
 })
 export class BandNotificationSettingsPage {
   private readonly route = inject(ActivatedRoute);
