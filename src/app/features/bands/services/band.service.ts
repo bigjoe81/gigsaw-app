@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { Band, BandMember, BandPressKit, BandPressPhoto, CreateBandRequest, PendingBandInvitation, UpdateBandRequest } from '../models/band.models';
+import { Band, BandEmailNotificationSettings, BandMember, BandPressKit, BandPressPhoto, CreateBandRequest, PendingBandInvitation, UpdateBandRequest } from '../models/band.models';
 
 type ApiEnvelope<T> = T | { data: T } | { data: { data: T } };
 const API_BASE_URL = `${environment.apiUrl}${environment.apiPath}`;
@@ -98,6 +98,37 @@ export class BandService {
     return this.http.put<void>(`${API_BASE_URL}/bands/${bandId}/user/${userId}/role`, { role });
   }
 
+  getNotificationSettings(bandId: number): Observable<BandEmailNotificationSettings> {
+    return this.http.get<ApiEnvelope<BandEmailNotificationSettings>>(`${API_BASE_URL}/bands/${bandId}/notification-settings`).pipe(
+      map((response) => this.normalizeNotificationSettings(this.unwrap(response))),
+    );
+  }
+
+  updateNotificationSettings(bandId: number, settings: BandEmailNotificationSettings): Observable<BandEmailNotificationSettings> {
+    const payload = {
+      enabled: settings.enabled,
+      recipients: settings.recipients,
+      user_ids: settings.userIds,
+      events: {
+        rehearsal_created: settings.events.rehearsalCreated,
+        rehearsal_updated: settings.events.rehearsalUpdated,
+        rehearsal_cancelled: settings.events.rehearsalCancelled,
+        rehearsal_deleted: settings.events.rehearsalDeleted,
+        gig_created: settings.events.gigCreated,
+        gig_updated: settings.events.gigUpdated,
+        gig_deleted: settings.events.gigDeleted,
+        member_invited: settings.events.memberInvited,
+      },
+    };
+
+    return this.http.put<ApiEnvelope<BandEmailNotificationSettings>>(
+      `${API_BASE_URL}/bands/${bandId}/notification-settings`,
+      payload,
+    ).pipe(
+      map((response) => this.normalizeNotificationSettings(this.unwrap(response))),
+    );
+  }
+
   updateMemberInstruments(bandId: number, userId: number, instruments: string[]): Observable<BandMember> {
     return this.http.put<ApiEnvelope<BandMember>>(
       `${API_BASE_URL}/bands/${bandId}/user/${userId}/strumenti`,
@@ -151,6 +182,25 @@ export class BandService {
       pressPhotos: this.normalizePressPhotos(band.pressPhotos ?? band.press_photos ?? []),
       members: (band.members ?? []).map((member: any) => this.normalizeMember(member)),
       invitations: (band.invitations ?? []).map((invitation: any) => this.normalizeInvitation(invitation)),
+    };
+  }
+
+  private normalizeNotificationSettings(settings: any): BandEmailNotificationSettings {
+    const events = settings?.events ?? {};
+    return {
+      enabled: Boolean(settings?.enabled),
+      recipients: settings?.recipients ?? 'all',
+      userIds: (settings?.userIds ?? settings?.user_ids ?? []).map((id: unknown) => Number(id)).filter(Number.isInteger),
+      events: {
+        rehearsalCreated: Boolean(events.rehearsalCreated ?? events.rehearsal_created),
+        rehearsalUpdated: Boolean(events.rehearsalUpdated ?? events.rehearsal_updated),
+        rehearsalCancelled: Boolean(events.rehearsalCancelled ?? events.rehearsal_cancelled),
+        rehearsalDeleted: Boolean(events.rehearsalDeleted ?? events.rehearsal_deleted),
+        gigCreated: Boolean(events.gigCreated ?? events.gig_created),
+        gigUpdated: Boolean(events.gigUpdated ?? events.gig_updated),
+        gigDeleted: Boolean(events.gigDeleted ?? events.gig_deleted),
+        memberInvited: Boolean(events.memberInvited ?? events.member_invited),
+      },
     };
   }
 

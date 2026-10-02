@@ -105,6 +105,7 @@ export const routes: Routes = [
         path: 'impostazioni',
         children: [
           { path: '', pathMatch: 'full', loadComponent: () => import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage) },
+          { path: 'notifiche', loadComponent: () => import('./features/bands/pages/band-notification-settings.page').then((m) => m.BandNotificationSettingsPage) },
           { path: ':section', loadComponent: () => import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage) },
         ],
       },

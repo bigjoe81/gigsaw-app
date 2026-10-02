@@ -1,0 +1,108 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="band-menu" />
+    </ion-buttons>
+    <ion-title>Notifiche email</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="ion-padding">
+      <ion-spinner name="crescent" />
+    </div>
+  } @else if (!band) {
+    <div class="ion-padding">
+      <ion-note color="danger">{{ error() || 'Band non trovata.' }}</ion-note>
+      <ion-button class="ion-margin-top" expand="block" fill="outline" type="button" (click)="load()">Riprova</ion-button>
+    </div>
+  } @else {
+    <div class="mx-auto w-full max-w-3xl p-4 md:p-6">
+      <a class="mb-4 inline-flex text-sm font-semibold no-underline" [routerLink]="settingsUrl">← Tutte le impostazioni</a>
+
+      <div class="mb-5">
+        <span class="text-xs font-semibold uppercase tracking-wider text-[var(--ion-color-medium)]">{{ band.name }}</span>
+        <h1 class="mt-1 text-2xl font-bold">Notifiche email</h1>
+        <p class="mt-1 text-sm text-[var(--ion-color-medium)]">Scegli quali cambiamenti importanti comunicare ai membri della band.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Invio email</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item lines="none">
+              <ion-toggle formControlName="enabled" justify="space-between">
+                Abilita notifiche email
+              </ion-toggle>
+            </ion-item>
+
+            <ion-item>
+              <ion-select formControlName="recipients" label="Destinatari" labelPlacement="stacked">
+                <ion-select-option value="all">Tutti i membri</ion-select-option>
+                <ion-select-option value="admins">Solo admin</ion-select-option>
+                <ion-select-option value="selected">Membri selezionati</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            @if (showMemberPicker) {
+              <ion-item>
+                <ion-select formControlName="userIds" label="Membri da notificare" labelPlacement="stacked" [multiple]="true">
+                  @for (member of band.members ?? []; track member.id) {
+                    <ion-select-option [value]="member.id">{{ member.name }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+            }
+
+            <ion-note class="ion-padding-top" color="medium">
+              Chi effettua la modifica non riceve la propria notifica.
+            </ion-note>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card formGroupName="events">
+          <ion-card-header>
+            <ion-card-title>Prove</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item><ion-toggle formControlName="rehearsalCreated" justify="space-between">Nuova prova</ion-toggle></ion-item>
+            <ion-item><ion-toggle formControlName="rehearsalUpdated" justify="space-between">Prova modificata</ion-toggle></ion-item>
+            <ion-item><ion-toggle formControlName="rehearsalCancelled" justify="space-between">Prova annullata</ion-toggle></ion-item>
+            <ion-item lines="none"><ion-toggle formControlName="rehearsalDeleted" justify="space-between">Prova eliminata</ion-toggle></ion-item>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card formGroupName="events">
+          <ion-card-header>
+            <ion-card-title>Live</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item><ion-toggle formControlName="gigCreated" justify="space-between">Nuovo live</ion-toggle></ion-item>
+            <ion-item><ion-toggle formControlName="gigUpdated" justify="space-between">Live modificato</ion-toggle></ion-item>
+            <ion-item lines="none"><ion-toggle formControlName="gigDeleted" justify="space-between">Live eliminato</ion-toggle></ion-item>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card formGroupName="events">
+          <ion-card-header>
+            <ion-card-title>Band</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item lines="none"><ion-toggle formControlName="memberInvited" justify="space-between">Nuovo invito membro</ion-toggle></ion-item>
+          </ion-card-content>
+        </ion-card>
+
+        @if (error()) {
+          <ion-note class="ion-padding" color="danger">{{ error() }}</ion-note>
+        }
+
+        <ion-button class="ion-margin" expand="block" type="submit" [disabled]="saving()">
+          @if (saving()) { <ion-spinner name="crescent" /> } @else { Salva notifiche }
+        </ion-button>
+      </form>
+    </div>
+  }
+</ion-content>
