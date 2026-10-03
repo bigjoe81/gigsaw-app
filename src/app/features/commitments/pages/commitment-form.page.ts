@@ -19,6 +19,7 @@ import {
 } from '@ionic/angular/standalone';
 import { finalize } from 'rxjs';
 import { Commitment, CommitmentStatus, CommitmentType } from '../../../core/models/band-resources.models';
+import { BandContextService } from '../../../core/services/band-context.service';
 import { CommitmentService } from '../services/commitment.service';
 
 @Component({
@@ -34,6 +35,7 @@ export class CommitmentFormPage {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastController);
   private readonly alert = inject(AlertController);
+  private readonly bandContext = inject(BandContextService);
 
   readonly loading = signal(false);
   readonly saving = signal(false);
@@ -102,7 +104,7 @@ export class CommitmentFormPage {
     request.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Impegno salvato.', duration: 1600, color: 'success' })).present();
-        void this.router.navigate(['../../'], { relativeTo: this.route });
+        void this.router.navigateByUrl(this.listUrl);
       },
       error: (error) => this.error.set(this.message(error, 'Salvataggio non riuscito.')),
     });
@@ -126,10 +128,15 @@ export class CommitmentFormPage {
     this.api.delete(this.id).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Impegno eliminato.', duration: 1600, color: 'success' })).present();
-        void this.router.navigate(['../../../'], { relativeTo: this.route });
+        void this.router.navigateByUrl(this.listUrl);
       },
       error: () => this.error.set('Impossibile eliminare l’impegno.'),
     });
+  }
+
+  get listUrl(): string {
+    const bandId = this.bandContext.getCurrentBand();
+    return bandId ? `/band/${bandId}/impegni` : '/band';
   }
 
   private today(): string {
