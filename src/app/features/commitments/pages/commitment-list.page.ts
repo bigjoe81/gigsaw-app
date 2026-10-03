@@ -12,14 +12,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import {
-  add,
-  calendarOutline,
-  chevronBackOutline,
-  chevronForwardOutline,
-  micOutline,
-  radioOutline,
-} from 'ionicons/icons';
+import { add, calendarOutline, chevronBackOutline, chevronForwardOutline, micOutline, radioOutline } from 'ionicons/icons';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
 import { Commitment, Gig, RehearsalSession } from '../../../core/models/band-resources.models';
 import { BandContextService } from '../../../core/services/band-context.service';
@@ -41,7 +34,7 @@ interface CalendarEvent {
 
 interface CalendarDay {
   key: string;
-  day: number;
+  number: number;
   currentMonth: boolean;
   today: boolean;
   events: CalendarEvent[];
@@ -49,7 +42,18 @@ interface CalendarDay {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton, IonSpinner, IonTitle, IonToolbar],
+  imports: [
+    RouterLink,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonMenuButton,
+    IonSpinner,
+    IonTitle,
+    IonToolbar,
+  ],
   templateUrl: './commitment-list.page.html',
   styleUrls: ['./commitment-list.page.scss'],
 })
@@ -59,73 +63,97 @@ export class CommitmentListPage {
   private readonly commitmentsApi = inject(CommitmentService);
   private readonly bandContext = inject(BandContextService);
 
+  readonly weekdays = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
   readonly loading = signal(true);
-  readonly error = signal('');
   readonly gigs = signal<Gig[]>([]);
   readonly rehearsals = signal<RehearsalSession[]>([]);
   readonly commitments = signal<Commitment[]>([]);
-  readonly viewMonth = signal(this.monthStart(new Date()));
   readonly selectedDate = signal<string | null>(null);
+  readonly viewYear = signal(new Date().getFullYear());
+  readonly viewMonthIndex = signal(new Date().getMonth());
 
-  readonly events = computed<CalendarEvent[]>(() => [
-    ...this.gigs().map((gig) => ({
-      key: `gig-${gig.id}`,
-      source: 'gig' as const,
-      date: this.dateKey(gig.date),
-      title: gig.title || 'Live',
-      meta: ['Live', gig.venue?.name].filter(Boolean).join(' · '),
-      link: `${this.bandBaseUrl}/concerti/${gig.id}`,
-      cancelled: false,
-    })),
-    ...this.rehearsals().map((rehearsal) => ({
-      key: `rehearsal-${rehearsal.id}`,
-      source: 'rehearsal' as const,
-      date: this.dateKey(rehearsal.date),
-      title: rehearsal.title || 'Prova',
-      meta: ['Prova', rehearsal.rehearsalRoom?.name, this.timeRange(rehearsal.startTime, rehearsal.endTime)].filter(Boolean).join(' · '),
-      link: `${this.bandBaseUrl}/prove/${rehearsal.id}`,
-      cancelled: rehearsal.status === 'cancelled',
-    })),
-    ...this.commitments().map((commitment) => ({
-      key: `commitment-${commitment.id}`,
-      source: 'commitment' as const,
-      date: this.dateKey(commitment.date),
-      title: commitment.title,
-      meta: [this.typeLabel(commitment.type), commitment.location, this.timeRange(commitment.startTime, commitment.endTime)].filter(Boolean).join(' · '),
-      link: `${this.bandBaseUrl}/impegni/${commitment.id}/modifica`,
-      cancelled: commitment.status === 'cancelled',
-    })),
-  ].sort((a, b) => a.date.localeCompare(b.date)));
+  readonly events = computed<CalendarEvent[]>(() => {
+    const events: CalendarEvent[] = [];
+
+    for (const gig of this.gigs()) {
+      events.push({
+        key: `gig-${gig.id}`,
+        source: 'gig',
+        date: this.dateKey(gig.date),
+        title: gig.title || 'Live',
+        meta: ['Live', gig.venue?.name].filter((value): value is string => Boolean(value)).join(' · '),
+        link: `${this.bandBaseUrl}/concerti/${gig.id}`,
+        cancelled: false,
+      });
+    }
+
+    for (const rehearsal of this.rehearsals()) {
+      events.push({
+        key: `rehearsal-${rehearsal.id}`,
+        source: 'rehearsal',
+        date: this.dateKey(rehearsal.date),
+        title: rehearsal.title || 'Prova',
+        meta: ['Prova', rehearsal.rehearsalRoom?.name, this.timeRange(rehearsal.startTime, rehearsal.endTime)]
+          .filter((value): value is string => Boolean(value))
+          .join(' · '),
+        link: `${this.bandBaseUrl}/prove/${rehearsal.id}`,
+        cancelled: rehearsal.status === 'cancelled',
+      });
+    }
+
+    for (const commitment of this.commitments()) {
+      events.push({
+        key: `commitment-${commitment.id}`,
+        source: 'commitment',
+        date: this.dateKey(commitment.date),
+        title: commitment.title,
+        meta: [this.typeLabel(commitment.type), commitment.location || '', this.timeRange(commitment.startTime, commitment.endTime)]
+          .filter((value): value is string => Boolean(value))
+          .join(' · '),
+        link: `${this.bandBaseUrl}/impegni/${commitment.id}/modifica`,
+        cancelled: commitment.status === 'cancelled',
+      });
+    }
+
+    return events.sort((a, b) => a.date.localeCompare(b.date));
+  });
 
   readonly calendarDays = computed<CalendarDay[]>(() => {
-    const month = this.viewMonth();
-    const first = new Date(month.getFullYear(), month.getMonth(), 1);
-    const mondayOffset = (first.getDay() + 6) % 7;
-    const start = new Date(first);
-    start.setDate(first.getDate() - mondayOffset);
-    const today = this.dateKey(new Date());
+    const year = this.viewYear();
+    const month = this.viewMonthIndex();
+    const first = new Date(year, month, 1);
+    const offset = (first.getDay() + 6) % 7;
+    const start = new Date(year, month, 1 - offset);
+    const todayKey = this.dateKey(new Date());
+    const result: CalendarDay[] = [];
 
-    return Array.from({ length: 42 }, (_, index) => {
+    for (let index = 0; index < 42; index += 1) {
       const date = new Date(start);
       date.setDate(start.getDate() + index);
       const key = this.dateKey(date);
-      return {
+      result.push({
         key,
-        day: date.getDate(),
-        currentMonth: date.getMonth() === month.getMonth(),
-        today: key === today,
+        number: date.getDate(),
+        currentMonth: date.getMonth() === month,
+        today: key === todayKey,
         events: this.events().filter((event) => event.date === key),
-      };
-    });
+      });
+    }
+
+    return result;
   });
 
-  readonly agendaEvents = computed(() => {
+  readonly agendaEvents = computed<CalendarEvent[]>(() => {
     const selected = this.selectedDate();
-    if (selected) return this.events().filter((event) => event.date === selected);
-    const month = this.viewMonth();
+    if (selected) {
+      return this.events().filter((event) => event.date === selected);
+    }
+
+    const year = this.viewYear();
+    const month = this.viewMonthIndex();
     return this.events().filter((event) => {
       const date = this.parseDate(event.date);
-      return date.getFullYear() === month.getFullYear() && date.getMonth() === month.getMonth();
+      return date.getFullYear() === year && date.getMonth() === month;
     });
   });
 
@@ -143,7 +171,8 @@ export class CommitmentListPage {
   }
 
   get monthLabel(): string {
-    return new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(this.viewMonth());
+    return new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' })
+      .format(new Date(this.viewYear(), this.viewMonthIndex(), 1));
   }
 
   get agendaTitle(): string {
@@ -153,7 +182,6 @@ export class CommitmentListPage {
 
   load(): void {
     this.loading.set(true);
-    this.error.set('');
     forkJoin({
       gigs: this.gigsApi.list().pipe(catchError(() => of([] as Gig[]))),
       rehearsals: this.rehearsalsApi.list().pipe(catchError(() => of([] as RehearsalSession[]))),
@@ -166,40 +194,58 @@ export class CommitmentListPage {
   }
 
   previousMonth(): void {
-    const current = this.viewMonth();
-    this.viewMonth.set(new Date(current.getFullYear(), current.getMonth() - 1, 1));
-    this.selectedDate.set(null);
+    this.changeMonth(-1);
   }
 
   nextMonth(): void {
-    const current = this.viewMonth();
-    this.viewMonth.set(new Date(current.getFullYear(), current.getMonth() + 1, 1));
-    this.selectedDate.set(null);
+    this.changeMonth(1);
   }
 
-  today(): void {
-    this.viewMonth.set(this.monthStart(new Date()));
-    this.selectedDate.set(this.dateKey(new Date()));
+  goToday(): void {
+    const today = new Date();
+    this.viewYear.set(today.getFullYear());
+    this.viewMonthIndex.set(today.getMonth());
+    this.selectedDate.set(this.dateKey(today));
   }
 
   selectDay(day: CalendarDay): void {
-    this.selectedDate.update((selected) => selected === day.key ? null : day.key);
+    this.selectedDate.set(this.selectedDate() === day.key ? null : day.key);
     if (!day.currentMonth) {
-      const date = this.parseDate(day.key);
-      this.viewMonth.set(this.monthStart(date));
+      const target = this.parseDate(day.key);
+      this.viewYear.set(target.getFullYear());
+      this.viewMonthIndex.set(target.getMonth());
     }
   }
 
+  visibleDayEvents(day: CalendarDay): CalendarEvent[] {
+    return day.events.slice(0, 3);
+  }
+
+  clearSelectedDate(): void {
+    this.selectedDate.set(null);
+  }
+
   eventIcon(source: CalendarSource): string {
-    return source === 'gig' ? 'radio-outline' : source === 'rehearsal' ? 'mic-outline' : 'calendar-outline';
+    if (source === 'gig') return 'radio-outline';
+    if (source === 'rehearsal') return 'mic-outline';
+    return 'calendar-outline';
   }
 
   eventSourceLabel(source: CalendarSource): string {
-    return source === 'gig' ? 'Live' : source === 'rehearsal' ? 'Prova' : 'Impegno';
+    if (source === 'gig') return 'Live';
+    if (source === 'rehearsal') return 'Prova';
+    return 'Impegno';
   }
 
   formattedDate(date: string): string {
     return new Intl.DateTimeFormat('it-IT', { weekday: 'short', day: '2-digit', month: 'short' }).format(this.parseDate(date));
+  }
+
+  private changeMonth(delta: number): void {
+    const date = new Date(this.viewYear(), this.viewMonthIndex() + delta, 1);
+    this.viewYear.set(date.getFullYear());
+    this.viewMonthIndex.set(date.getMonth());
+    this.selectedDate.set(null);
   }
 
   private typeLabel(type: Commitment['type']): string {
@@ -216,12 +262,8 @@ export class CommitmentListPage {
   }
 
   private timeRange(start?: string | null, end?: string | null): string {
-    const values = [start, end].filter(Boolean).map((value) => String(value).slice(0, 5));
-    return values.length ? values.join(' – ') : '';
-  }
-
-  private monthStart(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth(), 1);
+    const values = [start, end].filter((value): value is string => Boolean(value)).map((value) => value.slice(0, 5));
+    return values.join(' – ');
   }
 
   private dateKey(value: string | Date): string {
@@ -231,7 +273,7 @@ export class CommitmentListPage {
       const day = String(value.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     }
-    return String(value).slice(0, 10);
+    return value.slice(0, 10);
   }
 
   private parseDate(value: string): Date {
