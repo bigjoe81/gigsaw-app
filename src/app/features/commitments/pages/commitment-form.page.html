@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
+    <ion-buttons slot="start"><ion-back-button [defaultHref]="listUrl" /></ion-buttons>
     <ion-title>{{ editing() ? 'Modifica impegno' : 'Nuovo impegno' }}</ion-title>
   </ion-toolbar>
 </ion-header>
