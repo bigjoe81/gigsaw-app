@@ -21,6 +21,7 @@
         <p class="eyebrow">Data live</p>
         <h1>{{ currentGig.title || currentGig.venue?.name || 'Concerto' }}</h1>
         <div class="hero-meta"><span><ion-icon name="calendar-outline" />{{ date(currentGig.date) }}</span>@if (time(currentGig.date); as gigTime) { <span><ion-icon name="time-outline" />{{ gigTime }}</span> }</div>
+        <ion-button class="ion-margin-top" [routerLink]="['/band', bandId, 'locandine', 'nuova']" [queryParams]="{ gigId: currentGig.id }">Crea locandina AI</ion-button>
       </section>
 
       <section class="detail-grid">

@@ -31,6 +31,7 @@ export class GigDetailPage implements OnInit {
   readonly gig = signal<Gig | undefined>(undefined);
   readonly loading = signal(true);
   readonly error = signal('');
+  readonly bandId: string;
   private id!: number;
 
   constructor(
@@ -40,6 +41,7 @@ export class GigDetailPage implements OnInit {
     private readonly alert: AlertController,
     private readonly toast: ToastController,
   ) {
+    this.bandId = route.snapshot.parent?.parent?.paramMap.get('bandId') ?? '';
     addIcons({ calendarOutline, locationOutline, pencilOutline, timeOutline, trashOutline });
   }
 

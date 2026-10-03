@@ -8,6 +8,19 @@
         <ion-item><ion-select label="Formato" labelPlacement="stacked" interface="popover" [ngModel]="document.format.id" (ngModelChange)="changeFormat($event)">@for (format of formats; track format.id) {<ion-select-option [value]="format.id">{{ format.label }} · {{ format.width }}×{{ format.height }}</ion-select-option>}</ion-select></ion-item>
         <ion-item><ion-label>Sfondo PNG o JPG</ion-label><ion-button slot="end" fill="outline" (click)="backgroundInput.click()">Sfoglia</ion-button></ion-item>
         <input #backgroundInput hidden type="file" accept="image/png,image/jpeg" (change)="uploadBackground($event)" />
+        @if (gigId) {
+          <ion-item>
+            <ion-select label="Stile AI" labelPlacement="stacked" interface="popover" [(ngModel)]="aiStyle">
+              @for (style of aiStyles; track style.id) {<ion-select-option [value]="style.id">{{ style.label }}</ion-select-option>}
+            </ion-select>
+          </ion-item>
+          <ion-button expand="block" fill="outline" [disabled]="generatingAi || aiRemaining === 0" (click)="generateAiBackground()">
+            {{ generatingAi ? 'Genero il template…' : 'Genera template con AI' }}
+          </ion-button>
+          @if (aiRemaining !== null) {<ion-note>Generazioni beta rimaste: {{ aiRemaining }}</ion-note>}
+        } @else {
+          <ion-note>Per generare un template AI, apri l’editor da un concerto.</ion-note>
+        }
       </ion-list>
       <ion-list-header><ion-label>Campi dinamici</ion-label></ion-list-header>
       @for (preset of presets; track preset.key) {<ion-button size="small" fill="outline" [disabled]="hasField(preset.key)" (click)="addField(preset.key)">+ {{ preset.label }}</ion-button>}
