@@ -73,8 +73,8 @@ export const routes: Routes = [
       },
       {
         path: 'impegni',
-        loadChildren: () =>
-          import('./features/commitments/commitments.routes').then((m) => m.COMMITMENT_ROUTES),
+        loadComponent: () =>
+          import('./features/commitments/commitments-placeholder.page').then((m) => m.CommitmentsPlaceholderPage),
       },
       {
         path: 'luoghi',
