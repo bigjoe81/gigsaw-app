@@ -72,6 +72,11 @@ export const routes: Routes = [
           import('./features/gigs/gigs.routes').then((m) => m.GIG_ROUTES),
       },
       {
+        path: 'impegni',
+        loadChildren: () =>
+          import('./features/commitments/commitments.routes').then((m) => m.COMMITMENT_ROUTES),
+      },
+      {
         path: 'luoghi',
         loadChildren: () =>
           import('./features/venues/venues.routes').then((m) => m.VENUE_ROUTES),
