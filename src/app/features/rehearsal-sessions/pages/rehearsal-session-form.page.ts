@@ -71,6 +71,13 @@ export class RehearsalSessionFormPage implements OnInit {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.editing.set(!!this.id);
+  }
+
+  ionViewWillEnter(): void {
+    this.loading.set(true);
+    this.error.set('');
+    this.step.set(1);
+    this.selectedSongIds.set([]);
     forkJoin({
       rooms: this.rehearsalRoomsApi.list(),
       songs: this.songService.list(),
