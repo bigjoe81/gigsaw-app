@@ -64,7 +64,7 @@
         <header>
           <div>
             <span class="eyebrow">Agenda</span>
-            <h2>{{ selectedDate() ? formattedDate(selectedDate()!) : monthLabel }}</h2>
+            <h2>{{ agendaTitle }}</h2>
           </div>
           @if (selectedDate()) { <button type="button" class="clear-filter" (click)="selectedDate.set(null)">Tutto il mese</button> }
         </header>
