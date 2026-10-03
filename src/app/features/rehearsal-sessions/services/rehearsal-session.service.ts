@@ -11,13 +11,14 @@ export class RehearsalSessionService extends BandScopedCrudService<RehearsalSess
 
   override get(id: number): Observable<RehearsalSession> {
     return super.get(id).pipe(switchMap((session) => {
-      const songIds = session.songIds ?? session.songs?.map((song) => song.id) ?? [];
-      const embeddedSongs = new Map(session.songs?.map((song) => [song.id, song]));
+      const songIds = (session.songIds ?? session.songs?.map((song) => song.id) ?? []).map(Number);
+      const embeddedSongs = new Map(session.songs?.map((song) => [Number(song.id), { ...song, id: Number(song.id) }]));
       const needsSongs = songIds.some((songId) => !embeddedSongs.get(songId)?.title);
       return (needsSongs ? this.songService.list() : of([])).pipe(map((songs) => {
-        const repertoire = new Map(songs.map((song) => [song.id, song]));
+        const repertoire = new Map(songs.map((song) => [Number(song.id), { ...song, id: Number(song.id) }]));
         return {
           ...session,
+          songIds,
           songs: songIds.map((songId) => {
             const embedded = embeddedSongs.get(songId);
             return embedded?.title ? embedded : repertoire.get(songId) ?? { id: songId, title: 'Brano non disponibile' };

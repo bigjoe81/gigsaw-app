@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize, forkJoin, of } from 'rxjs';
+import { finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
 import {
   IonContent,
   IonIcon,
@@ -20,7 +20,6 @@ import {
 } from '../../../core/models/band-resources.models';
 import {
   GigsawButtonComponent,
-  GigsawCheckboxComponent,
   GigsawLoadingComponent,
   GigsawMessageComponent,
 } from '../../../shared/ui/gigsaw';
@@ -31,7 +30,7 @@ import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawCheckboxComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, IonContent, IonIcon, IonInput, IonSelect, IonTextarea, IonSelectOption],
+  imports: [ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, IonContent, IonIcon, IonInput, IonSelect, IonTextarea, IonSelectOption],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })
@@ -87,18 +86,21 @@ export class RehearsalSessionFormPage implements OnInit {
     ).subscribe({
       next: ({ rooms, songs, session }) => {
         this.rehearsalRooms.set(rooms);
-        this.songs.set(songs.filter((song) => song.status !== 'archived'));
+        this.songs.set(songs.filter((song) => song.status !== 'archived').map((song) => ({ ...song, id: Number(song.id) })));
         if (session) {
+          const roomId = session.rehearsalRoomId ?? session.rehearsalRoom?.id;
+          const availableRoom = rooms.find((room) => Number(room.id) === Number(roomId));
           this.form.patchValue({
             title: session.title ?? '',
             date: this.normalizeDate(session.date),
             startTime: this.normalizeTime(session.startTime),
             endTime: this.normalizeTime(session.endTime),
             status: session.status ?? 'confirmed',
-            rehearsalRoomId: session.rehearsalRoomId != null ? String(session.rehearsalRoomId) : '',
+            rehearsalRoomId: availableRoom ? String(availableRoom.id) : '',
             notes: session.notes ?? '',
           });
-          this.selectedSongIds.set(session.songIds ?? session.songs?.map((song) => song.id) ?? []);
+          this.selectedSongIds.set((session.songIds ?? session.songs?.map((song) => song.id) ?? []).map(Number));
+          if (!availableRoom) this.error.set('La sala associata alla prova non è più disponibile. Seleziona una sala prove valida prima di salvare.');
         }
       },
       error: (error: unknown) => {
@@ -126,17 +128,20 @@ export class RehearsalSessionFormPage implements OnInit {
       return;
     }
     if (!this.timeRangeValid()) return;
+    if (!this.roomValid()) return;
     this.step.set(2);
   }
 
   toggleSong(songId: number, checked: boolean): void {
+    songId = Number(songId);
     this.selectedSongIds.update((selectedIds) => checked
-      ? Array.from(new Set([...selectedIds, songId]))
-      : selectedIds.filter((id) => id !== songId));
+      ? Array.from(new Set([...selectedIds.map(Number), songId]))
+      : selectedIds.map(Number).filter((id) => id !== songId));
   }
 
   save(): void {
     this.error.set('');
+    if (!this.roomValid()) return;
     if (this.form.invalid || this.saving() || !this.timeRangeValid()) {
       this.form.markAllAsTouched();
       if (!this.error()) this.error.set('Completa i campi obbligatori prima di salvare.');
@@ -153,26 +158,52 @@ export class RehearsalSessionFormPage implements OnInit {
       status: values.status,
       rehearsalRoomId: Number(values.rehearsalRoomId),
       notes: values.notes.trim() || null,
-      songIds: this.selectedSongIds(),
+      songIds: [...this.selectedSongIds()],
     };
     const request = this.editing()
       ? this.rehearsalSessions.update(this.id!, payload)
       : this.rehearsalSessions.create(payload);
 
-    request.pipe(finalize(() => this.saving.set(false))).subscribe({
+    request.pipe(
+      switchMap((saved) => this.rehearsalSessions.get(saved.id)),
+      switchMap((saved) => {
+        const expected = new Set(payload.songIds);
+        const actual = new Set((saved.songIds ?? saved.songs?.map((song) => song.id) ?? []).map(Number));
+        return expected.size === actual.size && [...expected].every((id) => actual.has(id))
+          ? of(saved)
+          : throwError(() => new Error('Il server non ha salvato la selezione dei brani. Riprova il salvataggio.'));
+      }),
+      finalize(() => this.saving.set(false)),
+    ).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Prova salvata.', duration: 1800, color: 'success' })).present();
         void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/prove` : '/band');
       },
       error: (error: unknown) => {
+        if (error instanceof HttpErrorResponse && error.status === 422 && error.error?.errors?.rehearsal_room_id) {
+          this.form.controls.rehearsalRoomId.setValue('');
+          this.form.controls.rehearsalRoomId.markAsTouched();
+          this.error.set('La sala selezionata non è più disponibile. Seleziona una sala prove valida e salva di nuovo. I brani selezionati sono stati mantenuti.');
+          this.step.set(1);
+          this.rehearsalRoomsApi.list().subscribe({ next: (rooms) => this.rehearsalRooms.set(rooms), error: () => {} });
+          return;
+        }
         this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));
-        this.step.set(1);
       },
     });
   }
 
   roomLabel(room: RehearsalRoom): string {
     return [room.name, room.city].filter(Boolean).join(' · ');
+  }
+
+  private roomValid(): boolean {
+    const roomId = Number(this.form.controls.rehearsalRoomId.value);
+    if (roomId > 0 && this.rehearsalRooms().some((room) => Number(room.id) === roomId)) return true;
+    this.form.controls.rehearsalRoomId.markAsTouched();
+    this.error.set('Seleziona una sala prove valida prima di salvare.');
+    this.step.set(1);
+    return false;
   }
 
   private timeRangeValid(): boolean {

@@ -77,7 +77,7 @@
               @if (songs().length) {
                 @for (song of songs(); track song.id) {
                   <label class="song-option grid border-solid min-h-[72px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3.5 rounded-xl border border-[#2b3b52] bg-[#0f172a] px-4 py-3" [class.selected]="selectedSongIds().includes(song.id)">
-                    <app-gigsaw-checkbox [checked]="selectedSongIds().includes(song.id)" (checkedChange)="toggleSong(song.id, $event)" [attr.aria-label]="song.title" />
+                    <input type="checkbox" class="h-5 w-5 cursor-pointer accent-[var(--ion-color-primary)]" [checked]="selectedSongIds().includes(song.id)" (change)="toggleSong(song.id, $any($event.target).checked)" [attr.aria-label]="song.title" />
                     <span class="grid min-w-0 gap-1"><strong class="overflow-hidden text-ellipsis whitespace-nowrap text-[#e5edf7]">{{ song.title }}</strong><small class="text-[#9aabc1]">{{ song.performedBy || song.album || 'Nessun dettaglio aggiuntivo' }}</small></span>
                     @if (song.key) { <span class="rounded-[7px] bg-[#172554] px-2 py-1 text-xs font-extrabold text-[#93c5fd]">{{ song.key }}</span> }
                   </label>
