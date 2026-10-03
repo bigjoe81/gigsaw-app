@@ -1,7 +1,91 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start"><ion-back-button [defaultHref]="listUrl" /></ion-buttons>
-    <ion-title>Impegno</ion-title>
+    <ion-title>{{ editing() ? 'Modifica impegno' : 'Nuovo impegno' }}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content><main class="form-shell"></main></ion-content>
+
+<ion-content>
+  <main class="form-shell">
+    <header>
+      <span class="eyebrow">Agenda band</span>
+      <h1>{{ editing() ? 'Modifica impegno' : 'Aggiungi un impegno' }}</h1>
+      <p>Per appuntamenti diversi da prove e live: studio, shooting, interviste, riunioni e trasferte.</p>
+    </header>
+
+    @if (loading()) {
+      <div class="state">Caricamento…</div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="field-grid">
+          <label class="wide">
+            <span>Titolo *</span>
+            <ion-input formControlName="title" placeholder="Es. Sessione in studio" />
+          </label>
+
+          <label>
+            <span>Tipo *</span>
+            <ion-select formControlName="type" interface="popover">
+              <ion-select-option value="photo_shoot">Shoot fotografico</ion-select-option>
+              <ion-select-option value="recording">Sessione di registrazione</ion-select-option>
+              <ion-select-option value="interview">Intervista</ion-select-option>
+              <ion-select-option value="meeting">Riunione</ion-select-option>
+              <ion-select-option value="travel">Trasferta</ion-select-option>
+              <ion-select-option value="promo">Promo</ion-select-option>
+              <ion-select-option value="other">Altro</ion-select-option>
+            </ion-select>
+          </label>
+
+          <label>
+            <span>Stato *</span>
+            <ion-select formControlName="status" interface="popover">
+              <ion-select-option value="scheduled">Da confermare</ion-select-option>
+              <ion-select-option value="confirmed">Confermato</ion-select-option>
+              <ion-select-option value="completed">Completato</ion-select-option>
+              <ion-select-option value="cancelled">Annullato</ion-select-option>
+            </ion-select>
+          </label>
+
+          <label>
+            <span>Data *</span>
+            <ion-input type="date" formControlName="date" />
+          </label>
+
+          <label>
+            <span>Luogo</span>
+            <ion-input formControlName="location" placeholder="Es. Studio, locale o indirizzo" />
+          </label>
+
+          <label>
+            <span>Ora inizio</span>
+            <ion-input type="time" formControlName="startTime" />
+          </label>
+
+          <label>
+            <span>Ora fine</span>
+            <ion-input type="time" formControlName="endTime" />
+          </label>
+
+          <label class="wide">
+            <span>Note</span>
+            <ion-textarea formControlName="notes" [rows]="5" [autoGrow]="true" placeholder="Dettagli utili per la band" />
+          </label>
+        </div>
+
+        @if (error()) {
+          <p class="error">{{ error() }}</p>
+        }
+
+        <footer>
+          @if (editing()) {
+            <ion-button type="button" fill="clear" color="danger" (click)="remove()">Elimina</ion-button>
+          }
+          <span></span>
+          <ion-button type="submit" [disabled]="saving()">
+            {{ saving() ? 'Salvataggio…' : 'Salva impegno' }}
+          </ion-button>
+        </footer>
+      </form>
+    }
+  </main>
+</ion-content>
