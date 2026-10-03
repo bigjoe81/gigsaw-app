@@ -27,6 +27,8 @@
         <span>Caricamento calendario…</span>
       </section>
     } @else {
+      <div class="agenda-layout" [class.has-details]="!!selectedEvent()">
+      <div class="agenda-main">
       <section class="calendar-card">
         <header class="calendar-toolbar">
           <div>
@@ -96,7 +98,7 @@
         @if (agendaEvents().length) {
           <div class="agenda-list">
             @for (item of agendaEvents(); track item.key) {
-              <a class="agenda-item" [class.cancelled]="item.cancelled" [routerLink]="item.link">
+              <a class="agenda-item" [class.cancelled]="item.cancelled" [class.active]="selectedEventKey() === item.key" [attr.href]="item.link" (click)="openEvent($event, item)">
                 <span
                   class="agenda-icon"
                   [class.gig]="item.source === 'gig'"
@@ -122,6 +124,29 @@
           </div>
         }
       </section>
+      </div>
+      @if (selectedEvent(); as item) {
+        <aside class="details-sidebar" aria-label="Dettagli dell’impegno">
+          <header>
+            <span class="eyebrow">Dettagli {{ eventSourceLabel(item.source) }}</span>
+            <button type="button" class="icon-button" (click)="selectedEventKey.set(null)" aria-label="Chiudi dettagli">×</button>
+          </header>
+          <h2>{{ item.title }}</h2>
+          <p class="details-meta">{{ item.meta }}</p>
+          <dl>
+            <dt>Data</dt><dd>{{ formattedDate(item.date) }}</dd>
+            @if (item.time) { <dt>Orario</dt><dd>{{ item.time }}</dd> }
+            @if (item.location) { <dt>Luogo</dt><dd>{{ item.location }}</dd> }
+            @if (item.status) { <dt>Stato</dt><dd>{{ item.status }}</dd> }
+          </dl>
+          @if (item.notes) {
+            <h3>Note</h3>
+            <p class="details-notes">{{ item.notes }}</p>
+          }
+          <ion-button [routerLink]="item.link" expand="block">{{ item.source === 'commitment' ? 'Modifica impegno' : 'Apri dettagli' }}</ion-button>
+        </aside>
+      }
+      </div>
     }
   </main>
 </ion-content>

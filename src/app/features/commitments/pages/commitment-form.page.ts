@@ -44,7 +44,7 @@ export class CommitmentFormPage {
   private id?: number;
 
   readonly form = this.fb.nonNullable.group({
-    title: ['', [Validators.required, Validators.maxLength(255)]],
+    title: ['', Validators.maxLength(255)],
     type: ['other' as CommitmentType, Validators.required],
     date: [this.today(), Validators.required],
     startTime: '',
@@ -63,7 +63,7 @@ export class CommitmentFormPage {
     this.loading.set(true);
     this.api.get(id).pipe(finalize(() => this.loading.set(false))).subscribe({
       next: (item) => this.form.patchValue({
-        title: item.title,
+        title: item.title ?? '',
         type: item.type,
         date: String(item.date).slice(0, 10),
         startTime: item.startTime ? String(item.startTime).slice(0, 5) : '',

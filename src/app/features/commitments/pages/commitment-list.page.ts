@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -30,6 +30,10 @@ interface CalendarEvent {
   meta: string;
   link: string;
   cancelled: boolean;
+  location?: string | null;
+  time?: string;
+  status?: string;
+  notes?: string | null;
 }
 
 interface CalendarDay {
@@ -62,6 +66,7 @@ export class CommitmentListPage {
   private readonly rehearsalsApi = inject(RehearsalSessionService);
   private readonly commitmentsApi = inject(CommitmentService);
   private readonly bandContext = inject(BandContextService);
+  private readonly router = inject(Router);
 
   readonly weekdays = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
   readonly loading = signal(true);
@@ -69,6 +74,8 @@ export class CommitmentListPage {
   readonly rehearsals = signal<RehearsalSession[]>([]);
   readonly commitments = signal<Commitment[]>([]);
   readonly selectedDate = signal<string | null>(null);
+  readonly selectedEventKey = signal<string | null>(null);
+  readonly selectedEvent = computed(() => this.events().find((item) => item.key === this.selectedEventKey()));
   readonly viewYear = signal(new Date().getFullYear());
   readonly viewMonthIndex = signal(new Date().getMonth());
 
@@ -84,6 +91,8 @@ export class CommitmentListPage {
         meta: ['Live', gig.venue?.name].filter((value): value is string => Boolean(value)).join(' · '),
         link: `${this.bandBaseUrl}/concerti/${gig.id}`,
         cancelled: false,
+        location: [gig.venue?.name, gig.venue?.city, gig.venue?.address].filter(Boolean).join(' · '),
+        notes: gig.notes,
       });
     }
 
@@ -98,6 +107,10 @@ export class CommitmentListPage {
           .join(' · '),
         link: `${this.bandBaseUrl}/prove/${rehearsal.id}`,
         cancelled: rehearsal.status === 'cancelled',
+        location: [rehearsal.rehearsalRoom?.name, rehearsal.rehearsalRoom?.city].filter(Boolean).join(' · '),
+        time: this.timeRange(rehearsal.startTime, rehearsal.endTime),
+        status: this.statusLabel(rehearsal.status),
+        notes: rehearsal.notes,
       });
     }
 
@@ -106,12 +119,16 @@ export class CommitmentListPage {
         key: `commitment-${commitment.id}`,
         source: 'commitment',
         date: this.dateKey(commitment.date),
-        title: commitment.title,
+        title: commitment.title || this.typeLabel(commitment.type),
         meta: [this.typeLabel(commitment.type), commitment.location || '', this.timeRange(commitment.startTime, commitment.endTime)]
           .filter((value): value is string => Boolean(value))
           .join(' · '),
         link: `${this.bandBaseUrl}/impegni/${commitment.id}/modifica`,
         cancelled: commitment.status === 'cancelled',
+        location: commitment.location,
+        time: this.timeRange(commitment.startTime, commitment.endTime),
+        status: this.statusLabel(commitment.status),
+        notes: commitment.notes,
       });
     }
 
@@ -162,7 +179,22 @@ export class CommitmentListPage {
   }
 
   ionViewWillEnter(): void {
+    this.selectedEventKey.set(null);
     this.load();
+  }
+
+  openEvent(event: MouseEvent, item: CalendarEvent): void {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (window.matchMedia('(min-width: 1024px)').matches) {
+      this.selectedEventKey.set(item.key);
+    } else {
+      void this.router.navigateByUrl(item.link);
+    }
+  }
+
+  private statusLabel(status: Commitment['status']): string {
+    return { scheduled: 'Da confermare', confirmed: 'Confermato', completed: 'Completato', cancelled: 'Annullato' }[status];
   }
 
   get bandBaseUrl(): string {
@@ -202,6 +234,7 @@ export class CommitmentListPage {
   }
 
   goToday(): void {
+    this.selectedEventKey.set(null);
     const today = new Date();
     this.viewYear.set(today.getFullYear());
     this.viewMonthIndex.set(today.getMonth());
@@ -209,6 +242,7 @@ export class CommitmentListPage {
   }
 
   selectDay(day: CalendarDay): void {
+    this.selectedEventKey.set(null);
     this.selectedDate.set(this.selectedDate() === day.key ? null : day.key);
     if (!day.currentMonth) {
       const target = this.parseDate(day.key);
@@ -242,6 +276,7 @@ export class CommitmentListPage {
   }
 
   private changeMonth(delta: number): void {
+    this.selectedEventKey.set(null);
     const date = new Date(this.viewYear(), this.viewMonthIndex() + delta, 1);
     this.viewYear.set(date.getFullYear());
     this.viewMonthIndex.set(date.getMonth());
