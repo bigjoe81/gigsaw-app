@@ -15,7 +15,6 @@ import { addIcons } from 'ionicons';
 import {
   add,
   calendarOutline,
-  cameraOutline,
   chevronBackOutline,
   chevronForwardOutline,
   micOutline,
@@ -131,7 +130,7 @@ export class CommitmentListPage {
   });
 
   constructor() {
-    addIcons({ add, calendarOutline, cameraOutline, chevronBackOutline, chevronForwardOutline, micOutline, radioOutline });
+    addIcons({ add, calendarOutline, chevronBackOutline, chevronForwardOutline, micOutline, radioOutline });
   }
 
   ionViewWillEnter(): void {
@@ -145,6 +144,11 @@ export class CommitmentListPage {
 
   get monthLabel(): string {
     return new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(this.viewMonth());
+  }
+
+  get agendaTitle(): string {
+    const selected = this.selectedDate();
+    return selected ? this.formattedDate(selected) : this.monthLabel;
   }
 
   load(): void {
