@@ -55,6 +55,7 @@ export class BandResourceApiService {
       'rehearsal-rooms': 'rehearsal-rooms',
       'recording-sessions': 'recording-sessions',
       gigs: 'gigs',
+      commitments: 'commitments',
       venues: 'venues',
       setlists: 'setlists',
     };
@@ -67,7 +68,7 @@ export class BandResourceApiService {
   }
 
   private listParams(resource: ResourceKey, bandId: number): Record<string, string> | undefined {
-    if (resource === 'songs' || resource === 'gigs' || resource === 'rehearsal-sessions') {
+    if (resource === 'songs' || resource === 'gigs' || resource === 'rehearsal-sessions' || resource === 'commitments') {
       return { bandId: String(bandId) };
     }
 
@@ -108,7 +109,7 @@ export class BandResourceApiService {
       return result;
     }, {});
 
-    if (resource === 'songs' || resource === 'gigs' || resource === 'rehearsal-sessions') {
+    if (resource === 'songs' || resource === 'gigs' || resource === 'rehearsal-sessions' || resource === 'commitments') {
       result['band_id'] = bandId;
     }
 

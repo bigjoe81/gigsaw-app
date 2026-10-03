@@ -23,13 +23,14 @@ import {
   musicalNotesOutline,
   pinOutline,
   radioOutline,
+  calendarOutline,
   settingsOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
 
-type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'luoghi' | 'scalette' | 'locandine' | 'assistenza' | 'impostazioni';
+type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'impegni' | 'luoghi' | 'scalette' | 'locandine' | 'assistenza' | 'impostazioni';
 
 @Component({
   selector: 'app-band-layout',
@@ -69,6 +70,7 @@ export class BandLayoutPage implements OnInit {
     { key: 'repertorio', label: 'Repertorio', icon: 'musical-notes-outline' },
     { key: 'prove', label: 'Prove', icon: 'mic-outline' },
     { key: 'concerti', label: 'Concerti', icon: 'radio-outline' },
+    { key: 'impegni', label: 'Impegni', icon: 'calendar-outline' },
     { key: 'luoghi', label: 'Luoghi', icon: 'pin-outline' },
     { key: 'scalette', label: 'Scalette', icon: 'list-outline' },
     { key: 'locandine', label: 'Modelli di locandina', icon: 'color-palette-outline' },
@@ -87,6 +89,7 @@ export class BandLayoutPage implements OnInit {
       musicalNotesOutline,
       pinOutline,
       radioOutline,
+      calendarOutline,
       settingsOutline,
     });
   }

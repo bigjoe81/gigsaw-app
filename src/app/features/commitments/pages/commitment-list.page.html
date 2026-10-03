@@ -1,0 +1,127 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="band-menu" />
+    </ion-buttons>
+    <ion-title>Impegni</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="commitments-shell">
+    <header class="page-heading">
+      <div>
+        <span class="eyebrow">Agenda band</span>
+        <h1>Calendario e impegni</h1>
+        <p>Live, prove e tutti gli altri appuntamenti della band in un unico posto.</p>
+      </div>
+      <ion-button [routerLink]="['nuovo']">
+        <ion-icon slot="start" name="add" />
+        Nuovo impegno
+      </ion-button>
+    </header>
+
+    @if (loading()) {
+      <section class="loading-state">
+        <ion-spinner name="crescent" />
+        <span>Caricamento calendario…</span>
+      </section>
+    } @else {
+      <section class="calendar-card">
+        <header class="calendar-toolbar">
+          <div>
+            <button type="button" class="icon-button" (click)="previousMonth()" aria-label="Mese precedente">
+              <ion-icon name="chevron-back-outline" />
+            </button>
+            <h2>{{ monthLabel }}</h2>
+            <button type="button" class="icon-button" (click)="nextMonth()" aria-label="Mese successivo">
+              <ion-icon name="chevron-forward-outline" />
+            </button>
+          </div>
+          <button type="button" class="today-button" (click)="goToday()">Oggi</button>
+        </header>
+
+        <div class="weekday-row" aria-hidden="true">
+          @for (weekday of weekdays; track weekday) {
+            <span>{{ weekday }}</span>
+          }
+        </div>
+
+        <div class="calendar-grid">
+          @for (day of calendarDays(); track day.key) {
+            <button
+              type="button"
+              class="day-cell"
+              [class.outside]="!day.currentMonth"
+              [class.today]="day.today"
+              [class.selected]="selectedDate() === day.key"
+              (click)="selectDay(day)"
+            >
+              <span class="day-number">{{ day.number }}</span>
+              <span class="event-dots">
+                @for (item of visibleDayEvents(day); track item.key) {
+                  <span
+                    class="event-dot"
+                    [class.gig]="item.source === 'gig'"
+                    [class.rehearsal]="item.source === 'rehearsal'"
+                    [class.commitment]="item.source === 'commitment'"
+                  ></span>
+                }
+                @if (day.events.length > 3) {
+                  <small>+{{ day.events.length - 3 }}</small>
+                }
+              </span>
+            </button>
+          }
+        </div>
+
+        <footer class="calendar-legend">
+          <span><i class="event-dot gig"></i>Live</span>
+          <span><i class="event-dot rehearsal"></i>Prove</span>
+          <span><i class="event-dot commitment"></i>Altri impegni</span>
+        </footer>
+      </section>
+
+      <section class="agenda-card">
+        <header>
+          <div>
+            <span class="eyebrow">Agenda</span>
+            <h2>{{ agendaTitle }}</h2>
+          </div>
+          @if (selectedDate()) {
+            <button type="button" class="clear-filter" (click)="clearSelectedDate()">Tutto il mese</button>
+          }
+        </header>
+
+        @if (agendaEvents().length) {
+          <div class="agenda-list">
+            @for (item of agendaEvents(); track item.key) {
+              <a class="agenda-item" [class.cancelled]="item.cancelled" [routerLink]="item.link">
+                <span
+                  class="agenda-icon"
+                  [class.gig]="item.source === 'gig'"
+                  [class.rehearsal]="item.source === 'rehearsal'"
+                  [class.commitment]="item.source === 'commitment'"
+                >
+                  <ion-icon [name]="eventIcon(item.source)" />
+                </span>
+                <span class="agenda-copy">
+                  <small>{{ formattedDate(item.date) }} · {{ eventSourceLabel(item.source) }}</small>
+                  <strong>{{ item.title }}</strong>
+                  <span>{{ item.meta }}</span>
+                </span>
+                <ion-icon class="agenda-arrow" name="chevron-forward-outline" />
+              </a>
+            }
+          </div>
+        } @else {
+          <div class="empty-state compact">
+            <ion-icon name="calendar-outline" />
+            <strong>Nessun impegno</strong>
+            <span>Non ci sono appuntamenti per questo periodo.</span>
+          </div>
+        }
+      </section>
+    }
+  </main>
+</ion-content>

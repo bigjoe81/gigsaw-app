@@ -74,6 +74,19 @@ export interface Gig extends BandScopedEntity {
   notes?: string | null;
 }
 
+export type CommitmentType = 'photo_shoot' | 'recording' | 'interview' | 'meeting' | 'travel' | 'promo' | 'other';
+export type CommitmentStatus = 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
+
+export interface Commitment extends BandScopedEntity {
+  date: string;
+  type: CommitmentType;
+  status: CommitmentStatus;
+  startTime?: string | null;
+  endTime?: string | null;
+  location?: string | null;
+  notes?: string | null;
+}
+
 export interface Venue {
   id: number;
   bandId?: number;
@@ -168,5 +181,5 @@ export interface SetlistGeneration {
   chronologicalDifferenceRatio?: number | null;
 }
 
-export type BandResource = Song | RehearsalSession | RecordingSession | Gig | Venue | Setlist;
-export type ResourceKey = 'songs' | 'rehearsal-sessions' | 'rehearsal-rooms' | 'recording-sessions' | 'gigs' | 'venues' | 'setlists';
+export type BandResource = Song | RehearsalSession | RecordingSession | Gig | Commitment | Venue | Setlist;
+export type ResourceKey = 'songs' | 'rehearsal-sessions' | 'rehearsal-rooms' | 'recording-sessions' | 'gigs' | 'commitments' | 'venues' | 'setlists';
