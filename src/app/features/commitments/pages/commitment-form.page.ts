@@ -147,7 +147,8 @@ export class CommitmentFormPage {
   private message(error: unknown, fallback: string): string {
     if (error instanceof HttpErrorResponse) {
       const errors = error.error?.errors as Record<string, string[]> | undefined;
-      return errors ? Object.values(errors).flat()[0] || fallback : error.error?.message || fallback;
+      const firstError = errors ? Object.values(errors).find((messages) => messages.length)?.[0] : undefined;
+      return firstError || error.error?.message || fallback;
     }
     return fallback;
   }
