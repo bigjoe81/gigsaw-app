@@ -27,7 +27,7 @@
         <span>Caricamento calendario…</span>
       </section>
     } @else {
-      <div class="agenda-layout" [class.has-details]="!!selectedEvent()">
+      <div class="agenda-layout">
       <div class="agenda-main">
       <section class="calendar-card">
         <header class="calendar-toolbar">
@@ -84,6 +84,8 @@
         </footer>
       </section>
 
+      </div>
+      <div class="agenda-sidebar">
       <section class="agenda-card">
         <header>
           <div>
@@ -124,7 +126,6 @@
           </div>
         }
       </section>
-      </div>
       @if (selectedEvent(); as item) {
         <aside class="details-sidebar" aria-label="Dettagli dell’impegno">
           <header>
@@ -146,6 +147,7 @@
           <ion-button [routerLink]="item.link" expand="block">{{ item.source === 'commitment' ? 'Modifica impegno' : 'Apri dettagli' }}</ion-button>
         </aside>
       }
+      </div>
       </div>
     }
   </main>
