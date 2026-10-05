@@ -14,7 +14,7 @@ export interface GigsawTypeaheadItem {
   imports: [IonInput, IonItem, IonLabel, IonList, IonSpinner, IonNote],
   template: `
     <div class="gigsaw-typeahead" [class.dropdown-overlay]="dropdownOverlay()">
-      <ion-input [fill]="fill()" [class]="controlClass()" [attr.aria-label]="ariaLabel() || placeholder()" [name]="name()" [placeholder]="placeholder()" [autocomplete]="autocomplete()" [disabled]="disabled()" [value]="value()" [class.ion-invalid]="invalid()" [class.ion-touched]="invalid()" role="combobox" [attr.aria-expanded]="open()" [attr.aria-controls]="listboxId" (ionInput)="onInput($event.detail.value ?? '')" (ionFocus)="onFocus()" (keydown)="onKeydown($event)" (ionBlur)="blurred.emit()" />
+      <ion-input [fill]="fill()" [class]="controlClass()" [attr.aria-label]="ariaLabel() || placeholder()" [name]="name()" [placeholder]="placeholder()" [autocomplete]="autocomplete()" [disabled]="disabled()" [value]="value()" [class.ion-invalid]="invalid()" [class.ion-valid]="valid() && !invalid()" [class.ion-touched]="invalid() || valid()" role="combobox" [attr.aria-expanded]="open()" [attr.aria-controls]="listboxId" (ionInput)="onInput($event.detail.value ?? '')" (ionFocus)="onFocus()" (keydown)="onKeydown($event)" (ionBlur)="blurred.emit()" />
       @if (open()) {
         <ion-list [id]="listboxId" role="listbox">
           @if (loading()) { <ion-item><ion-spinner slot="start" /><ion-label>{{ loadingText() }}</ion-label></ion-item> }

@@ -5,6 +5,7 @@ export * from './gigsaw-checkbox.component';
 export * from './gigsaw-datepicker.component';
 export * from './gigsaw-file-input.component';
 export * from './gigsaw-input.component';
+export * from './gigsaw-icon.component';
 export * from './gigsaw-list.component';
 export * from './gigsaw-loading.component';
 export * from './gigsaw-message.component';

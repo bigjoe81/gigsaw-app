@@ -41,7 +41,16 @@ export class GigsawListComponent {
   `,
   styles: [`
     :host { display: block; min-width: 0; }
-    ion-item { width: 100%; --inner-border-width: 0; }
+    ion-item {
+      width: 100%;
+      --inner-border-width: 0;
+      --background-hover-opacity: 0;
+    }
+    @media (hover: hover) {
+      :host(:hover) ion-item:not(.item-disabled) {
+        --background: var(--gigsaw-list-hover-background, #2a3648);
+      }
+    }
   `],
 })
 export class GigsawListItemComponent {

@@ -17,11 +17,11 @@ import { SetlistPdfFormat } from '../services/setlist-pdf.service';
         </ion-toolbar></ion-header>
         <ion-content>
           <div class="options">
-            <ion-select label="Formato PDF" aria-label="Formato PDF" [value]="format()" (ionChange)="formatChange.emit($event.detail.value)" interface="popover">
+            <label class="gigsaw-select-field"><span>Formato PDF</span><ion-select  aria-label="Formato PDF" [value]="format()" (ionChange)="formatChange.emit($event.detail.value)" interface="popover">
               <ion-select-option value="a4">A4 · Standard</ion-select-option>
               <ion-select-option value="a3-large-print">A3 verticale · Alta leggibilità</ion-select-option>
               <ion-select-option value="large-print">A4 · Alta leggibilità · caratteri grandi</ion-select-option>
-            </ion-select>
+            </ion-select></label>
             <ion-checkbox [checked]="options().includePerformedBy" (ionChange)="changeOption('includePerformedBy', $event.detail.checked)">Autore</ion-checkbox>
             <ion-checkbox [checked]="options().includeKey" (ionChange)="changeOption('includeKey', $event.detail.checked)">Tonalità</ion-checkbox>
             <ion-checkbox [checked]="options().includeBpm" (ionChange)="changeOption('includeBpm', $event.detail.checked)">BPM</ion-checkbox>

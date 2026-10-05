@@ -22,7 +22,9 @@ export interface GigPosterValues {
     <section class="grid gap-5 border-t border-[var(--gigsaw-border)] py-[30px]">
       <h2 class="m-0 text-base font-extrabold">Locandine del concerto</h2>
       @if (!readOnly) {
-      <ion-select label="Modelli da compilare" labelPlacement="stacked" interface="alert" [multiple]="true"
+      <label class="grid gap-2 text-sm font-semibold text-[var(--gigsaw-text)]">
+      <span>Modelli da compilare</span>
+      <ion-select aria-label="Modelli da compilare" interface="alert" [multiple]="true"
         [value]="selectedIds" (ionChange)="select($event.detail.value)">
         @for (model of models; track model.id) {
           <ion-select-option [value]="model.id">{{ model.name }} · {{ model.document.format.label }}</ion-select-option>
@@ -31,6 +33,7 @@ export interface GigPosterValues {
           <ion-select-option [value]="poster.templateId">{{ poster.name }} · copia salvata</ion-select-option>
         }
       </ion-select>
+      </label>
       @if (!models.length) { <ion-note>Crea un modello nella sezione Modelli di locandina per aggiungere nuove locandine.</ion-note> }
       <ion-note>Le copie compilate vengono assegnate al concerto quando lo salvi e restano disponibili in questo browser.</ion-note>
       }

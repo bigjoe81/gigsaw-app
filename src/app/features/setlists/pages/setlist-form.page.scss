@@ -94,7 +94,7 @@ ion-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background)
   .constraint-grid { grid-template-columns: 1fr; }
 }
 
-.save-footer ion-toolbar { --background: var(--gigsaw-background); --border-color: var(--gigsaw-border); --border-width: 1px 0 0; }
+.save-footer ion-toolbar { --background: #333333; --border-color: var(--gigsaw-border); --border-width: 1px 0 0; }
 .save-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 20px; }
 .save-actions ion-button { min-height: 44px; font-weight: 700; }
 .save-hint { color: var(--gigsaw-muted); font-size: .8rem; }

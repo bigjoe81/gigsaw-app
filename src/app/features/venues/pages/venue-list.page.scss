@@ -86,14 +86,11 @@
   overflow: hidden;
   border: 1px solid var(--gigsaw-border);
   border-radius: 15px;
-  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  transition: background-color .18s ease;
 }
 
 .location-row:hover {
-  --background: color-mix(in srgb, var(--ion-color-primary) 7%, #101d30);
-  border-color: color-mix(in srgb, var(--ion-color-primary) 55%, var(--gigsaw-border));
-  box-shadow: 0 12px 30px rgba(var(--ion-color-primary-rgb), .1);
-  transform: translateY(-2px);
+  --background: var(--gigsaw-list-hover-background, #2a3648);
 }
 
 .location-icon {

@@ -1,5 +1,11 @@
-:host { display: block; height: 100%; }
-ion-content { --background: var(--gigsaw-background); }
+:host { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+ion-header { flex-shrink: 0; }
+ion-content {
+  flex: 1 1 0;
+  min-height: 0;
+  --background: var(--gigsaw-background);
+  --padding-bottom: var(--ion-safe-area-bottom, env(safe-area-inset-bottom, 0px));
+}
 .rehearsal-detail { width: min(100%, 1080px); margin: 0 auto; padding: 36px 24px 56px; color: var(--gigsaw-text); }
 .hero, .detail-card { border: 1px solid var(--gigsaw-border); border-radius: 20px; background: var(--gigsaw-surface, #101d30); }
 .hero { padding: 28px 32px; background: linear-gradient(125deg, rgba(var(--ion-color-primary-rgb), .12), var(--gigsaw-surface, #101d30) 65%); }

@@ -40,20 +40,20 @@
             </ion-item>
 
             <ion-item>
-              <ion-select formControlName="recipients" label="Destinatari" labelPlacement="stacked">
+              <label class="gigsaw-select-field"><span>Destinatari</span><ion-select formControlName="recipients" aria-label="Destinatari">
                 <ion-select-option value="all">Tutti i membri</ion-select-option>
                 <ion-select-option value="admins">Solo admin</ion-select-option>
                 <ion-select-option value="selected">Membri selezionati</ion-select-option>
-              </ion-select>
+              </ion-select></label>
             </ion-item>
 
             @if (showMemberPicker) {
               <ion-item>
-                <ion-select formControlName="userIds" label="Membri da notificare" labelPlacement="stacked" [multiple]="true">
+                <label class="gigsaw-select-field"><span>Membri da notificare</span><ion-select formControlName="userIds" [multiple]="true" aria-label="Membri da notificare">
                   @for (member of band.members ?? []; track member.id) {
                     <ion-select-option [value]="member.id">{{ member.name }}</ion-select-option>
                   }
-                </ion-select>
+                </ion-select></label>
               </ion-item>
             }
 

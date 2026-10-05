@@ -17,11 +17,48 @@
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
+@import '@fontsource/roboto/latin-300.css';
 
 :is(ion-input, ion-select, ion-textarea, ion-datetime-button) {
   --background: var(--gigsaw-input-background);
   --border-color: var(--gigsaw-input-border);
   --highlight-color-focused: var(--gigsaw-input-border-focus);
+}
+
+ion-select::part(inner) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+ion-select::part(container) {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+ion-select::part(icon) {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.gigsaw-select-field {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding-block: 12px;
+  color: var(--gigsaw-text);
+  font-size: .875rem;
+  font-weight: 600;
+}
+
+/* Stacked labels need room for both the label and the selected value. */
+ion-select[labelPlacement='stacked'] {
+  min-height: 76px;
+}
+
+ion-select[labelPlacement='stacked']::part(inner) {
+  flex-shrink: 0;
+  width: 100%;
+  min-height: 24px;
 }
 
 /* Unfilled controls and Ionic's iOS mode need an explicit field boundary.
@@ -42,6 +79,7 @@
   --padding-bottom: 12px;
   --placeholder-color: var(--gigsaw-muted);
   --placeholder-opacity: 1;
+  --highlight-height: 0px;
 
   &:focus-within {
     border-color: var(--gigsaw-input-border-focus);
@@ -49,10 +87,18 @@
     outline-offset: 1px;
   }
 
-  &.ion-invalid.ion-touched {
-    border-color: var(--ion-color-danger);
-    --highlight-color-focused: var(--ion-color-danger);
-  }
+}
+
+:is(ion-input, ion-select, ion-textarea).ion-valid.ion-touched {
+  border-color: var(--ion-color-success);
+  --border-color: var(--ion-color-success);
+  --highlight-color-focused: var(--ion-color-success);
+}
+
+:is(ion-input, ion-select, ion-textarea).ion-invalid.ion-touched {
+  border-color: var(--ion-color-danger);
+  --border-color: var(--ion-color-danger);
+  --highlight-color-focused: var(--ion-color-danger);
 }
 
 /* Optional CSS utils that can be commented out */
@@ -144,4 +190,64 @@ ion-header ion-toolbar::part(background) {
     --height: 100%;
     --border-radius: 0;
   }
+}
+
+/* Shared glass surface for form action bars, including Ionic footer toolbars. */
+.floating-action-toolbar,
+.form-action-bar,
+form > footer,
+.save-footer {
+  position: fixed !important;
+  z-index: 100;
+  bottom: max(16px, env(safe-area-inset-bottom, 0px)) !important;
+  left: clamp(20px, 5vw, 72px) !important;
+  right: clamp(20px, 5vw, 72px) !important;
+  width: auto !important;
+  margin: 0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.34);
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.form-action-bar,
+form > footer {
+  padding: 10px !important;
+}
+
+.save-footer ion-toolbar {
+  --background: transparent !important;
+  --border-width: 0;
+  border-radius: inherit;
+}
+
+ion-content:has(.form-action-bar, form > footer),
+ion-content:has(~ .save-footer) {
+  --padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 800px) {
+  .floating-action-toolbar,
+  .form-action-bar,
+  form > footer,
+  .save-footer {
+    left: 20px !important;
+    right: 20px !important;
+  }
+}
+
+/* Heading typography overrides feature weights without changing body text. */
+:is(h1, h2, h3, h4, h5, h6, ion-title, ion-card-title, [role='heading'], .alert-title) {
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 300 !important;
+}
+
+/* Keep button labels consistent across native and Ionic controls. */
+:is(button, ion-button, ion-back-button, ion-menu-button, .alert-button),
+ion-button::part(native),
+ion-back-button::part(native),
+ion-menu-button::part(native) {
+  font-weight: 600 !important;
 }

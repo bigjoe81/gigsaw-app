@@ -8,7 +8,6 @@ import {
   IonContent,
   IonCheckbox,
   IonHeader,
-  IonIcon,
   IonItem,
   IonLabel,
   IonMenuButton,
@@ -22,18 +21,18 @@ import {
   AlertController,
   ToastController,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { add, alertCircle, chevronForward, cloudUploadOutline, gitNetwork, musicalNotesOutline, trashOutline } from 'ionicons/icons';
+import { faPlus, faCircleExclamation, faChevronRight, faCloudArrowUp, faMusic, faTrash } from '@fortawesome/pro-light-svg-icons';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';
 import { SongDetailPage } from './song-detail.page';
-import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
+import { GigsawIconComponent, GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
+    GigsawIconComponent,
     GigsawListComponent,
     GigsawListItemComponent,
     IonBadge,
@@ -42,8 +41,7 @@ import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui
     IonContent,
     IonCheckbox,
     IonHeader,
-    IonIcon,
-    IonItem,
+      IonItem,
     IonLabel,
     IonMenuButton,
     IonRefresher,
@@ -57,6 +55,7 @@ import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui
   styleUrls: ['./song-list.page.scss'],
 })
 export class SongListPage {
+  readonly icons = { add: faPlus, alert: faCircleExclamation, forward: faChevronRight, upload: faCloudArrowUp, music: faMusic, trash: faTrash };
   readonly importEnabled = false;
   readonly songs = signal<Song[]>([]);
   readonly loading = signal(true);
@@ -73,9 +72,7 @@ export class SongListPage {
     private readonly route: ActivatedRoute,
     private readonly alertController: AlertController,
     private readonly toastController: ToastController,
-  ) {
-    addIcons({ add, alertCircle, chevronForward, cloudUploadOutline, gitNetwork, musicalNotesOutline, trashOutline });
-  }
+  ) {}
 
   ionViewWillEnter(): void {
     this.load();
@@ -154,9 +151,9 @@ export class SongListPage {
     });
   }
 
-  subtitle(song: Song): string {
+  subtitle(song: Song, includeAlbum = true): string {
     return [
-      song.album,
+      includeAlbum ? song.album : '',
       song.key ? `Tonalità: ${song.key}` : '',
       song.linkGroup ? `Link: ${song.linkGroup}` : '',
       song.tags?.length ? `Tag: ${song.tags.join(', ')}` : '',

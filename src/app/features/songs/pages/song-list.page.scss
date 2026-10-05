@@ -138,14 +138,11 @@
   overflow: hidden;
   border: 1px solid var(--gigsaw-border);
   border-radius: 15px;
-  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  transition: background-color .18s ease;
 }
 
 .song-row:hover {
-  --background: color-mix(in srgb, var(--ion-color-primary) 7%, #101d30);
-  border-color: color-mix(in srgb, var(--ion-color-primary) 55%, var(--gigsaw-border));
-  box-shadow: 0 12px 30px rgba(var(--ion-color-primary-rgb), .1);
-  transform: translateY(-2px);
+  --background: var(--gigsaw-list-hover-background, #2a3648);
 }
 
 .song-icon {
@@ -159,7 +156,7 @@
   background: rgba(var(--ion-color-primary-rgb), .12);
 }
 
-.song-icon ion-icon {
+.song-icon app-gigsaw-icon {
   font-size: 24px;
 }
 
@@ -197,7 +194,8 @@
   margin-inline-start: 16px;
 }
 
-.song-actions ion-badge {
+.song-actions ion-badge,
+.song-status-mobile {
   min-width: 68px;
   padding: 6px 10px;
   border-radius: 999px;
@@ -206,6 +204,14 @@
   letter-spacing: .04em;
   text-align: center;
   text-transform: uppercase;
+}
+
+.song-status-mobile {
+  display: none;
+}
+
+.metadata-mobile {
+  display: none;
 }
 
 .open-song {
@@ -230,12 +236,20 @@
   text-align: center;
 }
 
-.state ion-icon {
+.state app-gigsaw-icon {
   color: var(--ion-color-brand-blue);
   font-size: 44px;
 }
 
 @media (max-width: 700px) {
+  .metadata-desktop {
+    display: none;
+  }
+
+  .metadata-mobile {
+    display: inline;
+  }
+
   .library {
     padding: 20px 12px 36px;
   }
@@ -258,9 +272,7 @@
   }
 
   .song-icon {
-    width: 42px;
-    height: 42px;
-    margin-inline-end: 11px;
+    display: none;
   }
 
   .song-selector {
@@ -277,6 +289,12 @@
   }
 
   .song-actions ion-badge {
+    display: none;
+  }
+
+  .song-status-mobile {
+    display: inline-block;
+    margin-top: 8px;
     min-width: auto;
     padding-inline: 7px;
   }

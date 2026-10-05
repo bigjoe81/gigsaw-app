@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet, isPlatform } from '@ionic/angular/standalone';
+import { FaConfig } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,7 @@ import { IonApp, IonRouterOutlet, isPlatform } from '@ionic/angular/standalone';
 export class AppComponent {
   readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
 
-  constructor() {}
+  constructor(iconConfig: FaConfig) {
+    iconConfig.defaultPrefix = 'fal';
+  }
 }

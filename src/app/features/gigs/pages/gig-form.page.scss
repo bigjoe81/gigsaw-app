@@ -8,5 +8,5 @@ ion-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background)
 .selection-card div { display: grid; gap: 4px; }
 .error-banner { display: block; padding: 13px 15px; border: 1px solid rgba(var(--ion-color-danger-rgb), .35); border-radius: 12px; background: rgba(var(--ion-color-danger-rgb), .08); }
 .gig-field { font-weight: 400; }
-.floating-action-toolbar { position: absolute; z-index: 100; bottom: max(16px, env(safe-area-inset-bottom)); left: clamp(20px, 5vw, 72px); right: clamp(20px, 5vw, 72px); display: block; width: auto; overflow: hidden; border: 1px solid #243244; border-radius: 16px; background: color-mix(in srgb, var(--gigsaw-background) 94%, transparent); box-shadow: 0 14px 38px rgba(0, 0, 0, .34); backdrop-filter: blur(14px); }
+.floating-action-toolbar { position: absolute; z-index: 100; bottom: max(16px, env(safe-area-inset-bottom)); left: clamp(20px, 5vw, 72px); right: clamp(20px, 5vw, 72px); display: block; width: auto; overflow: hidden; border: 1px solid #243244; border-radius: 16px; background: #333333; box-shadow: 0 14px 38px rgba(0, 0, 0, .34); backdrop-filter: blur(14px); }
 @media (max-width: 800px) { .floating-action-toolbar { left: 20px; right: 20px; width: auto; } }

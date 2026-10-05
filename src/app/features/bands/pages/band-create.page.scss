@@ -434,15 +434,6 @@
   font-weight: 700;
 }
 
-.form-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  padding-top: 24px;
-  border-top: 1px solid var(--create-border);
-}
-
 .submit-button {
   min-width: 190px;
   min-height: 50px;
@@ -520,8 +511,8 @@
   .inline-notice { color: #f6d887; background: #3b3015; }
   .inline-notice button { color: #ffe8a8; }
   .error-banner { color: #ffbbc3; border-color: #6f3440; background: #351a21; }
-  .form-actions { background: rgba(18, 18, 18, 0.96); }
-  .embedded .form-actions { background: rgba(18, 18, 18, 0.96); }
+  .form-actions { background: #333333; }
+  .embedded .form-actions { background: #333333; }
 
 .text-control { color: #E5EDF7; }
 

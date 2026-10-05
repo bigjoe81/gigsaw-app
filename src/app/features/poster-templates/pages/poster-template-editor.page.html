@@ -5,7 +5,7 @@
       <ion-list>
         <ion-list-header><ion-label>Template</ion-label></ion-list-header>
         <ion-item><ion-input label="Nome template" labelPlacement="stacked" [(ngModel)]="name" /></ion-item>
-        <ion-item><ion-select label="Formato" labelPlacement="stacked" interface="popover" [ngModel]="document.format.id" (ngModelChange)="changeFormat($event)">@for (format of formats; track format.id) {<ion-select-option [value]="format.id">{{ format.label }} · {{ format.width }}×{{ format.height }}</ion-select-option>}</ion-select></ion-item>
+        <ion-item><label class="gigsaw-select-field"><span>Formato</span><ion-select interface="popover" [ngModel]="document.format.id" (ngModelChange)="changeFormat($event)" aria-label="Formato">@for (format of formats; track format.id) {<ion-select-option [value]="format.id">{{ format.label }} · {{ format.width }}×{{ format.height }}</ion-select-option>}</ion-select></label></ion-item>
         <ion-item><ion-label>Sfondo PNG o JPG</ion-label><ion-button slot="end" fill="outline" (click)="backgroundInput.click()">Sfoglia</ion-button></ion-item>
         <input #backgroundInput hidden type="file" accept="image/png,image/jpeg" (change)="uploadBackground($event)" />
       </ion-list>
@@ -18,10 +18,10 @@
         <ion-list-header><ion-label>Stile campo</ion-label></ion-list-header>
         @if (selected) {
           <ion-item><ion-input label="Valore di esempio" labelPlacement="stacked" [(ngModel)]="selected.sampleValue" (ngModelChange)="updateSelected()" /></ion-item>
-          <ion-item><ion-select label="Font" labelPlacement="stacked" interface="popover" [(ngModel)]="selected.fontFamily" (ngModelChange)="updateSelected()">@for (font of fonts; track font) {<ion-select-option [value]="font">{{ font }}</ion-select-option>}</ion-select></ion-item>
+          <ion-item><label class="gigsaw-select-field"><span>Font</span><ion-select interface="popover" [(ngModel)]="selected.fontFamily" (ngModelChange)="updateSelected()" aria-label="Font">@for (font of fonts; track font) {<ion-select-option [value]="font">{{ font }}</ion-select-option>}</ion-select></label></ion-item>
           <ion-item><ion-input label="Dimensione" labelPlacement="stacked" type="number" min="16" max="220" [(ngModel)]="selected.fontSize" (ngModelChange)="updateSelected()" /></ion-item>
           <ion-item><ion-input label="Colore (HEX)" labelPlacement="stacked" [(ngModel)]="selected.color" (ngModelChange)="updateSelected()" /></ion-item>
-          <ion-item><ion-select label="Allineamento" labelPlacement="stacked" interface="popover" [(ngModel)]="selected.textAlign" (ngModelChange)="updateSelected()"><ion-select-option value="left">Sinistra</ion-select-option><ion-select-option value="center">Centro</ion-select-option><ion-select-option value="right">Destra</ion-select-option></ion-select></ion-item>
+          <ion-item><label class="gigsaw-select-field"><span>Allineamento</span><ion-select interface="popover" [(ngModel)]="selected.textAlign" (ngModelChange)="updateSelected()" aria-label="Allineamento"><ion-select-option value="left">Sinistra</ion-select-option><ion-select-option value="center">Centro</ion-select-option><ion-select-option value="right">Destra</ion-select-option></ion-select></label></ion-item>
           <ion-item><ion-checkbox [(ngModel)]="selected.uppercase" (ngModelChange)="updateSelected()">Maiuscolo</ion-checkbox></ion-item>
           <ion-button color="danger" fill="outline" (click)="removeSelected()">Rimuovi campo</ion-button>
         } @else {<ion-note>Seleziona un campo sulla locandina per modificarlo.</ion-note>}

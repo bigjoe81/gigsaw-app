@@ -5,7 +5,7 @@ main, main * { box-sizing: border-box; }
 .rehearsal-form-content { --background: var(--gigsaw-background); }
 .gigsaw-outlined-form label:not(.song-option) { display: grid; gap: 8px; color: #e5edf7; font-size: .82rem; font-weight: 750; }
 .field-help { color: #9aabc1; font-weight: 600; }
-.floating-action-toolbar { position: absolute; z-index: 100; bottom: max(16px, env(safe-area-inset-bottom)); left: clamp(20px, 5vw, 72px); right: clamp(20px, 5vw, 72px); display: block; width: auto; overflow: hidden; border: 1px solid #243244; border-radius: 16px; background: color-mix(in srgb, var(--gigsaw-background) 94%, transparent); box-shadow: 0 14px 38px rgba(0, 0, 0, .34); backdrop-filter: blur(14px); }
+.floating-action-toolbar { position: absolute; z-index: 100; bottom: max(16px, env(safe-area-inset-bottom)); left: clamp(20px, 5vw, 72px); right: clamp(20px, 5vw, 72px); display: block; width: auto; overflow: hidden; border: 1px solid #243244; border-radius: 16px; background: #333333; box-shadow: 0 14px 38px rgba(0, 0, 0, .34); backdrop-filter: blur(14px); }
 .form-error { display: block; margin-top: 16px; padding: 12px 14px; border: 1px solid rgba(var(--ion-color-danger-rgb), .4); border-radius: 10px; background: rgba(var(--ion-color-danger-rgb), .08); }
 .song-option.selected { border-color: var(--ion-color-brand-blue); }
 @media (max-width: 800px) { .floating-action-toolbar { left: 20px; right: 20px; width: auto; } }
