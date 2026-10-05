@@ -2,7 +2,10 @@
   <ion-menu contentId="band-content" menuId="band-menu">
     <ion-content>
       <header class="menu-brand">
-        <img src="assets/logo-hor.png" alt="GigSaw" class="menu-brand__logo" />
+        <div class="gigsaw-brand">
+          <img src="assets/logo-hor.png" alt="GigSaw" class="menu-brand__logo" />
+          <span class="gigsaw-brand__beta">| Beta</span>
+        </div>
       </header>
 
       @if (currentBand(); as band) {

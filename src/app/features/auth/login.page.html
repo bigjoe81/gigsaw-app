@@ -1,14 +1,17 @@
 <ion-content class="ion-padding login-content" [fullscreen]="true">
   <div class="auth-shell">
     <div class="auth-brand">
-      <picture class="block w-full">
-        <source media="(min-width: 768px)" srcset="assets/logo-hor.png" />
-        <img
-          class="mx-auto block h-auto w-[min(260px,70vw)] object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.12)] md:w-[min(300px,48vw)]"
-          src="assets/logo-vert.png"
-          alt="GigSaw logo"
-        />
-      </picture>
+      <div class="gigsaw-brand">
+        <picture class="block">
+          <source media="(min-width: 768px)" srcset="assets/logo-hor.png" />
+          <img
+            class="mx-auto block h-auto w-[min(260px,70vw)] object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.12)] md:w-[min(300px,48vw)]"
+            src="assets/logo-vert.png"
+            alt="GigSaw logo"
+          />
+        </picture>
+        <span class="gigsaw-brand__beta">| Beta</span>
+      </div>
       <p class="max-w-96 text-center text-[0.95rem] text-[var(--ion-color-medium)]">
         La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong>
       </p>
