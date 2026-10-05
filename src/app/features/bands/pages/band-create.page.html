@@ -12,9 +12,12 @@
 <ion-content class="create-content">
   <main class="create-shell" [class.embedded]="embedded">
     <aside class="intro-panel" aria-labelledby="create-band-title">
-      <picture>
-         <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
-      </picture>
+      <div class="gigsaw-brand">
+        <picture>
+          <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
+        </picture>
+        <span class="gigsaw-brand__beta">| Beta</span>
+      </div>
 
       <div class="intro-copy">
         <span class="eyebrow">Nuovo workspace</span>
@@ -66,7 +69,7 @@
           <div class="logo-row">
             <div class="logo-preview" [class.has-image]="logoPreviewUrl">
               @if (logoPreviewUrl) {
-                <img [src]="logoPreviewUrl" alt="Anteprima del logo selezionato" />
+               <img [src]="logoPreviewUrl" alt="Anteprima del logo selezionato" />
                 <ion-button class="remove-logo" type="button" aria-label="Rimuovi logo" (click)="removeLogo()">
                   <ion-icon name="close" aria-hidden="true" />
                 </ion-button>

@@ -1,7 +1,10 @@
 <ion-content class="onboarding-content" [fullscreen]="true">
   <main class="onboarding-shell">
     <header class="onboarding-topbar">
-      <img src="assets/logo-hor.png" alt="GigSaw" />
+      <div class="gigsaw-brand">
+        <img src="assets/logo-hor.png" alt="GigSaw" />
+        <span class="gigsaw-brand__beta">| Beta</span>
+      </div>
       <ion-button class="text-button" type="button" fill="clear" (click)="skip()">Salta</ion-button>
     </header>
 
