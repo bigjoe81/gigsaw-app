@@ -7,7 +7,15 @@
   display: grid;
   align-items: center;
   padding-top: max(24px, var(--ion-safe-area-top));
-  padding-bottom: max(24px, var(--ion-safe-area-bottom));
+  padding-bottom: calc(max(24px, var(--ion-safe-area-bottom)) + var(--auth-keyboard-inset, 0px));
+}
+
+:host ion-content.auth-keyboard-open::part(scroll) {
+  align-items: start;
+}
+
+:host ion-content.auth-keyboard-open .auth-shell {
+  margin-block: 0;
 }
 
 .auth-shell {

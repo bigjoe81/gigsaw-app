@@ -4,9 +4,11 @@ import { IonContent, IonInput } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
 import { GigsawButtonComponent, GigsawMessageComponent } from '../../shared/ui/gigsaw';
 
+import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
+
 @Component({
   standalone: true,
-  imports: [RouterLink, GigsawButtonComponent, GigsawMessageComponent, IonContent, IonInput],
+  imports: [AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, IonContent, IonInput],
   templateUrl: './register.page.html',
   styleUrls: ['./auth-layout.scss'],
 })
