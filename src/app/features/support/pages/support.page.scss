@@ -203,6 +203,11 @@ ion-item p {
   background: color-mix(in srgb, var(--ion-color-primary) 5%, transparent);
 }
 
+.screenshot-picker:focus-within {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
 .screenshot-picker input {
   position: absolute;
   width: 1px;
@@ -236,8 +241,17 @@ ion-item p {
 }
 
 .screenshot-file > div {
+  flex: 1;
   min-width: 0;
   display: grid;
+}
+
+.screenshot-preview {
+  width: 64px;
+  height: 48px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  border-radius: 6px;
 }
 
 .screenshot-file strong {

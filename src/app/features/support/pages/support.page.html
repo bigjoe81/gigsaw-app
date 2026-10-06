@@ -110,6 +110,8 @@
                   type="file"
                   accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                   multiple
+                  aria-label="Allega screenshot"
+                  [disabled]="saving()"
                   (change)="onScreenshotsSelected($event)"
                 />
                 <strong>Allega screenshot</strong>
@@ -118,13 +120,14 @@
 
               @if (screenshots.length) {
                 <div class="screenshot-selection">
-                  @for (file of screenshots; track file.name + file.size; let i = $index) {
+                  @for (file of screenshots; track file; let i = $index) {
                     <div class="screenshot-file">
+                      <img class="screenshot-preview" [src]="screenshotPreview(file)" [alt]="'Anteprima di ' + file.name" />
                       <div>
                         <strong>{{ file.name }}</strong>
                         <small>{{ fileSize(file) }}</small>
                       </div>
-                      <button type="button" (click)="removeScreenshot(i)" aria-label="Rimuovi screenshot">×</button>
+                      <button type="button" (click)="removeScreenshot(i)" [disabled]="saving()" [attr.aria-label]="'Rimuovi ' + file.name">×</button>
                     </div>
                   }
                 </div>

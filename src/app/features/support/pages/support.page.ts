@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -47,7 +47,7 @@ import { SupportTicketService } from '../services/support-ticket.service';
   templateUrl: './support.page.html',
   styleUrls: ['./support.page.scss'],
 })
-export class SupportPage implements OnInit {
+export class SupportPage implements OnInit, OnDestroy {
   private static readonly MAX_SCREENSHOTS = 5;
   private static readonly MAX_SCREENSHOT_SIZE = 5 * 1024 * 1024;
   private static readonly SCREENSHOT_TYPES = new Set(['image/jpeg', 'image/png']);
@@ -67,6 +67,21 @@ export class SupportPage implements OnInit {
   message = '';
   replyMessage = '';
   screenshots: File[] = [];
+  private readonly screenshotPreviews = new Map<File, string>();
+
+  ngOnDestroy(): void {
+    this.clearScreenshots();
+  }
+
+  private clearScreenshots(): void {
+    this.screenshotPreviews.forEach((url) => URL.revokeObjectURL(url));
+    this.screenshotPreviews.clear();
+    this.screenshots = [];
+  }
+
+  screenshotPreview(file: File): string {
+    return this.screenshotPreviews.get(file) ?? '';
+  }
 
   private get bandId(): number | null {
     const value = this.route.parent?.snapshot.paramMap.get('bandId');
@@ -109,14 +124,20 @@ export class SupportPage implements OnInit {
     this.subject = '';
     this.category = 'question';
     this.message = '';
-    this.screenshots = [];
+    this.clearScreenshots();
   }
 
   onScreenshotsSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files ?? []);
+    input.value = '';
+    if (this.saving() || !files.length) return;
 
-    if (files.length > SupportPage.MAX_SCREENSHOTS) {
+    const newFiles = files.filter((file) => !this.screenshots.some((selected) =>
+      selected.name === file.name && selected.size === file.size && selected.lastModified === file.lastModified,
+    ));
+
+    if (this.screenshots.length + newFiles.length > SupportPage.MAX_SCREENSHOTS) {
       this.error.set(`Puoi allegare al massimo ${SupportPage.MAX_SCREENSHOTS} screenshot.`);
       input.value = '';
       return;
@@ -137,10 +158,16 @@ export class SupportPage implements OnInit {
     }
 
     this.error.set(null);
-    this.screenshots = files;
+    newFiles.forEach((file) => this.screenshotPreviews.set(file, URL.createObjectURL(file)));
+    this.screenshots = [...this.screenshots, ...newFiles];
   }
 
   removeScreenshot(index: number): void {
+    if (this.saving()) return;
+    const file = this.screenshots[index];
+    const preview = this.screenshotPreviews.get(file);
+    if (preview) URL.revokeObjectURL(preview);
+    this.screenshotPreviews.delete(file);
     this.screenshots = this.screenshots.filter((_, currentIndex) => currentIndex !== index);
   }
 
@@ -165,7 +192,7 @@ export class SupportPage implements OnInit {
         this.selectedTicket.set(ticket);
         this.creating.set(false);
         this.saving.set(false);
-        this.screenshots = [];
+        this.clearScreenshots();
         this.loadTickets();
       },
       error: () => {
