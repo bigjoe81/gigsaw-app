@@ -19,6 +19,8 @@ export interface SupportTicket {
   category: SupportTicketCategory;
   status: SupportTicketStatus;
   priority: SupportTicketPriority;
+  screenshots?: string[];
+  screenshot_urls?: string[];
   resolved_at: string | null;
   created_at: string;
   updated_at: string;
@@ -32,4 +34,5 @@ export interface CreateSupportTicketRequest {
   subject: string;
   category: SupportTicketCategory;
   message: string;
+  screenshots?: File[];
 }

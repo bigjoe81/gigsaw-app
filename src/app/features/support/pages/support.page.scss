@@ -167,6 +167,129 @@ ion-item p {
   opacity: 0.55;
 }
 
+.screenshot-field {
+  display: grid;
+  gap: 10px;
+}
+
+.screenshot-field__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.screenshot-field__heading small {
+  opacity: 0.55;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.screenshot-picker {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  padding: 16px;
+  border: 1px dashed color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.screenshot-picker:hover {
+  border-color: var(--ion-color-primary);
+  background: color-mix(in srgb, var(--ion-color-primary) 5%, transparent);
+}
+
+.screenshot-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.screenshot-picker strong {
+  color: var(--ion-color-primary);
+}
+
+.screenshot-picker span {
+  opacity: 0.6;
+  font-size: 0.78rem;
+}
+
+.screenshot-selection {
+  display: grid;
+  gap: 8px;
+}
+
+.screenshot-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+.screenshot-file > div {
+  min-width: 0;
+  display: grid;
+}
+
+.screenshot-file strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.screenshot-file small {
+  opacity: 0.55;
+  font-size: 0.72rem;
+}
+
+.screenshot-file button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 9%, transparent);
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.ticket-screenshots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  padding: 18px 0 0;
+}
+
+.ticket-screenshots a {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, currentColor 4%, transparent);
+}
+
+.ticket-screenshots img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 .conversation {
   display: grid;
   gap: 12px;
@@ -255,5 +378,11 @@ ion-item p {
 
   .message {
     max-width: 92%;
+  }
+
+  .screenshot-field__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
   }
 }

@@ -19,7 +19,21 @@ export class SupportTicketService {
   }
 
   create(payload: CreateSupportTicketRequest): Observable<SupportTicket> {
-    return this.http.post<SupportTicket>(`${API_BASE_URL}/support-tickets`, payload);
+    const formData = new FormData();
+
+    if (payload.band_id != null) {
+      formData.append('band_id', String(payload.band_id));
+    }
+
+    formData.append('subject', payload.subject);
+    formData.append('category', payload.category);
+    formData.append('message', payload.message);
+
+    for (const screenshot of payload.screenshots ?? []) {
+      formData.append('screenshots[]', screenshot, screenshot.name);
+    }
+
+    return this.http.post<SupportTicket>(`${API_BASE_URL}/support-tickets`, formData);
   }
 
   reply(id: number, message: string): Observable<SupportTicket> {

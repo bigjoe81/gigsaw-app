@@ -99,6 +99,38 @@
               />
             </label>
 
+            <div class="screenshot-field">
+              <div class="screenshot-field__heading">
+                <span>Screenshot</span>
+                <small>JPG o PNG · max 5 file · 5 MB ciascuno</small>
+              </div>
+
+              <label class="screenshot-picker">
+                <input
+                  type="file"
+                  accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                  multiple
+                  (change)="onScreenshotsSelected($event)"
+                />
+                <strong>Allega screenshot</strong>
+                <span>Seleziona immagini dal dispositivo</span>
+              </label>
+
+              @if (screenshots.length) {
+                <div class="screenshot-selection">
+                  @for (file of screenshots; track file.name + file.size; let i = $index) {
+                    <div class="screenshot-file">
+                      <div>
+                        <strong>{{ file.name }}</strong>
+                        <small>{{ fileSize(file) }}</small>
+                      </div>
+                      <button type="button" (click)="removeScreenshot(i)" aria-label="Rimuovi screenshot">×</button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
             <ion-button expand="block" (click)="createTicket()" [disabled]="saving() || !subject.trim() || !message.trim()">
               @if (saving()) { <ion-spinner name="crescent" /> } @else { Apri ticket }
             </ion-button>
@@ -111,6 +143,16 @@
             </div>
             <ion-badge>{{ statusLabel(ticket.status) }}</ion-badge>
           </div>
+
+          @if (ticket.screenshot_urls?.length) {
+            <div class="ticket-screenshots">
+              @for (url of ticket.screenshot_urls ?? []; track url) {
+                <a [href]="url" target="_blank" rel="noopener noreferrer">
+                  <img [src]="url" alt="Screenshot allegato al ticket" loading="lazy" />
+                </a>
+              }
+            </div>
+          }
 
           <div class="conversation">
             @for (item of ticket.messages ?? []; track item.id) {
