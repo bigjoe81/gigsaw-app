@@ -4,7 +4,7 @@
     <div>
       <ion-list>
         <ion-list-header><ion-label>Template</ion-label></ion-list-header>
-        <ion-item><ion-input label="Nome locandina" labelPlacement="stacked" [(ngModel)]="name" /></ion-item>
+        <ion-item><ion-input aria-label="Nome locandina" [(ngModel)]="name" /></ion-item>
         <ion-item><label class="gigsaw-select-field"><span>Variante del formato</span><ion-select interface="popover" [ngModel]="document.format.id" (ngModelChange)="changeFormat($event)" aria-label="Formato">@for (format of formats; track format.id) {<ion-select-option [value]="format.id">{{ format.label }} · {{ format.width }}×{{ format.height }}</ion-select-option>}</ion-select></label></ion-item>
         <ion-note>Seleziona un formato per aprire la sua variante o crearla da quella corrente. Ogni variante mantiene il proprio sfondo e layout. Salva per conservare tutti i formati modificati.</ion-note>
         <ion-item><ion-label>Sfondo PNG o JPG</ion-label><ion-button slot="end" fill="outline" (click)="backgroundInput.click()">Sfoglia</ion-button></ion-item>
