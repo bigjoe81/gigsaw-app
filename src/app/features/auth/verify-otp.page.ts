@@ -5,9 +5,11 @@ import { AuthService } from '../../core/auth/auth.service';
 import { OtpPurpose } from '../../core/auth/auth.models';
 import { GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent } from '../../shared/ui/gigsaw';
 
+import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
+
 @Component({
   standalone: true,
-  imports: [RouterLink, GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent, IonContent],
+  imports: [AuthKeyboardScrollDirective, RouterLink, GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent, IonContent],
   templateUrl: './verify-otp.page.html',
   styleUrls: ['./auth-layout.scss'],
 })
