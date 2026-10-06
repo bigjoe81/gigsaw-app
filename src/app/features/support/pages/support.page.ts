@@ -48,6 +48,10 @@ import { SupportTicketService } from '../services/support-ticket.service';
   styleUrls: ['./support.page.scss'],
 })
 export class SupportPage implements OnInit {
+  private static readonly MAX_SCREENSHOTS = 5;
+  private static readonly MAX_SCREENSHOT_SIZE = 5 * 1024 * 1024;
+  private static readonly SCREENSHOT_TYPES = new Set(['image/jpeg', 'image/png']);
+
   private readonly route = inject(ActivatedRoute);
   private readonly support = inject(SupportTicketService);
 
@@ -62,6 +66,7 @@ export class SupportPage implements OnInit {
   category: SupportTicketCategory = 'question';
   message = '';
   replyMessage = '';
+  screenshots: File[] = [];
 
   private get bandId(): number | null {
     const value = this.route.parent?.snapshot.paramMap.get('bandId');
@@ -104,6 +109,43 @@ export class SupportPage implements OnInit {
     this.subject = '';
     this.category = 'question';
     this.message = '';
+    this.screenshots = [];
+  }
+
+  onScreenshotsSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+
+    if (files.length > SupportPage.MAX_SCREENSHOTS) {
+      this.error.set(`Puoi allegare al massimo ${SupportPage.MAX_SCREENSHOTS} screenshot.`);
+      input.value = '';
+      return;
+    }
+
+    const invalidType = files.find((file) => !SupportPage.SCREENSHOT_TYPES.has(file.type));
+    if (invalidType) {
+      this.error.set('Gli screenshot devono essere in formato JPG o PNG.');
+      input.value = '';
+      return;
+    }
+
+    const tooLarge = files.find((file) => file.size > SupportPage.MAX_SCREENSHOT_SIZE);
+    if (tooLarge) {
+      this.error.set(`Ogni screenshot può pesare al massimo 5 MB (${tooLarge.name} è troppo grande).`);
+      input.value = '';
+      return;
+    }
+
+    this.error.set(null);
+    this.screenshots = files;
+  }
+
+  removeScreenshot(index: number): void {
+    this.screenshots = this.screenshots.filter((_, currentIndex) => currentIndex !== index);
+  }
+
+  fileSize(file: File): string {
+    return `${(file.size / 1024 / 1024).toFixed(1)} MB`;
   }
 
   createTicket(): void {
@@ -117,15 +159,17 @@ export class SupportPage implements OnInit {
       subject: this.subject.trim(),
       category: this.category,
       message: this.message.trim(),
+      screenshots: this.screenshots,
     }).subscribe({
       next: (ticket) => {
         this.selectedTicket.set(ticket);
         this.creating.set(false);
         this.saving.set(false);
+        this.screenshots = [];
         this.loadTickets();
       },
       error: () => {
-        this.error.set('Non riesco ad aprire il ticket.');
+        this.error.set('Non riesco ad aprire il ticket. Controlla formato e dimensione degli screenshot e riprova.');
         this.saving.set(false);
       },
     });
