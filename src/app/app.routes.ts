@@ -111,6 +111,7 @@ export const routes: Routes = [
         children: [
           { path: '', pathMatch: 'full', loadComponent: () => import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage) },
           { path: 'notifiche', loadComponent: () => import('./features/bands/pages/band-notification-settings.page').then((m) => m.BandNotificationSettingsPage) },
+          { path: 'abbonamento', loadComponent: () => import('./features/bands/pages/band-billing.page').then((m) => m.BandBillingPage) },
           { path: ':section', loadComponent: () => import('./features/bands/pages/band-manage.page').then((m) => m.BandManagePage) },
         ],
       },

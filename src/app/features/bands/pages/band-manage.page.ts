@@ -82,7 +82,7 @@ import { GigsawBadgeComponent, GigsawListComponent, GigsawListItemComponent, Gig
 
 })
 export class BandManagePage implements OnInit, OnDestroy {
-  readonly settingsSection = signal<'overview' | 'profile' | 'tech' | 'media' | 'team' | 'invites' | 'notifications'>('overview');
+  readonly settingsSection = signal<'overview' | 'profile' | 'tech' | 'media' | 'team' | 'invites' | 'notifications' | 'billing'>('overview');
   readonly techSection = signal<'channels' | 'stage' | 'notes'>('channels');
   readonly selectedStageItem = signal<number | null>(null);
   readonly genreQuery = signal('');
@@ -233,6 +233,7 @@ export class BandManagePage implements OnInit, OnDestroy {
   }
 
   readonly sections = [
+    { key: 'billing', path: 'abbonamento', title: 'Abbonamento', description: 'Piano della band, Beta e pagamenti.', icon: 'options-outline', admin: true },
     { key: 'profile', path: 'profilo', title: 'Profilo', description: 'Identità, biografia e contatti della band.', icon: 'person-circle-outline', admin: true },
     { key: 'tech', path: 'scheda-tecnica', title: 'Scheda tecnica', description: 'Canali audio, disposizione palco e note per il live.', icon: 'options-outline', admin: true },
     { key: 'media', path: 'media', title: 'Media e press kit', description: 'Foto promozionali e materiali da condividere.', icon: 'images-outline', admin: true },
