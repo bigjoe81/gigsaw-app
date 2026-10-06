@@ -251,32 +251,3 @@ ion-back-button::part(native),
 ion-menu-button::part(native) {
   font-weight: 600 !important;
 }
-
-/* Shared logo lockup: keep the release label readable at every logo size. */
-.gigsaw-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  max-width: 100%;
-
-  > img,
-  > picture {
-    flex: 0 1 auto;
-    min-width: 0;
-    max-width: calc(100% - 58px);
-  }
-
-  > picture img {
-    max-width: 100%;
-  }
-}
-
-.gigsaw-brand__beta {
-  flex: 0 0 auto;
-  color: var(--gigsaw-text, var(--ion-text-color));
-  font-size: .875rem;
-  font-weight: 600;
-  line-height: 1;
-  white-space: nowrap;
-}
