@@ -35,7 +35,7 @@
     } @else {
       <section class="library" aria-label="Template della band">
         <div class="library-toolbar">
-          <h2>I tuoi template <span class="count">{{ templates.length }}</span></h2>
+          <h2>I tuoi template <span class="count">{{ groups.length }}</span></h2>
           <label class="search-field">
             <ion-icon name="search-outline" aria-hidden="true" />
             <input type="search" [(ngModel)]="search" placeholder="Cerca un template…" aria-label="Cerca un template" />
@@ -47,9 +47,10 @@
             <button type="button" [class.active]="format === item.id" [attr.aria-pressed]="format === item.id" (click)="format = item.id">{{ item.label }}</button>
           }
         </div>
-        <p class="result-count" aria-live="polite">{{ filteredTemplates.length }} {{ filteredTemplates.length === 1 ? 'template disponibile' : 'template disponibili' }}</p>
+        <p class="result-count" aria-live="polite">{{ filteredGroups.length }} {{ filteredGroups.length === 1 ? 'template disponibile' : 'template disponibili' }}</p>
         <div class="poster-grid">
-          @for (template of filteredTemplates; track template.id) {
+          @for (group of filteredGroups; track group[0].groupId) {
+            @let template = preview(group);
             <article class="poster-card">
               <a class="poster-link" [routerLink]="[template.id, 'modifica']" [attr.aria-label]="'Modifica ' + template.name">
                 <div class="poster-preview">
@@ -57,11 +58,16 @@
                   <span class="preview-action">Apri nell’editor <ion-icon name="arrow-forward-outline" aria-hidden="true" /></span>
                 </div>
                 <div class="card-copy">
-                  <span class="format-badge">{{ template.document.format.label }}</span>
+                  <span class="format-badge">{{ group.length }} {{ group.length === 1 ? 'formato' : 'formati' }}</span>
                   <h3>{{ template.name }}</h3>
                   <p>{{ template.document.format.width }} × {{ template.document.format.height }} px · {{ template.document.fields.length }} campi</p>
                 </div>
               </a>
+              <div class="variant-links">
+                @for (variant of group; track variant.id) {
+                  <a [routerLink]="[variant.id, 'modifica']">{{ variant.document.format.label }}</a>
+                }
+              </div>
               <footer class="card-footer">
                 <span>Aggiornato il {{ template.updatedAt | date:'dd/MM/yyyy' }}</span>
                 <button type="button" class="delete-button" (click)="remove(template, $event)" [attr.aria-label]="'Elimina ' + template.name" title="Elimina template"><ion-icon name="trash-outline" aria-hidden="true" /></button>

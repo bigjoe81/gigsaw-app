@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonSelect, IonSelectOption, IonCheckbox, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { PosterCanvasComponent } from '../components/poster-canvas.component';
-import { POSTER_FIELD_PRESETS, POSTER_FORMATS, PosterField, PosterFieldKey, PosterFormatId, PosterTemplateDocument } from '../models/poster-template.models';
+import { POSTER_FIELD_PRESETS, POSTER_FORMATS, PosterField, PosterFieldKey, PosterFormatId, PosterTemplateDocument, PosterTemplate } from '../models/poster-template.models';
 import { PosterTemplateService } from '../services/poster-template.service';
 
 @Component({
@@ -20,6 +20,9 @@ export class PosterTemplateEditorPage {
   readonly fonts = ['Arial', 'Helvetica', 'Georgia', 'Times New Roman', 'Courier New', 'Impact'];
   readonly bandId: string;
   readonly templateId: string | null;
+  variants: PosterTemplate[] = [];
+  groupId?: string;
+  private drafts = new Map<PosterFormatId, PosterTemplateDocument>();
   name = 'Nuova locandina';
   selectedId: string | null = null;
   document: PosterTemplateDocument = this.emptyDocument('instagram-post');
@@ -28,7 +31,11 @@ export class PosterTemplateEditorPage {
     this.bandId = route.snapshot.parent?.parent?.paramMap.get('bandId') ?? '';
     this.templateId = route.snapshot.paramMap.get('templateId');
     const stored = this.templateId ? storage.get(this.bandId, this.templateId) : undefined;
-    if (stored) { this.name = stored.name; this.document = structuredClone(stored.document); }
+    if (stored) {
+      this.name = stored.name; this.document = structuredClone(stored.document); this.groupId = stored.groupId;
+      this.variants = storage.list(this.bandId).filter(item => item.groupId === this.groupId);
+      for (const variant of this.variants) this.drafts.set(variant.document.format.id, structuredClone(variant.document));
+    }
   }
 
   get selected(): PosterField | undefined { return this.document.fields.find((field) => field.id === this.selectedId); }
@@ -36,6 +43,10 @@ export class PosterTemplateEditorPage {
   changeFormat(id: PosterFormatId | string): void {
     const format = this.formats.find((item) => item.id === id);
     if (!format) return;
+    this.drafts.set(this.document.format.id, structuredClone(this.document));
+    const draft = this.drafts.get(format.id);
+    this.selectedId = null;
+    if (draft) { this.document = structuredClone(draft); return; }
     const old = this.document.format;
     this.document = { ...this.document, format: { ...format }, fields: this.document.fields.map((field) => ({ ...field, x: field.x * format.width / old.width, y: field.y * format.height / old.height, width: Math.min(field.width * format.width / old.width, format.width) })) };
   }
@@ -69,9 +80,17 @@ export class PosterTemplateEditorPage {
 
   async save(): Promise<void> {
     if (!this.name.trim()) { await this.message('Inserisci un nome per il template.', 'warning'); return; }
-    const item = this.storage.save(this.bandId, this.name, this.document, this.templateId ?? undefined);
+    this.drafts.set(this.document.format.id, structuredClone(this.document));
+    let active: PosterTemplate | undefined;
+    for (const [formatId, document] of this.drafts) {
+      const existing = this.variants.find(variant => variant.document.format.id === formatId);
+      const item = this.storage.save(this.bandId, this.name, document, existing?.id, this.groupId);
+      this.groupId = item.groupId;
+      if (formatId === this.document.format.id) active = item;
+    }
+    this.variants = this.storage.list(this.bandId).filter(item => item.groupId === this.groupId);
     await this.message('Template salvato sul dispositivo.', 'success');
-    if (!this.templateId) await this.router.navigate(['/band', this.bandId, 'locandine', item.id, 'modifica']);
+    if (active && active.id !== this.templateId) await this.router.navigate(['/band', this.bandId, 'locandine', active.id, 'modifica']);
   }
 
   exportPng(): void {

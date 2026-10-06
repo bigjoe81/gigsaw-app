@@ -20,10 +20,21 @@ export class PosterTemplateListPage implements OnInit {
   search = '';
   format: PosterFormatId | '' = '';
   readonly formats = POSTER_FORMATS;
-  get filteredTemplates(): PosterTemplate[] {
+  get groups(): PosterTemplate[][] {
+    const groups = new Map<string, PosterTemplate[]>();
+    for (const template of this.templates) {
+      const key = template.groupId ?? template.id;
+      groups.set(key, [...(groups.get(key) ?? []), template]);
+    }
+    return [...groups.values()];
+  }
+  get filteredGroups(): PosterTemplate[][] {
     const query = this.search.trim().toLocaleLowerCase('it');
-    return this.templates.filter(template => (!this.format || template.document.format.id === this.format)
-      && template.name.toLocaleLowerCase('it').includes(query));
+    return this.groups.filter(group => group[0].name.toLocaleLowerCase('it').includes(query)
+      && (!this.format || group.some(item => item.document.format.id === this.format)));
+  }
+  preview(group: PosterTemplate[]): PosterTemplate {
+    return group.find(item => item.document.format.id === this.format) ?? group[0];
   }
   readonly bandId: string;
   constructor(route: ActivatedRoute, private readonly storage: PosterTemplateService) {
@@ -34,7 +45,7 @@ export class PosterTemplateListPage implements OnInit {
   ionViewWillEnter(): void { this.refresh(); }
   remove(template: PosterTemplate, event: Event): void {
     event.preventDefault(); event.stopPropagation();
-    if (confirm(`Eliminare “${template.name}”?`)) { this.storage.delete(this.bandId, template.id); this.refresh(); }
+    if (confirm(`Eliminare “${template.name}” e tutti i suoi formati?`)) { this.storage.deleteGroup(this.bandId, template.groupId ?? template.id); this.refresh(); }
   }
   private refresh(): void { this.templates = this.storage.list(this.bandId); }
 }

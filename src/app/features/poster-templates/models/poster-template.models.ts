@@ -33,6 +33,7 @@ export interface PosterTemplateDocument {
 }
 
 export interface PosterTemplate {
+  groupId?: string;
   id: string;
   bandId: string;
   name: string;

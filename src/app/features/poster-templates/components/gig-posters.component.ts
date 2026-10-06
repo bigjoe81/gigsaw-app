@@ -22,18 +22,29 @@ export interface GigPosterValues {
     <section class="grid gap-5 border-t border-[var(--gigsaw-border)] py-[30px]">
       <h2 class="m-0 text-base font-extrabold">Locandine del concerto</h2>
       @if (!readOnly) {
-      <label class="grid gap-2 text-sm font-semibold text-[var(--gigsaw-text)]">
-      <span>Modelli da compilare</span>
-      <ion-select aria-label="Modelli da compilare" interface="alert" [multiple]="true"
-        [value]="selectedIds" (ionChange)="select($event.detail.value)">
-        @for (model of models; track model.id) {
-          <ion-select-option [value]="model.id">{{ model.name }} · {{ model.document.format.label }}</ion-select-option>
-        }
-        @for (poster of missingModels; track poster.templateId) {
-          <ion-select-option [value]="poster.templateId">{{ poster.name }} · copia salvata</ion-select-option>
-        }
-      </ion-select>
-      </label>
+      <span class="text-sm font-semibold">Locandine e formati da compilare</span>
+      @for (group of modelGroups; track group[0].groupId) {
+        <label class="grid gap-2 text-sm font-semibold text-[var(--gigsaw-text)]">
+          <span>{{ group[0].name }}</span>
+          <ion-select [attr.aria-label]="'Formati di ' + group[0].name" interface="alert" [multiple]="true"
+            [value]="selectedFor(group)" (ionChange)="selectGroup(group, $event.detail.value)">
+            @for (model of group; track model.id) {
+              <ion-select-option [value]="model.id">{{ model.document.format.label }}</ion-select-option>
+            }
+          </ion-select>
+        </label>
+      }
+      @if (missingModels.length) {
+        <label class="grid gap-2 text-sm font-semibold">
+          <span>Copie salvate senza modello</span>
+          <ion-select aria-label="Copie salvate senza modello" interface="alert" [multiple]="true"
+            [value]="missingModelsIds" (ionChange)="selectMissing($event.detail.value)">
+            @for (poster of missingModels; track poster.templateId) {
+              <ion-select-option [value]="poster.templateId">{{ poster.name }} · {{ poster.document.format.label }}</ion-select-option>
+            }
+          </ion-select>
+        </label>
+      }
       @if (!models.length) { <ion-note>Crea un modello nella sezione Modelli di locandina per aggiungere nuove locandine.</ion-note> }
       <ion-note>Le copie compilate vengono assegnate al concerto quando lo salvi e restano disponibili in questo browser.</ion-note>
       }
@@ -66,6 +77,24 @@ export class GigPostersComponent implements OnChanges {
   constructor(private readonly templates: PosterTemplateService) {}
   get selectedIds(): string[] { return this.posters.map(item => item.templateId); }
   get missingModels(): GigPoster[] { return this.posters.filter(item => !this.models.some(model => model.id === item.templateId)); }
+  get modelGroups(): typeof this.models[] {
+    const groups = new Map<string, typeof this.models>();
+    for (const model of this.models) {
+      const key = model.groupId ?? model.id;
+      groups.set(key, [...(groups.get(key) ?? []), model]);
+    }
+    return [...groups.values()];
+  }
+  get missingModelsIds(): string[] { return this.missingModels.map(item => item.templateId); }
+  selectedFor(group: typeof this.models): string[] {
+    return this.selectedIds.filter(id => group.some(model => model.id === id));
+  }
+  selectGroup(group: typeof this.models, ids: string[]): void {
+    this.select([...this.selectedIds.filter(id => !group.some(model => model.id === id)), ...(ids ?? [])]);
+  }
+  selectMissing(ids: string[]): void {
+    this.select([...this.selectedIds.filter(id => !this.missingModelsIds.includes(id)), ...(ids ?? [])]);
+  }
   ngOnChanges(changes: Record<string, unknown>): void {
     if (changes['bandId'] || changes['gigId']) {
       this.models = this.templates.list(this.bandId);

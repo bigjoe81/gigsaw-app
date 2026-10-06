@@ -61,3 +61,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--gigsaw-orange);
 @media (prefers-reduced-motion: reduce) {
   .poster-card, .preview-action { transition: none; }
 }
+
+.variant-links { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 16px; }
+.variant-links a { padding: 6px 8px; border: 1px solid var(--gigsaw-border); border-radius: 8px; color: var(--gigsaw-blue); font-size: .75rem; text-decoration: none; }

@@ -14,18 +14,22 @@ export class PosterTemplateService {
     return this.list(bandId).find((item) => item.id === id);
   }
 
-  save(bandId: string, name: string, document: PosterTemplateDocument, id?: string): PosterTemplate {
+  save(bandId: string, name: string, document: PosterTemplateDocument, id?: string, groupId?: string): PosterTemplate {
     const templates = this.read();
     const now = new Date().toISOString();
     const index = id ? templates.findIndex((item) => item.id === id && item.bandId === bandId) : -1;
     const item: PosterTemplate = {
       id: index >= 0 ? templates[index].id : this.createId(),
+      groupId: groupId ?? (index >= 0 ? templates[index].groupId : undefined) ?? this.createId(),
       bandId,
       name: name.trim(),
       createdAt: index >= 0 ? templates[index].createdAt : now,
       updatedAt: now,
       document: structuredClone(document),
     };
+    for (const sibling of templates) {
+      if (sibling.bandId === bandId && sibling.groupId === item.groupId) { sibling.name = item.name; sibling.updatedAt = now; }
+    }
     if (index >= 0) templates[index] = item;
     else templates.push(item);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
@@ -38,10 +42,20 @@ export class PosterTemplateService {
     ));
   }
 
+  deleteGroup(bandId: string, groupId: string): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.read().filter(item => item.bandId !== bandId || item.groupId !== groupId)));
+  }
+
   private read(): PosterTemplate[] {
     try {
       const value: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
-      return Array.isArray(value) ? value as PosterTemplate[] : [];
+      if (!Array.isArray(value)) return [];
+      const templates = value as PosterTemplate[];
+      // Keep old IDs so saved concert copies still refer to their original templates.
+      for (const item of templates) {
+        item.groupId ??= templates.find(other => other.bandId === item.bandId && other.name.trim().toLocaleLowerCase('it') === item.name.trim().toLocaleLowerCase('it'))?.groupId ?? item.id;
+      }
+      return templates;
     } catch {
       return [];
     }
