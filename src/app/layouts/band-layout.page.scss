@@ -238,16 +238,3 @@ ion-item.is-active ion-icon {
   bottom: 10px;
   left: 0;
 }
-
-ion-split-pane.menu-collapsed .gigsaw-brand {
-  flex-direction: column;
-  gap: 6px;
-
-  > img {
-    max-width: 100%;
-  }
-}
-
-ion-split-pane.menu-collapsed .gigsaw-brand__beta {
-  font-size: .65rem;
-}
