@@ -11,6 +11,8 @@ export interface RequestOtpRequest {
   email: string;
   purpose: OtpPurpose;
   name?: string;
+  registrationToken?: string;
+  website?: string;
 }
 
 export interface AuthOtpChallenge {

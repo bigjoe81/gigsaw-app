@@ -36,10 +36,14 @@ export class AuthService {
     return this.currentUser() !== null;
   }
 
+  registrationChallenge(): Observable<{ token: string; waitSeconds: number }> {
+    return this.http.get<{ token: string; waitSeconds: number }>(`${API_BASE_URL}/registration-challenge`);
+  }
+
   requestOtp(payload: RequestOtpRequest): Observable<RequestOtpResponse> {
     const endpoint = payload.purpose === 'register' ? 'register' : 'login';
     const body = payload.purpose === 'register'
-      ? { name: payload.name, email: payload.email }
+      ? { name: payload.name, email: payload.email, registration_token: payload.registrationToken, website: payload.website ?? '' }
       : { email: payload.email };
 
     return this.ensureCsrfCookie().pipe(
