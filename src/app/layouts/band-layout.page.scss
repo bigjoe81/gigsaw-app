@@ -1,196 +1,151 @@
 :host {
-  --band-menu-width: 260px;
   display: block;
   width: 100%;
   height: 100%;
 }
 
-ion-split-pane {
+.app-shell {
+  position: relative;
+  display: grid;
   width: 100%;
   height: 100%;
-  --border: 0;
-  --side-width: var(--band-menu-width);
-  --side-max-width: var(--band-menu-width);
-  --side-min-width: var(--band-menu-width);
+  grid-template-rows: auto minmax(0, 1fr);
+  background: var(--gigsaw-background);
 }
 
-ion-router-outlet#band-content {
+.flow-header {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(160px, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  min-height: 72px;
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--gigsaw-border);
+  background: color-mix(in srgb, var(--gigsaw-background) 94%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.brand-logo {
+  display: block;
+  width: 132px;
+  max-width: 100%;
+  height: auto;
+}
+
+.band-chip {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.band-chip__avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.band-chip__initials {
+  color: var(--ion-color-primary-contrast);
+  background: var(--ion-color-primary);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.band-chip__copy {
+  display: grid;
+  min-width: 0;
+}
+
+.band-chip__copy strong,
+.band-chip__copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.band-chip__copy strong {
+  color: var(--gigsaw-text);
+  font-size: .88rem;
+}
+
+.band-chip__copy span {
+  color: var(--gigsaw-muted);
+  font-size: .68rem;
+}
+
+.flow-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: end;
+}
+
+.flow-nav__item {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--gigsaw-muted);
+  font-size: .82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.flow-nav__item ion-icon {
+  font-size: 18px;
+}
+
+.flow-nav__item:hover,
+.flow-nav__item.is-active {
+  color: var(--gigsaw-text);
+  background: var(--gigsaw-surface);
+}
+
+.flow-nav__item.is-active {
+  box-shadow: inset 0 0 0 1px var(--gigsaw-border);
+}
+
+.shell-content {
   min-width: 0;
   min-height: 0;
   height: 100%;
-  overflow: hidden;
 }
 
 ion-menu {
-  --width: var(--band-menu-width);
+  --width: min(86vw, 340px);
   --background: var(--gigsaw-background);
-  border-right: 1px solid var(--gigsaw-border);
 }
 
 ion-menu ion-content {
   --background: var(--gigsaw-background);
 }
 
-/* Ionic can miss the menu-pane-visible state when this nested routed layout is
-   restored from the router outlet. The split pane state remains authoritative. */
-ion-split-pane.split-pane-visible > ion-menu {
-  position: relative;
-  display: flex !important;
-  flex: 0 0 var(--band-menu-width);
-  width: var(--band-menu-width);
-  min-width: var(--band-menu-width);
-  max-width: var(--band-menu-width);
-  transform: none !important;
-}
-
-ion-split-pane.split-pane-visible > ion-menu::part(container) {
-  width: var(--band-menu-width);
-  transform: none !important;
-  box-shadow: none;
-}
-
-ion-split-pane.menu-collapsed {
-  --band-menu-width: 76px;
-}
-
-ion-split-pane.menu-collapsed .menu-brand {
-  justify-content: center;
-  padding: 16px 8px 10px;
-}
-
-ion-split-pane.menu-collapsed ion-item ion-label {
-  display: none;
-}
-
-ion-split-pane.menu-collapsed .menu-brand__logo {
-  width: 56px;
-}
-
-ion-split-pane.menu-collapsed .current-band {
-  justify-content: center;
-  margin-inline: 8px;
-  padding: 8px;
-}
-
-ion-split-pane.menu-collapsed .current-band__copy {
-  display: none;
-}
-
-ion-split-pane.menu-collapsed ion-list {
-  padding-inline: 8px;
-}
-
-ion-split-pane.menu-collapsed ion-item {
-  --padding-start: 0;
-  --inner-padding-end: 0;
-  margin-inline: 0;
-}
-
-ion-split-pane.menu-collapsed ion-item::part(native) {
-  justify-content: center;
-  padding-inline: 0;
-}
-
-ion-split-pane.menu-collapsed ion-item ion-icon {
-  position: absolute;
-  left: 50%;
-  margin: 0;
-  transform: translateX(-50%);
-}
-
-ion-split-pane:not(.menu-collapsed) ion-item ion-icon[slot='start'] {
-  margin-inline-end: 22px;
-}
-
-ion-split-pane.menu-collapsed ion-item.is-active {
-  --border-radius: 8px;
-}
-
-ion-split-pane.split-pane-visible > .split-pane-main {
-  margin: 0 !important;
-  transform: none !important;
-}
-
-ion-split-pane.split-pane-visible > .menu-content-open {
-  overflow: hidden !important;
-  cursor: auto !important;
-  touch-action: auto !important;
-  pointer-events: auto !important;
-}
-
-.menu-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 18px 10px;
-}
-
-.menu-brand__logo {
-  display: block;
-  width: 168px;
-  max-width: 100%;
-  height: auto;
-}
-
-.current-band {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 11px;
-  margin: 6px 12px 10px;
-  padding: 11px;
-  border: 1px solid var(--gigsaw-border);
-  border-radius: 8px;
-  background: var(--gigsaw-surface);
-}
-
-.current-band__avatar {
+.mobile-menu-head {
   display: grid;
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  place-items: center;
-  border-radius: 7px;
-  object-fit: cover;
+  gap: 18px;
+  padding: 24px 20px 14px;
 }
 
-.current-band__initials {
-  color: #fff;
-  background: color-mix(in srgb, var(--ion-color-primary) 18%, var(--gigsaw-surface));
-  font-size: .78rem;
-  font-weight: 900;
-  letter-spacing: .04em;
-}
-
-.current-band__copy {
-  display: grid;
-  min-width: 0;
-  gap: 1px;
-}
-
-.current-band__copy small {
-  color: var(--gigsaw-muted);
-  font-size: .62rem;
-  font-weight: 800;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.current-band__copy strong,
-.current-band__copy > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.current-band__copy strong {
+.mobile-menu-head strong {
   color: var(--gigsaw-text);
-  font-size: .88rem;
-}
-
-.current-band__copy > span {
-  color: var(--gigsaw-muted);
-  font-size: .7rem;
+  font-size: 1rem;
 }
 
 ion-list {
@@ -198,43 +153,68 @@ ion-list {
   background: transparent;
 }
 
-.menu-nav {
-  padding-top: 4px;
-}
-
 ion-item {
-  --min-height: 44px;
-  --padding-start: 20px;
+  --min-height: 58px;
+  --padding-start: 14px;
   --inner-padding-end: 12px;
   --background: transparent;
-  --border-radius: 6px;
-  margin: 2px 0;
+  --border-radius: 12px;
+  margin: 4px 0;
   font-weight: 600;
 }
 
 ion-item ion-icon {
-  color: var(--ion-color-medium);
+  color: var(--gigsaw-muted);
   font-size: 20px;
+}
+
+ion-item ion-label p {
+  margin-top: 3px;
+  color: var(--gigsaw-muted);
+  font-size: .72rem;
 }
 
 ion-item.is-active {
   --background: color-mix(in srgb, var(--ion-color-primary) 10%, var(--gigsaw-surface));
-  --border-radius: 6px;
   --color: var(--gigsaw-text);
-  position: relative;
-}
-
-ion-item.is-active::part(native) {
-  border-left: 2px solid var(--ion-color-primary);
 }
 
 ion-item.is-active ion-icon {
   color: var(--ion-color-primary);
 }
 
-.menu-footer {
-  position: absolute;
-  right: 0;
-  bottom: 10px;
-  left: 0;
+.mobile-menu-footer {
+  margin-top: 18px;
+  border-top: 1px solid var(--gigsaw-border);
+  padding-top: 12px;
+}
+
+@media (max-width: 899px) {
+  .app-shell {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .flow-header {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  ion-menu {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) and (min-width: 900px) {
+  .flow-header {
+    grid-template-columns: auto 1fr;
+  }
+
+  .band-chip {
+    display: none;
+  }
+
+  .flow-nav__item {
+    padding-inline: 10px;
+  }
 }
