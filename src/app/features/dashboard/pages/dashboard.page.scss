@@ -26,27 +26,8 @@ a:focus-visible {
   outline-offset: 4px;
 }
 
-.invite-shortcut {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  padding: 20px;
-  border: 1px solid var(--ion-color-primary);
-  border-radius: 12px;
-  background: var(--gigsaw-surface);
-  color: var(--gigsaw-text);
-  font: inherit;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--gigsaw-input-background);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--ion-color-primary);
-    outline-offset: 4px;
+@media (min-width: 900px) {
+  ion-header {
+    display: none;
   }
 }
