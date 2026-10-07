@@ -9,7 +9,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const isApiRequest = environment.apiUrl
     ? request.url.startsWith(environment.apiUrl)
     : request.url.startsWith(environment.apiPath);
-  const isPublicAuthEndpoint = /\/(login|register|verify-otp|resend-otp|forgot-password|reset-password|google\/exchange-code)$/.test(request.url);
+  const isPublicAuthEndpoint = /\/(login|register|registration-challenge|verify-otp|resend-otp|forgot-password|reset-password|google\/exchange-code)$/.test(request.url);
   const isRefreshEndpoint = /\/refresh-token$/.test(request.url);
   const isCsrfEndpoint = /\/sanctum\/csrf-cookie$/.test(request.url);
   const authToken = isRefreshEndpoint ? auth.refreshToken : auth.token;

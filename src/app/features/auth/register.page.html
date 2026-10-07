@@ -18,6 +18,11 @@
       Il nome della band potrai inserirlo successivamente.
     </p>
     <form class="auth-form" (submit)="submit(); $event.preventDefault()">
+      <div aria-hidden="true" inert style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;">
+        <label for="registration-website">Sito web</label>
+        <input id="registration-website" name="website" type="text" autocomplete="off" tabindex="-1"
+          [value]="website()" (input)="website.set($any($event.target).value)" />
+      </div>
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Nome e cognome</span>
         <ion-input class="auth-ion-input login-style-field w-full font-normal"
@@ -61,11 +66,15 @@
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-gigsaw-message>
       }
 
+      @if (spamPreparing()) {
+        <p class="text-sm text-[var(--ion-color-medium)]" role="status">Verifica in corso…</p>
+      }
+
       @if (error) {
         <app-gigsaw-message tone="error" messageClass="mt-2">{{ error }}</app-gigsaw-message>
       }
 
-      <app-gigsaw-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Invia codice OTP</app-gigsaw-button>
+      <app-gigsaw-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading" [disabled]="spamPreparing()">Invia codice OTP</app-gigsaw-button>
     </form>
     <a class="btn btn-ghost auth-link" routerLink="/accedi" [queryParams]="{ returnUrl }">Hai già un account? Accedi</a>
   </div>
