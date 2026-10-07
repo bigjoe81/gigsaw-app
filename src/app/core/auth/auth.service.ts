@@ -11,6 +11,9 @@ const GOOGLE_RETURN_URL_KEY = 'gigsaw.google-return-url';
 const API_BASE_URL = `${environment.apiUrl}${environment.apiPath}`;
 const SANCTUM_CSRF_COOKIE_URL = `${environment.apiUrl}/sanctum/csrf-cookie`;
 type UserResponse = User | { data: User };
+type ClarityWindow = Window & {
+  clarity?: (...args: unknown[]) => void;
+};
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -159,6 +162,20 @@ export class AuthService {
   private setUser(user: User): void {
     this.userSubject.next(user);
     this.currentUser.set(user);
+    this.identifyWithClarity(user);
+  }
+
+  private identifyWithClarity(user: User): void {
+    const clarity = (window as ClarityWindow).clarity;
+    if (!clarity) return;
+
+    clarity(
+      'identify',
+      `user-${user.id}`,
+      undefined,
+      undefined,
+      `${user.name} (${user.email})`,
+    );
   }
 
   private storeTokens(response: LoginResponse | null | undefined): void {
