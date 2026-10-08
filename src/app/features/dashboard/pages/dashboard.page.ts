@@ -101,9 +101,11 @@ export class DashboardPage {
       return {
         eyebrow: 'Costruzione repertorio',
         title: 'Partite dai brani, non dal calendario.',
-        text: 'Aggiungete i pezzi che volete preparare e portateli progressivamente a uno stato suonabile. Prove e scalette arriveranno come conseguenza del repertorio.',
-        cta: this.repertoireTotal() ? 'Continua il repertorio' : 'Aggiungi il primo brano',
-        route: this.repertoireTotal() ? [this.bandBaseUrl, 'repertorio'] : [this.bandBaseUrl, 'repertorio', 'nuovo'],
+        text: 'Aggiungete i pezzi che volete preparare oppure importate una lista che avete già. Prove e scalette arriveranno come conseguenza del repertorio.',
+        primaryCta: this.repertoireTotal() ? 'Continua il repertorio' : 'Aggiungi il primo brano',
+        primaryRoute: this.repertoireTotal() ? [this.bandBaseUrl, 'repertorio'] : [this.bandBaseUrl, 'repertorio', 'nuovo'],
+        secondaryCta: 'Importa una lista',
+        secondaryRoute: [this.bandBaseUrl, 'repertorio', 'importa'],
       };
     }
     if (this.flow() === 'importing') {
@@ -111,8 +113,10 @@ export class DashboardPage {
         eyebrow: 'Repertorio esistente',
         title: 'Prima portiamo dentro quello che sapete già suonare.',
         text: 'Organizza il repertorio esistente, completa i dati mancanti e poi usa prove e scalette senza ricostruire la band da zero.',
-        cta: 'Apri il repertorio',
-        route: [this.bandBaseUrl, 'repertorio'],
+        primaryCta: 'Importa una lista',
+        primaryRoute: [this.bandBaseUrl, 'repertorio', 'importa'],
+        secondaryCta: 'Apri il repertorio',
+        secondaryRoute: [this.bandBaseUrl, 'repertorio'],
       };
     }
     if (this.flow() === 'active') {
@@ -120,8 +124,11 @@ export class DashboardPage {
         eyebrow: 'Band attiva',
         title: 'Concentrati su quello che state preparando adesso.',
         text: 'Prossime prove, live e scalette vengono prima; il repertorio resta la base comune che collega tutto il lavoro della band.',
-        cta: this.events().length ? 'Vedi i prossimi impegni' : 'Aggiungi il prossimo impegno',
-        route: this.events().length ? [this.bandBaseUrl, 'impegni'] : [this.bandBaseUrl, 'prove', 'nuova'],
+        primaryCta: this.events().length ? 'Vedi i prossimi impegni' : 'Aggiungi il prossimo impegno',
+        primaryRoute: this.events().length ? [this.bandBaseUrl, 'impegni'] : [this.bandBaseUrl, 'prove', 'nuova'],
+        secondaryCta: 'Ricalibra percorso',
+        secondaryRoute: ['/inizia'],
+        secondaryQueryParams: { bandId: this.bandContext.getCurrentBand(), percorso: 1 },
       };
     }
     return null;
@@ -188,7 +195,6 @@ export class DashboardPage {
     }
 
     this.bandContext.setCurrentBand(bandId);
-    this.flow.set(this.bandFlow.get(bandId));
     this.loading.set(true);
     this.loadError.set('');
 
@@ -201,12 +207,14 @@ export class DashboardPage {
       finalize(() => this.loading.set(false)),
     ).subscribe(({ band, songs, gigs, rehearsals }) => {
       if (!band) this.loadError.set('Alcuni dati della dashboard non sono disponibili.');
-      this.populateDashboard(
-        band,
-        songs,
-        gigs.filter((gig) => !gig.bandId || gig.bandId === bandId),
-        rehearsals.filter((rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId),
-      );
+      const bandGigs = gigs.filter((gig) => !gig.bandId || gig.bandId === bandId);
+      const bandRehearsals = rehearsals.filter((rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId);
+      this.flow.set(this.bandFlow.infer({
+        songs: songs.length,
+        gigs: bandGigs.length,
+        rehearsals: bandRehearsals.length,
+      }, this.bandFlow.get(bandId)));
+      this.populateDashboard(band, songs, bandGigs, bandRehearsals);
     });
   }
 
