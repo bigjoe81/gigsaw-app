@@ -45,6 +45,7 @@ export class OnboardingPage implements OnInit {
   readonly step = signal<OnboardingStep>('welcome');
   readonly mode = signal<OnboardingMode | null>(null);
   readonly selectedFlow = signal<BandFlow | null>(null);
+  readonly recalibrating = signal(false);
   readonly loading = signal(false);
   readonly error = signal('');
   readonly genres = signal<BandGenre[]>([]);
@@ -75,18 +76,29 @@ export class OnboardingPage implements OnInit {
     this.genresService.list().pipe(catchError(() => of([]))).subscribe((genres) => this.genres.set(genres));
 
     const bandId = Number(this.route.snapshot.queryParamMap.get('bandId'));
+    const recalibrate = this.route.snapshot.queryParamMap.get('percorso') === '1';
     if (Number.isInteger(bandId) && bandId > 0) {
-      this.mode.set('invite');
       this.loading.set(true);
       this.bandService.get(bandId).pipe(finalize(() => this.loading.set(false))).subscribe({
         next: (band) => {
           this.currentBand = band;
+          this.bandContext.setCurrentBand(band.id);
+
+          if (recalibrate) {
+            this.recalibrating.set(true);
+            this.mode.set('create');
+            this.selectedFlow.set(this.bandFlow.get(band.id));
+            this.step.set('flow');
+            return;
+          }
+
+          this.mode.set('invite');
           const currentMember = band.members?.find((member) => member.id === this.auth.currentUser()?.id);
           this.instruments.set(currentMember?.instruments ?? []);
           this.step.set('profile');
         },
         error: () => {
-          this.error.set('Non riesco a recuperare la band dell’invito.');
+          this.error.set(recalibrate ? 'Non riesco a recuperare la band.' : 'Non riesco a recuperare la band dell’invito.');
           this.step.set('welcome');
         },
       });
@@ -194,6 +206,10 @@ export class OnboardingPage implements OnInit {
 
   back(): void {
     this.error.set('');
+    if (this.step() === 'flow' && this.recalibrating()) {
+      this.returnToBand();
+      return;
+    }
     if (this.step() === 'flow') this.step.set('band');
     else if (this.step() === 'band') this.step.set('profile');
     else if (this.step() === 'invite') this.step.set('welcome');
@@ -215,6 +231,10 @@ export class OnboardingPage implements OnInit {
   }
 
   skip(): void {
+    if (this.recalibrating()) {
+      this.returnToBand();
+      return;
+    }
     this.onboarding.complete();
     void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/panoramica` : '/band');
   }
@@ -260,6 +280,10 @@ export class OnboardingPage implements OnInit {
     if (this.selectedFlow() === 'building') return 'Aggiungi il primo brano';
     if (this.selectedFlow() === 'importing') return 'Importa il repertorio';
     return 'Entra nella panoramica';
+  }
+
+  private returnToBand(): void {
+    void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/panoramica` : '/band');
   }
 
   private saveInstruments(): void {
