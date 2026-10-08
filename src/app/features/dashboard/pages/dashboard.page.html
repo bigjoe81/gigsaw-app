@@ -23,7 +23,8 @@
         <p class="m-0 max-w-3xl text-sm leading-6 text-[var(--gigsaw-muted)]">{{ guide.text }}</p>
         <div class="mt-5 flex flex-wrap gap-3">
           <a class="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--ion-color-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--ion-color-primary-contrast)] no-underline" [routerLink]="guide.primaryRoute">{{ guide.primaryCta }}</a>
-          <a class="inline-flex min-h-11 items-center justify-center rounded-lg border border-solid border-[var(--gigsaw-border)] px-4 py-2.5 text-sm font-semibold text-[var(--gigsaw-text)] no-underline hover:bg-[var(--gigsaw-input-background)]" [routerLink]="guide.secondaryRoute" [queryParams]="guide.secondaryQueryParams || null">{{ guide.secondaryCta }}</a>
+          <a class="inline-flex min-h-11 items-center justify-center rounded-lg border border-solid border-[var(--gigsaw-border)] px-4 py-2.5 text-sm font-semibold text-[var(--gigsaw-text)] no-underline hover:bg-[var(--gigsaw-input-background)]" [routerLink]="guide.secondaryRoute">{{ guide.secondaryCta }}</a>
+          <a class="inline-flex min-h-11 items-center justify-center px-2 py-2.5 text-sm font-semibold text-[var(--gigsaw-muted)] no-underline hover:text-[var(--ion-color-primary)]" [routerLink]="['/inizia']" [queryParams]="calibrationQueryParams()">Cambia percorso</a>
         </div>
       </section>
     }
