@@ -8,7 +8,6 @@ import { SongListPage } from './pages/song-list.page';
 export const SONG_ROUTES: Routes = [
   { path: '', component: SongListPage },
   { path: 'nuovo', component: SongFormPage },
-  { path: 'importa', redirectTo: '', pathMatch: 'full' },
   { path: 'gruppi-collegati', component: SongLinkGroupsPage },
   { path: 'importa', component: SongImportPage },
   { path: 'new', redirectTo: 'nuovo', pathMatch: 'full' },
