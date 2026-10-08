@@ -23,7 +23,7 @@ import { BandService } from '../bands/services/band.service';
 import { GenreService } from '../bands/services/genre.service';
 
 type OnboardingMode = 'create' | 'invite';
-type OnboardingStep = 'welcome' | 'profile' | 'band' | 'flow' | 'complete';
+type OnboardingStep = 'welcome' | 'invite' | 'profile' | 'band' | 'flow' | 'complete';
 type BuildingStart = 'manual' | 'import';
 
 @Component({
@@ -100,7 +100,7 @@ export class OnboardingPage implements OnInit {
   get progress(): number {
     const current = this.step();
     if (current === 'welcome') return 1;
-    if (current === 'profile') return 2;
+    if (current === 'profile' || current === 'invite') return 2;
     if (current === 'band') return 3;
     if (current === 'flow') return 4;
     return 5;
@@ -196,6 +196,7 @@ export class OnboardingPage implements OnInit {
     this.error.set('');
     if (this.step() === 'flow') this.step.set('band');
     else if (this.step() === 'band') this.step.set('profile');
+    else if (this.step() === 'invite') this.step.set('welcome');
     else if (this.step() === 'profile' && this.mode() === 'invite' && this.currentBand) this.step.set('complete');
     else {
       this.mode.set(null);
