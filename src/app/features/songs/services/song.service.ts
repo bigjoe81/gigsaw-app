@@ -55,12 +55,20 @@ export class SongService extends BandScopedCrudService<Song> {
     return this.reviewFile(`${API_BASE_URL}/songs/imports/pdf/review`, file, bandId);
   }
 
+  reviewDocumentImport(file: File, bandId: number): Observable<SongImportReview> {
+    return this.reviewFile(`${API_BASE_URL}/songs/imports/document/review`, file, bandId);
+  }
+
   reviewSpreadsheetImport(file: File, bandId: number): Observable<SongImportReview> {
     return this.reviewFile(`${API_BASE_URL}/songs/imports/spreadsheet/review`, file, bandId);
   }
 
   confirmPdfImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean }>): Observable<SongImportConfirmResult> {
     return this.confirmImport(`${API_BASE_URL}/songs/imports/pdf/confirm`, importToken, rows);
+  }
+
+  confirmDocumentImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean }>): Observable<SongImportConfirmResult> {
+    return this.confirmImport(`${API_BASE_URL}/songs/imports/document/confirm`, importToken, rows);
   }
 
   confirmSpreadsheetImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean }>): Observable<SongImportConfirmResult> {
