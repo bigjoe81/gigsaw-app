@@ -1,5 +1,7 @@
 export const environment = {
   production: true,
+  staging: false,
+  environmentName: 'production',
   // Public Laravel backend origin.
   apiUrl: 'https://api.gigsaw.it',
   apiPath: '/api/v1',
