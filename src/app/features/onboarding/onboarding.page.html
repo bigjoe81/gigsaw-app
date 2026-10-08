@@ -6,9 +6,7 @@
     </header>
 
     <div class="progress-track" role="progressbar" aria-label="Avanzamento onboarding" [attr.aria-valuenow]="progress" aria-valuemin="1" aria-valuemax="5">
-      @for (position of [1, 2, 3, 4, 5]; track position) {
-        <span [class.active]="position <= progress"></span>
-      }
+      @for (position of [1, 2, 3, 4, 5]; track position) { <span [class.active]="position <= progress"></span> }
     </div>
 
     <section class="onboarding-card" aria-live="polite">
@@ -17,130 +15,67 @@
       } @else {
         @if (step() === 'welcome') {
           <span class="feature-icon"><ion-icon name="sparkles-outline" /></span>
-          <p class="eyebrow">Primi passi</p>
-          <h1>Benvenuto in GigSaw</h1>
+          <p class="eyebrow">Primi passi</p><h1>Benvenuto in GigSaw</h1>
           <p class="lead">Metti in ordine repertorio, prove, concerti e scalette della tua band.</p>
           <div class="choice-grid">
-            <ion-button class="choice-card" type="button" (click)="chooseMode('create')">
-              <span class="choice-icon"><ion-icon name="people-outline" /></span>
-              <span><strong>Crea la mia band</strong><small>Configura un nuovo spazio condiviso</small></span>
-              <ion-icon name="chevron-forward-outline" />
-            </ion-button>
-            <ion-button class="choice-card" type="button" (click)="chooseMode('invite')">
-              <span class="choice-icon"><ion-icon name="person-add-outline" /></span>
-              <span><strong>Ho ricevuto un invito</strong><small>Entra in una band esistente</small></span>
-              <ion-icon name="chevron-forward-outline" />
-            </ion-button>
+            <ion-button class="choice-card" type="button" (click)="chooseMode('create')"><span class="choice-icon"><ion-icon name="people-outline" /></span><span><strong>Crea la mia band</strong><small>Configura un nuovo spazio condiviso</small></span><ion-icon name="chevron-forward-outline" /></ion-button>
+            <ion-button class="choice-card" type="button" (click)="chooseMode('invite')"><span class="choice-icon"><ion-icon name="person-add-outline" /></span><span><strong>Ho ricevuto un invito</strong><small>Entra in una band esistente</small></span><ion-icon name="chevron-forward-outline" /></ion-button>
           </div>
         } @else if (step() === 'invite') {
-          <span class="feature-icon"><ion-icon name="person-add-outline" /></span>
-          <p class="eyebrow">Invito alla band</p>
-          <h1>Inserisci il codice</h1>
+          <span class="feature-icon"><ion-icon name="person-add-outline" /></span><p class="eyebrow">Invito alla band</p><h1>Inserisci il codice</h1>
           <p class="lead">Lo trovi nel link o nel messaggio ricevuto dall’admin.</p>
           <label class="field-label" for="join-code">Codice invito</label>
           <ion-input id="join-code" class="onboarding-input code-input" type="text" autocomplete="off" placeholder="Es. A1B2C3D4" [value]="joinCode" (ionInput)="joinCode = $any($event.detail).value ?? ''" />
-          <div class="form-actions">
-            <ion-button class="primary-button" type="button" [disabled]="loading()" (click)="joinBand()">
-              @if (loading()) { <ion-spinner name="crescent" /> } @else { Continua }
-            </ion-button>
-            <ion-button class="secondary-button" type="button" (click)="back()"><ion-icon name="arrow-back-outline" /> Indietro</ion-button>
-          </div>
+          <div class="form-actions"><ion-button class="primary-button" type="button" [disabled]="loading()" (click)="joinBand()">@if (loading()) { <ion-spinner name="crescent" /> } @else { Continua }</ion-button><ion-button class="secondary-button" type="button" (click)="back()"><ion-icon name="arrow-back-outline" /> Indietro</ion-button></div>
         } @else if (step() === 'profile') {
-          <span class="feature-icon"><ion-icon name="musical-notes-outline" /></span>
-          <p class="eyebrow">Profilo musicale</p>
-          @if (currentBand) {
-            <h1>Ciao {{ userName }}, cosa suoni nei {{ currentBand.name }}?</h1>
-          } @else {
-            <h1>Ciao {{ userName }}, cosa suoni?</h1>
-          }
+          <span class="feature-icon"><ion-icon name="musical-notes-outline" /></span><p class="eyebrow">Profilo musicale</p>
+          @if (currentBand) { <h1>Ciao {{ userName }}, cosa suoni nei {{ currentBand.name }}?</h1> } @else { <h1>Ciao {{ userName }}, cosa suoni?</h1> }
           <p class="lead">Gli strumenti vengono salvati per questa band. In un’altra band potranno essere diversi.</p>
-          <div class="chip-grid" aria-label="Strumenti suonati">
-            @for (instrument of instrumentPresets; track instrument) {
-              <ion-chip class="instrument-chip" type="button" [class.selected]="instruments().includes(instrument)" [attr.aria-pressed]="instruments().includes(instrument)" (click)="toggleInstrument(instrument)">{{ instrument }}</ion-chip>
-            }
-          </div>
+          <div class="chip-grid" aria-label="Strumenti suonati">@for (instrument of instrumentPresets; track instrument) { <ion-chip class="instrument-chip" type="button" [class.selected]="instruments().includes(instrument)" [attr.aria-pressed]="instruments().includes(instrument)" (click)="toggleInstrument(instrument)">{{ instrument }}</ion-chip> }</div>
           <label class="field-label" for="custom-instrument">Altro strumento</label>
           <ion-input id="custom-instrument" class="onboarding-input" type="text" placeholder="Es. Mandolino, Ukulele" [value]="customInstrument" (ionInput)="customInstrument = $any($event.detail).value ?? ''" />
-          <div class="form-actions">
-            <ion-button class="primary-button" type="button" [disabled]="loading()" (click)="continueFromProfile()">
-              @if (loading()) { <ion-spinner name="crescent" /> } @else { Continua }
-            </ion-button>
-            <ion-button class="secondary-button" type="button" (click)="backFromProfile()"><ion-icon name="arrow-back-outline" /> @if (mode() === 'invite' && currentBand) { Salta per ora } @else { Indietro }</ion-button>
-          </div>
+          <div class="form-actions"><ion-button class="primary-button" type="button" [disabled]="loading()" (click)="continueFromProfile()">@if (loading()) { <ion-spinner name="crescent" /> } @else { Continua }</ion-button><ion-button class="secondary-button" type="button" (click)="backFromProfile()"><ion-icon name="arrow-back-outline" /> @if (mode() === 'invite' && currentBand) { Salta per ora } @else { Indietro }</ion-button></div>
         } @else if (step() === 'band') {
-          <span class="feature-icon"><ion-icon name="people-outline" /></span>
-          <p class="eyebrow">Nuova band</p>
-          <h1>Crea il tuo spazio</h1>
+          <span class="feature-icon"><ion-icon name="people-outline" /></span><p class="eyebrow">Nuova band</p><h1>Crea il tuo spazio</h1>
           <p class="lead">Per iniziare bastano il nome e, se vuoi, i generi principali.</p>
-          <label class="field-label" for="band-name">Nome band</label>
-          <ion-input id="band-name" class="onboarding-input" type="text" maxlength="120" placeholder="Nome della band" [value]="bandName" (ionInput)="bandName = $any($event.detail).value ?? ''" />
-          @if (genres().length) {
-            <span class="field-label">Generi</span>
-            <div class="chip-grid genres" aria-label="Generi musicali">
-              @for (genre of genres(); track genre.id) {
-                <ion-chip class="instrument-chip" type="button" [class.selected]="isGenreSelected(genre.id)" [attr.aria-pressed]="isGenreSelected(genre.id)" (click)="toggleGenre(genre.id)">{{ genre.name }}</ion-chip>
-              }
-            </div>
-          }
-          <div class="form-actions">
-            <ion-button class="primary-button" type="button" [disabled]="loading()" (click)="createBand()">
-              @if (loading()) { <ion-spinner name="crescent" /> } @else { Crea band }
-            </ion-button>
-            <ion-button class="secondary-button" type="button" (click)="back()"><ion-icon name="arrow-back-outline" /> Indietro</ion-button>
-          </div>
+          <label class="field-label" for="band-name">Nome band</label><ion-input id="band-name" class="onboarding-input" type="text" maxlength="120" placeholder="Nome della band" [value]="bandName" (ionInput)="bandName = $any($event.detail).value ?? ''" />
+          @if (genres().length) { <span class="field-label">Generi</span><div class="chip-grid genres" aria-label="Generi musicali">@for (genre of genres(); track genre.id) { <ion-chip class="instrument-chip" type="button" [class.selected]="isGenreSelected(genre.id)" [attr.aria-pressed]="isGenreSelected(genre.id)" (click)="toggleGenre(genre.id)">{{ genre.name }}</ion-chip> }</div> }
+          <div class="form-actions"><ion-button class="primary-button" type="button" [disabled]="loading()" (click)="createBand()">@if (loading()) { <ion-spinner name="crescent" /> } @else { Crea band }</ion-button><ion-button class="secondary-button" type="button" (click)="back()"><ion-icon name="arrow-back-outline" /> Indietro</ion-button></div>
         } @else if (step() === 'flow') {
-          <span class="feature-icon"><ion-icon name="sparkles-outline" /></span>
-          <p class="eyebrow">A che punto siete?</p>
-          <h1>Da dove parte {{ currentBand?.name }}?</h1>
+          <span class="feature-icon"><ion-icon name="sparkles-outline" /></span><p class="eyebrow">A che punto siete?</p><h1>Da dove parte {{ currentBand?.name }}?</h1>
           <p class="lead">GigSaw cambia il primo percorso in base alla situazione reale della band. Potrai comunque usare tutto fin da subito.</p>
           <div class="choice-grid">
-            <ion-button class="choice-card" type="button" (click)="chooseFlow('building')">
-              <span class="choice-icon"><ion-icon name="musical-notes-outline" /></span>
-              <span><strong>Stiamo iniziando</strong><small>Dobbiamo costruire il repertorio da zero o quasi</small></span>
-              <ion-icon name="chevron-forward-outline" />
-            </ion-button>
-            <ion-button class="choice-card" type="button" (click)="chooseFlow('importing')">
-              <span class="choice-icon"><ion-icon name="folder-open-outline" /></span>
-              <span><strong>Abbiamo già un repertorio</strong><small>Vogliamo importarlo, ripulirlo e organizzarci</small></span>
-              <ion-icon name="chevron-forward-outline" />
-            </ion-button>
-            <ion-button class="choice-card" type="button" (click)="chooseFlow('active')">
-              <span class="choice-icon"><ion-icon name="flame-outline" /></span>
-              <span><strong>Siamo già molto attivi</strong><small>Abbiamo repertorio consolidato, prove e live da preparare</small></span>
-              <ion-icon name="chevron-forward-outline" />
-            </ion-button>
+            <ion-button class="choice-card" type="button" (click)="chooseFlow('building')"><span class="choice-icon"><ion-icon name="musical-notes-outline" /></span><span><strong>Stiamo iniziando</strong><small>Dobbiamo costruire il repertorio da zero o quasi</small></span><ion-icon name="chevron-forward-outline" /></ion-button>
+            <ion-button class="choice-card" type="button" (click)="chooseFlow('importing')"><span class="choice-icon"><ion-icon name="folder-open-outline" /></span><span><strong>Abbiamo già un repertorio</strong><small>Vogliamo importarlo, ripulirlo e organizzarci</small></span><ion-icon name="chevron-forward-outline" /></ion-button>
+            <ion-button class="choice-card" type="button" (click)="chooseFlow('active')"><span class="choice-icon"><ion-icon name="flame-outline" /></span><span><strong>Siamo già molto attivi</strong><small>Abbiamo repertorio consolidato, prove e live da preparare</small></span><ion-icon name="chevron-forward-outline" /></ion-button>
           </div>
-          <div class="form-actions">
-            <ion-button class="secondary-button" type="button" (click)="back()"><ion-icon name="arrow-back-outline" /> Indietro</ion-button>
-          </div>
+          <div class="form-actions"><ion-button class="secondary-button" type="button" (click)="back()"><ion-icon name="arrow-back-outline" /> Indietro</ion-button></div>
         } @else {
-          <span class="feature-icon success"><ion-icon name="checkmark-circle-outline" /></span>
-          <p class="eyebrow">Tutto pronto</p>
-          <h1>{{ completionTitle }}</h1>
-          <p class="lead">{{ completionText }}</p>
+          <span class="feature-icon success"><ion-icon name="checkmark-circle-outline" /></span><p class="eyebrow">Tutto pronto</p><h1>{{ completionTitle }}</h1><p class="lead">{{ completionText }}</p>
           <div class="first-steps">
             <div><ion-icon name="checkmark-circle-outline" /><span><strong>Profilo musicale</strong><small>Strumenti salvati per la band</small></span></div>
             @if (selectedFlow() === 'building') {
-              <div><ion-icon name="musical-notes-outline" /><span><strong>Primo obiettivo: brani</strong><small>Aggiungi i pezzi e portali progressivamente a “pronto”</small></span></div>
-              <div><ion-icon name="people-outline" /><span><strong>Poi arrivano le prove</strong><small>Il repertorio nasce dal lavoro reale della band</small></span></div>
+              <div><ion-icon name="musical-notes-outline" /><span><strong>Parti dai brani che volete preparare</strong><small>Aggiungili a mano oppure importa una lista già esistente</small></span></div>
+              <div><ion-icon name="folder-open-outline" /><span><strong>Hai già un file?</strong><small>PDF, Word DOCX, Excel, CSV e TXT sono importabili con anteprima</small></span></div>
             } @else if (selectedFlow() === 'importing') {
-              <div><ion-icon name="folder-open-outline" /><span><strong>Primo obiettivo: repertorio</strong><small>Porta dentro i brani che suonate già</small></span></div>
+              <div><ion-icon name="folder-open-outline" /><span><strong>Primo obiettivo: importare</strong><small>Carica il repertorio che suonate già</small></span></div>
               <div><ion-icon name="checkmark-circle-outline" /><span><strong>Poi ripulisci e completa</strong><small>Controlla metadati, duplicati e stato dei brani</small></span></div>
             } @else if (selectedFlow() === 'active') {
               <div><ion-icon name="flame-outline" /><span><strong>Primo obiettivo: attività corrente</strong><small>Parti da prove e concerti che state preparando adesso</small></span></div>
               <div><ion-icon name="musical-notes-outline" /><span><strong>Repertorio sempre al centro</strong><small>Ogni prova e scaletta resta collegata ai brani</small></span></div>
             } @else {
               <div><ion-icon name="musical-notes-outline" /><span><strong>Aggiungi il primo brano</strong><small>Costruisci il repertorio condiviso</small></span></div>
-              @if (mode() === 'create') {
-                <div><ion-icon name="person-add-outline" /><span><strong>Invita i musicisti</strong><small>Condividi il link dalle impostazioni</small></span></div>
-              } @else {
-                <div><ion-icon name="people-outline" /><span><strong>Scopri la band</strong><small>Controlla prove e concerti in programma</small></span></div>
-              }
             }
           </div>
-          <div class="form-actions single"><ion-button class="primary-button" type="button" (click)="finish()">{{ finishLabel }}</ion-button></div>
+          @if (selectedFlow() === 'building') {
+            <div class="choice-grid">
+              <ion-button class="choice-card" type="button" (click)="finish('manual')"><span class="choice-icon"><ion-icon name="musical-notes-outline" /></span><span><strong>Aggiungi a mano</strong><small>Parti dal primo brano da preparare</small></span><ion-icon name="chevron-forward-outline" /></ion-button>
+              <ion-button class="choice-card" type="button" (click)="finish('import')"><span class="choice-icon"><ion-icon name="folder-open-outline" /></span><span><strong>Importa una lista</strong><small>PDF, Word, Excel, CSV o TXT</small></span><ion-icon name="chevron-forward-outline" /></ion-button>
+            </div>
+          } @else {
+            <div class="form-actions single"><ion-button class="primary-button" type="button" (click)="finish()">{{ finishLabel }}</ion-button></div>
+          }
         }
-
         @if (error()) { <p class="error-message" role="alert">{{ error() }}</p> }
       }
     </section>
