@@ -1,3 +1,6 @@
 <ion-app>
+  @if (isStaging) {
+    <div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:99999;padding:6px 12px;border-radius:999px;background:#111827;color:#fff;font-size:11px;font-weight:800;letter-spacing:.14em;box-shadow:0 4px 14px rgba(0,0,0,.28);pointer-events:none;">STAGING</div>
+  }
   <ion-router-outlet [animated]="pageTransitionsEnabled"></ion-router-outlet>
 </ion-app>
