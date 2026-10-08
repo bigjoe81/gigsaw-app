@@ -56,6 +56,16 @@ interface DashboardActivity {
   link: string;
 }
 
+interface DashboardFlowGuide {
+  eyebrow: string;
+  title: string;
+  text: string;
+  primaryCta: string;
+  primaryRoute: string[];
+  secondaryCta: string;
+  secondaryRoute: string[];
+}
+
 @Component({
   standalone: true,
   imports: [
@@ -90,13 +100,17 @@ export class DashboardPage {
   readonly activities = signal<DashboardActivity[]>([]);
   readonly band = signal<Band | null>(null);
   readonly flow = signal<BandFlow | null>(null);
+  readonly calibrationQueryParams = computed(() => ({
+    bandId: this.bandContext.getCurrentBand(),
+    percorso: 1,
+  }));
   readonly canInviteToSoloBand = computed(() => {
     const band = this.band();
     return band?.currentUserRole === 'ADMIN'
       && (band.membersCount ?? band.members?.length) === 1
       && Boolean(band.joinCode?.trim());
   });
-  readonly flowGuide = computed(() => {
+  readonly flowGuide = computed<DashboardFlowGuide | null>(() => {
     if (this.flow() === 'building') {
       return {
         eyebrow: 'Costruzione repertorio',
@@ -126,9 +140,8 @@ export class DashboardPage {
         text: 'Prossime prove, live e scalette vengono prima; il repertorio resta la base comune che collega tutto il lavoro della band.',
         primaryCta: this.events().length ? 'Vedi i prossimi impegni' : 'Aggiungi il prossimo impegno',
         primaryRoute: this.events().length ? [this.bandBaseUrl, 'impegni'] : [this.bandBaseUrl, 'prove', 'nuova'],
-        secondaryCta: 'Ricalibra percorso',
-        secondaryRoute: ['/inizia'],
-        secondaryQueryParams: { bandId: this.bandContext.getCurrentBand(), percorso: 1 },
+        secondaryCta: 'Apri il repertorio',
+        secondaryRoute: [this.bandBaseUrl, 'repertorio'],
       };
     }
     return null;
