@@ -1,14 +1,15 @@
 <ion-header><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons><ion-title>Importa brani</ion-title></ion-toolbar></ion-header>
 <ion-content class="ion-padding">
   <ion-card>
-    <ion-card-header><ion-card-title>Importa repertorio da PDF</ion-card-title></ion-card-header>
+    <ion-card-header><ion-card-title>Importa una lista di brani</ion-card-title></ion-card-header>
     <ion-card-content>
-      <p>Controlla i brani trovati prima di salvarli.</p>
-      <input #pdfInput hidden type="file" accept="application/pdf,.pdf" (change)="onFileSelected($event)" />
-      <ion-button [disabled]="analyzing() || importing()" (click)="chooseFile(pdfInput)">
+      <p>Carica un PDF, un foglio Excel, un CSV o un file di testo. GigSaw ti mostra sempre un’anteprima prima di salvare.</p>
+      <input #fileInput hidden type="file" accept="application/pdf,.pdf,.csv,.txt,.xls,.xlsx" (change)="onFileSelected($event)" />
+      <ion-button [disabled]="analyzing() || importing()" (click)="chooseFile(fileInput)">
         @if (analyzing()) { <ion-spinner slot="start" /> Analisi in corso… }
-        @else { <ion-icon slot="start" name="cloud-upload-outline" /> Scegli PDF }
+        @else { <ion-icon slot="start" name="cloud-upload-outline" /> Scegli file }
       </ion-button>
+      <p><ion-note>PDF anche scansiti · Excel XLS/XLSX · CSV · TXT</ion-note></p>
     </ion-card-content>
   </ion-card>
   @if (error()) { <ion-note color="danger">{{ error() }}</ion-note> }
@@ -16,7 +17,7 @@
   @if (review(); as data) {
     <ion-list>
       <ion-list-header><ion-label>Anteprima · {{ data.summary.total_rows }} righe, {{ data.summary.ready_rows }} pronte</ion-label></ion-list-header>
-      <ion-item><ion-label>AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti</ion-label></ion-item>
+      @if (data.ai_quota) { <ion-item><ion-label>AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti</ion-label></ion-item> }
       @for (row of data.rows; track row.row_number) {
         <ion-item>
           <ion-checkbox slot="start" [checked]="isSelected(row)" [disabled]="row.duplicate_existing || !row.ready" (ionChange)="toggle(row)" />
