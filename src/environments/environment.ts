@@ -4,6 +4,8 @@
 
 export const environment = {
   production: false,
+  staging: false,
+  environmentName: 'development',
   // In development the Angular proxy forwards /api, /sanctum and /auth to Laravel.
   // Keeping this empty makes browser requests same-origin and avoids cross-domain CSRF cookies.
   apiUrl: '',
