@@ -1,3 +1,50 @@
 <ion-app>
   <ion-router-outlet [animated]="pageTransitionsEnabled"></ion-router-outlet>
+
+  <ion-modal [isOpen]="changelogOpen()" [initialBreakpoint]="0.72" [breakpoints]="[0, 0.72, 1]" (didDismiss)="closeChangelog()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Novità in GigSaw</ion-title>
+          <ion-buttons slot="end">
+            <ion-button type="button" (click)="closeChangelog()">Chiudi</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <main class="mx-auto flex w-full max-w-2xl flex-col gap-6 p-5 pb-10 text-[var(--gigsaw-text)] sm:p-7">
+          <header>
+            <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ion-color-primary)]">Beta · 8 ottobre 2026</p>
+            <h1 class="mb-2 mt-3 text-2xl font-bold tracking-tight sm:text-3xl">GigSaw segue finalmente il modo in cui lavora davvero una band.</h1>
+            <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">Questa versione introduce un onboarding più intelligente e percorsi diversi in base al punto in cui si trova la band.</p>
+          </header>
+
+          <section class="flex flex-col gap-3" aria-label="Novità della versione">
+            <article class="rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-4">
+              <p class="m-0 text-base font-semibold">🌱 Band appena nata</p>
+              <p class="mb-0 mt-1 text-sm leading-6 text-[var(--gigsaw-muted)]">Se state iniziando, GigSaw vi porta subito a costruire il repertorio partendo dai primi brani.</p>
+            </article>
+
+            <article class="rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-4">
+              <p class="m-0 text-base font-semibold">📚 Repertorio già esistente</p>
+              <p class="mb-0 mt-1 text-sm leading-6 text-[var(--gigsaw-muted)]">Le band già avviate possono partire dal proprio repertorio e organizzarlo senza rifare tutto da zero.</p>
+            </article>
+
+            <article class="rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-4">
+              <p class="m-0 text-base font-semibold">🔥 Band già molto attiva</p>
+              <p class="mb-0 mt-1 text-sm leading-6 text-[var(--gigsaw-muted)]">Per chi ha già prove, live e repertorio consolidato, il punto di partenza diventa la panoramica operativa.</p>
+            </article>
+
+            <article class="rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-4">
+              <p class="m-0 text-base font-semibold">🧭 Un flusso, non un gestionale</p>
+              <p class="mb-0 mt-1 text-sm leading-6 text-[var(--gigsaw-muted)]">Brani → prove → repertorio → scalette → live: GigSaw accompagna la band nel prossimo passo utile invece di mostrarle solo un menu di funzioni.</p>
+            </article>
+          </section>
+
+          <ion-button expand="block" type="button" class="mt-1" (click)="closeChangelog()">Ho capito, iniziamo</ion-button>
+        </main>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-app>
