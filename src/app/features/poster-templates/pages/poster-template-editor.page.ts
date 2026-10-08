@@ -93,9 +93,10 @@ export class PosterTemplateEditorPage {
         if (format.id === master.format.id) continue;
         const derived = this.deriveDocument(master, format);
         const suggestion = await this.analyzeBackgroundForFormat(master.backgroundDataUrl, format, focus);
-        this.drafts.set(format.id, this.applySuggestionToDocument(derived, suggestion));
+        this.drafts.set(format.id, this.applySuggestionToDocument(derived, suggestion, false));
       }
 
+      this.selectedId = master.fields[0]?.id ?? null;
       this.layoutHint = `Master ${master.format.label}: create ${this.formats.length - 1} varianti con crop intelligente`;
       await this.message('Ho preparato automaticamente le varianti per gli altri formati.', 'success');
     } finally {
@@ -198,7 +199,7 @@ export class PosterTemplateEditorPage {
     };
   }
 
-  private applySuggestionToDocument(document: PosterTemplateDocument, suggestion: PosterLayoutSuggestion): PosterTemplateDocument {
+  private applySuggestionToDocument(document: PosterTemplateDocument, suggestion: PosterLayoutSuggestion, updateSelection = true): PosterTemplateDocument {
     const { width, height } = document.format;
     const blockWidth = width * suggestion.widthRatio;
     const startX = width * suggestion.xRatio;
@@ -216,7 +217,7 @@ export class PosterTemplateEditorPage {
       cursorY += estimatedHeight + gap;
       return placed;
     });
-    this.selectedId = fields[0]?.id ?? null;
+    if (updateSelection) this.selectedId = fields[0]?.id ?? null;
     return { ...document, fields };
   }
 
