@@ -6,6 +6,8 @@ import {
   arrowBackOutline,
   checkmarkCircleOutline,
   chevronForwardOutline,
+  flameOutline,
+  folderOpenOutline,
   musicalNotesOutline,
   peopleOutline,
   personAddOutline,
@@ -14,13 +16,14 @@ import {
 import { catchError, finalize, Observable, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { BandContextService } from '../../core/services/band-context.service';
+import { BandFlow, BandFlowService } from '../../core/services/band-flow.service';
 import { OnboardingService } from '../../core/services/onboarding.service';
 import { Band, BandGenre } from '../bands/models/band.models';
 import { BandService } from '../bands/services/band.service';
 import { GenreService } from '../bands/services/genre.service';
 
 type OnboardingMode = 'create' | 'invite';
-type OnboardingStep = 'welcome' | 'profile' | 'band' | 'invite' | 'complete';
+type OnboardingStep = 'welcome' | 'profile' | 'band' | 'flow' | 'complete';
 
 @Component({
   standalone: true,
@@ -36,9 +39,11 @@ export class OnboardingPage implements OnInit {
   private readonly genresService = inject(GenreService);
   private readonly bandContext = inject(BandContextService);
   private readonly onboarding = inject(OnboardingService);
+  private readonly bandFlow = inject(BandFlowService);
 
   readonly step = signal<OnboardingStep>('welcome');
   readonly mode = signal<OnboardingMode | null>(null);
+  readonly selectedFlow = signal<BandFlow | null>(null);
   readonly loading = signal(false);
   readonly error = signal('');
   readonly genres = signal<BandGenre[]>([]);
@@ -56,6 +61,8 @@ export class OnboardingPage implements OnInit {
       arrowBackOutline,
       checkmarkCircleOutline,
       chevronForwardOutline,
+      flameOutline,
+      folderOpenOutline,
       musicalNotesOutline,
       peopleOutline,
       personAddOutline,
@@ -96,9 +103,10 @@ export class OnboardingPage implements OnInit {
   get progress(): number {
     const current = this.step();
     if (current === 'welcome') return 1;
-    if (current === 'complete') return 4;
-    if (current === 'profile') return this.mode() === 'invite' && this.currentBand ? 3 : 2;
-    return 3;
+    if (current === 'profile') return 2;
+    if (current === 'band') return 3;
+    if (current === 'flow') return 4;
+    return 5;
   }
 
   chooseMode(mode: OnboardingMode): void {
@@ -150,7 +158,7 @@ export class OnboardingPage implements OnInit {
       }),
       finalize(() => this.loading.set(false)),
     ).subscribe({
-      next: () => this.step.set('complete'),
+      next: () => this.step.set('flow'),
       error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
         if (this.currentBand) {
           this.step.set('profile');
@@ -160,6 +168,13 @@ export class OnboardingPage implements OnInit {
         this.error.set(error.error?.errors?.['name']?.[0] || error.error?.message || 'Creazione della band non riuscita.');
       },
     });
+  }
+
+  chooseFlow(flow: BandFlow): void {
+    if (!this.currentBand) return;
+    this.selectedFlow.set(flow);
+    this.bandFlow.set(this.currentBand.id, flow);
+    this.step.set('complete');
   }
 
   joinBand(): void {
@@ -187,13 +202,16 @@ export class OnboardingPage implements OnInit {
 
   back(): void {
     this.error.set('');
-    if (this.step() === 'band') {
+    if (this.step() === 'flow') {
+      this.step.set('band');
+    } else if (this.step() === 'band') {
       this.step.set('profile');
     } else if (this.step() === 'profile' && this.mode() === 'invite' && this.currentBand) {
       this.step.set('complete');
     } else {
       this.mode.set(null);
       this.currentBand = undefined;
+      this.selectedFlow.set(null);
       this.step.set('welcome');
     }
   }
@@ -214,7 +232,45 @@ export class OnboardingPage implements OnInit {
 
   finish(): void {
     this.onboarding.complete();
-    void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/panoramica` : '/band');
+    if (!this.currentBand) {
+      void this.router.navigateByUrl('/band');
+      return;
+    }
+
+    const base = `/band/${this.currentBand.id}`;
+    const flow = this.selectedFlow() ?? this.bandFlow.get(this.currentBand.id);
+
+    if (flow === 'building') {
+      void this.router.navigateByUrl(`${base}/repertorio/nuovo`);
+      return;
+    }
+    if (flow === 'importing') {
+      void this.router.navigateByUrl(`${base}/repertorio`);
+      return;
+    }
+
+    void this.router.navigateByUrl(`${base}/panoramica`);
+  }
+
+  get completionTitle(): string {
+    if (!this.currentBand) return 'Sei pronto!';
+    if (this.selectedFlow() === 'building') return `${this.currentBand.name}: partiamo dai brani`;
+    if (this.selectedFlow() === 'importing') return `${this.currentBand.name}: portiamo dentro il repertorio`;
+    if (this.selectedFlow() === 'active') return `${this.currentBand.name}: tutto pronto per lavorare`;
+    return `${this.currentBand.name} è pronta!`;
+  }
+
+  get completionText(): string {
+    if (this.selectedFlow() === 'building') return 'Inizia dal primo brano: GigSaw ti accompagnerà fino a prove, repertorio e prima scaletta.';
+    if (this.selectedFlow() === 'importing') return 'Parti dal repertorio che avete già e organizzalo senza ricominciare da zero.';
+    if (this.selectedFlow() === 'active') return 'Usa la panoramica per coordinare prove, live, scalette e nuovi brani da preparare.';
+    return 'Ora puoi lavorare insieme alla band su repertorio, prove, concerti e scalette.';
+  }
+
+  get finishLabel(): string {
+    if (this.selectedFlow() === 'building') return 'Aggiungi il primo brano';
+    if (this.selectedFlow() === 'importing') return 'Vai al repertorio';
+    return 'Entra nella panoramica';
   }
 
   private saveInstruments(): void {
