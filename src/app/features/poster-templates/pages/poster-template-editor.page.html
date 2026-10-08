@@ -27,7 +27,7 @@
         <input #backgroundInput hidden type="file" accept="image/png,image/jpeg" (change)="uploadBackground($event)" />
 
         @if (document.backgroundDataUrl) {
-          <ion-note class="block px-4 pb-2">GigSaw individua il punto focale dello sfondo e usa quel riferimento quando cambia formato, invece di tagliare sempre dal centro.</ion-note>
+          <ion-note class="block px-4 pb-2">GigSaw cerca il punto visivo importante e lo protegge nei tagli dei formati più piccoli. I testi vengono poi riposizionati nello spazio più libero.</ion-note>
           <ion-item lines="none">
             <ion-button expand="block" fill="solid" (click)="suggestLayout(false)" [disabled]="analyzingLayout || generatingVariants">
               {{ analyzingLayout ? 'Analizzo lo sfondo…' : '✨ Ottimizza questo formato' }}
@@ -35,7 +35,7 @@
           </ion-item>
           <ion-item lines="none">
             <ion-button expand="block" fill="outline" (click)="generateVariantsFromMaster()" [disabled]="analyzingLayout || generatingVariants">
-              {{ generatingVariants ? 'Creo le varianti…' : 'Crea tutte le varianti dal master' }}
+              {{ generatingVariants ? 'Creo le varianti…' : 'Crea Post, Story e altri formati' }}
             </ion-button>
           </ion-item>
           @if (layoutHint) { <ion-note class="block px-4 pb-3">{{ layoutHint }}</ion-note> }
