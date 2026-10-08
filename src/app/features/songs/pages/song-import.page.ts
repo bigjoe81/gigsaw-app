@@ -7,7 +7,7 @@ import { finalize } from 'rxjs';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { SongImportReview, SongImportRow, SongService } from '../services/song.service';
 
-type ImportKind = 'pdf' | 'spreadsheet';
+type ImportKind = 'document' | 'spreadsheet';
 
 @Component({
   standalone: true,
@@ -21,7 +21,7 @@ export class SongImportPage {
   readonly importing = signal(false);
   readonly error = signal('');
   readonly result = signal('');
-  readonly importKind = signal<ImportKind>('pdf');
+  readonly importKind = signal<ImportKind>('document');
 
   constructor(
     private readonly songsApi: SongService,
@@ -42,10 +42,10 @@ export class SongImportPage {
     if (!file) return;
 
     const name = file.name.toLowerCase();
-    const isPdf = name.endsWith('.pdf') || file.type === 'application/pdf';
+    const isDocument = /\.(pdf|docx)$/.test(name) || file.type === 'application/pdf';
     const isSpreadsheet = /\.(csv|txt|xls|xlsx)$/.test(name);
-    if (!isPdf && !isSpreadsheet) {
-      this.error.set('Formato non supportato. Usa PDF, Excel, CSV o TXT.');
+    if (!isDocument && !isSpreadsheet) {
+      this.error.set('Formato non supportato. Usa PDF, Word DOCX, Excel, CSV o TXT.');
       return;
     }
 
@@ -55,14 +55,14 @@ export class SongImportPage {
       return;
     }
 
-    this.importKind.set(isPdf ? 'pdf' : 'spreadsheet');
+    this.importKind.set(isDocument ? 'document' : 'spreadsheet');
     this.error.set('');
     this.result.set('');
     this.review.set(null);
     this.analyzing.set(true);
 
-    const request = isPdf
-      ? this.songsApi.reviewPdfImport(file, bandId)
+    const request = isDocument
+      ? this.songsApi.reviewDocumentImport(file, bandId)
       : this.songsApi.reviewSpreadsheetImport(file, bandId);
 
     request.pipe(finalize(() => this.analyzing.set(false))).subscribe({
@@ -96,8 +96,8 @@ export class SongImportPage {
       selected: this.selectedRows().has(row.row_number),
       use_metadata: false,
     }));
-    const request = this.importKind() === 'pdf'
-      ? this.songsApi.confirmPdfImport(review.import_token, rows)
+    const request = this.importKind() === 'document'
+      ? this.songsApi.confirmDocumentImport(review.import_token, rows)
       : this.songsApi.confirmSpreadsheetImport(review.import_token, rows);
 
     request.pipe(finalize(() => this.importing.set(false))).subscribe({
