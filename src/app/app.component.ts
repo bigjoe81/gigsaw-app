@@ -34,6 +34,7 @@ export class AppComponent {
 
   readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
   readonly changelogOpen = signal(false);
+  readonly fullHistoryOpen = signal(false);
 
   constructor(iconConfig: FaConfig) {
     iconConfig.defaultPrefix = 'fal';
@@ -44,8 +45,13 @@ export class AppComponent {
     }
   }
 
+  toggleFullHistory(): void {
+    this.fullHistoryOpen.update((open) => !open);
+  }
+
   closeChangelog(): void {
     localStorage.setItem(AppComponent.changelogStorageKey, AppComponent.changelogReleaseId);
+    this.fullHistoryOpen.set(false);
     this.changelogOpen.set(false);
   }
 }
