@@ -1,16 +1,51 @@
-import { Component } from '@angular/core';
-import { IonApp, IonRouterOutlet, isPlatform } from '@ionic/angular/standalone';
+import { Component, signal } from '@angular/core';
+import {
+  IonApp,
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonModal,
+  IonRouterOutlet,
+  IonTitle,
+  IonToolbar,
+  isPlatform,
+} from '@ionic/angular/standalone';
 import { FaConfig } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet],
+  imports: [
+    IonApp,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonModal,
+    IonRouterOutlet,
+    IonTitle,
+    IonToolbar,
+  ],
 })
 export class AppComponent {
+  private static readonly changelogReleaseId = '2026-10-08-band-flows';
+  private static readonly changelogStorageKey = 'gigsaw:last-seen-changelog';
+
   readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
+  readonly changelogOpen = signal(false);
 
   constructor(iconConfig: FaConfig) {
     iconConfig.defaultPrefix = 'fal';
+
+    const lastSeenRelease = localStorage.getItem(AppComponent.changelogStorageKey);
+    if (lastSeenRelease !== AppComponent.changelogReleaseId) {
+      queueMicrotask(() => this.changelogOpen.set(true));
+    }
+  }
+
+  closeChangelog(): void {
+    localStorage.setItem(AppComponent.changelogStorageKey, AppComponent.changelogReleaseId);
+    this.changelogOpen.set(false);
   }
 }
