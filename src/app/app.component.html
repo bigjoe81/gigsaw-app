@@ -1,7 +1,7 @@
 <ion-app>
   <ion-router-outlet [animated]="pageTransitionsEnabled"></ion-router-outlet>
 
-  <ion-modal [isOpen]="changelogOpen()" [initialBreakpoint]="0.72" [breakpoints]="[0, 0.72, 1]" (didDismiss)="closeChangelog()">
+  <ion-modal class="changelog-modal" [isOpen]="changelogOpen()" (didDismiss)="closeChangelog()">
     <ng-template>
       <ion-header class="ion-no-border">
         <ion-toolbar>
