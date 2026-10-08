@@ -4,7 +4,6 @@ import { IonButton, IonChip, IonContent, IonIcon, IonInput, IonSpinner } from '@
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
-  checkmarkCircleOutline,
   chevronForwardOutline,
   flameOutline,
   folderOpenOutline,
@@ -23,7 +22,7 @@ import { BandService } from '../bands/services/band.service';
 import { GenreService } from '../bands/services/genre.service';
 
 type OnboardingMode = 'create' | 'invite';
-type OnboardingStep = 'welcome' | 'invite' | 'profile' | 'band' | 'flow' | 'complete';
+type OnboardingStep = 'welcome' | 'invite' | 'profile' | 'band' | 'flow' | 'source';
 type BuildingStart = 'manual' | 'import';
 
 @Component({
@@ -51,7 +50,11 @@ export class OnboardingPage implements OnInit {
   readonly genres = signal<BandGenre[]>([]);
   readonly selectedGenreIds = signal<number[]>([]);
   readonly instruments = signal<string[]>([]);
-  readonly instrumentPresets = ['Voce', 'Chitarra', 'Basso', 'Batteria', 'Percussioni', 'Pianoforte', 'Tastiere', 'Hammond', 'Synth', 'Armonica', 'Sassofono', 'Tromba', 'Violino', 'Contrabbasso'];
+  readonly showAllInstruments = signal(false);
+  readonly showGenres = signal(false);
+
+  readonly primaryInstruments = ['Voce', 'Chitarra', 'Basso', 'Batteria', 'Pianoforte', 'Tastiere'];
+  readonly instrumentPresets = ['Voce', 'Chitarra', 'Basso', 'Batteria', 'Pianoforte', 'Tastiere', 'Percussioni', 'Hammond', 'Synth', 'Armonica', 'Sassofono', 'Tromba', 'Violino', 'Contrabbasso'];
 
   bandName = '';
   joinCode = '';
@@ -61,7 +64,6 @@ export class OnboardingPage implements OnInit {
   constructor() {
     addIcons({
       arrowBackOutline,
-      checkmarkCircleOutline,
       chevronForwardOutline,
       flameOutline,
       folderOpenOutline,
@@ -118,6 +120,10 @@ export class OnboardingPage implements OnInit {
     return 5;
   }
 
+  get visibleInstruments(): string[] {
+    return this.showAllInstruments() ? this.instrumentPresets : this.primaryInstruments;
+  }
+
   chooseMode(mode: OnboardingMode): void {
     this.mode.set(mode);
     this.error.set('');
@@ -139,7 +145,7 @@ export class OnboardingPage implements OnInit {
   toggleGenre(id?: number): void {
     if (!Number.isInteger(id)) return;
     this.selectedGenreIds.update((current) => current.includes(id!)
-      ? current.filter((genreId) => genreId !== id)
+      ? current.filter((genreId) => genreId !== id!)
       : [...current, id!]);
   }
 
@@ -150,7 +156,7 @@ export class OnboardingPage implements OnInit {
   createBand(): void {
     const name = this.bandName.trim();
     if (!name || this.loading()) {
-      this.error.set('Inserisci il nome della band.');
+      this.error.set('Come si chiama la band?');
       return;
     }
 
@@ -178,9 +184,21 @@ export class OnboardingPage implements OnInit {
 
   chooseFlow(flow: BandFlow): void {
     if (!this.currentBand) return;
+
     this.selectedFlow.set(flow);
     this.bandFlow.set(this.currentBand.id, flow);
-    this.step.set('complete');
+
+    if (flow === 'building') {
+      this.step.set('source');
+      return;
+    }
+
+    if (flow === 'importing') {
+      this.finish('import');
+      return;
+    }
+
+    this.finish();
   }
 
   joinBand(): void {
@@ -206,6 +224,11 @@ export class OnboardingPage implements OnInit {
 
   back(): void {
     this.error.set('');
+
+    if (this.step() === 'source') {
+      this.step.set('flow');
+      return;
+    }
     if (this.step() === 'flow' && this.recalibrating()) {
       this.returnToBand();
       return;
@@ -213,7 +236,7 @@ export class OnboardingPage implements OnInit {
     if (this.step() === 'flow') this.step.set('band');
     else if (this.step() === 'band') this.step.set('profile');
     else if (this.step() === 'invite') this.step.set('welcome');
-    else if (this.step() === 'profile' && this.mode() === 'invite' && this.currentBand) this.step.set('complete');
+    else if (this.step() === 'profile' && this.mode() === 'invite' && this.currentBand) this.returnToBand();
     else {
       this.mode.set(null);
       this.currentBand = undefined;
@@ -261,27 +284,6 @@ export class OnboardingPage implements OnInit {
     void this.router.navigateByUrl(`${base}/panoramica`);
   }
 
-  get completionTitle(): string {
-    if (!this.currentBand) return 'Sei pronto!';
-    if (this.selectedFlow() === 'building') return `${this.currentBand.name}: partiamo dai brani`;
-    if (this.selectedFlow() === 'importing') return `${this.currentBand.name}: portiamo dentro il repertorio`;
-    if (this.selectedFlow() === 'active') return `${this.currentBand.name}: tutto pronto per lavorare`;
-    return `${this.currentBand.name} è pronta!`;
-  }
-
-  get completionText(): string {
-    if (this.selectedFlow() === 'building') return 'Puoi aggiungere il primo brano a mano oppure partire da una lista che avete già preparato in PDF, Word o Excel.';
-    if (this.selectedFlow() === 'importing') return 'Parti dal repertorio che avete già: carica il vostro file, controlla l’anteprima e importalo senza ricominciare da zero.';
-    if (this.selectedFlow() === 'active') return 'Usa la panoramica per coordinare prove, live, scalette e nuovi brani da preparare.';
-    return 'Ora puoi lavorare insieme alla band su repertorio, prove, concerti e scalette.';
-  }
-
-  get finishLabel(): string {
-    if (this.selectedFlow() === 'building') return 'Aggiungi il primo brano';
-    if (this.selectedFlow() === 'importing') return 'Importa il repertorio';
-    return 'Entra nella panoramica';
-  }
-
   private returnToBand(): void {
     void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/panoramica` : '/band');
   }
@@ -292,7 +294,7 @@ export class OnboardingPage implements OnInit {
     this.loading.set(true);
     this.error.set('');
     this.saveCurrentMemberInstruments(this.currentBand).pipe(finalize(() => this.loading.set(false))).subscribe({
-      next: () => this.step.set('complete'),
+      next: () => this.returnToBand(),
       error: (error: { error?: { message?: string } }) => {
         this.error.set(error.error?.message || 'Salvataggio degli strumenti non riuscito.');
       },
