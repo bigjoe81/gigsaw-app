@@ -1,52 +1,69 @@
-<ion-split-pane contentId="band-content" when="(min-width: 600px)" [class.menu-collapsed]="menuCollapsed()" (click)="handleLayoutClick($event)">
-  <ion-menu contentId="band-content" menuId="band-menu">
-    <ion-content>
-      <header class="menu-brand">
-        <img src="assets/logo-hor.png" alt="GigSaw" class="menu-brand__logo" />
-      </header>
+<div class="app-shell">
+  <header class="flow-header">
+    <a routerLink="/band" class="brand-link" aria-label="GigSaw - cambia band">
+      <img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" />
+    </a>
 
-      @if (currentBand(); as band) {
-        <section class="current-band" [attr.title]="band.name" aria-label="Band corrente">
-          @if (band.logo) {
-            <img class="current-band__avatar" [src]="band.logo" [alt]="'Logo ' + band.name" />
-          } @else {
-            <span class="current-band__avatar current-band__initials" aria-hidden="true">{{ bandInitials(band.name) }}</span>
-          }
-          <span class="current-band__copy">
-            <small>Band corrente</small>
-            <strong>{{ band.name }}</strong>
-            @if (band.city || band.country) {
-              <span>{{ band.city }}@if (band.city && band.country) { · }{{ band.country }}</span>
-            }
-          </span>
-        </section>
-      } @else if (currentBandLoading()) {
-        <div class="current-band current-band--loading" aria-label="Caricamento band corrente">
-          <span class="skeleton current-band__avatar"></span>
-          <span class="current-band__copy"><span class="skeleton h-3 w-20"></span><span class="skeleton h-4 w-28"></span></span>
+    @if (currentBand(); as band) {
+      <div class="band-chip" [attr.title]="band.name">
+        @if (band.logo) {
+          <img class="band-chip__avatar" [src]="band.logo" [alt]="'Logo ' + band.name" />
+        } @else {
+          <span class="band-chip__avatar band-chip__initials" aria-hidden="true">{{ bandInitials(band.name) }}</span>
+        }
+        <div class="band-chip__copy">
+          <strong>{{ band.name }}</strong>
+          <span>La tua band. Organizzata.</span>
         </div>
-      }
+      </div>
+    }
 
-      <ion-list class="menu-nav" lines="none">
+    <nav class="flow-nav" aria-label="Navigazione principale">
+      @for (section of sections; track section.key) {
+        <a
+          class="flow-nav__item"
+          [routerLink]="sectionHref(section.key)"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          <ion-icon [name]="section.icon" aria-hidden="true" />
+          <span>{{ section.label }}</span>
+        </a>
+      }
+    </nav>
+  </header>
+
+  <ion-menu contentId="band-content" menuId="band-menu" type="overlay">
+    <ion-content>
+      <div class="mobile-menu-head">
+        <img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" />
+        @if (currentBand(); as band) {
+          <strong>{{ band.name }}</strong>
+        }
+      </div>
+
+      <ion-list lines="none">
         @for (section of sections; track section.key) {
-          <ion-menu-toggle [autoHide]="false">
+          <ion-menu-toggle [autoHide]="true">
             <ion-item
               [detail]="false"
               [routerLink]="sectionHref(section.key)"
               routerLinkActive="is-active"
               [routerLinkActiveOptions]="{ exact: false }"
-              [title]="section.label"
             >
               <ion-icon aria-hidden="true" slot="start" [name]="section.icon" />
-              <ion-label>{{ section.label }}</ion-label>
+              <ion-label>
+                <strong>{{ section.label }}</strong>
+                <p>{{ section.hint }}</p>
+              </ion-label>
             </ion-item>
           </ion-menu-toggle>
         }
       </ion-list>
 
-      <ion-list class="menu-footer" lines="none">
-        <ion-menu-toggle [autoHide]="false">
-          <ion-item [detail]="false" routerLink="/band" title="Cambia band">
+      <ion-list class="mobile-menu-footer" lines="none">
+        <ion-menu-toggle [autoHide]="true">
+          <ion-item [detail]="false" routerLink="/band">
             <ion-icon aria-hidden="true" slot="start" name="arrow-back-outline" />
             <ion-label>Cambia band</ion-label>
           </ion-item>
@@ -55,5 +72,5 @@
     </ion-content>
   </ion-menu>
 
-  <ion-router-outlet id="band-content" [animated]="pageTransitionsEnabled" />
-</ion-split-pane>
+  <ion-router-outlet id="band-content" class="shell-content" [animated]="pageTransitionsEnabled" />
+</div>

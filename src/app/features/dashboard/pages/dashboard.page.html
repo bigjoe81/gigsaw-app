@@ -2,123 +2,127 @@
   <ion-toolbar>
     <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
     <ion-title>{{ bandName() }}</ion-title>
-    <ion-buttons slot="end"><ion-button [routerLink]="[bandBaseUrl, 'repertorio', 'nuovo']" aria-label="Nuovo brano"><ion-icon slot="icon-only" name="add-outline" /></ion-button></ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <main class="mx-auto flex w-full max-w-7xl flex-col gap-8 p-4 text-[var(--gigsaw-text)] sm:p-6 lg:gap-10 lg:p-10">
-    <header class="flex flex-wrap items-center justify-between gap-4">
-      <div class="min-w-0">
-        <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ion-color-primary)]">Panoramica band</p>
-        <h1 class="mb-2 mt-3 text-3xl font-bold tracking-tight [overflow-wrap:anywhere] sm:text-4xl">Ciao {{ userName }}.</h1>
-        <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">Tutto pronto per la prossima sessione? La tua band parte da qui.</p>
-      </div>
-      <a class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--ion-color-primary)] px-4 py-3 text-sm font-bold text-[var(--ion-color-primary-contrast)] no-underline transition hover:brightness-110" [routerLink]="[bandBaseUrl, 'concerti', 'nuovo']">
-        <ion-icon name="add-outline" aria-hidden="true" class="text-xl" /> Nuovo concerto
-      </a>
+  <main class="mx-auto flex w-full max-w-6xl flex-col gap-8 p-4 text-[var(--gigsaw-text)] sm:p-6 lg:gap-10 lg:p-10">
+    <header class="max-w-3xl">
+      <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ion-color-primary)]">La tua band, in movimento</p>
+      <h1 class="mb-3 mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Ciao {{ userName }}. Cosa viene dopo?</h1>
+      <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">GigSaw ti accompagna dalla musica alla sala prove, dalla scaletta al palco.</p>
     </header>
 
-    <section aria-labelledby="quick-actions-title">
-      <h2 id="quick-actions-title" class="mb-3 mt-0 text-xs font-semibold uppercase tracking-widest text-[var(--gigsaw-muted)]">Azioni rapide</h2>
-      <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        @if (canInviteToSoloBand()) {
-          <a class="invite-shortcut" [routerLink]="[bandBaseUrl, 'impostazioni', 'inviti']">
-            <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] text-[var(--ion-color-primary)]"><ion-icon name="people-outline" aria-hidden="true" class="text-xl" /></span>
-            <span class="text-sm font-semibold">Invita elementi nella band</span>
-          </a>
-        }
-        @for (action of quickActions; track action.label) {
-          <a class="group flex min-w-0 flex-col gap-4 rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-4 text-[var(--gigsaw-text)] no-underline transition-colors hover:border-[var(--ion-color-primary)] hover:bg-[var(--gigsaw-input-background)] sm:flex-row sm:items-center sm:gap-3 sm:p-5" [routerLink]="[bandBaseUrl, ...action.route]">
-            <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] text-[var(--ion-color-primary)]"><ion-icon [name]="action.icon" aria-hidden="true" class="text-xl" /></span>
-            <span class="text-sm font-semibold">{{ action.label }}</span>
-            <ion-icon name="chevron-forward-outline" aria-hidden="true" class="ml-auto hidden shrink-0 text-[var(--gigsaw-muted)] xl:block" />
-          </a>
-        }
-      </div>
-    </section>
-
     @if (loading()) {
-      <div role="status" class="flex items-center justify-center gap-3 rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] px-6 py-16 text-sm text-[var(--gigsaw-muted)]">
-        <ion-spinner name="crescent" class="size-5 text-[var(--ion-color-primary)]" /> Caricamento dashboard…
+      <div role="status" class="flex items-center justify-center gap-3 rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] px-6 py-16 text-sm text-[var(--gigsaw-muted)]">
+        <ion-spinner name="crescent" class="size-5 text-[var(--ion-color-primary)]" /> Prepariamo il prossimo passo…
       </div>
     } @else {
       @if (loadError()) {
-        <p role="alert" class="m-0 rounded-lg border border-solid border-[var(--ion-color-warning)] bg-[color-mix(in_srgb,var(--ion-color-warning)_8%,transparent)] p-4 text-sm text-[var(--ion-color-warning)]">{{ loadError() }}</p>
+        <p role="alert" class="m-0 rounded-xl border border-solid border-[var(--ion-color-warning)] bg-[color-mix(in_srgb,var(--ion-color-warning)_8%,transparent)] p-4 text-sm text-[var(--ion-color-warning)]">{{ loadError() }}</p>
       }
-      <div class="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <div class="flex min-w-0 flex-col gap-6">
-          <section class="overflow-hidden rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)]" aria-labelledby="events-title">
-            <div class="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
-              <div><h2 id="events-title" class="m-0 text-lg font-semibold">Prossimi impegni</h2><p class="mb-0 mt-1 text-sm text-[var(--gigsaw-muted)]">Il ritmo delle prossime giornate.</p></div>
-              <a [routerLink]="[bandBaseUrl, 'concerti']" class="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[var(--ion-color-primary)] no-underline hover:underline">Calendario <ion-icon name="chevron-forward-outline" aria-hidden="true" /></a>
-            </div>
-            @for (event of events(); track event.id) {
-              <a [routerLink]="event.link" class="flex items-center gap-4 border-0 border-t border-solid border-[var(--gigsaw-border)] p-5 text-[var(--gigsaw-text)] no-underline transition-colors hover:bg-[var(--gigsaw-input-background)] sm:px-6">
-                <div class="flex w-16 shrink-0 flex-col items-center gap-0.5 rounded-lg bg-[var(--gigsaw-input-background)] py-2 text-[var(--ion-color-secondary)]" [style.color]="event.tone === 'green' ? 'var(--ion-color-success)' : 'var(--ion-color-secondary)'">
-                  <span class="text-[10px] font-semibold tracking-wider">{{ event.badgeTop }}</span><span class="text-2xl font-bold leading-none">{{ event.badgeMain }}</span><span class="text-[10px] font-semibold tracking-wider">{{ event.badgeBottom }}</span>
-                </div>
-                <div class="min-w-0 flex-1">
-                  <p class="mb-1 mt-0 text-xs font-medium text-[var(--gigsaw-muted)]">{{ event.meta }}</p>
-                  <h3 class="m-0 text-base font-semibold [overflow-wrap:anywhere]">{{ event.title }}</h3>
-                  @if (event.location) { <p class="mb-0 mt-2 flex items-center gap-1.5 text-xs text-[var(--gigsaw-muted)]"><ion-icon name="location-outline" aria-hidden="true" class="shrink-0" /><span class="[overflow-wrap:anywhere]">{{ event.location }}</span></p> }
-                </div>
-                <ion-icon name="chevron-forward-outline" aria-hidden="true" class="shrink-0 text-[var(--gigsaw-muted)]" />
-              </a>
-            } @empty {
-              <div class="flex flex-col items-center px-6 pb-10 pt-5 text-center">
-                <span class="mb-4 flex size-14 items-center justify-center rounded-full bg-[var(--gigsaw-input-background)] text-[var(--ion-color-secondary)]"><ion-icon name="calendar-outline" aria-hidden="true" class="text-2xl" /></span>
-                <p class="m-0 text-sm font-semibold">Nessun impegno in programma</p><p class="mb-0 mt-2 max-w-xs text-sm leading-6 text-[var(--gigsaw-muted)]">Organizza una prova o aggiungi il prossimo concerto dalle azioni rapide.</p>
-              </div>
-            }
-          </section>
 
-          <section class="rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 sm:p-6" aria-labelledby="activity-title">
-            <h2 id="activity-title" class="mb-5 mt-0 text-lg font-semibold">Attività recente</h2>
-            <div class="flex flex-col gap-5">
-              @for (activity of activities(); track activity.id) {
-                <a [routerLink]="activity.link" class="flex items-start gap-3 rounded-lg text-[var(--gigsaw-text)] no-underline hover:bg-[var(--gigsaw-input-background)]">
-                  <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--gigsaw-input-background)] text-[var(--ion-color-secondary)]"><ion-icon [name]="activity.icon" aria-hidden="true" /></span>
-                  <div class="min-w-0 flex-1"><p class="m-0 text-sm">{{ activity.text }} <span class="font-semibold [overflow-wrap:anywhere]">· {{ activity.target }}</span></p><p class="mb-0 mt-1 text-xs text-[var(--gigsaw-muted)]">{{ activity.time }}</p></div>
-                </a>
-              } @empty { <p class="m-0 py-3 text-sm leading-6 text-[var(--gigsaw-muted)]">Nessun aggiornamento recente. Qui trovi le ultime modifiche a brani, prove e concerti.</p> }
-            </div>
-          </section>
+      <section aria-labelledby="next-title" class="overflow-hidden rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)]">
+        <div class="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-7">
+          <div>
+            <p class="m-0 text-xs font-semibold uppercase tracking-widest text-[var(--gigsaw-muted)]">Prossimo passo</p>
+            <h2 id="next-title" class="mb-0 mt-2 text-xl font-bold">Preparati a quello che viene dopo</h2>
+          </div>
+          <a [routerLink]="[bandBaseUrl, 'impegni']" class="inline-flex min-h-11 items-center gap-2 rounded-full border border-solid border-[var(--gigsaw-border)] px-4 text-sm font-semibold text-[var(--gigsaw-text)] no-underline hover:bg-[var(--gigsaw-input-background)]">Apri agenda <ion-icon name="chevron-forward-outline" /></a>
         </div>
 
-        <aside class="flex min-w-0 flex-col gap-6" aria-label="Riepilogo band">
-          <section class="rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 sm:p-6" aria-labelledby="repertoire-title">
-            <h2 id="repertoire-title" class="m-0 text-lg font-semibold">Repertorio</h2>
-            <figure class="mx-0 my-6 flex flex-col items-center gap-3" aria-label="Distribuzione dei brani per stato, dettagli nella legenda seguente">
-              <div class="flex size-44 items-center justify-center rounded-full p-3" [style.background]="repertoireChartBackground" aria-hidden="true">
-                <div class="flex h-full w-full flex-col items-center justify-center rounded-full bg-[var(--gigsaw-surface)]">
-                  <span class="text-4xl font-bold tracking-tight tabular-nums">{{ repertoireTotal() }}</span>
-                  <span class="mt-1 text-xs text-[var(--gigsaw-muted)]">brani totali</span>
-                </div>
+        @if (events().length) {
+          @for (event of events().slice(0, 1); track event.id) {
+            <a [routerLink]="event.link" class="group flex flex-col gap-5 border-0 border-t border-solid border-[var(--gigsaw-border)] p-5 text-[var(--gigsaw-text)] no-underline sm:flex-row sm:items-center sm:p-7">
+              <div class="flex w-20 shrink-0 flex-col items-center rounded-xl bg-[var(--gigsaw-input-background)] py-3 text-[var(--ion-color-secondary)]">
+                <span class="text-[10px] font-semibold tracking-wider">{{ event.badgeTop }}</span>
+                <span class="text-3xl font-bold leading-none">{{ event.badgeMain }}</span>
+                <span class="mt-1 text-[10px] font-semibold tracking-wider">{{ event.badgeBottom }}</span>
               </div>
-              <figcaption class="text-center text-xs text-[var(--gigsaw-muted)]">
-                @if (repertoireTotal()) { {{ repertoireTotal() }} brani · distribuzione per stato } @else { Aggiungi il primo brano per iniziare. }
-              </figcaption>
-            </figure>
-            <div class="flex flex-col gap-5">
-              @for (item of repertoire(); track item.label) {
-                <div>
-                  <div class="mb-2 flex items-center justify-between gap-3 text-sm"><span class="flex items-center gap-2 text-[var(--gigsaw-muted)]"><span aria-hidden="true" class="size-2 shrink-0 rounded-full" [style.background]="item.color === 'blue' ? 'var(--ion-color-secondary)' : item.color === 'green' ? 'var(--ion-color-success)' : 'var(--ion-color-warning)'"></span>{{ item.label }}</span><span class="font-semibold tabular-nums">{{ item.value }}</span></div>
-                  <div role="progressbar" [attr.aria-label]="item.label" aria-valuemin="0" [attr.aria-valuemax]="repertoireTotal() || 1" [attr.aria-valuenow]="item.value" class="h-1.5 overflow-hidden rounded-full bg-[var(--gigsaw-border)]">
-                    <div class="h-full rounded-full" [style.width.%]="repertoireTotal() ? item.value / repertoireTotal() * 100 : 0" [style.background]="item.color === 'blue' ? 'var(--ion-color-secondary)' : item.color === 'green' ? 'var(--ion-color-success)' : 'var(--ion-color-warning)'"></div>
-                  </div>
-                </div>
-              }
+              <div class="min-w-0 flex-1">
+                <p class="m-0 text-xs font-semibold uppercase tracking-wider text-[var(--ion-color-primary)]">{{ event.meta }}</p>
+                <h3 class="mb-1 mt-2 text-2xl font-bold [overflow-wrap:anywhere]">{{ event.title }}</h3>
+                @if (event.location) {
+                  <p class="mb-0 mt-2 flex items-center gap-1.5 text-sm text-[var(--gigsaw-muted)]"><ion-icon name="location-outline" /><span>{{ event.location }}</span></p>
+                }
+              </div>
+              <span class="inline-flex min-h-11 items-center gap-2 self-start rounded-full bg-[var(--ion-color-primary)] px-5 text-sm font-bold text-[var(--ion-color-primary-contrast)] sm:self-auto">Continua <ion-icon name="chevron-forward-outline" /></span>
+            </a>
+          }
+        } @else {
+          <div class="border-0 border-t border-solid border-[var(--gigsaw-border)] p-7">
+            <p class="m-0 text-base font-semibold">Niente in agenda. È un buon momento per preparare il prossimo passo.</p>
+            <div class="mt-5 flex flex-wrap gap-3">
+              <a [routerLink]="[bandBaseUrl, 'prove', 'nuova']" class="inline-flex min-h-11 items-center rounded-full bg-[var(--ion-color-primary)] px-5 text-sm font-bold text-[var(--ion-color-primary-contrast)] no-underline">Prepara una prova</a>
+              <a [routerLink]="[bandBaseUrl, 'concerti', 'nuovo']" class="inline-flex min-h-11 items-center rounded-full border border-solid border-[var(--gigsaw-border)] px-5 text-sm font-semibold text-[var(--gigsaw-text)] no-underline">Aggiungi un live</a>
             </div>
-            <a [routerLink]="[bandBaseUrl, 'repertorio']" class="mt-6 flex min-h-11 items-center justify-center gap-2 rounded-lg border border-solid border-[var(--gigsaw-border)] px-3 py-2 text-sm font-semibold text-[var(--gigsaw-text)] no-underline transition-colors hover:bg-[var(--gigsaw-input-background)]">Apri repertorio <ion-icon name="chevron-forward-outline" aria-hidden="true" /></a>
-          </section>
+          </div>
+        }
+      </section>
 
-          <section class="rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 sm:p-6" aria-labelledby="press-kit-title">
-            <div class="mb-4 flex items-center gap-3"><span class="flex size-10 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] text-[var(--ion-color-primary)]"><ion-icon name="document-text-outline" aria-hidden="true" class="text-xl" /></span><h2 id="press-kit-title" class="m-0 text-lg font-semibold">Press kit</h2></div>
-            <p class="mb-5 mt-0 text-sm leading-6 text-[var(--gigsaw-muted)]">La vostra musica merita di farsi conoscere. Cura il profilo della band.</p>
-            <div class="mb-2 flex items-center justify-between text-sm"><span class="text-[var(--gigsaw-muted)]">Profilo completato</span><span class="font-bold text-[var(--ion-color-primary)]">{{ pressKitProgress() }}%</span></div>
-            <div role="progressbar" aria-label="Completamento press kit" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="pressKitProgress()" class="h-2 overflow-hidden rounded-full bg-[var(--gigsaw-border)]"><div class="h-full rounded-full bg-[var(--ion-color-primary)]" [style.width.%]="pressKitProgress()"></div></div>
-          </section>
+      <section aria-labelledby="journey-title">
+        <div class="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <p class="m-0 text-xs font-semibold uppercase tracking-widest text-[var(--gigsaw-muted)]">Il flusso della band</p>
+            <h2 id="journey-title" class="mb-0 mt-2 text-xl font-bold">Dalla sala prove al palco</h2>
+          </div>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-4">
+          <a [routerLink]="[bandBaseUrl, 'repertorio']" class="group rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 text-[var(--gigsaw-text)] no-underline hover:border-[var(--ion-color-primary)]">
+            <span class="mb-5 flex size-11 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] text-xl text-[var(--ion-color-primary)]"><ion-icon name="musical-notes-outline" /></span>
+            <p class="m-0 text-xs font-semibold uppercase tracking-wider text-[var(--gigsaw-muted)]">01 · Prepara</p>
+            <h3 class="mb-2 mt-2 text-lg font-bold">La tua musica</h3>
+            <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">{{ repertoireTotal() }} brani nel repertorio. Parti da quello che suonerete davvero.</p>
+          </a>
+
+          <a [routerLink]="[bandBaseUrl, 'prove']" class="group rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 text-[var(--gigsaw-text)] no-underline hover:border-[var(--ion-color-primary)]">
+            <span class="mb-5 flex size-11 items-center justify-center rounded-xl bg-[var(--gigsaw-input-background)] text-xl text-[var(--ion-color-secondary)]"><ion-icon name="mic-outline" /></span>
+            <p class="m-0 text-xs font-semibold uppercase tracking-wider text-[var(--gigsaw-muted)]">02 · Prova</p>
+            <h3 class="mb-2 mt-2 text-lg font-bold">Portala in sala</h3>
+            <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">Organizza le sessioni e tieni traccia di ciò che va sistemato.</p>
+          </a>
+
+          <a [routerLink]="[bandBaseUrl, 'scalette']" class="group rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 text-[var(--gigsaw-text)] no-underline hover:border-[var(--ion-color-primary)]">
+            <span class="mb-5 flex size-11 items-center justify-center rounded-xl bg-[var(--gigsaw-input-background)] text-xl text-[var(--ion-color-secondary)]"><ion-icon name="list-outline" /></span>
+            <p class="m-0 text-xs font-semibold uppercase tracking-wider text-[var(--gigsaw-muted)]">03 · Costruisci</p>
+            <h3 class="mb-2 mt-2 text-lg font-bold">Prepara il live</h3>
+            <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">Ordine, pause, medley, durata e Magic Set nello stesso flusso.</p>
+          </a>
+
+          <a [routerLink]="[bandBaseUrl, 'scalette']" class="group rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 text-[var(--gigsaw-text)] no-underline hover:border-[var(--ion-color-primary)]">
+            <span class="mb-5 flex size-11 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] text-xl text-[var(--ion-color-primary)]"><ion-icon name="ticket-outline" /></span>
+            <p class="m-0 text-xs font-semibold uppercase tracking-wider text-[var(--gigsaw-muted)]">04 · Suona</p>
+            <h3 class="mb-2 mt-2 text-lg font-bold">Vai sul palco</h3>
+            <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">La scaletta diventa lo strumento operativo del concerto.</p>
+          </a>
+        </div>
+      </section>
+
+      <div class="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,.8fr)]">
+        <section class="rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 sm:p-6" aria-labelledby="activity-title">
+          <div class="mb-5 flex items-center justify-between gap-3">
+            <h2 id="activity-title" class="m-0 text-lg font-semibold">Continua da dove eri rimasto</h2>
+          </div>
+          <div class="flex flex-col gap-2">
+            @for (activity of activities().slice(0, 4); track activity.id) {
+              <a [routerLink]="activity.link" class="flex items-center gap-3 rounded-xl p-3 text-[var(--gigsaw-text)] no-underline hover:bg-[var(--gigsaw-input-background)]">
+                <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[var(--gigsaw-input-background)] text-[var(--ion-color-secondary)]"><ion-icon [name]="activity.icon" /></span>
+                <div class="min-w-0 flex-1"><p class="m-0 text-sm">{{ activity.text }} <strong>· {{ activity.target }}</strong></p><p class="mb-0 mt-1 text-xs text-[var(--gigsaw-muted)]">{{ activity.time }}</p></div>
+                <ion-icon name="chevron-forward-outline" class="text-[var(--gigsaw-muted)]" />
+              </a>
+            } @empty {
+              <p class="m-0 py-4 text-sm text-[var(--gigsaw-muted)]">Le attività recenti compariranno qui.</p>
+            }
+          </div>
+        </section>
+
+        <aside class="rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 sm:p-6">
+          <p class="m-0 text-xs font-semibold uppercase tracking-widest text-[var(--gigsaw-muted)]">Band</p>
+          <h2 class="mb-2 mt-2 text-lg font-semibold">Pronta a farsi vedere?</h2>
+          <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">Il profilo band è completo al {{ pressKitProgress() }}%. I dati che inserisci qui alimentano press kit e materiali.</p>
+          <div class="my-5 h-2 overflow-hidden rounded-full bg-[var(--gigsaw-border)]"><div class="h-full rounded-full bg-[var(--ion-color-primary)]" [style.width.%]="pressKitProgress()"></div></div>
+          <a [routerLink]="[bandBaseUrl, 'impostazioni']" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[var(--ion-color-primary)] no-underline">Completa la band <ion-icon name="chevron-forward-outline" /></a>
         </aside>
       </div>
     }

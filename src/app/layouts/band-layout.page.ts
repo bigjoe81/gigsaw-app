@@ -9,28 +9,22 @@ import {
   IonMenu,
   IonMenuToggle,
   IonRouterOutlet,
-  IonSplitPane,
   isPlatform,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
-  colorPaletteOutline,
-  helpCircleOutline,
+  calendarOutline,
   homeOutline,
   listOutline,
-  micOutline,
   musicalNotesOutline,
-  pinOutline,
-  radioOutline,
-  calendarOutline,
-  settingsOutline,
+  peopleOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
 
-type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'impegni' | 'luoghi' | 'scalette' | 'locandine' | 'assistenza' | 'impostazioni';
+type FlowSection = 'home' | 'musica' | 'agenda' | 'live' | 'band';
 
 @Component({
   selector: 'app-band-layout',
@@ -48,7 +42,6 @@ type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'impegni
     IonMenu,
     IonMenuToggle,
     IonRouterOutlet,
-    IonSplitPane,
   ],
 })
 export class BandLayoutPage implements OnInit {
@@ -57,41 +50,19 @@ export class BandLayoutPage implements OnInit {
   private readonly bandContext = inject(BandContextService);
   private readonly bandService = inject(BandService);
   readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
-  readonly menuCollapsed = signal(false);
   readonly currentBand = signal<Band | null>(null);
   readonly currentBandLoading = signal(true);
 
-  readonly sections: Array<{
-    key: BandSection;
-    label: string;
-    icon: string;
-  }> = [
-    { key: 'panoramica', label: 'Panoramica', icon: 'home-outline' },
-    { key: 'repertorio', label: 'Repertorio', icon: 'musical-notes-outline' },
-    { key: 'prove', label: 'Prove', icon: 'mic-outline' },
-    { key: 'concerti', label: 'Concerti', icon: 'radio-outline' },
-    { key: 'impegni', label: 'Impegni', icon: 'calendar-outline' },
-    { key: 'luoghi', label: 'Luoghi', icon: 'pin-outline' },
-    { key: 'scalette', label: 'Scalette', icon: 'list-outline' },
-    { key: 'locandine', label: 'Modelli di locandina', icon: 'color-palette-outline' },
-    { key: 'assistenza', label: 'Feedback e assistenza', icon: 'help-circle-outline' },
-    { key: 'impostazioni', label: 'Impostazioni', icon: 'settings-outline' },
+  readonly sections: Array<{ key: FlowSection; label: string; icon: string; hint: string }> = [
+    { key: 'home', label: 'Home', icon: 'home-outline', hint: 'Cosa viene dopo' },
+    { key: 'musica', label: 'Musica', icon: 'musical-notes-outline', hint: 'Brani e repertorio' },
+    { key: 'agenda', label: 'Agenda', icon: 'calendar-outline', hint: 'Prove, live e impegni' },
+    { key: 'live', label: 'Live', icon: 'list-outline', hint: 'Scalette e palco' },
+    { key: 'band', label: 'Band', icon: 'people-outline', hint: 'Persone e profilo' },
   ];
 
   constructor() {
-    addIcons({
-      arrowBackOutline,
-      colorPaletteOutline,
-      helpCircleOutline,
-      homeOutline,
-      listOutline,
-      micOutline,
-      musicalNotesOutline,
-      pinOutline,
-      radioOutline,
-      calendarOutline,
-      settingsOutline,
-    });
+    addIcons({ arrowBackOutline, calendarOutline, homeOutline, listOutline, musicalNotesOutline, peopleOutline });
   }
 
   ngOnInit(): void {
@@ -121,18 +92,18 @@ export class BandLayoutPage implements OnInit {
       .toUpperCase();
   }
 
-  sectionHref(section: BandSection): string {
+  sectionHref(section: FlowSection): string {
     const bandId = this.route.snapshot.paramMap.get('bandId') ?? this.bandContext.getCurrentBand();
-    return bandId ? `/band/${bandId}/${section}` : '/band';
-  }
+    if (!bandId) return '/band';
 
-  handleLayoutClick(event: MouseEvent): void {
-    if (!window.matchMedia('(min-width: 600px)').matches) return;
-    const path = event.composedPath();
-    const menuButtonClicked = path.some((target) => target instanceof HTMLElement && target.tagName === 'ION-MENU-BUTTON');
-    if (!menuButtonClicked) return;
-    event.preventDefault();
-    event.stopPropagation();
-    this.menuCollapsed.update((collapsed) => !collapsed);
+    const routes: Record<FlowSection, string> = {
+      home: 'panoramica',
+      musica: 'repertorio',
+      agenda: 'impegni',
+      live: 'scalette',
+      band: 'impostazioni',
+    };
+
+    return `/band/${bandId}/${routes[section]}`;
   }
 }
