@@ -22,6 +22,7 @@ import {
   micOutline,
   musicalNotesOutline,
   peopleOutline,
+  radioOutline,
   ticketOutline,
 } from 'ionicons/icons';
 import { BandContextService } from '../../../core/services/band-context.service';
@@ -33,6 +34,8 @@ import { BandService } from '../../bands/services/band.service';
 import { GigService } from '../../gigs/services/gig.service';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalSessionService } from '../../rehearsal-sessions/services/rehearsal-session.service';
+
+import { GUIDE_GOALS } from '../../guide/guide-goals';
 
 interface DashboardEvent {
   id: number;
@@ -146,6 +149,8 @@ export class DashboardPage {
     }
     return null;
   });
+  readonly entryGoals = GUIDE_GOALS;
+
   readonly quickActions = [
     { icon: 'musical-notes-outline', label: 'Aggiungi brano', route: ['repertorio', 'nuovo'] },
     { icon: 'list-outline', label: 'Crea scaletta', route: ['scalette', 'nuova'] },
@@ -180,6 +185,7 @@ export class DashboardPage {
       micOutline,
       musicalNotesOutline,
       peopleOutline,
+      radioOutline,
       ticketOutline,
     });
   }

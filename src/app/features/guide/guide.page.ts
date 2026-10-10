@@ -4,8 +4,8 @@ import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { chevronForwardOutline, musicalNotesOutline, radioOutline, micOutline } from 'ionicons/icons';
 import { BandService } from '../bands/services/band.service';
+import { GUIDE_GOALS, GuideGoal, parseGuideGoal } from './guide-goals';
 
-type Goal = 'repertoire' | 'gig' | 'rehearsal';
 interface Choice { title: string; text: string; route: string; }
 
 @Component({
@@ -21,18 +21,14 @@ export class GuidePage {
   readonly bandId = Number(this.route.snapshot.paramMap.get('bandId'));
   readonly baseUrl = `/band/${this.bandId}`;
   readonly bandName = signal('La tua band');
-  readonly goal = signal<Goal | null>(null);
-  readonly goals: Array<{ key: Goal; title: string; text: string; icon: string }> = [
-    { key: 'repertoire', title: 'Costruire il repertorio', text: 'Aggiungiamo i brani che volete suonare.', icon: 'musical-notes-outline' },
-    { key: 'gig', title: 'Preparare un concerto', text: 'Partiamo dalla data o dalla scaletta.', icon: 'radio-outline' },
-    { key: 'rehearsal', title: 'Organizzare una prova', text: 'Decidiamo quando trovarci o cosa suonare.', icon: 'mic-outline' },
-  ];
-  readonly questions: Record<Goal, string> = {
+  readonly goal = signal<GuideGoal | null>(null);
+  readonly goals = GUIDE_GOALS;
+  readonly questions: Record<GuideGoal, string> = {
     repertoire: 'Avete già una lista di brani?',
     gig: 'A che punto siete con il concerto?',
     rehearsal: 'Da cosa vuoi partire per la prova?',
   };
-  readonly answers: Record<Goal, Choice[]> = {
+  readonly answers: Record<GuideGoal, Choice[]> = {
     repertoire: [
       { title: 'Sì, voglio importarla', text: 'Porta qui la vostra lista di brani.', route: 'repertorio/importa' },
       { title: 'Aggiungiamo un brano', text: 'Basta il primo per cominciare.', route: 'repertorio/nuovo' },
@@ -59,7 +55,7 @@ export class GuidePage {
   }
 
   ionViewWillEnter(): void {
-    this.goal.set(null);
+    this.goal.set(parseGuideGoal(this.route.snapshot.queryParamMap.get('obiettivo')));
   }
 
   open(choice: Choice): void {
