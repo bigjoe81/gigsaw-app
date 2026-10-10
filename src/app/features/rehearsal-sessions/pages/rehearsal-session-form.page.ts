@@ -1,3 +1,4 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -177,7 +178,7 @@ export class RehearsalSessionFormPage implements OnInit {
     ).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Prova salvata.', duration: 1800, color: 'success' })).present();
-        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/prove` : '/band');
+        void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'prova') ?? (this.bandId ? `/band/${this.bandId}/prove` : '/band'));
       },
       error: (error: unknown) => {
         if (error instanceof HttpErrorResponse && error.status === 422 && error.error?.errors?.rehearsal_room_id) {

@@ -6,10 +6,10 @@
     <ion-title>Brani</ion-title>
     <ion-buttons slot="end">
       @if (importEnabled) {
-        <ion-button fill="clear" [routerLink]="['importa']"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
+        <ion-button fill="clear" [routerLink]="['importa']" queryParamsHandling="preserve"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
       }
-      <ion-button fill="clear" color="secondary" [routerLink]="['gruppi-collegati']">Medley</ion-button>
-      <ion-button class="create-song" [routerLink]="['nuovo']" aria-label="Crea brano"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" /> Nuovo</ion-button>
+      <ion-button fill="clear" color="secondary" [routerLink]="['gruppi-collegati']" queryParamsHandling="preserve">Medley</ion-button>
+      <ion-button class="create-song" [routerLink]="['nuovo']" queryParamsHandling="preserve" aria-label="Crea brano"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" /> Nuovo</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -25,7 +25,7 @@
     <div class="state"><app-gigsaw-icon [icon]="icons.alert" aria-hidden="true" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
   } @else if (!songs().length) {
     <div class="state"><app-gigsaw-icon [icon]="icons.music" aria-hidden="true" /><ion-text class="font-bold">Nessun brano presente</ion-text>
-      <ion-button [routerLink]="['nuovo']">
+      <ion-button [routerLink]="['nuovo']" queryParamsHandling="preserve">
         <app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true"></app-gigsaw-icon>
         Crea brano
       </ion-button>
@@ -40,10 +40,10 @@
         <div class="library-actions">
           <span class="song-count">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>
           @if (importEnabled) {
-            <ion-button class="library-import" fill="outline" [routerLink]="['importa']"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
+            <ion-button class="library-import" fill="outline" [routerLink]="['importa']" queryParamsHandling="preserve"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
           }
-          <ion-button class="library-medleys" fill="outline" [routerLink]="['gruppi-collegati']">Gestisci medley</ion-button>
-          <ion-button class="library-add" [routerLink]="['nuovo']"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" />Aggiungi brano</ion-button>
+          <ion-button class="library-medleys" fill="outline" [routerLink]="['gruppi-collegati']" queryParamsHandling="preserve">Gestisci medley</ion-button>
+          <ion-button class="library-add" [routerLink]="['nuovo']" queryParamsHandling="preserve"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" />Aggiungi brano</ion-button>
         </div>
       </header>
 

@@ -173,7 +173,7 @@ export class SongListPage {
 
     const result = await modal.onDidDismiss<{ id: number }>();
     if (result.role === 'edit') {
-      await this.router.navigate([id, 'modifica'], { relativeTo: this.route });
+      await this.router.navigate([id, 'modifica'], { relativeTo: this.route, queryParamsHandling: 'preserve' });
     } else if (result.role === 'deleted') {
       this.load();
     }

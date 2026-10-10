@@ -1,3 +1,4 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
 import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular/standalone';
@@ -116,7 +117,11 @@ export class SongImportPage {
         }
         this.result.set(`${result.created_count} ${result.created_count === 1 ? 'brano importato' : 'brani importati'}.`);
         const bandId = this.bandContext.activeBandId;
-        setTimeout(() => void this.router.navigate(bandId ? ['/band', bandId, 'repertorio'] : ['/band']), 700);
+        const destination = guidedCompletionUrl(this.router.url, bandId ?? undefined, 'importazione');
+        setTimeout(() => {
+          if (destination) void this.router.navigateByUrl(destination);
+          else void this.router.navigate(bandId ? ['/band', bandId, 'repertorio'] : ['/band']);
+        }, 700);
       },
       error: (error) => this.error.set(this.apiError(error, 'Importazione non riuscita.')),
     });

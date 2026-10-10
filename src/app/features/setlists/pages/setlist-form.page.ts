@@ -1,3 +1,4 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -206,7 +207,10 @@ export class SetlistFormPage implements OnInit, OnDestroy {
         this.saveState = 'saved';
         this.savedToServer.set(true);
         await (await this.toast.create({ message: 'Scaletta salvata.', duration: 1800, color: 'success' })).present();
-        if (previousId === 'new') void this.router.navigate(['..', setlist.id], { relativeTo: this.route });
+        const bandId = Number(this.router.url.match(/\/band\/(\d+)/)?.[1]);
+        const destination = guidedCompletionUrl(this.router.url, bandId, 'scaletta');
+        if (destination) void this.router.navigateByUrl(destination);
+        else if (previousId === 'new') void this.router.navigate(['..', setlist.id], { relativeTo: this.route });
       },
       error: async (error: Error) => {
         this.saveState = 'dirty';

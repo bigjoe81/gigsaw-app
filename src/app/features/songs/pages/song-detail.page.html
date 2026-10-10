@@ -61,7 +61,7 @@
         <ion-card-content>
           <app-gigsaw-list>
             @for (linkedSong of linkedSongs(); track linkedSong.id) {
-              <app-gigsaw-list-item [interactive]="true" [routerLink]="['..', linkedSong.id]">
+              <app-gigsaw-list-item [interactive]="true" [routerLink]="['..', linkedSong.id]" queryParamsHandling="preserve">
                 <div class="list-col-grow">
                   <h2>{{ linkedSong.title }}</h2>
                   <p>{{ linkedSubtitle(linkedSong) }}</p>

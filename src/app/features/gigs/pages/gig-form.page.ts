@@ -1,3 +1,4 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -166,7 +167,7 @@ export class GigFormPage implements OnInit {
           return;
         }
         (await this.toast.create({ message: 'Concerto salvato.', duration: 1800, color: 'success' })).present();
-        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/concerti` : '/band');
+        void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'concerto') ?? (this.bandId ? `/band/${this.bandId}/concerti` : '/band'));
       },
       error: (error: unknown) => {
         this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));

@@ -15,7 +15,7 @@
         <h1>Calendario e impegni</h1>
         <p>Live, prove e tutti gli altri appuntamenti della band in un unico posto.</p>
       </div>
-      <ion-button [routerLink]="['nuovo']">
+      <ion-button [routerLink]="['nuovo']" queryParamsHandling="preserve">
         <ion-icon slot="start" name="add" />
         Nuovo impegno
       </ion-button>
@@ -144,7 +144,7 @@
             <h3>Note</h3>
             <p class="details-notes">{{ item.notes }}</p>
           }
-          <ion-button [routerLink]="item.link" expand="block">{{ item.source === 'commitment' ? 'Modifica impegno' : 'Apri dettagli' }}</ion-button>
+          <ion-button [routerLink]="item.link" queryParamsHandling="preserve" expand="block">{{ item.source === 'commitment' ? 'Modifica impegno' : 'Apri dettagli' }}</ion-button>
         </aside>
       }
       </div>

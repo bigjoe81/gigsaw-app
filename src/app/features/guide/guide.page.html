@@ -5,7 +5,7 @@
       <a routerLink="/band">Cambia band</a>
     </header>
     <section class="guide-card" aria-labelledby="guide-title">
-      <p class="eyebrow">{{ bandName() }} · Passo {{ goal() ? 2 : 1 }} di 2</p>
+      <p class="eyebrow">{{ bandName() }} · Il tuo percorso</p>
       @if (goal(); as selected) {
         <h1 id="guide-title" aria-live="polite">{{ questions[selected] }}</h1>
         <p class="lead">Scegli il prossimo passo. Puoi cambiare idea in qualsiasi momento.</p>
@@ -19,19 +19,27 @@
         </div>
         <button type="button" class="back" (click)="goal.set(null)">Indietro</button>
       } @else {
-        <h1 id="guide-title" aria-live="polite">Cosa vuoi fare con la tua band?</h1>
-        <p class="lead">Due domande, poi iniziamo. Da cosa vuoi partire oggi?</p>
+        <h1 id="guide-title" aria-live="polite">{{ completed() ? completionTitles[completed()!] : 'Cosa vuoi fare con la tua band?' }}</h1>
+        <p class="lead">Ti accompagniamo un passo alla volta. Da cosa vuoi partire?</p>
+        @if (nextStep(); as next) {
+          <button type="button" class="choice next-step" (click)="open(next)">
+            <span><small>Prossimo passo</small><strong>{{ next.title }}</strong><small>{{ next.text }}</small></span>
+            <ion-icon name="chevron-forward-outline" aria-hidden="true" />
+          </button>
+          <p class="lead">Oppure scegli un altro percorso:</p>
+        }
         <div class="choices">
           @for (item of goals; track item.key) {
-            <button type="button" class="choice" (click)="goal.set(item.key)">
+            <button type="button" class="choice" (click)="chooseGoal(item.key)">
               <ion-icon class="choice-icon" [name]="item.icon" aria-hidden="true" />
               <span><strong>{{ item.title }}</strong><small>{{ item.text }}</small></span>
               <ion-icon name="chevron-forward-outline" aria-hidden="true" />
             </button>
           }
         </div>
+        <a class="upcoming-link" [routerLink]="[baseUrl, 'impegni']" [queryParams]="{ guidato: 1 }">Ho già organizzato tutto: vediamo i prossimi impegni <ion-icon name="chevron-forward-outline" aria-hidden="true" /></a>
       }
     </section>
-    <footer><a [routerLink]="[baseUrl, 'panoramica']">Apri gestione completa</a></footer>
+    <footer><a [routerLink]="[baseUrl, 'panoramica']">Consulta il gestionale completo</a></footer>
   </main>
 </ion-content>

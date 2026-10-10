@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
     <ion-title>Riepilogo prova</ion-title>
-    <ion-buttons slot="end"><ion-button [routerLink]="['modifica']">Modifica</ion-button></ion-buttons>
+    <ion-buttons slot="end"><ion-button [routerLink]="['modifica']" queryParamsHandling="preserve">Modifica</ion-button></ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -53,10 +53,10 @@
           @if (current.songs?.length) {
             <ol>@for (song of current.songs; track song.id) { <li>{{ song.title }}</li> }</ol>
           } @else { <p class="muted">Apri la modifica per consultare i brani selezionati.</p> }
-          <ion-button fill="outline" size="small" [routerLink]="['modifica']">Gestisci brani</ion-button>
+          <ion-button fill="outline" size="small" [routerLink]="['modifica']" queryParamsHandling="preserve">Gestisci brani</ion-button>
         </section>
       }
-      <footer class="detail-footer"><span>Vuoi aggiornare i dettagli della prova?</span><div><ion-button fill="clear" color="danger" (click)="confirmDelete()">Elimina prova</ion-button><ion-button [routerLink]="['modifica']">Modifica prova</ion-button></div></footer>
+      <footer class="detail-footer"><span>Vuoi aggiornare i dettagli della prova?</span><div><ion-button fill="clear" color="danger" (click)="confirmDelete()">Elimina prova</ion-button><ion-button [routerLink]="['modifica']" queryParamsHandling="preserve">Modifica prova</ion-button></div></footer>
     }
   </main>
 </ion-content>

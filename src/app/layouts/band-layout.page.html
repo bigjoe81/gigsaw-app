@@ -1,5 +1,11 @@
+@if (guided()) {
+  <nav class="guided-navigation" aria-label="Navigazione del percorso guidato">
+    <a [routerLink]="sectionHref('inizia')">Torna al flusso guidato</a>
+    <a [routerLink]="sectionHref('panoramica')">Consulta il gestionale</a>
+  </nav>
+}
 <ion-split-pane contentId="band-content" [when]="guided() ? false : '(min-width: 600px)'" [class.menu-collapsed]="menuCollapsed()" (click)="handleLayoutClick($event)">
-  <ion-menu contentId="band-content" menuId="band-menu">
+  <ion-menu contentId="band-content" menuId="band-menu" [disabled]="guided()">
     <ion-content>
       <header class="menu-brand">
         <img src="assets/logo-hor.png" alt="GigSaw" class="menu-brand__logo" />

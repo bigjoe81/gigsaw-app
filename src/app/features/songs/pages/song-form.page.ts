@@ -1,3 +1,4 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
 
 import { Component, computed, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -275,7 +276,7 @@ export class SongFormPage implements OnInit, OnDestroy {
           this.prepareNextSong();
           return;
         }
-        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/repertorio` : '/band');
+        void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'repertorio') ?? (this.bandId ? `/band/${this.bandId}/repertorio` : '/band'));
       },
       error: (error: Error) => {
         this.error.set(error.message || 'Salvataggio non riuscito.');

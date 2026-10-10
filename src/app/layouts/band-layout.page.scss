@@ -238,3 +238,10 @@ ion-item.is-active ion-icon {
   bottom: 10px;
   left: 0;
 }
+
+:host { display: flex; flex-direction: column; }
+:host > ion-split-pane { position: relative; flex: 1; min-height: 0; height: auto; }
+.guided-navigation { display: flex; flex-shrink: 0; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; padding: max(4px, var(--ion-safe-area-top)) 16px 4px; border-bottom: 1px solid var(--gigsaw-border); background: var(--gigsaw-surface); }
+.guided-navigation a { display: inline-flex; min-height: 44px; align-items: center; color: var(--ion-color-primary); font-size: .85rem; text-decoration: none; }
+.guided-navigation a:last-child { color: var(--gigsaw-muted); }
+.guided-navigation a:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: 2px; }

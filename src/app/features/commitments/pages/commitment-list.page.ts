@@ -189,7 +189,7 @@ export class CommitmentListPage {
     if (window.matchMedia('(min-width: 1024px)').matches) {
       this.selectedEventKey.set(item.key);
     } else {
-      void this.router.navigateByUrl(item.link);
+      void this.router.navigate([item.link], { queryParamsHandling: 'preserve' });
     }
   }
 
