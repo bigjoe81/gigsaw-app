@@ -16,50 +16,53 @@ import {
   addOutline,
   calendarOutline,
   chevronForwardOutline,
-  documentTextOutline,
+  clipboardOutline,
   listOutline,
   locationOutline,
   micOutline,
   musicalNotesOutline,
   peopleOutline,
   ticketOutline,
+  timeOutline,
 } from 'ionicons/icons';
-import { BandContextService } from '../../../core/services/band-context.service';
 import { AuthService } from '../../../core/auth/auth.service';
-import { Gig, RehearsalSession, Song } from '../../../core/models/band-resources.models';
+import {
+  Commitment,
+  Gig,
+  RehearsalSession,
+  Setlist,
+  Song,
+} from '../../../core/models/band-resources.models';
+import { BandContextService } from '../../../core/services/band-context.service';
 import { Band } from '../../bands/models/band.models';
 import { BandService } from '../../bands/services/band.service';
+import { CommitmentService } from '../../commitments/services/commitment.service';
 import { GigService } from '../../gigs/services/gig.service';
-import { SongService } from '../../songs/services/song.service';
 import { RehearsalSessionService } from '../../rehearsal-sessions/services/rehearsal-session.service';
+import { SetlistService } from '../../setlists/services/setlist.service';
+import { SongService } from '../../songs/services/song.service';
 
-interface DashboardEvent {
-  id: number;
-  badgeTop: string;
-  badgeMain: string;
-  badgeBottom: string;
-  title: string;
-  meta: string;
-  location?: string;
-  tone: 'blue' | 'green' | 'amber';
-  action: string;
-  link: string;
-}
+type OperationalEventType = 'gig' | 'rehearsal' | 'commitment';
 
-interface DashboardActivity {
+interface OperationalEvent {
   id: string;
-  text: string;
-  target: string;
-  time: string;
+  type: OperationalEventType;
+  eyebrow: string;
+  title: string;
+  date: string;
+  time?: string;
+  location?: string;
   icon: string;
   link: string;
+  preparation: string[];
+  ready: boolean;
 }
 
 @Component({
   standalone: true,
   imports: [
     RouterLink,
-      IonButtons,
+    IonButtons,
     IonContent,
     IonHeader,
     IonIcon,
@@ -79,66 +82,58 @@ export class DashboardPage {
   private readonly songs = inject(SongService);
   private readonly gigs = inject(GigService);
   private readonly rehearsals = inject(RehearsalSessionService);
+  private readonly commitments = inject(CommitmentService);
+  private readonly setlists = inject(SetlistService);
 
   readonly loading = signal(true);
   readonly loadError = signal('');
-  readonly bandName = signal('La tua band');
-  readonly pressKitProgress = signal(0);
-  readonly events = signal<DashboardEvent[]>([]);
-  readonly activities = signal<DashboardActivity[]>([]);
   readonly band = signal<Band | null>(null);
+  readonly bandName = signal('La tua band');
+  readonly upcoming = signal<OperationalEvent[]>([]);
+  readonly repertoireTotal = signal(0);
+  readonly readySongs = signal(0);
+
+  readonly nextEvent = computed(() => this.upcoming()[0] ?? null);
+  readonly laterEvents = computed(() => this.upcoming().slice(1));
+  readonly pendingPreparationCount = computed(() =>
+    this.upcoming().reduce((total, event) => total + event.preparation.length, 0),
+  );
   readonly canInviteToSoloBand = computed(() => {
     const band = this.band();
     return band?.currentUserRole === 'ADMIN'
       && (band.membersCount ?? band.members?.length) === 1
       && Boolean(band.joinCode?.trim());
   });
-  readonly quickActions = [
-    { icon: 'musical-notes-outline', label: 'Aggiungi brano', route: ['repertorio', 'nuovo'] },
-    { icon: 'list-outline', label: 'Crea scaletta', route: ['scalette', 'nuova'] },
-    { icon: 'mic-outline', label: 'Registra prova', route: ['prove', 'nuova'] },
-    { icon: 'ticket-outline', label: 'Nuovo concerto', route: ['concerti', 'nuovo'] },
+
+  readonly libraryActions = [
+    { icon: 'musical-notes-outline', label: 'Repertorio', route: ['repertorio'] },
+    { icon: 'list-outline', label: 'Scalette', route: ['scalette'] },
+    { icon: 'mic-outline', label: 'Prove', route: ['prove'] },
+    { icon: 'ticket-outline', label: 'Concerti', route: ['concerti'] },
   ];
-
-  readonly repertoire = signal([
-    { label: 'Pronti', value: 0, color: 'blue' },
-    { label: 'Da provare', value: 0, color: 'green' },
-    { label: 'In lavorazione', value: 0, color: 'amber' },
-  ]);
-  readonly repertoireTotal = signal(0);
-
-  get repertoireChartBackground(): string {
-    const total = this.repertoireTotal();
-    if (!total) return 'conic-gradient(var(--gigsaw-border) 0 100%)';
-    const values = this.repertoire();
-    const readyEnd = (values[0].value / total) * 100;
-    const rehearsalEnd = readyEnd + (values[1].value / total) * 100;
-    return `conic-gradient(var(--ion-color-secondary) 0 ${readyEnd}%, var(--ion-color-success) ${readyEnd}% ${rehearsalEnd}%, var(--ion-color-warning) ${rehearsalEnd}% 100%)`;
-  }
 
   constructor() {
     addIcons({
       addOutline,
       calendarOutline,
       chevronForwardOutline,
-      documentTextOutline,
+      clipboardOutline,
       listOutline,
       locationOutline,
       micOutline,
       musicalNotesOutline,
       peopleOutline,
       ticketOutline,
+      timeOutline,
     });
   }
 
-  ionViewWillEnter(): void { this.loadDashboard(); }
+  ionViewWillEnter(): void {
+    this.loadDashboard();
+  }
 
   get userName(): string {
     return this.auth.currentUser()?.name || 'musicista';
-  }
-
-  get userInitial(): string {
-    return this.userName.charAt(0).toLocaleUpperCase('it');
   }
 
   get bandBaseUrl(): string {
@@ -163,101 +158,208 @@ export class DashboardPage {
       songs: this.songs.list().pipe(timeout(15_000), catchError(() => of([] as Song[]))),
       gigs: this.gigs.list().pipe(timeout(15_000), catchError(() => of([] as Gig[]))),
       rehearsals: this.rehearsals.list().pipe(timeout(15_000), catchError(() => of([] as RehearsalSession[]))),
+      commitments: this.commitments.list().pipe(timeout(15_000), catchError(() => of([] as Commitment[]))),
+      setlists: this.setlists.list().pipe(timeout(15_000), catchError(() => of([] as Setlist[]))),
     }).pipe(
       finalize(() => this.loading.set(false)),
-    ).subscribe(({ band, songs, gigs, rehearsals }) => {
-      if (!band) this.loadError.set('Alcuni dati della dashboard non sono disponibili.');
+    ).subscribe(({ band, songs, gigs, rehearsals, commitments, setlists }) => {
+      if (!band) this.loadError.set('Alcuni dati della band non sono disponibili.');
       this.populateDashboard(
         band,
         songs,
         gigs.filter((gig) => !gig.bandId || gig.bandId === bandId),
         rehearsals.filter((rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId),
+        commitments.filter((commitment) => !commitment.bandId || commitment.bandId === bandId),
+        setlists,
       );
     });
   }
 
-  private populateDashboard(band: Band | null, songs: Song[], gigs: Gig[], rehearsals: RehearsalSession[]): void {
+  private populateDashboard(
+    band: Band | null,
+    songs: Song[],
+    gigs: Gig[],
+    rehearsals: RehearsalSession[],
+    commitments: Commitment[],
+    setlists: Setlist[],
+  ): void {
     this.band.set(band);
-    const now = Date.now();
-    const upcomingGigs = gigs
-      .filter((gig) => this.dateValue(gig.date) >= now)
-      .sort((a, b) => this.dateValue(a.date) - this.dateValue(b.date));
-    const upcomingRehearsals = rehearsals
-      .filter((rehearsal) => rehearsal.status !== 'cancelled' && this.dateValue(rehearsal.date) >= this.startOfToday())
-      .sort((a, b) => this.dateValue(a.date) - this.dateValue(b.date));
-
     this.bandName.set(band?.name || 'La tua band');
-    this.pressKitProgress.set(this.calculatePressKitProgress(band));
-
-    const agenda = [
-      ...upcomingGigs.map((gig) => ({ date: this.dateValue(gig.date), event: this.toDashboardEvent(gig) })),
-      ...upcomingRehearsals.map((rehearsal) => ({ date: this.dateValue(rehearsal.date), event: this.toRehearsalEvent(rehearsal) })),
-    ].sort((a, b) => a.date - b.date).slice(0, 4);
-    this.events.set(agenda.map((item) => item.event));
-
-    const recent = [
-      ...songs.map(song => ({ id: `song:${song.id}`, target: song.title, kind: 'Brano', icon: 'musical-notes-outline', link: `${this.bandBaseUrl}/repertorio/${song.id}`, updatedAt: song.updatedAt, createdAt: song.createdAt })),
-      ...gigs.map(gig => ({ id: `gig:${gig.id}`, target: gig.title || 'Concerto', kind: 'Concerto', icon: 'ticket-outline', link: `${this.bandBaseUrl}/concerti/${gig.id}`, updatedAt: gig.updatedAt, createdAt: gig.createdAt })),
-      ...rehearsals.map(rehearsal => ({ id: `rehearsal:${rehearsal.id}`, target: rehearsal.title || 'Prova', kind: 'Prova', icon: 'mic-outline', link: `${this.bandBaseUrl}/prove/${rehearsal.id}`, updatedAt: rehearsal.updatedAt, createdAt: rehearsal.createdAt })),
-    ].filter(item => this.dateValue(item.updatedAt || item.createdAt) > 0)
-      .sort((a, b) => this.dateValue(b.updatedAt || b.createdAt) - this.dateValue(a.updatedAt || a.createdAt))
-      .slice(0, 5);
-    this.activities.set(recent.map(item => ({
-      id: item.id, target: item.target, icon: item.icon, link: item.link,
-      text: `${item.kind} ${item.updatedAt && item.updatedAt !== item.createdAt ? (item.kind === 'Prova' ? 'aggiornata' : 'aggiornato') : (item.kind === 'Prova' ? 'aggiunta' : 'aggiunto')}`,
-      time: this.dateTime(item.updatedAt || item.createdAt),
-    })));
-
-
-    const ready = songs.filter((song) => song.status?.toLocaleLowerCase() === 'active').length;
-    const archived = songs.filter((song) => song.status?.toLocaleLowerCase() === 'archived').length;
-    this.repertoire.set([
-      { label: 'Pronti', value: ready, color: 'blue' },
-      { label: 'Da provare', value: archived, color: 'green' },
-      { label: 'In lavorazione', value: Math.max(0, songs.length - ready - archived), color: 'amber' },
-    ]);
     this.repertoireTotal.set(songs.length);
+    this.readySongs.set(songs.filter((song) => song.status === 'active').length);
+
+    const now = Date.now();
+    const today = this.startOfToday();
+
+    const events: Array<{ timestamp: number; value: OperationalEvent }> = [
+      ...gigs
+        .filter((gig) => this.dateValue(gig.date) >= now)
+        .map((gig) => ({
+          timestamp: this.dateValue(gig.date),
+          value: this.toGigEvent(gig, setlists),
+        })),
+      ...rehearsals
+        .filter((rehearsal) => rehearsal.status !== 'cancelled' && this.dateValue(rehearsal.date) >= today)
+        .map((rehearsal) => ({
+          timestamp: this.eventTimestamp(rehearsal.date, rehearsal.startTime),
+          value: this.toRehearsalEvent(rehearsal, songs),
+        })),
+      ...commitments
+        .filter((commitment) => commitment.status !== 'cancelled' && this.dateValue(commitment.date) >= today)
+        .map((commitment) => ({
+          timestamp: this.eventTimestamp(commitment.date, commitment.startTime),
+          value: this.toCommitmentEvent(commitment),
+        })),
+    ];
+
+    this.upcoming.set(
+      events
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .slice(0, 8)
+        .map((item) => item.value),
+    );
   }
 
-  private toDashboardEvent(gig: Gig): DashboardEvent {
-    const date = new Date(gig.date);
+  private toGigEvent(gig: Gig, setlists: Setlist[]): OperationalEvent {
+    const setlist = setlists.find((item) => item.gigId === gig.id);
+    const preparation: string[] = [];
+
+    if (!setlist) {
+      preparation.push('Prepara la scaletta');
+    } else {
+      const songCount = this.setlistSongCount(setlist);
+      if (songCount > 0) preparation.push(`Controlla la scaletta · ${songCount} brani`);
+    }
+
+    if (!gig.venue?.name) preparation.push('Aggiungi il luogo del concerto');
+    if (gig.notes?.trim()) preparation.push('Rileggi le note del live');
+
     return {
-      id: gig.id,
-      badgeTop: date.toLocaleDateString('it-IT', { weekday: 'short' }).replace('.', '').toUpperCase(),
-      badgeMain: date.toLocaleDateString('it-IT', { day: '2-digit' }),
-      badgeBottom: date.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '').toUpperCase(),
+      id: `gig:${gig.id}`,
+      type: 'gig',
+      eyebrow: 'Concerto',
       title: gig.title || 'Concerto',
-      meta: this.dateTime(gig.date).toUpperCase(),
+      date: this.dateLabel(gig.date),
+      time: this.timeLabel(gig.date),
       location: gig.venue?.name ?? undefined,
-      tone: 'green', action: 'Dettagli', link: `${this.bandBaseUrl}/concerti/${gig.id}`,
+      icon: 'ticket-outline',
+      link: `${this.bandBaseUrl}/concerti/${gig.id}`,
+      preparation,
+      ready: preparation.length === 0,
     };
   }
 
-  private toRehearsalEvent(rehearsal: RehearsalSession): DashboardEvent {
-    const date = new Date(rehearsal.date);
+  private toRehearsalEvent(rehearsal: RehearsalSession, songs: Song[]): OperationalEvent {
+    const rehearsalSongs = rehearsal.songs?.length
+      ? rehearsal.songs
+      : songs.filter((song) => rehearsal.songIds?.includes(song.id));
+    const preparation: string[] = [];
+
+    if (rehearsalSongs.length > 0) {
+      const notReady = rehearsalSongs.filter((song) => song.status !== 'active').length;
+      preparation.push(`${rehearsalSongs.length} brani da ripassare${notReady ? ` · ${notReady} non pronti` : ''}`);
+    } else {
+      preparation.push('Scegli i brani da provare');
+    }
+
+    if (rehearsal.notes?.trim()) preparation.push('Rileggi le note della prova');
+
     return {
-      id: -rehearsal.id,
-      badgeTop: date.toLocaleDateString('it-IT', { weekday: 'short' }).replace('.', '').toUpperCase(),
-      badgeMain: date.toLocaleDateString('it-IT', { day: '2-digit' }),
-      badgeBottom: date.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '').toUpperCase(),
+      id: `rehearsal:${rehearsal.id}`,
+      type: 'rehearsal',
+      eyebrow: 'Prova',
       title: rehearsal.title || 'Prova',
-      meta: ['PROVA', rehearsal.startTime?.slice(0, 5)].filter(Boolean).join(' · '),
+      date: this.dateLabel(rehearsal.date),
+      time: rehearsal.startTime?.slice(0, 5) || undefined,
       location: rehearsal.rehearsalRoom?.name ?? undefined,
-      tone: 'blue',
-      action: 'Dettagli',
+      icon: 'mic-outline',
       link: `${this.bandBaseUrl}/prove/${rehearsal.id}`,
+      preparation,
+      ready: preparation.length === 0,
     };
   }
 
-  private calculatePressKitProgress(band: Band | null): number {
-    if (!band) return 0;
-    const fields = [band.logo, band.bioShort, band.bio, band.city, band.email, band.phone, band.website, band.genres?.length];
-    return Math.round((fields.filter(Boolean).length / fields.length) * 100);
+  private toCommitmentEvent(commitment: Commitment): OperationalEvent {
+    const preparation: string[] = [];
+    if (commitment.notes?.trim()) preparation.push('Rileggi le note dell’impegno');
+
+    return {
+      id: `commitment:${commitment.id}`,
+      type: 'commitment',
+      eyebrow: this.commitmentTypeLabel(commitment.type),
+      title: commitment.title || 'Impegno',
+      date: this.dateLabel(commitment.date),
+      time: commitment.startTime?.slice(0, 5) || undefined,
+      location: commitment.location ?? undefined,
+      icon: 'calendar-outline',
+      link: `${this.bandBaseUrl}/impegni/${commitment.id}/modifica`,
+      preparation,
+      ready: preparation.length === 0,
+    };
   }
 
-  private dateTime(value: string | undefined): string {
-    if (!value) return '';
-    return new Date(value).toLocaleString('it-IT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  private setlistSongCount(setlist: Setlist): number {
+    if (setlist.songEntries?.length) return setlist.songEntries.length;
+    if (setlist.songs?.length) return setlist.songs.length;
+    if (setlist.songIds?.length) return setlist.songIds.length;
+    if (setlist.items?.length) {
+      return setlist.items.reduce(
+        (total, section) => total + section.items.filter((item) => item.type === 'song').length,
+        0,
+      );
+    }
+    return 0;
+  }
+
+  private commitmentTypeLabel(type: Commitment['type']): string {
+    const labels: Record<Commitment['type'], string> = {
+      photo_shoot: 'Servizio fotografico',
+      recording: 'Registrazione',
+      interview: 'Intervista',
+      meeting: 'Riunione',
+      travel: 'Trasferta',
+      promo: 'Promozione',
+      other: 'Impegno',
+    };
+    return labels[type];
+  }
+
+  private dateLabel(value: string): string {
+    const date = new Date(value);
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    if (this.isSameDay(date, today)) return 'Oggi';
+    if (this.isSameDay(date, tomorrow)) return 'Domani';
+
+    return date.toLocaleDateString('it-IT', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    });
+  }
+
+  private timeLabel(value: string): string | undefined {
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) return undefined;
+    if (date.getHours() === 0 && date.getMinutes() === 0) return undefined;
+    return date.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  private eventTimestamp(dateValue: string, timeValue?: string | null): number {
+    if (!timeValue) return this.dateValue(dateValue);
+    const date = new Date(dateValue);
+    const [hours, minutes] = timeValue.split(':').map(Number);
+    if (!Number.isFinite(date.getTime())) return 0;
+    date.setHours(hours || 0, minutes || 0, 0, 0);
+    return date.getTime();
+  }
+
+  private isSameDay(a: Date, b: Date): boolean {
+    return a.getFullYear() === b.getFullYear()
+      && a.getMonth() === b.getMonth()
+      && a.getDate() === b.getDate();
   }
 
   private startOfToday(): number {
@@ -269,12 +371,5 @@ export class DashboardPage {
   private dateValue(value: string | undefined): number {
     const timestamp = value ? new Date(value).getTime() : 0;
     return Number.isFinite(timestamp) ? timestamp : 0;
-  }
-
-  private isCurrentMonth(value: string | undefined): boolean {
-    if (!value) return false;
-    const date = new Date(value);
-    const now = new Date();
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
   }
 }
