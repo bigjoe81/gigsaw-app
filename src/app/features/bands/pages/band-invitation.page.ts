@@ -98,7 +98,7 @@ export class BandInvitationPage implements OnInit {
         if (this.onboarding.shouldShow()) {
           void this.router.navigate(['/inizia'], { queryParams: { bandId: band.id, percorso: 'invito' } });
         } else {
-          void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
+          void this.router.navigateByUrl(`/band/${band.id}/inizia`);
         }
       },
       error: (error: { status?: number; error?: { errors?: Record<string, string[]>; message?: string } }) => {

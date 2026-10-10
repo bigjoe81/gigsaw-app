@@ -1,4 +1,6 @@
 import { Component, EnvironmentInjector, OnInit, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import {
   IonContent,
@@ -30,7 +32,7 @@ import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
 
-type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'impegni' | 'luoghi' | 'scalette' | 'locandine' | 'assistenza' | 'impostazioni';
+type BandSection = 'inizia' | 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'impegni' | 'luoghi' | 'scalette' | 'locandine' | 'assistenza' | 'impostazioni';
 
 @Component({
   selector: 'app-band-layout',
@@ -57,6 +59,7 @@ export class BandLayoutPage implements OnInit {
   private readonly bandContext = inject(BandContextService);
   private readonly bandService = inject(BandService);
   readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
+  readonly guided = toSignal(this.route.queryParamMap.pipe(map((params) => params.get('guidato') === '1')), { initialValue: false });
   readonly menuCollapsed = signal(false);
   readonly currentBand = signal<Band | null>(null);
   readonly currentBandLoading = signal(true);
@@ -66,6 +69,7 @@ export class BandLayoutPage implements OnInit {
     label: string;
     icon: string;
   }> = [
+    { key: 'inizia', label: 'Cosa vuoi fare?', icon: 'home-outline' },
     { key: 'panoramica', label: 'Panoramica', icon: 'home-outline' },
     { key: 'repertorio', label: 'Repertorio', icon: 'musical-notes-outline' },
     { key: 'prove', label: 'Prove', icon: 'mic-outline' },

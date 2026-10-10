@@ -4,7 +4,7 @@ import {
   AlertController,
   IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonSpinner,
   IonIcon,
-  IonModal, IonTitle, IonToolbar,
+  IonModal, IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -20,7 +20,6 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import {
-  GigsawButtonComponent,
   GigsawMessageComponent,
 } from '../../../shared/ui/gigsaw';
 import { Band } from '../models/band.models';
@@ -31,14 +30,12 @@ import { BandCreatePage } from './band-create.page';
   standalone: true,
   imports: [IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonSpinner,
     BandCreatePage,
-    GigsawButtonComponent,
     GigsawMessageComponent,
     IonContent,
     IonHeader,
     IonIcon,
     IonModal,
     IonToolbar,
-    IonTitle,
   ],
   templateUrl: './band-selection.page.html',
   styleUrls: ['./band-selection.page.scss'],
@@ -92,12 +89,12 @@ export class BandSelectionPage {
 
   selectBand(band: Band): void {
     this.bandContext.setCurrentBand(band.id);
-    void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
+    void this.router.navigateByUrl(`/band/${band.id}/inizia`);
   }
 
   formatGenres(band: Band): string {
     const genres = band.genres?.map((genre) => genre.name).filter(Boolean) ?? [];
-    return genres.length ? genres.join(' · ') : 'Apri workspace';
+    return genres.length ? genres.join(' · ') : 'Scegli cosa fare oggi';
   }
 
   async promptJoinBand(): Promise<void> {
@@ -140,7 +137,7 @@ export class BandSelectionPage {
       next: (band) => {
         this.loading.set(false);
         this.bandContext.setCurrentBand(band.id);
-        void this.router.navigateByUrl(`/band/${band.id}/repertorio`);
+        void this.router.navigateByUrl(`/band/${band.id}/inizia`);
       },
       error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
         this.loading.set(false);
@@ -165,7 +162,7 @@ export class BandSelectionPage {
     this.createModalOpen.set(false);
     await this.createBandModal()?.dismiss(band, 'created');
     this.bandContext.setCurrentBand(band.id);
-    await this.router.navigateByUrl(`/band/${band.id}/impostazioni`);
+    await this.router.navigateByUrl(`/band/${band.id}/inizia`);
   }
 
   logout(): void {

@@ -12,12 +12,22 @@
       <div class="min-w-0">
         <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ion-color-primary)]">Panoramica band</p>
         <h1 class="mb-2 mt-3 text-3xl font-bold tracking-tight [overflow-wrap:anywhere] sm:text-4xl">Ciao {{ userName }}.</h1>
-        <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">Tutto pronto per la prossima sessione? La tua band parte da qui.</p>
+        <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">GigSaw guarda cosa avete già costruito e ti propone il prossimo passo utile.</p>
       </div>
-      <a class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--ion-color-primary)] px-4 py-3 text-sm font-bold text-[var(--ion-color-primary-contrast)] no-underline transition hover:brightness-110" [routerLink]="[bandBaseUrl, 'concerti', 'nuovo']">
-        <ion-icon name="add-outline" aria-hidden="true" class="text-xl" /> Nuovo concerto
-      </a>
     </header>
+
+    @if (!loading() && flowGuide(); as guide) {
+      <section class="rounded-2xl border border-solid border-[color-mix(in_srgb,var(--ion-color-primary)_35%,var(--gigsaw-border))] bg-[color-mix(in_srgb,var(--ion-color-primary)_6%,var(--gigsaw-surface))] p-5 sm:p-6" aria-labelledby="band-flow-title">
+        <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ion-color-primary)]">{{ guide.eyebrow }}</p>
+        <h2 id="band-flow-title" class="mb-2 mt-3 text-2xl font-semibold tracking-tight">{{ guide.title }}</h2>
+        <p class="m-0 max-w-3xl text-sm leading-6 text-[var(--gigsaw-muted)]">{{ guide.text }}</p>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a class="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--ion-color-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--ion-color-primary-contrast)] no-underline" [routerLink]="guide.primaryRoute">{{ guide.primaryCta }}</a>
+          <a class="inline-flex min-h-11 items-center justify-center rounded-lg border border-solid border-[var(--gigsaw-border)] px-4 py-2.5 text-sm font-semibold text-[var(--gigsaw-text)] no-underline hover:bg-[var(--gigsaw-input-background)]" [routerLink]="guide.secondaryRoute">{{ guide.secondaryCta }}</a>
+          <a class="inline-flex min-h-11 items-center justify-center px-2 py-2.5 text-sm font-semibold text-[var(--gigsaw-muted)] no-underline hover:text-[var(--ion-color-primary)]" [routerLink]="['/inizia']" [queryParams]="calibrationQueryParams()">Cambia percorso</a>
+        </div>
+      </section>
+    }
 
     <section aria-labelledby="quick-actions-title">
       <h2 id="quick-actions-title" class="mb-3 mt-0 text-xs font-semibold uppercase tracking-widest text-[var(--gigsaw-muted)]">Azioni rapide</h2>
@@ -51,7 +61,7 @@
           <section class="overflow-hidden rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)]" aria-labelledby="events-title">
             <div class="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
               <div><h2 id="events-title" class="m-0 text-lg font-semibold">Prossimi impegni</h2><p class="mb-0 mt-1 text-sm text-[var(--gigsaw-muted)]">Il ritmo delle prossime giornate.</p></div>
-              <a [routerLink]="[bandBaseUrl, 'concerti']" class="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[var(--ion-color-primary)] no-underline hover:underline">Calendario <ion-icon name="chevron-forward-outline" aria-hidden="true" /></a>
+              <a [routerLink]="[bandBaseUrl, 'impegni']" class="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[var(--ion-color-primary)] no-underline hover:underline">Calendario <ion-icon name="chevron-forward-outline" aria-hidden="true" /></a>
             </div>
             @for (event of events(); track event.id) {
               <a [routerLink]="event.link" class="flex items-center gap-4 border-0 border-t border-solid border-[var(--gigsaw-border)] p-5 text-[var(--gigsaw-text)] no-underline transition-colors hover:bg-[var(--gigsaw-input-background)] sm:px-6">

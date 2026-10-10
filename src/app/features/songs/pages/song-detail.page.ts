@@ -14,8 +14,6 @@ import {
   IonFooter,
   IonHeader,
   IonIcon,
-  IonItem,
-  IonLabel,
   IonNote,
   IonSkeletonText,
   IonTitle,
@@ -33,7 +31,7 @@ import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui
 @Component({
   standalone: true,
   host: { class: 'ion-page' },
-  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFooter, IonHeader, IonIcon, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './song-detail.page.html',
   styleUrls: ['./song-detail.page.scss'],
 })

@@ -10,8 +10,6 @@ import {
   IonCardContent,
   IonContent,
   IonHeader,
-  IonItem,
-  IonLabel,
   IonNote,
   IonSkeletonText,
   IonTitle,
@@ -24,7 +22,7 @@ import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui
 
 @Component({
   standalone: true,
-  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './setlist-template-detail.page.html',
 })
 export class SetlistTemplateDetailPage implements OnInit {

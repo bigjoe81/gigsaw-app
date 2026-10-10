@@ -254,7 +254,7 @@ export class BandCreatePage implements OnDestroy {
           this.created.emit(band);
           return;
         }
-        void this.router.navigateByUrl(`/band/${band.id}/impostazioni`);
+        void this.router.navigateByUrl(`/band/${band.id}/inizia`);
       },
       error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
         this.error = error.error?.errors?.['name']?.[0]

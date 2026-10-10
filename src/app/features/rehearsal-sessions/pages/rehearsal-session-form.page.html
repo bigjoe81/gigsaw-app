@@ -1,78 +1,72 @@
 <app-form-page-header
-    eyebrow="Calendario"
-    [title]="editing() ? 'Modifica prova' : 'Nuova prova'"
-    subtitle="Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro."
-    backHref="../"
-    [sections]="rehearsalSections"
-    [activeSection]="step()"
-    ariaLabel="Avanzamento creazione prova"
-    (sectionChange)="onHeaderSectionChange($event)"
-  />
+  eyebrow="Prova"
+  [title]="editing() ? 'Modifica prova' : 'Nuova prova'"
+  subtitle="Prima fissiamo l’appuntamento, poi scegliamo cosa provare."
+  backHref="../"
+  [sections]="rehearsalSections"
+  [activeSection]="step()"
+  ariaLabel="Avanzamento creazione prova"
+  (sectionChange)="onHeaderSectionChange($event)"
+/>
 <ion-content class="rehearsal-form-content">
   <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
-    <section class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
+    <section class="mx-auto w-full max-w-4xl min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
       @if (loading()) {
         <div class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[#9aabc1]"><app-gigsaw-loading /> Caricamento…</div>
       } @else {
         <form class="gigsaw-outlined-form w-full pb-28" [formGroup]="form" (ngSubmit)="save()">
           @if (step() === 1) {
             <header class="mb-[34px]">
-              <span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Dettagli appuntamento</span>
-              <h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">{{ editing() ? 'Modifica la prova' : 'Crea una nuova prova' }}</h1>
-              <p class="m-0 text-[#9aabc1]">Inserisci le informazioni essenziali per tutta la band.</p>
+              <span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Appuntamento</span>
+              <h1 class="my-2.5 text-[clamp(1.8rem,4vw,2.4rem)] text-[#e5edf7]">Quando vi trovate?</h1>
+              <p class="m-0 max-w-xl text-[#9aabc1]">Data, orario e sala. Gli altri dettagli sono facoltativi.</p>
             </header>
 
             <section class="grid gap-5">
-              <label>
-                <span>Titolo (facoltativo)</span>
-                <ion-input formControlName="title" aria-label="Titolo"  placeholder="Es. Prova generale" />
-              </label>
               <label>
                 <span>Data *</span>
                 <ion-input formControlName="date" aria-label="Data" type="date" />
               </label>
 
               <div class="grid grid-cols-2 gap-5 max-[800px]:grid-cols-1">
-                <label>
-                  <span>Ora inizio</span>
-                  <ion-input formControlName="startTime" aria-label="Ora inizio" type="time" />
-                </label>
-                <label>
-                  <span>Ora fine</span>
-                  <ion-input formControlName="endTime" aria-label="Ora fine" type="time" />
-                </label>
+                <label><span>Inizio</span><ion-input formControlName="startTime" aria-label="Ora inizio" type="time" /></label>
+                <label><span>Fine</span><ion-input formControlName="endTime" aria-label="Ora fine" type="time" /></label>
               </div>
 
               <label>
-                <span>Stato</span>
-                <ion-select formControlName="status" interface="popover" aria-label="Stato" placeholder="Seleziona uno stato">
-                  <ion-select-option value="scheduled">Da confermare</ion-select-option>
-                  <ion-select-option value="confirmed">Confermata</ion-select-option>
-                  <ion-select-option value="completed">Completata</ion-select-option>
-                  <ion-select-option value="cancelled">Annullata</ion-select-option>
+                <span>Dove? *</span>
+                <ion-select formControlName="rehearsalRoomId" interface="popover" aria-label="Sala prove" placeholder="Scegli la sala">
+                  <ion-select-option value="" disabled>Scegli la sala</ion-select-option>
+                  @for (room of rehearsalRooms(); track room.id) { <ion-select-option [value]="room.id.toString()">{{ roomLabel(room) }}</ion-select-option> }
                 </ion-select>
+                @if (!rehearsalRooms().length) { <app-gigsaw-message messageClass="field-help">Prima aggiungi una sala prove.</app-gigsaw-message> }
               </label>
 
-              <label>
-                <span>Sala prove *</span>
-                <ion-select formControlName="rehearsalRoomId" interface="popover" aria-label="Sala prove" placeholder="Seleziona una sala">
-                  <ion-select-option value="" disabled>Seleziona una sala</ion-select-option>
-                  @for (room of rehearsalRooms(); track room.id) {
-                    <ion-select-option [value]="room.id.toString()">{{ roomLabel(room) }}</ion-select-option>
-                  }
-                </ion-select>
-                @if (!rehearsalRooms().length) { <app-gigsaw-message messageClass="field-help">Nessuna sala prova disponibile.</app-gigsaw-message> }
-              </label>
+              <details class="rounded-2xl border border-[#2b3b52] p-4">
+                <summary class="cursor-pointer font-extrabold text-[#e5edf7]">Aggiungi dettagli <span class="font-normal text-[#9aabc1]">(opzionale)</span></summary>
+                <div class="mt-5 grid gap-5">
+                  <label><span>Titolo</span><ion-input formControlName="title" aria-label="Titolo" placeholder="Es. Prova generale" /></label>
+                  <label>
+                    <span>Stato</span>
+                    <ion-select formControlName="status" interface="popover" aria-label="Stato">
+                      <ion-select-option value="scheduled">Da confermare</ion-select-option>
+                      <ion-select-option value="confirmed">Confermata</ion-select-option>
+                      <ion-select-option value="completed">Completata</ion-select-option>
+                      <ion-select-option value="cancelled">Annullata</ion-select-option>
+                    </ion-select>
+                  </label>
+                  <label><span>Nota per la band</span><ion-textarea formControlName="notes" aria-label="Note" [rows]="3" [autoGrow]="true" placeholder="Es. Portare ampli, arrivare 15 minuti prima…" /></label>
+                </div>
+              </details>
 
-              <label>
-                <span>Note</span>
-                <ion-textarea formControlName="notes" aria-label="Note" [rows]="4" [autoGrow]="true" placeholder="Aggiungi una nota per la band" />
-              </label>
               @if (error()) { <app-gigsaw-message tone="error" messageClass="form-error">{{ error() }}</app-gigsaw-message> }
             </section>
-
           } @else {
-            <header class="mb-[34px]"><span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Repertorio</span><h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">Brani da provare</h1><p class="m-0 text-[#9aabc1]">Seleziona i brani da preparare durante questa prova.</p></header>
+            <header class="mb-[34px]">
+              <span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Obiettivo della prova</span>
+              <h1 class="my-2.5 text-[clamp(1.8rem,4vw,2.4rem)] text-[#e5edf7]">Cosa volete provare?</h1>
+              <p class="m-0 max-w-xl text-[#9aabc1]">Scegli solo i brani utili per questo incontro. Puoi anche lasciare la prova senza lista e decidere dopo.</p>
+            </header>
             <section class="grid gap-2.5">
               @if (songs().length) {
                 @for (song of songs(); track song.id) {
@@ -92,15 +86,16 @@
       }
     </section>
   </main>
+
   @if (!loading()) {
     <div slot="fixed" class="floating-action-toolbar" role="toolbar" aria-label="Azioni del form">
       <div class="flex justify-between gap-2.5 p-2.5">
         @if (step() === 1) {
           <app-gigsaw-button tone="outline" buttonClass="font-bold max-[800px]:flex-1" [routerLink]="['../']">Annulla</app-gigsaw-button>
-          <app-gigsaw-button tone="primary" buttonClass="font-bold max-[800px]:flex-1" (click)="continueToSongs()" [disabled]="!rehearsalRooms().length">Continua</app-gigsaw-button>
+          <app-gigsaw-button tone="primary" buttonClass="font-bold max-[800px]:flex-1" (click)="continueToSongs()" [disabled]="!rehearsalRooms().length">Scegli i brani</app-gigsaw-button>
         } @else {
           <app-gigsaw-button tone="outline" buttonClass="font-bold max-[800px]:flex-1" (click)="step.set(1)">Indietro</app-gigsaw-button>
-          <app-gigsaw-button tone="primary" buttonClass="font-bold max-[800px]:flex-1" [loading]="saving()" (click)="save()">{{ editing() ? 'Salva modifiche' : 'Crea prova' }}</app-gigsaw-button>
+          <app-gigsaw-button tone="primary" buttonClass="font-bold max-[800px]:flex-1" [loading]="saving()" (click)="save()">{{ editing() ? 'Salva' : 'Crea prova' }}</app-gigsaw-button>
         }
       </div>
     </div>

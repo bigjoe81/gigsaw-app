@@ -1,3 +1,81 @@
 <ion-app>
   <ion-router-outlet [animated]="pageTransitionsEnabled"></ion-router-outlet>
+
+  <ion-modal class="changelog-modal" [isOpen]="changelogOpen()" (didDismiss)="closeChangelog()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Novità in GigSaw</ion-title>
+          <ion-buttons slot="end">
+            <ion-button type="button" (click)="closeChangelog()">Chiudi</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <main class="mx-auto flex w-full max-w-2xl flex-col gap-6 p-5 pb-10 text-[var(--gigsaw-text)] sm:p-7">
+          @if (currentRelease(); as release) {
+            <header>
+              <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ion-color-primary)]">{{ release.label }} · {{ release.date }}</p>
+              <h1 class="mb-2 mt-3 text-2xl font-bold tracking-tight sm:text-3xl">{{ release.title }}</h1>
+              <p class="m-0 text-sm leading-6 text-[var(--gigsaw-muted)]">{{ release.summary }}</p>
+            </header>
+
+            <section class="flex flex-col gap-3" aria-label="Novità della versione">
+              @for (highlight of release.highlights; track highlight) {
+                <article class="rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-4">
+                  <p class="m-0 text-sm leading-6">{{ highlight }}</p>
+                </article>
+              }
+            </section>
+          }
+
+          @if (previousReleases().length) {
+            <section class="flex flex-col gap-3 border-t border-solid border-[var(--gigsaw-border)] pt-5" aria-label="Version history">
+              <div>
+                <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gigsaw-muted)]">Version history</p>
+                <h2 class="mb-0 mt-2 text-xl">Versioni precedenti</h2>
+              </div>
+
+              @for (release of previousReleases(); track release.id) {
+                <article class="rounded-xl border border-solid border-[var(--gigsaw-border)] p-4">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class="m-0 text-sm font-semibold">{{ release.title }}</p>
+                      <p class="mb-0 mt-1 text-xs text-[var(--gigsaw-muted)]">{{ release.summary }}</p>
+                    </div>
+                    <span class="shrink-0 text-xs text-[var(--gigsaw-muted)]">{{ release.date }}</span>
+                  </div>
+                </article>
+              }
+
+              @if (archivedReleases().length) {
+                <ion-button fill="clear" type="button" (click)="toggleFullHistory()">
+                  {{ fullHistoryOpen() ? 'Nascondi la storia completa' : 'Mostra tutta la storia' }}
+                </ion-button>
+
+                @if (fullHistoryOpen()) {
+                  <div class="flex flex-col gap-3">
+                    @for (release of archivedReleases(); track release.id) {
+                      <article class="rounded-xl border border-solid border-[var(--gigsaw-border)] p-4">
+                        <div class="flex items-start justify-between gap-4">
+                          <div>
+                            <p class="m-0 text-sm font-semibold">{{ release.title }}</p>
+                            <p class="mb-0 mt-1 text-xs text-[var(--gigsaw-muted)]">{{ release.summary }}</p>
+                          </div>
+                          <span class="shrink-0 text-xs text-[var(--gigsaw-muted)]">{{ release.date }}</span>
+                        </div>
+                      </article>
+                    }
+                  </div>
+                }
+              }
+            </section>
+          }
+
+          <ion-button expand="block" type="button" class="mt-1" (click)="closeChangelog()">Ho capito, iniziamo</ion-button>
+        </main>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-app>

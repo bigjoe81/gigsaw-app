@@ -26,6 +26,7 @@ import {
 } from 'ionicons/icons';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { BandFlow, BandFlowService } from '../../../core/services/band-flow.service';
 import { Gig, RehearsalSession, Song } from '../../../core/models/band-resources.models';
 import { Band } from '../../bands/models/band.models';
 import { BandService } from '../../bands/services/band.service';
@@ -55,11 +56,21 @@ interface DashboardActivity {
   link: string;
 }
 
+interface DashboardFlowGuide {
+  eyebrow: string;
+  title: string;
+  text: string;
+  primaryCta: string;
+  primaryRoute: string[];
+  secondaryCta: string;
+  secondaryRoute: string[];
+}
+
 @Component({
   standalone: true,
   imports: [
     RouterLink,
-      IonButtons,
+    IonButtons,
     IonContent,
     IonHeader,
     IonIcon,
@@ -79,6 +90,7 @@ export class DashboardPage {
   private readonly songs = inject(SongService);
   private readonly gigs = inject(GigService);
   private readonly rehearsals = inject(RehearsalSessionService);
+  private readonly bandFlow = inject(BandFlowService);
 
   readonly loading = signal(true);
   readonly loadError = signal('');
@@ -87,11 +99,52 @@ export class DashboardPage {
   readonly events = signal<DashboardEvent[]>([]);
   readonly activities = signal<DashboardActivity[]>([]);
   readonly band = signal<Band | null>(null);
+  readonly flow = signal<BandFlow | null>(null);
+  readonly calibrationQueryParams = computed(() => ({
+    bandId: this.bandContext.getCurrentBand(),
+    percorso: 1,
+  }));
   readonly canInviteToSoloBand = computed(() => {
     const band = this.band();
     return band?.currentUserRole === 'ADMIN'
       && (band.membersCount ?? band.members?.length) === 1
       && Boolean(band.joinCode?.trim());
+  });
+  readonly flowGuide = computed<DashboardFlowGuide | null>(() => {
+    if (this.flow() === 'building') {
+      return {
+        eyebrow: 'Costruzione repertorio',
+        title: 'Partite dai brani, non dal calendario.',
+        text: 'Aggiungete i pezzi che volete preparare oppure importate una lista che avete già. Prove e scalette arriveranno come conseguenza del repertorio.',
+        primaryCta: this.repertoireTotal() ? 'Continua il repertorio' : 'Aggiungi il primo brano',
+        primaryRoute: this.repertoireTotal() ? [this.bandBaseUrl, 'repertorio'] : [this.bandBaseUrl, 'repertorio', 'nuovo'],
+        secondaryCta: 'Importa una lista',
+        secondaryRoute: [this.bandBaseUrl, 'repertorio', 'importa'],
+      };
+    }
+    if (this.flow() === 'importing') {
+      return {
+        eyebrow: 'Repertorio esistente',
+        title: 'Prima portiamo dentro quello che sapete già suonare.',
+        text: 'Organizza il repertorio esistente, completa i dati mancanti e poi usa prove e scalette senza ricostruire la band da zero.',
+        primaryCta: 'Importa una lista',
+        primaryRoute: [this.bandBaseUrl, 'repertorio', 'importa'],
+        secondaryCta: 'Apri il repertorio',
+        secondaryRoute: [this.bandBaseUrl, 'repertorio'],
+      };
+    }
+    if (this.flow() === 'active') {
+      return {
+        eyebrow: 'Band attiva',
+        title: 'Concentrati su quello che state preparando adesso.',
+        text: 'Prossime prove, live e scalette vengono prima; il repertorio resta la base comune che collega tutto il lavoro della band.',
+        primaryCta: this.events().length ? 'Vedi i prossimi impegni' : 'Aggiungi il prossimo impegno',
+        primaryRoute: this.events().length ? [this.bandBaseUrl, 'impegni'] : [this.bandBaseUrl, 'prove', 'nuova'],
+        secondaryCta: 'Apri il repertorio',
+        secondaryRoute: [this.bandBaseUrl, 'repertorio'],
+      };
+    }
+    return null;
   });
   readonly quickActions = [
     { icon: 'musical-notes-outline', label: 'Aggiungi brano', route: ['repertorio', 'nuovo'] },
@@ -167,12 +220,14 @@ export class DashboardPage {
       finalize(() => this.loading.set(false)),
     ).subscribe(({ band, songs, gigs, rehearsals }) => {
       if (!band) this.loadError.set('Alcuni dati della dashboard non sono disponibili.');
-      this.populateDashboard(
-        band,
-        songs,
-        gigs.filter((gig) => !gig.bandId || gig.bandId === bandId),
-        rehearsals.filter((rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId),
-      );
+      const bandGigs = gigs.filter((gig) => !gig.bandId || gig.bandId === bandId);
+      const bandRehearsals = rehearsals.filter((rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId);
+      this.flow.set(this.bandFlow.infer({
+        songs: songs.length,
+        gigs: bandGigs.length,
+        rehearsals: bandRehearsals.length,
+      }, this.bandFlow.get(bandId)));
+      this.populateDashboard(band, songs, bandGigs, bandRehearsals);
     });
   }
 
@@ -207,7 +262,6 @@ export class DashboardPage {
       text: `${item.kind} ${item.updatedAt && item.updatedAt !== item.createdAt ? (item.kind === 'Prova' ? 'aggiornata' : 'aggiornato') : (item.kind === 'Prova' ? 'aggiunta' : 'aggiunto')}`,
       time: this.dateTime(item.updatedAt || item.createdAt),
     })));
-
 
     const ready = songs.filter((song) => song.status?.toLocaleLowerCase() === 'active').length;
     const archived = songs.filter((song) => song.status?.toLocaleLowerCase() === 'archived').length;

@@ -1,7 +1,7 @@
 import { Component, Injector, OnInit, signal } from '@angular/core';
 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AlertController, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
+import { AlertController, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonNote, IonSkeletonText, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { finalize, timeout } from 'rxjs';
 import { ResourceConfig } from '../models/resource-form.models';
 import { BandResource } from '../../core/models/band-resources.models';
@@ -9,7 +9,7 @@ import { GigsawListComponent, GigsawListItemComponent } from './gigsaw';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonNote, IonSkeletonText, IonTitle, IonToolbar],
   templateUrl: './resource-detail.page.html',
   styleUrls: ['./resource-detail.page.scss'],
 })
