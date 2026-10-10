@@ -1,4 +1,4 @@
-<ion-split-pane contentId="band-content" when="(min-width: 600px)" [class.menu-collapsed]="menuCollapsed()" (click)="handleLayoutClick($event)">
+<ion-split-pane contentId="band-content" [when]="guided() ? false : '(min-width: 600px)'" [class.menu-collapsed]="menuCollapsed()" (click)="handleLayoutClick($event)">
   <ion-menu contentId="band-content" menuId="band-menu">
     <ion-content>
       <header class="menu-brand">

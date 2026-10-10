@@ -149,7 +149,7 @@
 
           @if (ticket.screenshot_urls?.length) {
             <div class="ticket-screenshots">
-              @for (url of ticket.screenshot_urls ?? []; track url) {
+              @for (url of ticket.screenshot_urls; track url) {
                 <a [href]="url" target="_blank" rel="noopener noreferrer">
                   <img [src]="url" alt="Screenshot allegato al ticket" loading="lazy" />
                 </a>

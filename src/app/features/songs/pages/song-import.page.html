@@ -15,18 +15,24 @@
   @if (error()) { <ion-note color="danger">{{ error() }}</ion-note> }
   @if (result()) { <ion-note color="success">{{ result() }}</ion-note> }
   @if (review(); as data) {
+    <ion-item>
+      <ion-checkbox [checked]="normalizeTitles()" [disabled]="importing()" (ionChange)="normalizeTitles.set($event.detail.checked)">
+        Normalizza i titoli tutti maiuscoli
+      </ion-checkbox>
+    </ion-item>
+    <p><ion-note>ALBACHIARA → Albachiara. I titoli già scritti con maiuscole e minuscole restano come sono. L’anteprima mostra ciò che verrà salvato.</ion-note></p>
     <ion-list>
       <ion-list-header><ion-label>Anteprima · {{ data.summary.total_rows }} righe, {{ data.summary.ready_rows }} pronte</ion-label></ion-list-header>
-      @if (data.ai_quota) { <ion-item><ion-label>AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti</ion-label></ion-item> }
+      @if (data.ai_quota) { <ion-item><ion-label>@if (data.ai_quota.limit === null) { Sviluppo locale: importazioni AI senza limite } @else { AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti }</ion-label></ion-item> }
       @for (row of data.rows; track row.row_number) {
         <ion-item>
-          <ion-checkbox slot="start" [checked]="isSelected(row)" [disabled]="row.duplicate_existing || !row.ready" (ionChange)="toggle(row)" />
+          <ion-checkbox slot="start" [checked]="isSelected(row)" [disabled]="importing() || row.duplicate_existing || !row.ready" (ionChange)="toggle(row)" />
           <ion-label>
-            <h2>{{ row.input.title || 'Titolo mancante' }}</h2>
+            <h2>{{ displayTitle(row) || 'Titolo mancante' }}</h2>
             <p>{{ row.input.performed_by || 'Artista non indicato' }} · {{ row.input.key || '—' }} · {{ row.input.bpm || '—' }} BPM</p>
             @if (row.duplicate_existing) { <ion-note color="warning">Già presente</ion-note> }
             @if (!row.ready && !row.duplicate_existing) { <ion-note color="danger">Da verificare</ion-note> }
-            @if (row.errors?.length) { <p><ion-note color="danger">{{ row.errors.join(' · ') }}</ion-note></p> }
+            @if (row.errors.length) { <p><ion-note color="danger">{{ row.errors.join(' · ') }}</ion-note></p> }
           </ion-label>
         </ion-item>
       }

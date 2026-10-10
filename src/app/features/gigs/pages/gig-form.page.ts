@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   IonButton,
   IonContent,
-  IonIcon,
   IonInput,
   IonNote,
   IonSpinner,
@@ -47,7 +46,6 @@ import { GigPostersComponent, GigPosterValues } from '../../poster-templates/com
     FormPageHeaderComponent,
     IonButton,
     IonContent,
-    IonIcon,
     IonInput,
     IonNote,
     IonSpinner,

@@ -1,4 +1,3 @@
-import { JsonPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +19,7 @@ interface PosterLayoutSuggestion {
 
 @Component({
   standalone: true,
-  imports: [JsonPipe, FormsModule, PosterCanvasComponent, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonSelect, IonSelectOption, IonCheckbox, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonTitle, IonToolbar],
+  imports: [FormsModule, PosterCanvasComponent, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonSelect, IonSelectOption, IonCheckbox, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonTitle, IonToolbar],
   templateUrl: './poster-template-editor.page.html',
   styleUrl: './poster-template-editor.page.scss',
 })
@@ -80,11 +79,12 @@ export class PosterTemplateEditorPage {
   }
 
   async generateVariantsFromMaster(): Promise<void> {
-    if (!this.document.backgroundDataUrl || this.generatingVariants) return;
+    const backgroundDataUrl = this.document.backgroundDataUrl;
+    if (!backgroundDataUrl || this.generatingVariants) return;
     this.generatingVariants = true;
     try {
       const master = structuredClone(this.document);
-      const focus = master.backgroundFocus ?? await this.detectFocusPoint(master.backgroundDataUrl);
+      const focus = master.backgroundFocus ?? await this.detectFocusPoint(backgroundDataUrl);
       master.backgroundFocus = focus;
       this.document = master;
       this.drafts.set(master.format.id, structuredClone(master));
@@ -92,7 +92,7 @@ export class PosterTemplateEditorPage {
       for (const format of this.formats) {
         if (format.id === master.format.id) continue;
         const derived = this.deriveDocument(master, format);
-        const suggestion = await this.analyzeBackgroundForFormat(master.backgroundDataUrl, format, focus);
+        const suggestion = await this.analyzeBackgroundForFormat(backgroundDataUrl, format, focus);
         this.drafts.set(format.id, this.applySuggestionToDocument(derived, suggestion, false));
       }
 
@@ -105,12 +105,13 @@ export class PosterTemplateEditorPage {
   }
 
   async suggestLayout(addDefaults = false): Promise<void> {
-    if (!this.document.backgroundDataUrl || this.analyzingLayout) return;
+    const backgroundDataUrl = this.document.backgroundDataUrl;
+    if (!backgroundDataUrl || this.analyzingLayout) return;
     this.analyzingLayout = true;
     try {
-      const focus = this.document.backgroundFocus ?? await this.detectFocusPoint(this.document.backgroundDataUrl);
+      const focus = this.document.backgroundFocus ?? await this.detectFocusPoint(backgroundDataUrl);
       this.document = { ...this.document, backgroundFocus: focus };
-      const suggestion = await this.analyzeBackgroundForFormat(this.document.backgroundDataUrl, this.document.format, focus);
+      const suggestion = await this.analyzeBackgroundForFormat(backgroundDataUrl, this.document.format, focus);
       if (addDefaults && !this.document.fields.length) this.addDefaultFields();
       if (this.document.fields.length) this.document = this.applySuggestionToDocument(this.document, suggestion);
       this.layoutHint = `Testi suggeriti ${this.zoneLabel(suggestion.zone)} · crop sul punto focale ${Math.round(focus.xRatio * 100)}% / ${Math.round(focus.yRatio * 100)}%`;

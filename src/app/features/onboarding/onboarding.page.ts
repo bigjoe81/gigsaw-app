@@ -259,7 +259,7 @@ export class OnboardingPage implements OnInit {
       return;
     }
     this.onboarding.complete();
-    void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/panoramica` : '/band');
+    void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/inizia` : '/band');
   }
 
   finish(buildingStart: BuildingStart = 'manual'): void {
@@ -273,19 +273,19 @@ export class OnboardingPage implements OnInit {
     const flow = this.selectedFlow() ?? this.bandFlow.get(this.currentBand.id);
 
     if (flow === 'building') {
-      void this.router.navigateByUrl(buildingStart === 'import' ? `${base}/repertorio/importa` : `${base}/repertorio/nuovo`);
+      void this.router.navigateByUrl(buildingStart === 'import' ? `${base}/repertorio/importa?guidato=1` : `${base}/repertorio/nuovo?guidato=1`);
       return;
     }
     if (flow === 'importing') {
-      void this.router.navigateByUrl(`${base}/repertorio/importa`);
+      void this.router.navigateByUrl(`${base}/repertorio/importa?guidato=1`);
       return;
     }
 
-    void this.router.navigateByUrl(`${base}/panoramica`);
+    void this.router.navigateByUrl(`${base}/inizia`);
   }
 
   private returnToBand(): void {
-    void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/panoramica` : '/band');
+    void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/inizia` : '/band');
   }
 
   private saveInstruments(): void {

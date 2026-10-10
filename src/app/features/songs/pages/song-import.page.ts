@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack, cloudUploadOutline, documentTextOutline } from 'ionicons/icons';
@@ -11,7 +11,7 @@ type ImportKind = 'document' | 'spreadsheet';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSpinner, IonTitle, IonToolbar],
+  imports: [IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSpinner, IonTitle, IonToolbar],
   templateUrl: './song-import.page.html',
 })
 export class SongImportPage {
@@ -21,6 +21,7 @@ export class SongImportPage {
   readonly importing = signal(false);
   readonly error = signal('');
   readonly result = signal('');
+  readonly normalizeTitles = signal(false);
   readonly importKind = signal<ImportKind>('document');
 
   constructor(
@@ -37,6 +38,7 @@ export class SongImportPage {
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
+    if (this.analyzing() || this.importing()) return;
     const file = input.files?.[0];
     input.value = '';
     if (!file) return;
@@ -87,7 +89,7 @@ export class SongImportPage {
 
   confirm(): void {
     const review = this.review();
-    if (!review || !this.selectedRows().size) return;
+    if (!review || !this.selectedRows().size || this.importing()) return;
 
     this.error.set('');
     this.importing.set(true);
@@ -95,6 +97,7 @@ export class SongImportPage {
       row_number: row.row_number,
       selected: this.selectedRows().has(row.row_number),
       use_metadata: false,
+      input: { title: this.displayTitle(row) },
     }));
     const request = this.importKind() === 'document'
       ? this.songsApi.confirmDocumentImport(review.import_token, rows)
@@ -102,12 +105,27 @@ export class SongImportPage {
 
     request.pipe(finalize(() => this.importing.set(false))).subscribe({
       next: (result) => {
+        if (!result.created_count) {
+          this.error.set('Nessun brano salvato. Verifica i dati delle righe selezionate prima di riprovare.');
+          return;
+        }
+        if (result.skipped_count) {
+          this.result.set(`${result.created_count} brani importati, ${result.skipped_count} non salvati. Torna al repertorio per controllare i brani importati.`);
+          this.selectedRows.set(new Set());
+          return;
+        }
         this.result.set(`${result.created_count} ${result.created_count === 1 ? 'brano importato' : 'brani importati'}.`);
         const bandId = this.bandContext.activeBandId;
         setTimeout(() => void this.router.navigate(bandId ? ['/band', bandId, 'repertorio'] : ['/band']), 700);
       },
       error: (error) => this.error.set(this.apiError(error, 'Importazione non riuscita.')),
     });
+  }
+
+  displayTitle(row: SongImportRow): string {
+    const title = row.input.title || '';
+    if (!this.normalizeTitles() || title !== title.toLocaleUpperCase('it') || title === title.toLocaleLowerCase('it')) return title;
+    return title.toLocaleLowerCase('it').replace(/\p{L}/u, (letter) => letter.toLocaleUpperCase('it'));
   }
 
   private apiError(error: any, fallback: string): string {
