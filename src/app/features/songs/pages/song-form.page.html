@@ -1,4 +1,5 @@
 <app-form-page-header
+    class="refined-form-header"
     eyebrow="Repertorio"
     [title]="editing ? 'Modifica brano' : 'Nuovo brano'"
     subtitle="Parti dai metadati disponibili oppure inserisci tutto manualmente."
@@ -10,7 +11,7 @@
   />
 <ion-content class="song-content [--background:var(--gigsaw-background)] [--navy:#e5edf7] [--blue:var(--ion-color-brand-blue)] [--muted:#9aabc1] [&_ion-button]:[--border-radius:9px] [&_ion-button]:font-bold" [scrollY]="true" [forceOverscroll]="true">
   <main class="min-h-full w-full">
-    <section class="w-full min-w-0 px-[clamp(20px,5vw,72px)] pb-[max(96px,calc(48px_+_env(safe-area-inset-bottom,0px)))] pt-12 max-[800px]:px-5 max-[800px]:pb-[max(88px,calc(40px_+_env(safe-area-inset-bottom,0px)))] max-[800px]:pt-8">
+    <section class="form-container w-full min-w-0 px-[clamp(20px,5vw,72px)] pb-[max(96px,calc(48px_+_env(safe-area-inset-bottom,0px)))] pt-12 max-[800px]:px-5 max-[800px]:pb-[max(88px,calc(40px_+_env(safe-area-inset-bottom,0px)))] max-[800px]:pt-8">
       @if (loading()) {
         <div class="flex min-h-[350px] items-center justify-center gap-3 text-[var(--gigsaw-muted)]">
           <ion-spinner name="crescent"/>
@@ -19,17 +20,17 @@
       } @else {
         <form class="gigsaw-outlined-form" [formGroup]="form" (ngSubmit)="save()">
           @if (step() === 1) {
-            <section class="form-step magic-step" [formGroup]="magicForm">
-              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-extrabold uppercase tracking-[.11em] text-[var(--blue)]"><ion-icon name="sparkles-outline"/> Magic Song</span>
+            <section class="form-step form-group magic-step" [formGroup]="magicForm">
+              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-semibold tracking-[.02em] text-[var(--blue)]"><ion-icon name="sparkles-outline"/> Magic Song</span>
                 <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Cerca, scegli, completa.</h2>
                 <p class="m-0 text-[var(--muted)]">Inserisci titolo e artista: cercheremo la registrazione sui servizi musicali disponibili.</p>
               </header>
               <div class="field-grid grid-cols-2 max-[800px]:grid-cols-1 [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750]"><label><span>Titolo *</span>
-                <ion-input formControlName="title" placeholder="Es. Come Together"/>
+                <ion-input aria-label="Titolo" formControlName="title" placeholder="Es. Come Together"/>
               </label><label><span>Artista</span>
-                <ion-input formControlName="artist" placeholder="Es. The Beatles"/>
+                <ion-input aria-label="Artista" formControlName="artist" placeholder="Es. The Beatles"/>
               </label></div>
-              <div class="mt-7 flex items-center justify-between gap-3.5">
+              <div class="search-actions mt-7 flex items-center justify-between gap-3.5">
                 <ion-button type="button" (click)="searchMagicSong()" [disabled]="magicLoading()">@if (magicLoading()) {
                   <ion-spinner name="crescent"/>
                 } @else {
@@ -42,9 +43,9 @@
             }
               @if (metadataResults().length) {
                 <div class="mt-7 grid gap-2.5">@for (result of metadataResults(); track result.externalId) {
-                  <button type="button" class="grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ion-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)"
+                  <button type="button" class="metadata-result grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ion-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)"
                           [disabled]="detailLoading()">@if (result.artworkUrl) {
-                    <img [src]="result.artworkUrl" alt=""/>
+                    <img class="result-artwork" [src]="result.artworkUrl" alt=""/>
                   } @else {
                     <span class="grid h-[62px] w-[62px] place-items-center rounded-[9px] bg-[#172b49] text-[var(--blue)] max-[640px]:h-14 max-[640px]:w-14"><ion-icon name="musical-notes-outline"/></span>
                   }<span
@@ -55,8 +56,8 @@
               }</section>
           }
           @if (step() === 2) {
-            <section class="form-step">
-              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-extrabold uppercase tracking-[.11em] text-[var(--blue)]">Dettagli musicali</span>
+            <section class="form-step form-group">
+              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-semibold tracking-[.02em] text-[var(--blue)]">Dettagli musicali</span>
                 <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Controlla le informazioni.</h2>
                 <p class="m-0 text-[var(--muted)]">I dati trovati restano sempre modificabili.</p></header>
               <div class="mb-3.5 flex flex-wrap items-center gap-3">
@@ -76,9 +77,9 @@
               @if (metadataResults().length) {
                 <div class="mt-7 mb-[18px] grid gap-2.5">
                   @for (result of metadataResults(); track result.externalId) {
-                    <button type="button" class="grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ion-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
+                    <button type="button" class="metadata-result grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ion-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
                       @if (result.artworkUrl) {
-                        <img [src]="result.artworkUrl" alt=""/>
+                        <img class="result-artwork" [src]="result.artworkUrl" alt=""/>
                       } @else {
                         <span class="grid h-[62px] w-[62px] place-items-center rounded-[9px] bg-[#172b49] text-[var(--blue)] max-[640px]:h-14 max-[640px]:w-14"><ion-icon name="musical-notes-outline"/></span>
                       }
@@ -93,22 +94,22 @@
                 </div>
               }
               <div class="field-grid grid-cols-2 max-[800px]:grid-cols-1 [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750] [&_.wide]:col-span-full max-[800px]:[&_.wide]:col-span-auto"><label class="wide"><span>Titolo *</span>
-                <ion-input formControlName="title"/>
+                <ion-input aria-label="Titolo" formControlName="title"/>
               </label><label><span>Eseguito da</span>
-                <ion-input formControlName="performedBy"/>
+                <ion-input aria-label="Eseguito da" formControlName="performedBy"/>
               </label><label><span>Album</span>
-                <ion-input formControlName="album"/>
+                <ion-input aria-label="Album" formControlName="album"/>
               </label><label><span>Musica di</span>
-                <ion-input formControlName="musicBy"/>
+                <ion-input aria-label="Musica di" formControlName="musicBy"/>
               </label><label><span>Testo di</span>
-                <ion-input formControlName="lyricsBy"/>
+                <ion-input aria-label="Testo di" formControlName="lyricsBy"/>
               </label><div class="wide grid grid-cols-2 items-start gap-5 max-[800px]:grid-cols-1">
                 <div class="grid gap-5">
-                  <label><span>Tonalità *</span><ion-input formControlName="key"/></label>
-                  <label><span>Durata * (mm:ss)</span><ion-input formControlName="duration" inputmode="numeric" placeholder="3:45"/></label>
+                  <label><span>Tonalità *</span><ion-input aria-label="Tonalità" formControlName="key"/></label>
+                  <label><span>Durata * (mm:ss)</span><ion-input aria-label="Durata in minuti e secondi" formControlName="duration" inputmode="numeric" placeholder="3:45"/></label>
                 </div>
                 <div class="grid gap-2 rounded-[14px] border border-[var(--gigsaw-border)] bg-[color-mix(in_srgb,var(--gigsaw-input-background)_58%,transparent)] p-3.5">
-                  <label><span>BPM</span><ion-input type="number" formControlName="bpm"/></label>
+                  <label><span>BPM</span><ion-input type="number" aria-label="BPM" formControlName="bpm"/></label>
                   <ion-button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl border border-[#2b3b52] bg-[#0f172a] px-3 py-[9px] text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] focus-visible:border-[var(--ion-color-brand-blue)] focus-visible:outline-none active:scale-[.985] [--background:transparent] [--color:#e5edf7] [--box-shadow:none] [--border-radius:12px]" (click)="tapTempo()" [style.border-color]="tapCount() > 0 ? 'var(--ion-color-brand-blue)' : null" [style.background]="tapCount() > 0 ? '#132442' : null"
                           aria-label="Batti il tempo per calcolare i BPM">
                     <span class="grid h-11 w-11 flex-none place-items-center rounded-full [background:var(--ion-gradient-brand)] text-[.72rem] font-black tracking-[.08em] text-white" aria-hidden="true">TAP</span>
@@ -134,25 +135,25 @@
               </div></div>@if (error()) {
               <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ error() }}</p>
             }
-              <footer class="mt-7 flex items-center justify-between gap-3.5">
+              <footer class="step-actions mt-7 flex items-center justify-between gap-3.5">
                 <ion-button type="button" fill="clear" (click)="goToStep(1)" [disabled]="editing">Indietro</ion-button>
                 <ion-button type="button" (click)="goToStep(3)">Continua</ion-button>
               </footer>
             </section>
           }
           @if (step() === 3) {
-            <section class="form-step">
-              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-extrabold uppercase tracking-[.11em] text-[var(--blue)]">Organizzazione</span>
+            <section class="form-step form-group">
+              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-semibold tracking-[.02em] text-[var(--blue)]">Organizzazione</span>
                 <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Preparalo per la band.</h2>
                 <p class="m-0 text-[var(--muted)]">Imposta stato, medley e indicazioni utili per prove e scalette.</p></header>
               <div class="field-grid [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750]"><label><span>Stato</span>
-                <ion-select formControlName="status" interface="popover">
+                <ion-select aria-label="Stato" formControlName="status" interface="popover">
                   <ion-select-option value="draft">Bozza</ion-select-option>
                   <ion-select-option value="active">Attivo</ion-select-option>
                   <ion-select-option value="archived">Archiviato</ion-select-option>
                 </ion-select>
               </label><label><span>Medley</span>
-                <ion-select [value]="creatingLinkGroup ? '__new__' : form.controls.linkGroup.value"
+                <ion-select aria-label="Medley" [value]="creatingLinkGroup ? '__new__' : form.controls.linkGroup.value"
                             interface="popover" placeholder="Nessun medley" (ionChange)="onLinkGroupChoice($event)">
                   <ion-select-option value="">Nessun medley
                   </ion-select-option>@for (group of existingLinkGroups; track group) {
@@ -162,20 +163,20 @@
                 </ion-select>
               </label>@if (creatingLinkGroup) {
                 <label><span>Nome del nuovo medley</span>
-                  <ion-input formControlName="linkGroup" placeholder="Es. Medley anni '80"/>
+                  <ion-input aria-label="Nome medley" formControlName="linkGroup" placeholder="Es. Medley anni '80"/>
                 </label>
               }<label><span>Tag</span>
-                <ion-input formControlName="tagsText" placeholder="Dance, acustico, anni 90"/>
+                <ion-input aria-label="Tag" formControlName="tagsText" placeholder="Dance, acustico, anni 90"/>
               </label>@if (existingTags.length) {
                 <div class="flex flex-wrap items-center gap-2"><small class="w-full text-[var(--muted)]">Tag usati</small>@for (tag of existingTags; track tag) {
                   <ion-chip (click)="applyTag(tag)" [outline]="!hasTag(tag)">{{ tag }}</ion-chip>
                 }</div>
               }<label><span>Note</span>
-                <ion-textarea formControlName="notes" [autoGrow]="true" [rows]="4"/>
+                <ion-textarea aria-label="Note" formControlName="notes" [autoGrow]="true" [rows]="4"/>
               </label></div>@if (error()) {
               <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ error() }}</p>
             }
-              <footer class="mt-7 flex items-center justify-between gap-3.5">
+              <footer class="step-actions mt-7 flex items-center justify-between gap-3.5">
                 <ion-button type="button" fill="clear" (click)="goToStep(2)">Indietro</ion-button>
                 @if (!editing) {
                   <ion-button type="button" fill="outline" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</ion-button>

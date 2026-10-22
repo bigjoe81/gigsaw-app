@@ -1,4 +1,5 @@
 <app-form-page-header
+    class="refined-form-header"
     eyebrow="Calendario"
     [title]="editing() ? 'Modifica prova' : 'Nuova prova'"
     subtitle="Organizza tempi, dettagli e brani per arrivare preparati al prossimo incontro."
@@ -10,26 +11,18 @@
   />
 <ion-content class="bg-[var(--gigsaw-background)]">
   <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
-    <section class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
+    <section class="form-container w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
       @if (loading()) {
         <div class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[#9aabc1]"><app-gigsaw-loading /> Caricamento…</div>
       } @else {
         <form class="w-full pb-28" [formGroup]="form" (ngSubmit)="save()">
           @if (step() === 1) {
-            <header class="mb-[34px]">
-              <span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Dettagli appuntamento</span>
-              <h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">{{ editing() ? 'Modifica la prova' : 'Crea una nuova prova' }}</h1>
-              <p class="m-0 text-[#9aabc1]">Inserisci le informazioni essenziali per tutta la band.</p>
-            </header>
-
-            <section class="grid gap-5">
+            <section class="form-group grid gap-5">
+              <div><h2>La prossima prova</h2><p class="section-caption">Quando e dove ritrovarsi.</p></div>
               <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
-                <span>Titolo (facoltativo)</span>
-                <ion-input formControlName="title" aria-label="Titolo"  placeholder="Es. Prova generale" />
-              </label>
-              <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
-                <span>Data *</span>
+                <span>Data <span class="required-mark">*</span></span>
                 <ion-input formControlName="date" aria-label="Data" type="date" />
+                @if (form.controls.date.touched && form.controls.date.invalid) { <small class="field-error" role="alert">Scegli la data della prova.</small> }
               </label>
 
               <div class="grid grid-cols-2 gap-5 max-[800px]:grid-cols-1">
@@ -54,7 +47,7 @@
               </label>
 
               <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
-                <span>Sala prove *</span>
+                <span>Sala prove <span class="required-mark">*</span></span>
                 <ion-select formControlName="rehearsalRoomId" interface="popover" aria-label="Sala prove" placeholder="Seleziona una sala">
                   <ion-select-option value="" disabled>Seleziona una sala</ion-select-option>
                   @for (room of rehearsalRooms(); track room.id) {
@@ -64,16 +57,23 @@
                 @if (!rehearsalRooms().length) { <app-gigsaw-message messageClass="text-[#9aabc1] font-semibold">Nessuna sala prova disponibile.</app-gigsaw-message> }
               </label>
 
-              <label>
-                <span>Note</span>
+              </section>
+              <section class="form-group grid gap-5">
+              <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
+                <span>Titolo</span>
+                <ion-input formControlName="title" aria-label="Titolo"  placeholder="Es. Prove del 5 novembre 2026" />
+                <small class="font-normal text-[var(--gigsaw-muted)]">{{ editing() ? 'Puoi personalizzare il titolo della prova.' : 'Si aggiorna con la data finché non lo personalizzi.' }}</small>
+              </label>
+              <label class="grid gap-2">
+                <span>Note per la band</span>
                 <ion-textarea formControlName="notes" aria-label="Note" [rows]="4" [autoGrow]="true" placeholder="Aggiungi una nota per la band" />
               </label>
               @if (error()) { <app-gigsaw-message tone="error" messageClass="mt-4 block rounded-[10px] border border-[rgba(var(--ion-color-danger-rgb),.4)] bg-[rgba(var(--ion-color-danger-rgb),.08)] px-3.5 py-3">{{ error() }}</app-gigsaw-message> }
             </section>
 
           } @else {
-            <header class="mb-[34px]"><span class="text-xs font-extrabold uppercase tracking-[.11em] text-[var(--ion-color-primary)]">Repertorio</span><h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">Brani da provare</h1><p class="m-0 text-[#9aabc1]">Seleziona i brani da preparare durante questa prova.</p></header>
-            <section class="grid gap-2.5">
+            <header class="mb-[34px]"><span class="text-xs font-semibold tracking-[.02em] text-[var(--ion-color-primary)]">Repertorio</span><h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">Brani da provare</h1><p class="m-0 text-[#9aabc1]">Seleziona i brani da preparare durante questa prova.</p></header>
+            <section class="song-choices grid gap-2.5">
               @if (songs().length) {
                 @for (song of songs(); track song.id) {
                   <label class="song-option" [class]="'grid min-h-[72px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3.5 rounded-xl border border-solid bg-[#0f172a] px-4 py-3 ' + (selectedSongIds().includes(song.id) ? 'border-[var(--ion-color-brand-blue)]' : 'border-[#2b3b52]')">
@@ -96,10 +96,10 @@
     <div slot="fixed" class="floating-action-toolbar absolute inset-x-[clamp(20px,5vw,72px)] bottom-[max(16px,env(safe-area-inset-bottom))] z-[100] w-auto overflow-hidden rounded-2xl border border-[#243244] bg-[#333] shadow-[0_14px_38px_rgba(0,0,0,.34)] backdrop-blur-[14px] max-[800px]:inset-x-5" role="toolbar" aria-label="Azioni del form">
       <div class="flex justify-between gap-2.5 p-2.5">
         @if (step() === 1) {
-          <app-gigsaw-button tone="outline" buttonClass="font-bold max-[800px]:flex-1" [routerLink]="['../']">Annulla</app-gigsaw-button>
+          <app-gigsaw-button tone="ghost" buttonClass="font-bold max-[800px]:flex-1" [routerLink]="['../']">Annulla</app-gigsaw-button>
           <app-gigsaw-button tone="primary" buttonClass="font-bold max-[800px]:flex-1" (click)="continueToSongs()" [disabled]="!rehearsalRooms().length">Continua</app-gigsaw-button>
         } @else {
-          <app-gigsaw-button tone="outline" buttonClass="font-bold max-[800px]:flex-1" (click)="step.set(1)">Indietro</app-gigsaw-button>
+          <app-gigsaw-button tone="ghost" buttonClass="font-bold max-[800px]:flex-1" (click)="step.set(1)">Indietro</app-gigsaw-button>
           <app-gigsaw-button tone="primary" buttonClass="font-bold max-[800px]:flex-1" [loading]="saving()" (click)="save()">{{ editing() ? 'Salva modifiche' : 'Crea prova' }}</app-gigsaw-button>
         }
       </div>

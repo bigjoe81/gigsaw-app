@@ -46,6 +46,45 @@ export interface FormPageHeaderSection {
       }
     </ion-header>
   `,
+  styles: `
+    :host(.refined-form-header) {
+      display: block;
+      flex-shrink: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    :host(.refined-form-header) ion-header { box-shadow: none; }
+    :host(.refined-form-header) ion-toolbar { --border-width: 0; }
+    :host(.refined-form-header) ion-title {
+      font-family: inherit !important;
+      font-weight: 600 !important;
+      font-size: 1.1rem;
+      letter-spacing: -.02em;
+    }
+    :host(.refined-form-header) ion-segment {
+      width: calc(100% - 32px);
+      max-width: 520px;
+      margin: 4px auto 16px;
+      padding: 4px;
+      border-radius: 12px;
+      background: var(--gigsaw-input-background);
+      --background: transparent;
+    }
+    :host(.refined-form-header) ion-segment-button {
+      min-height: 36px;
+      min-width: 0;
+      flex: 1;
+      margin: 0;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: .82rem;
+      --color: var(--gigsaw-muted);
+      --color-checked: var(--gigsaw-text);
+      --indicator-color: #343b46;
+      --indicator-height: 100%;
+      --indicator-box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    :host(.refined-form-header) ion-segment-button::part(indicator-background) { border-radius: 8px; }
+  `,
 })
 export class FormPageHeaderComponent {
   @Input() eyebrow = '';
