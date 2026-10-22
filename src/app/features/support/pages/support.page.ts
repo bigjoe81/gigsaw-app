@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +13,7 @@ import { SupportTicketService } from '../services/support-ticket.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule,
+  imports: [NativeUiModule, GigsawFormControlsModule,
     DatePipe,
     FormsModule,
     ],

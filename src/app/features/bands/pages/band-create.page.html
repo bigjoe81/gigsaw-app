@@ -2,7 +2,7 @@
 <header class="page-header hidden max-[900px]:block">
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
-      <button class="btn btn-ghost btn-square" defaultHref="/band" icon="arrow-back-outline"  type="button" appBack>←</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="/band" icon="arrow-back-outline"  type="button" appBack>←</app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">Nuova band</h1>
   </div>
@@ -67,9 +67,9 @@
             <div class="relative grid h-[110px] w-[110px] shrink-0 place-items-center overflow-visible rounded-3xl border-2 border-dashed border-[#aebbd0] bg-[#111827] text-[#71809a] text-[2.3rem] max-[560px]:h-[88px] max-[560px]:w-[88px] max-[560px]:rounded-[20px]" [ngClass]="(logoPreviewUrl ? 'border-solid border-[var(--create-border)] ' : '') + (embedded ? 'h-[86px] w-[86px] rounded-[19px]' : '')">
               @if (logoPreviewUrl) {
                 <img class="h-full w-full rounded-[22px] object-cover max-[560px]:rounded-[18px]" [ngClass]="embedded ? 'rounded-[17px]' : ''" [src]="logoPreviewUrl" alt="Anteprima del logo selezionato" />
-                <button class="btn btn-primary absolute -top-2.5 -right-2.5 grid h-[30px] w-[30px] place-items-center rounded-full [--background:#071434] [--color:#fff] [--box-shadow:0_5px_14px_rgba(7,20,52,.24)]" type="button" aria-label="Rimuovi logo" (click)="removeLogo()">
+                <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary absolute -top-2.5 -right-2.5 grid h-[30px] w-[30px] place-items-center rounded-full [--background:#071434] [--color:#fff] [--box-shadow:0_5px_14px_rgba(7,20,52,.24)]" type="button" aria-label="Rimuovi logo" (click)="removeLogo()">
                   <app-symbol name="close" aria-hidden="true"  />
-                </button>
+                </app-gigsaw-button>
               } @else {
                 <app-symbol class="text-[2.3rem]" name="image-outline" aria-hidden="true"  />
               }
@@ -107,17 +107,16 @@
             </div>
           </div>
 
-          <input
+          <app-gigsaw-input
             id="band-name"
-            class="input w-full w-full min-h-12 text-base font-normal"
-
+            controlClass="w-full min-h-12 text-base font-normal"
             formControlName="name"
             placeholder="Es. Crossroads Blues Trio"
-            [attr.maxlength]="120"
+            [maxLength]="120"
             autocomplete="organization"
-            enterkeyhint="next"
-            [ngClass]="nameControl.touched && nameControl.invalid ? 'border-[var(--ui-color-danger)]' : ''"
-           />
+            enterKeyHint="next"
+            [invalid]="nameControl.touched && nameControl.invalid"
+          />
           <div class="mt-[7px] flex min-h-[22px] justify-between gap-3 text-[var(--create-muted)] text-[.72rem]">
             <span>
               @if (nameControl.touched && nameControl.hasError('required')) {
@@ -187,7 +186,7 @@
           @if (genresError) {
             <div class="flex items-center justify-between gap-4 rounded-xl bg-[#3b3015] px-[14px] py-3 text-[#f6d887] text-[.82rem]" role="status">
               <span>{{ genresError }}</span>
-              <button class="btn btn-primary" type="button" (click)="loadGenres()">Riprova</button>
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" (click)="loadGenres()">Riprova</app-gigsaw-button>
             </div>
           }
         </div>
@@ -201,17 +200,14 @@
             <span class="shrink-0 rounded-full bg-[#1b293d] px-2.5 py-[5px] text-[var(--create-muted)] text-[.68rem] font-bold whitespace-nowrap">Facoltativo</span>
           </div>
 
-          <textarea
+          <app-gigsaw-textarea
             id="band-description"
-            class="textarea w-full min-h-[118px] w-full text-base font-normal"
-            [ngClass]="embedded ? 'min-h-[92px]' : ''"
-
+            [controlClass]="'min-h-[118px] text-base font-normal ' + (embedded ? 'min-h-[92px]' : '')"
             formControlName="bioShort"
             placeholder="Es. Blues, rhythm & blues e rock ’n’ roll tra Chicago e New Orleans."
-            [maxlength]="500"
-
+            [maxLength]="500"
             [rows]="4"
-          ></textarea>
+          />
           <div class="mt-[7px] flex min-h-[22px] justify-end gap-3 text-[var(--create-muted)] text-[.72rem]"><span>{{ bioLength }}/500</span></div>
         </div>
 
@@ -220,17 +216,17 @@
         }
 
         <footer class="form-action-bar flex items-center justify-between gap-3" [ngClass]="embedded ? '!sticky bottom-0 z-[3] mx-[-42px] my-0 px-[42px] py-4 shadow-[0_-12px_28px_rgba(30,48,79,.08)] backdrop-blur-[12px] [background:#333] max-[900px]:mx-[-28px] max-[900px]:px-7 max-[560px]:mx-[-18px] max-[560px]:px-[18px] max-[560px]:pb-[calc(16px+env(safe-area-inset-bottom))]' : ''">
-          <button class="btn btn-ghost btn-neutral" type="button" (click)="cancel()" [disabled]="saving()">
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-neutral" type="button" (click)="cancel()" [disabled]="saving()">
             Annulla
-          </button>
-          <button class="btn btn-primary min-h-[50px] min-w-[190px] font-extrabold [--background:var(--create-blue)] [--border-radius:11px] [--box-shadow:0_12px_24px_rgba(7,91,216,.2)] max-[560px]:min-w-0 max-[560px]:flex-1" type="submit" [disabled]="saving()">
+          </app-gigsaw-button>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary min-h-[50px] min-w-[190px] font-extrabold [--background:var(--create-blue)] [--border-radius:11px] [--box-shadow:0_12px_24px_rgba(7,91,216,.2)] max-[560px]:min-w-0 max-[560px]:flex-1" type="submit" [disabled]="saving()">
             @if (saving()) {
               <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span>
               Creazione in corso…
             } @else {
               Crea workspace
             }
-          </button>
+          </app-gigsaw-button>
         </footer>
       </form>
     </section>

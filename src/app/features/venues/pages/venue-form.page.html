@@ -26,19 +26,19 @@
 
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ui-color-danger)] [&_strong]:text-[var(--ui-color-danger)]">
               <span>Nome <strong>*</strong></span>
-              <input class="input w-full" formControlName="name" aria-label="Nome" [placeholder]="kind === 'venue' ? 'Es. Bloom' : 'Es. Sound Factory'"  />
+              <app-gigsaw-input formControlName="name" aria-label="Nome" [placeholder]="kind === 'venue' ? 'Es. Bloom' : 'Es. Sound Factory'" />
               @if (form.controls.name.touched && form.controls.name.invalid) { <small>Inserisci il nome del luogo.</small> }
             </label>
 
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ui-color-danger)] [&_strong]:text-[var(--ui-color-danger)]">
               <span>Indirizzo <strong>*</strong></span>
-              <input class="input w-full" formControlName="address" aria-label="Indirizzo" placeholder="Es. Via Giuseppe Verdi 12" autocomplete="street-address"  />
+              <app-gigsaw-input formControlName="address" aria-label="Indirizzo" placeholder="Es. Via Giuseppe Verdi 12" autocomplete="street-address" />
               @if (form.controls.address.touched && form.controls.address.invalid) { <small>Inserisci l’indirizzo.</small> }
             </label>
 
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ui-color-danger)] [&_strong]:text-[var(--ui-color-danger)]">
               <span>Città <strong>*</strong></span>
-              <input class="input w-full" formControlName="city" aria-label="Città" placeholder="Es. Milano" autocomplete="address-level2"  />
+              <app-gigsaw-input formControlName="city" aria-label="Città" placeholder="Es. Milano" autocomplete="address-level2" />
               @if (form.controls.city.touched && form.controls.city.invalid) { <small>Inserisci la città.</small> }
             </label>
           </section>
@@ -55,8 +55,8 @@
               }
             </div>
             <div class="grid grid-cols-2 gap-3.5 max-[680px]:grid-cols-1">
-              <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]"><span>Latitudine</span><input class="input w-full" formControlName="latitude" aria-label="Latitudine" type="number" placeholder="Es. 45.4642" inputmode="decimal"  /></label>
-              <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]"><span>Longitudine</span><input class="input w-full" formControlName="longitude" aria-label="Longitudine" type="number" placeholder="Es. 9.1900" inputmode="decimal"  /></label>
+              <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]"><span>Latitudine</span><app-gigsaw-input formControlName="latitude" aria-label="Latitudine" type="number" placeholder="Es. 45.4642" inputMode="decimal" /></label>
+              <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]"><span>Longitudine</span><app-gigsaw-input formControlName="longitude" aria-label="Longitudine" type="number" placeholder="Es. 9.1900" inputMode="decimal" /></label>
             </div>
           </section>
 
@@ -69,11 +69,11 @@
   @if (!loading) {
     <div slot="fixed" class="floating-action-toolbar absolute inset-x-[clamp(20px,5vw,72px)] bottom-[max(16px,env(safe-area-inset-bottom))] z-[100] w-auto overflow-hidden rounded-2xl border border-[#243244] bg-[#333] shadow-[0_14px_38px_rgba(0,0,0,.34)] backdrop-blur-[14px] max-[800px]:inset-x-5" role="toolbar" aria-label="Azioni del form">
       <div class="flex items-center justify-between gap-2.5 p-2.5">
-        <button class="btn btn-outline" type="button" [disabled]="saving" (click)="cancel()">Annulla</button>
-        <button class="btn btn-primary" type="submit" form="location-form" [disabled]="saving">
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" type="button" [disabled]="saving" (click)="cancel()">Annulla</app-gigsaw-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="submit" form="location-form" [disabled]="saving">
           @if (saving) { <span class="loading loading-spinner" slot="start"  role="status" aria-label="Caricamento"></span> }
           {{ editing ? 'Salva modifiche' : 'Crea ' + locationLabel }}
-        </button>
+        </app-gigsaw-button>
       </div>
     </div>
   }

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit } from '@angular/core';
@@ -10,7 +11,7 @@ import { RecordingSessionService } from '../services/recording-session.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, ReactiveFormsModule, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, ],
   templateUrl: './recording-session-form.page.html',
 })
 export class RecordingSessionFormPage implements OnInit {

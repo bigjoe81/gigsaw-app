@@ -1,14 +1,15 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { Component, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { PdfSongImportReview, SongImportRow, SongService } from '../services/song.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, RouterLink, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, ],
   templateUrl: './song-import.page.html',
 })
 export class SongImportPage {

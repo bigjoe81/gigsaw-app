@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
@@ -12,7 +13,7 @@ import { BandContextService } from '../../../core/services/band-context.service'
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule,
+  imports: [NativeUiModule, GigsawFormControlsModule,
     ReactiveFormsModule,
     RouterLink,
     ],

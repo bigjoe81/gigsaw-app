@@ -7,6 +7,7 @@ import {AuthService} from '../../core/auth/auth.service';
 import {GigsawButtonComponent, GigsawMessageComponent} from '../../shared/ui/gigsaw';
 
 import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
+import { GigsawFormControlsModule } from '../../shared/ui/gigsaw/gigsaw-form-controls.module';
 
 type LoginError = {
   status?: number;
@@ -18,7 +19,7 @@ type LoginError = {
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, ],
   templateUrl: './login.page.html',
   styleUrls: ['./auth-layout.scss'],
 })
@@ -38,8 +39,8 @@ export class LoginPage {
   ) {
   }
 
-  updateEmail(email: string): void {
-    this.email.set(email);
+  updateEmail(email: string | number | null): void {
+    this.email.set(String(email ?? ''));
   }
 
   requestOtp(): void {

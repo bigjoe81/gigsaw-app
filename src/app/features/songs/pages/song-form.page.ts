@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, computed, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
@@ -14,7 +15,7 @@ import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, ReactiveFormsModule, FormPageHeaderComponent, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, FormPageHeaderComponent, ],
   templateUrl: './song-form.page.html',
   styleUrls: ['./song-form.page.scss'],
 })

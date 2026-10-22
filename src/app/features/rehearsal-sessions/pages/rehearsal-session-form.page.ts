@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
@@ -25,7 +26,7 @@ import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, ],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })

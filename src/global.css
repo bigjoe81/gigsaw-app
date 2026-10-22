@@ -19,7 +19,7 @@ router-outlet + * { display: flex !important; height: 100%; flex: 1; flex-direct
 .navbar h1 { margin: 0; }
 .ui-item { min-width: 0; }
 .ui-label { min-width: 0; flex: 1; }
-.ui-item:has(> .input, > .textarea, > .select) { display: grid; gap: 8px; }
+.ui-item:has(> .input, > .textarea, > .select, > app-gigsaw-input, > app-gigsaw-textarea, > app-gigsaw-datepicker, > app-gigsaw-time-input) { display: grid; gap: 8px; }
 .ui-item[routerLink], .ui-item[ng-reflect-router-link] { cursor: pointer; }
 .btn { text-transform: none; font-weight: 600; }
 .btn app-symbol { color: inherit; }

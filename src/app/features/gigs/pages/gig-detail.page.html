@@ -1,10 +1,10 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div>
     <h1 class="grow text-xl">Concerto</h1>
     <div class="flex items-center gap-2" slot="end">
-      <button class="btn btn-primary" [routerLink]="['modifica']" type="button"><app-symbol name="pencil-outline"  />Modifica</button>
-      <button class="btn btn-primary btn-error" (click)="confirmDelete()" type="button"><app-symbol name="trash-outline"  /></button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" type="button"><app-symbol name="pencil-outline"  />Modifica</app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-error" (click)="confirmDelete()" type="button"><app-symbol name="trash-outline"  /></app-gigsaw-button>
     </div>
   </div>
 </header>

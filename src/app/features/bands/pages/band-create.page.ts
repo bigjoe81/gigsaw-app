@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { Component, EventEmitter, Input, OnDestroy, Output, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -13,7 +14,7 @@ import { GigsawBadgeComponent, GigsawTypeaheadComponent, GigsawTypeaheadItem } f
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-band-create',
   standalone: true,
-  imports: [NativeUiModule,
+  imports: [NativeUiModule, GigsawFormControlsModule,
     NgClass,
     ReactiveFormsModule,
     GigsawTypeaheadComponent,

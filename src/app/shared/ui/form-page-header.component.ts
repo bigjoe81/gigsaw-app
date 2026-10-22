@@ -14,7 +14,7 @@ export interface FormPageHeaderSection {
     <header class="page-header">
       <div class="navbar gap-3">
         <div class="flex items-center gap-2" slot="start">
-          <button class="btn btn-ghost btn-square" [defaultHref]="backHref" aria-label="Torna indietro"  type="button" appBack>←</button>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" [defaultHref]="backHref" aria-label="Torna indietro"  type="button" appBack>←</app-gigsaw-button>
         </div>
         <h1 class="grow text-xl">{{ title }}</h1>
       </div>
@@ -27,9 +27,9 @@ export interface FormPageHeaderSection {
             [attr.aria-label]="ariaLabel"
             role="tablist">
             @for (section of sections; track section.id) {
-              <button class="tab" [disabled]="section.disabled" (click)="onSectionChange(section.id)" [class.tab-active]="activeSection === section.id" [attr.aria-selected]="activeSection === section.id" role="tab" type="button">
+              <app-gigsaw-button tone="unstyled" buttonClass="tab" [disabled]="section.disabled ?? false" (click)="onSectionChange(section.id)" [class.tab-active]="activeSection === section.id" [attr.aria-selected]="activeSection === section.id" role="tab" type="button">
                 <span class="ui-label">{{ section.label }}</span>
-              </button>
+              </app-gigsaw-button>
             }
           </div>
         </div>

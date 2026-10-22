@@ -7,7 +7,6 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import {
-  GigsawButtonComponent,
   GigsawMessageComponent,
 } from '../../../shared/ui/gigsaw';
 import { Band } from '../models/band.models';
@@ -17,7 +16,6 @@ import { BandCreatePage } from './band-create.page';
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
   imports: [NativeUiModule, BandCreatePage,
-    GigsawButtonComponent,
     GigsawMessageComponent,
     ],
   templateUrl: './band-selection.page.html',

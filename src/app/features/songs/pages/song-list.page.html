@@ -1,20 +1,20 @@
 <header class="page-header">
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
-      <button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">Brani</h1>
     <div class="flex items-center gap-2" slot="end">
       @if (importEnabled) {
-        <button class="btn btn-ghost" [routerLink]="['importa']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost" [routerLink]="['importa']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</app-gigsaw-button>
       }
-      <button class="btn btn-ghost btn-secondary" [routerLink]="['gruppi-collegati']" type="button">Medley</button>
-      <button class="btn btn-primary [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] [--box-shadow:0_8px_20px_rgba(var(--ui-color-primary-rgb),.22)] max-[700px]:text-[.82rem]" [routerLink]="['nuovo']" aria-label="Crea brano" type="button"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" /> Nuovo</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-secondary" [routerLink]="['gruppi-collegati']" type="button">Medley</app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] [--box-shadow:0_8px_20px_rgba(var(--ui-color-primary-rgb),.22)] max-[700px]:text-[.82rem]" [routerLink]="['nuovo']" aria-label="Crea brano" type="button"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" /> Nuovo</app-gigsaw-button>
     </div>
   </div>
 </header>
 <section class="app-content [--background:var(--gigsaw-background)]">
-  <button type="button" class="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</button>
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</app-gigsaw-button>
   @if (loading()) {
     <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {
@@ -22,13 +22,13 @@
       }
     </app-gigsaw-list>
   } @else if (error()) {
-    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ui-color-brand-blue)]" [icon]="icons.alert" aria-hidden="true" /><span class=" text-error">{{ error() }}</span><button class="btn btn-outline" (click)="load()" type="button">Riprova</button></div>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ui-color-brand-blue)]" [icon]="icons.alert" aria-hidden="true" /><span class=" text-error">{{ error() }}</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button></div>
   } @else if (!songs().length) {
     <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ui-color-brand-blue)]" [icon]="icons.music" aria-hidden="true" /><span class="font-bold">Nessun brano presente</span>
-      <button class="btn btn-primary" [routerLink]="['nuovo']" type="button">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" type="button">
         <app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true"></app-gigsaw-icon>
         Crea brano
-      </button>
+      </app-gigsaw-button>
     </div>
   } @else {
     <section class="w-full px-6 pb-14 pt-[34px] max-[700px]:px-3 max-[700px]:pb-9 max-[700px]:pt-5" aria-labelledby="library-title">
@@ -40,25 +40,25 @@
         <div class="flex items-center gap-3 max-[700px]:w-full max-[700px]:flex-wrap max-[700px]:justify-end">
           <span class="rounded-full border border-[var(--gigsaw-border)] px-[11px] py-[7px] text-[.78rem] font-bold text-[var(--gigsaw-muted)]">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>
           @if (importEnabled) {
-            <button class="btn btn-outline [--border-color:var(--ui-color-primary)] [--color:var(--ui-color-primary)] [--border-radius:9px] font-bold" [routerLink]="['importa']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</button>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline [--border-color:var(--ui-color-primary)] [--color:var(--ui-color-primary)] [--border-radius:9px] font-bold" [routerLink]="['importa']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</app-gigsaw-button>
           }
-          <button class="btn btn-outline [--border-color:var(--ui-color-brand-blue)] [--color:var(--ui-color-brand-blue)] [--border-radius:9px] font-bold" [routerLink]="['gruppi-collegati']" type="button">Gestisci medley</button>
-          <button class="btn btn-primary [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] [--border-radius:9px] font-extrabold" [routerLink]="['nuovo']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" />Aggiungi brano</button>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline [--border-color:var(--ui-color-brand-blue)] [--color:var(--ui-color-brand-blue)] [--border-radius:9px] font-bold" [routerLink]="['gruppi-collegati']" type="button">Gestisci medley</app-gigsaw-button>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] [--border-radius:9px] font-extrabold" [routerLink]="['nuovo']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" />Aggiungi brano</app-gigsaw-button>
         </div>
       </header>
 
       <div class="mx-1 mb-3 flex min-h-12 items-center gap-3.5 rounded-xl border border-[var(--gigsaw-border)] bg-[#101d30] px-3 py-2" [style.border-color]="selectedCount() ? 'color-mix(in srgb, var(--ui-color-primary) 55%, var(--gigsaw-border))' : null">
-        <input
-          class="checkbox checkbox-primary text-[.84rem] font-bold text-[var(--gigsaw-text)]"
+        <app-gigsaw-checkbox
+          controlClass="checkbox checkbox-primary text-[.84rem] font-bold text-[var(--gigsaw-text)]"
           aria-label="Seleziona tutti i brani"
           [checked]="allSelected()"
           [indeterminate]="selectedCount() > 0 && !allSelected()"
           [disabled]="deleting()"
-          (change)="toggleAll($any($event.target).checked)"
-         type="checkbox" />Seleziona tutti
+          (checkedChange)="toggleAll($event)"
+        />Seleziona tutti
         <span class="text-[.78rem] text-[var(--gigsaw-muted)]">{{ selectedCount() }} selezionati</span>
-        <button
-          class="btn btn-outline btn-error btn-sm ms-auto font-bold"
+        <app-gigsaw-button tone="unstyled"
+          buttonClass="btn btn-outline btn-error btn-sm ms-auto font-bold"
 
 
 
@@ -67,20 +67,20 @@
          type="button">
           <app-gigsaw-icon slot="start" [icon]="icons.trash" aria-hidden="true" />
           {{ deleting() ? 'Eliminazione…' : 'Elimina' }}
-        </button>
+        </app-gigsaw-button>
       </div>
 
       <app-gigsaw-list listClass="grid gap-[10px] bg-transparent p-0">
         @for (song of songs(); track song.id) {
           <app-gigsaw-list-item itemClass="my-0 min-h-[94px] overflow-hidden rounded-[15px] border border-[var(--gigsaw-border)] [--min-height:94px] [--padding-start:14px] [--inner-padding-end:14px] [--background:#101d30] [--color:var(--gigsaw-text)] transition-colors duration-[180ms] hover:[--background:var(--gigsaw-list-hover-background,#2a3648)] max-[700px]:min-h-[86px] max-[700px]:[--min-height:86px] max-[700px]:[--padding-start:10px] max-[700px]:[--inner-padding-end:10px] [&_h2]:m-0 [&_h2]:font-extrabold [&_h2]:text-[var(--gigsaw-text)] [&_p]:my-1 [&_p]:text-[var(--gigsaw-muted)] [&_.artist]:text-[.86rem] [&_.artist]:text-[var(--gigsaw-text)] [&_.artist]:opacity-80 [&_.metadata]:text-[.78rem]" [interactive]="true" [disabled]="deleting()" (selected)="openSong(song.id)">
-            <input
-              class="checkbox checkbox-primary me-3.5 flex-none max-[700px]:me-2.5"
+            <app-gigsaw-checkbox
+              controlClass="checkbox checkbox-primary me-3.5 flex-none max-[700px]:me-2.5"
               slot="start"
-              aria-label="Seleziona {{ song.title }}"
+              [aria-label]="'Seleziona ' + song.title"
               [checked]="selectedIds().has(song.id)"
               (click)="$event.stopPropagation()"
-              (change)="toggleSong(song.id, $any($event.target).checked)"
-             type="checkbox" />
+              (checkedChange)="toggleSong(song.id, $event)"
+            />
             <span class="me-4 grid h-12 w-12 flex-none place-items-center rounded-[13px] bg-[rgba(var(--ui-color-primary-rgb),.12)] text-[var(--ui-color-primary)] max-[700px]:hidden" slot="start"><app-gigsaw-icon class="text-2xl" [icon]="icons.music" aria-hidden="true" /></span>
             <span class="ui-label">
               <div class="flex items-center gap-2.5 max-[700px]:gap-1.5">

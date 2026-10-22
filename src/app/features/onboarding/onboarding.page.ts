@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, finalize, Observable, of } from 'rxjs';
@@ -15,7 +16,7 @@ type OnboardingStep = 'welcome' | 'profile' | 'band' | 'invite' | 'complete' | '
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule],
+  imports: [NativeUiModule, GigsawFormControlsModule],
   templateUrl: './onboarding.page.html',
 })
 export class OnboardingPage implements OnInit {

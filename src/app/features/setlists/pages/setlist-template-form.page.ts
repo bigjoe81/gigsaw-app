@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit } from '@angular/core';
@@ -14,7 +15,7 @@ import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, ReactiveFormsModule, GigsawListComponent, GigsawListItemComponent, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, GigsawListComponent, GigsawListItemComponent, ],
   templateUrl: './setlist-template-form.page.html',
 })
 export class SetlistTemplateFormPage implements OnInit {

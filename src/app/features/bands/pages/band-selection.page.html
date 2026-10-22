@@ -2,12 +2,12 @@
   <div class="navbar gap-3">
     <img class="max-h-[42px] w-[132px] object-contain" slot="start" src="assets/logo-hor.png" alt="GigSaw" />
     <div class="flex items-center gap-2" slot="end">
-      <button class="btn btn-ghost" (click)="openOnboarding()" aria-label="Guida introduttiva" type="button">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost" (click)="openOnboarding()" aria-label="Guida introduttiva" type="button">
         <app-symbol name="help-circle-outline"  />
-      </button>
-      <button class="btn btn-ghost" (click)="logout()" aria-label="Esci" type="button">
+      </app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost" (click)="logout()" aria-label="Esci" type="button">
         <app-symbol name="log-out-outline"  />
-      </button>
+      </app-gigsaw-button>
     </div>
   </div>
 </header>
@@ -19,9 +19,9 @@
         <h1 class="m-0 text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.15] font-bold">Scegli la tua band</h1>
         <p class="mt-2 mb-0 text-[var(--ui-color-medium)]">Seleziona il workspace in cui vuoi lavorare.</p>
       </div>
-      <button class="btn btn-primary m-0 shrink-0 max-[700px]:self-start" (click)="openCreateModal()" type="button">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary m-0 shrink-0 max-[700px]:self-start" (click)="openCreateModal()" type="button">
         <app-symbol name="add"  /> Crea una band
-      </button>
+      </app-gigsaw-button>
     </section>
 
     @if (loading()) {
@@ -32,7 +32,7 @@
     } @else if (error()) {
       <div class="flex min-h-[240px] flex-col items-center justify-center gap-3 text-[var(--ui-color-medium)]">
         <app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message>
-        <button class="btn btn-outline" (click)="load()" type="button">Riprova</button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
       </div>
     } @else {
       <section class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] items-stretch gap-4 max-[700px]:grid-cols-1" aria-label="Le tue band">

@@ -6,6 +6,12 @@ import { NativeUiModule, DialogService } from './native-ui';
 class MultiSelectFixture { options = signal(['a', 'b']); selected = signal(['b']); }
 @Component({ changeDetection: ChangeDetectionStrategy.Default, imports: [NativeUiModule], template: `<app-dialog [isOpen]="open()" (closed)="open.set(false)"><ng-template><button type="button">Contenuto</button></ng-template></app-dialog>` })
 class ModalFixture { open = signal(false); }
+@Component({ changeDetection: ChangeDetectionStrategy.Default, imports: [NativeUiModule], template: `<app-gigsaw-button tone="unstyled" class="btn btn-ghost" buttonClass="btn btn-ghost" aria-label="Action" [disabled]="disabled" (click)="increment()">Action</app-gigsaw-button>` })
+class ButtonFixture {
+  disabled = false;
+  clicks = 0;
+  increment(): void { this.clicks++; }
+}
 
 describe('DaisyUI native controls', () => {
   afterEach(() => document.querySelectorAll('body > dialog').forEach(dialog => dialog.remove()));
@@ -30,6 +36,22 @@ describe('DaisyUI native controls', () => {
     expect(dialog.open).toBeFalse(); expect(fixture.componentInstance.open()).toBeFalse();
     fixture.componentInstance.open.set(true); fixture.detectChanges(); expect(dialog.open).toBeTrue();
     fixture.destroy(); expect(dialog.open).toBeFalse();
+  });
+  it('forwards button classes and accessibility attributes while preserving click and disabled behavior', async () => {
+    const fixture = TestBed.createComponent(ButtonFixture);
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    const button = fixture.nativeElement.querySelector('app-gigsaw-button button') as HTMLButtonElement;
+    expect(button.classList.contains('btn-ghost')).toBeTrue();
+    expect(button.getAttribute('aria-label')).toBe('Action');
+    button.click();
+    expect(fixture.componentInstance.clicks).toBe(1);
+
+    fixture.componentInstance.disabled = true;
+    fixture.detectChanges();
+    button.click();
+    expect(fixture.componentInstance.clicks).toBe(1);
   });
   it('does not execute a destructive action when a confirmation is cancelled', async () => {
     const action = jasmine.createSpy();

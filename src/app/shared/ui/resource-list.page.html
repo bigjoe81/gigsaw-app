@@ -1,18 +1,18 @@
 <header class="page-header">
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
-      <button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">{{ config.plural }}</h1>
     <div class="flex items-center gap-2" slot="end">
-      <button class="btn btn-primary" [routerLink]="['nuova']" aria-label="Crea" type="button">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" aria-label="Crea" type="button">
         <app-symbol name="add"  />
-      </button>
+      </app-gigsaw-button>
     </div>
   </div>
 </header>
 <section class="app-content">
-  <button type="button" class="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</button>
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</app-gigsaw-button>
   @if (loading) {
     <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {
@@ -28,13 +28,13 @@
     <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center">
       <app-symbol class="text-[44px] text-[var(--ui-color-medium)]" name="alert-circle"  />
       <span class=" text-error">{{ error }}</span>
-      <button class="btn btn-outline" (click)="load()" type="button">Riprova</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
     </div>
   } @else if (!items.length) {
     <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center">
       <app-symbol class="text-[44px] text-[var(--ui-color-medium)]" name="musical-notes"  />
       <span>Nessun{{ config.singular === 'brano' ? ' brano' : 'a ' + config.singular }} presente.</span>
-      <button class="btn btn-primary" [routerLink]="['nuova']" type="button">Crea {{ config.singular }}</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" type="button">Crea {{ config.singular }}</app-gigsaw-button>
     </div>
   } @else {
     <app-gigsaw-list>

@@ -1,11 +1,11 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button></div>
     <h1 class="grow text-xl">Prove</h1>
   </div>
 </header>
 <section class="app-content bg-[var(--gigsaw-background)]">
-  <button type="button" class="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</button>
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</app-gigsaw-button>
   @if (loading()) {
     <app-gigsaw-list listClass="grid gap-2.5 bg-transparent p-0">
       @for (i of [1, 2, 3]; track i) {
@@ -21,14 +21,14 @@
     <div class="flex min-h-[55%] flex-col items-center justify-center gap-3 p-6 text-center text-[var(--gigsaw-text)]">
       <app-symbol class="text-[44px] text-[var(--ui-color-brand-blue)]" name="alert-circle"  />
       <span class=" text-error">{{ error() }}</span>
-      <button class="btn btn-outline" (click)="load()" type="button">Riprova</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
     </div>
   } @else if (!sessions().length) {
     <div class="flex min-h-[55%] flex-col items-center justify-center gap-3 p-6 text-center text-[var(--gigsaw-text)]">
       <app-symbol class="text-[44px] text-[var(--ui-color-brand-blue)]" name="calendar-outline"  />
       <strong>Nessuna prova programmata</strong>
       <span class="text-[var(--gigsaw-muted)]">Crea la prima prova della band.</span>
-      <button class="btn btn-primary" [routerLink]="['nuova']" type="button"><app-symbol name="add"  />Nuova prova</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" type="button"><app-symbol name="add"  />Nuova prova</app-gigsaw-button>
     </div>
   } @else {
     <main class="w-full px-6 pb-14 pt-[34px] max-[700px]:px-3 max-[700px]:pb-9 max-[700px]:pt-5">
@@ -37,7 +37,7 @@
           <span class="text-[.72rem] font-extrabold tracking-[.12em] text-[var(--ui-color-primary)]">CALENDARIO</span>
           <h1 class="mt-[5px] text-[clamp(1.5rem,3vw,2rem)] text-[var(--gigsaw-text)]">Le tue prove</h1>
         </div>
-        <button class="btn btn-primary font-extrabold [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] max-[700px]:self-stretch" [routerLink]="['nuova']" type="button"><app-symbol name="add"  />Nuova prova</button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary font-extrabold [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] max-[700px]:self-stretch" [routerLink]="['nuova']" type="button"><app-symbol name="add"  />Nuova prova</app-gigsaw-button>
       </header>
       <app-gigsaw-list listClass="grid gap-2.5 bg-transparent p-0">
         @for (s of sessions(); track s.id) {

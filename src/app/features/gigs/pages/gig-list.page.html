@@ -1,13 +1,13 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button></div>
     <h1 class="grow text-xl">Concerti</h1>
-    <div class="flex items-center gap-2" slot="end"><button class="btn btn-primary" [routerLink]="['nuovo']" aria-label="Nuovo concerto" type="button"><app-symbol name="add"  /></button></div>
+    <div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" aria-label="Nuovo concerto" type="button"><app-symbol name="add"  /></app-gigsaw-button></div>
   </div>
 </header>
 
 <section class="app-content">
-  <button type="button" class="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</button>
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</app-gigsaw-button>
   <main class="w-full px-6 pt-[34px] pb-14 text-[var(--gigsaw-text)] max-[760px]:px-3 max-[760px]:pt-5 max-[760px]:pb-9">
     <section class="mb-5 flex items-end justify-between gap-5 max-[760px]:[&>.btn]:hidden">
       <div>
@@ -15,7 +15,7 @@
         <h1 class="mt-1 mb-1.5 text-[clamp(1.6rem,3vw,2.15rem)] !font-[850]">I concerti della band</h1>
         <p class="m-0 text-[var(--ui-color-medium)]">Organizza date, venue e informazioni operative in un unico posto.</p>
       </div>
-      <button class="btn btn-primary" [routerLink]="['nuovo']" type="button"><app-symbol name="add"  />Nuovo concerto</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" type="button"><app-symbol name="add"  />Nuovo concerto</app-gigsaw-button>
     </section>
 
     @if (!loading() && !error() && gigs().length) {
@@ -24,9 +24,9 @@
         <div class="flex items-baseline gap-2 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-0.5"><strong class="text-[var(--ui-color-primary)] text-[1.35rem]">{{ gigs().length - upcomingCount() }}</strong><span class="text-[var(--ui-color-medium)] text-[.88rem]">concerti passati</span></div>
       </section>
       <div class="tabs tabs-box mb-[18px] w-fit min-w-[min(100%,310px)] rounded-xl border border-[var(--gigsaw-border)] bg-[var(--ui-card-background)] p-1" aria-label="Filtra concerti" role="tablist">
-        <button class="tab min-h-[38px] font-bold normal-case [--color:var(--ui-color-medium)] [--color-checked:var(--ui-color-primary)] [--indicator-color:rgba(var(--ui-color-primary-rgb),.16)]" (click)="setFilter('upcoming')" [class.tab-active]="filter() === 'upcoming'" [attr.aria-selected]="filter() === 'upcoming'" role="tab" type="button"><span class="ui-label">Prossimi</span></button>
-        <button class="tab min-h-[38px] font-bold normal-case [--color:var(--ui-color-medium)] [--color-checked:var(--ui-color-primary)] [--indicator-color:rgba(var(--ui-color-primary-rgb),.16)]" (click)="setFilter('past')" [class.tab-active]="filter() === 'past'" [attr.aria-selected]="filter() === 'past'" role="tab" type="button"><span class="ui-label">Passati</span></button>
-        <button class="tab min-h-[38px] font-bold normal-case [--color:var(--ui-color-medium)] [--color-checked:var(--ui-color-primary)] [--indicator-color:rgba(var(--ui-color-primary-rgb),.16)]" (click)="setFilter('all')" [class.tab-active]="filter() === 'all'" [attr.aria-selected]="filter() === 'all'" role="tab" type="button"><span class="ui-label">Tutti</span></button>
+        <app-gigsaw-button tone="unstyled" buttonClass="tab min-h-[38px] font-bold normal-case [--color:var(--ui-color-medium)] [--color-checked:var(--ui-color-primary)] [--indicator-color:rgba(var(--ui-color-primary-rgb),.16)]" (click)="setFilter('upcoming')" [class.tab-active]="filter() === 'upcoming'" [attr.aria-selected]="filter() === 'upcoming'" role="tab" type="button"><span class="ui-label">Prossimi</span></app-gigsaw-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="tab min-h-[38px] font-bold normal-case [--color:var(--ui-color-medium)] [--color-checked:var(--ui-color-primary)] [--indicator-color:rgba(var(--ui-color-primary-rgb),.16)]" (click)="setFilter('past')" [class.tab-active]="filter() === 'past'" [attr.aria-selected]="filter() === 'past'" role="tab" type="button"><span class="ui-label">Passati</span></app-gigsaw-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="tab min-h-[38px] font-bold normal-case [--color:var(--ui-color-medium)] [--color-checked:var(--ui-color-primary)] [--indicator-color:rgba(var(--ui-color-primary-rgb),.16)]" (click)="setFilter('all')" [class.tab-active]="filter() === 'all'" [attr.aria-selected]="filter() === 'all'" role="tab" type="button"><span class="ui-label">Tutti</span></app-gigsaw-button>
       </div>
     }
 
@@ -37,9 +37,9 @@
         }
       </section>
     } @else if (error()) {
-      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><app-symbol class="text-[var(--ui-color-medium)] text-[50px]" name="alert-circle-outline"  /><span class=" text-error">{{ error() }}</span><button class="btn btn-outline" (click)="load()" type="button">Riprova</button></section>
+      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><app-symbol class="text-[var(--ui-color-medium)] text-[50px]" name="alert-circle-outline"  /><span class=" text-error">{{ error() }}</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button></section>
     } @else if (!visibleGigs().length) {
-      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><app-symbol class="text-[var(--ui-color-medium)] text-[50px]" name="calendar-clear-outline"  /><h2 class="m-0">{{ gigs().length ? 'Nessun concerto in questa vista' : 'Nessun concerto ancora' }}</h2><p class="m-0 text-[var(--ui-color-medium)]">{{ gigs().length ? 'Prova un altro filtro.' : 'Aggiungi la prima data live della band.' }}</p>@if (!gigs().length) { <button class="btn btn-primary" [routerLink]="['nuovo']" type="button">Aggiungi concerto</button> }</section>
+      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><app-symbol class="text-[var(--ui-color-medium)] text-[50px]" name="calendar-clear-outline"  /><h2 class="m-0">{{ gigs().length ? 'Nessun concerto in questa vista' : 'Nessun concerto ancora' }}</h2><p class="m-0 text-[var(--ui-color-medium)]">{{ gigs().length ? 'Prova un altro filtro.' : 'Aggiungi la prima data live della band.' }}</p>@if (!gigs().length) { <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" type="button">Aggiungi concerto</app-gigsaw-button> }</section>
     } @else {
       <section class="grid grid-cols-1 gap-2.5">
         @for (gig of visibleGigs(); track gig.id) {

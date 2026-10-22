@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <button class="btn btn-ghost btn-square" slot="start"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button>
+    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" slot="start"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button>
     <div class="flex flex-col gap-0.5 py-2">
       <span class="font-extrabold">Feedback e assistenza</span>
       <small class="text-[.72rem] opacity-60">Parla direttamente con il team GigSaw</small>
@@ -16,7 +16,7 @@
         <h1 class="mb-2 mt-3 text-[clamp(2rem,5vw,3rem)] leading-none tracking-[-.04em]">Come possiamo aiutarti?</h1>
         <p class="m-0 leading-[1.55] opacity-65">Segnala un problema, proponi una funzione o chiedi assistenza. Qui trovi anche tutte le risposte del team.</p>
       </div>
-      <button class="btn btn-primary" (click)="startNewTicket()" type="button">Nuovo ticket</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="startNewTicket()" type="button">Nuovo ticket</app-gigsaw-button>
     </section>
 
     @if (error()) {
@@ -66,13 +66,13 @@
           <div class="grid min-w-0 gap-5 pt-2.5">
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
               <span>Oggetto <strong class="text-[var(--ui-color-danger)]">*</strong></span>
-              <input
+              <app-gigsaw-input
                 aria-label="Oggetto"
-                class="input w-full font-normal"
+                controlClass="font-normal"
                 [(ngModel)]="subject"
                 placeholder="Es. Import PDF bloccato"
                 [required]="true"
-               />
+              />
             </label>
 
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
@@ -88,15 +88,14 @@
 
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
               <span>Messaggio <strong class="text-[var(--ui-color-danger)]">*</strong></span>
-              <textarea
+              <app-gigsaw-textarea
                 aria-label="Messaggio"
-                class="textarea w-full font-normal"
-
+                controlClass="font-normal"
                 [rows]="7"
                 [(ngModel)]="message"
                 placeholder="Descrivi il problema con più dettagli possibile"
                 [required]="true"
-              ></textarea>
+              />
             </label>
 
             <div class="grid gap-2.5">
@@ -128,16 +127,16 @@
                         <strong class="overflow-hidden text-ellipsis whitespace-nowrap text-[.82rem]">{{ file.name }}</strong>
                         <small class="text-[.72rem] opacity-55">{{ fileSize(file) }}</small>
                       </div>
-                      <button class="grid size-[30px] shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-[color-mix(in_srgb,currentColor_9%,transparent)] text-inherit text-xl leading-none" type="button" (click)="removeScreenshot(i)" [disabled]="saving()" [attr.aria-label]="'Rimuovi ' + file.name">×</button>
+                      <app-gigsaw-button tone="unstyled" buttonClass="grid size-[30px] shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-[color-mix(in_srgb,currentColor_9%,transparent)] text-inherit text-xl leading-none" type="button" (click)="removeScreenshot(i)" [disabled]="saving()" [attr.aria-label]="'Rimuovi ' + file.name">×</app-gigsaw-button>
                     </div>
                   }
                 </div>
               }
             </div>
 
-            <button class="btn btn-primary" (click)="createTicket()" [disabled]="saving() || !subject.trim() || !message.trim()" type="button">
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="createTicket()" [disabled]="saving() || !subject.trim() || !message.trim()" type="button">
               @if (saving()) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Apri ticket }
-            </button>
+            </app-gigsaw-button>
           </div>
         } @else if (selectedTicket(); as ticket) {
           <div class="flex items-start justify-between gap-3 border-b border-[color-mix(in_srgb,currentColor_10%,transparent)] pb-[18px]">
@@ -173,24 +172,23 @@
           <div class="grid gap-2.5 border-t border-[color-mix(in_srgb,currentColor_10%,transparent)] pt-4">
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
               <span>Rispondi</span>
-              <textarea
+              <app-gigsaw-textarea
                 aria-label="Rispondi"
-                class="textarea w-full font-normal"
-
+                controlClass="font-normal"
                 [rows]="4"
                 [(ngModel)]="replyMessage"
                 placeholder="Scrivi una risposta"
-              ></textarea>
+              />
             </label>
-            <button class="btn btn-primary justify-self-end" (click)="sendReply()" [disabled]="saving() || !replyMessage.trim()" type="button">
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary justify-self-end" (click)="sendReply()" [disabled]="saving() || !replyMessage.trim()" type="button">
               @if (saving()) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Invia risposta }
-            </button>
+            </app-gigsaw-button>
           </div>
         } @else {
           <div class="grid min-h-[480px] place-items-center content-center p-6 text-center">
             <strong>Seleziona un ticket</strong>
             <p class="m-0 leading-[1.55] opacity-65">Oppure aprine uno nuovo per contattarci.</p>
-            <button class="btn btn-outline" (click)="startNewTicket()" type="button">Nuovo ticket</button>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="startNewTicket()" type="button">Nuovo ticket</app-gigsaw-button>
           </div>
         }
       </section>

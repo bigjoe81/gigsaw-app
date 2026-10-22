@@ -1,8 +1,10 @@
-import { AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, Directive, ElementRef, EventEmitter, HostListener, Injectable, Input, NgModule, OnChanges, OnDestroy, Output, TemplateRef, ViewChild, ApplicationRef, EnvironmentInjector, Type, createComponent, inject } from '@angular/core';
+import { AfterContentInit, AfterViewChecked, AfterViewInit, Component, ComponentRef, ContentChild, Directive, ElementRef, EventEmitter, HostListener, Injectable, Input, NgModule, OnChanges, OnDestroy, Output, TemplateRef, ViewChild, ApplicationRef, EnvironmentInjector, Type, createComponent, inject } from '@angular/core';
 import { NgTemplateOutlet, Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { symbolRegistry } from './symbol-registry';
+import { GigsawButtonComponent } from './gigsaw/gigsaw-button.component';
+import { GigsawInputComponent } from './gigsaw/gigsaw-input.component';
 
 @Component({
   selector: 'app-symbol',
@@ -22,7 +24,7 @@ export class SymbolComponent implements OnChanges {
   }
 }
 
-@Directive({ selector: 'button[appBack]' })
+@Directive({ selector: 'button[appBack], app-gigsaw-button[appBack]' })
 export class BackDirective {
   @Input() defaultHref = '/band';
   private readonly router = inject(Router);
@@ -58,24 +60,50 @@ export interface ReorderEvent { detail: { from: number; to: number; complete: ()
 export class ReorderDirective implements AfterContentInit, OnDestroy {
   @Output() itemsReordered = new EventEmitter<ReorderEvent>();
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly application = inject(ApplicationRef);
+  private readonly environment = inject(EnvironmentInjector);
   private readonly observer = new MutationObserver(() => this.decorate());
+  private readonly buttons = new Set<ComponentRef<GigsawButtonComponent>>();
   private from = -1;
   ngAfterContentInit(): void { this.decorate(); this.observer.observe(this.host, { childList: true }); }
-  ngOnDestroy(): void { this.observer.disconnect(); }
+  ngOnDestroy(): void {
+    this.observer.disconnect();
+    for (const button of this.buttons) this.destroyButton(button);
+  }
   private decorate(): void {
-    Array.from(this.host.children).forEach((child, index) => {
+    Array.from(this.host.children).forEach(child => {
       const row = child as HTMLElement;
       row.draggable = true;
       if (row.querySelector(':scope > .reorder-actions')) return;
       const actions = document.createElement('span'); actions.className = 'reorder-actions flex gap-1';
       for (const [label, delta] of [['Sposta su', -1], ['Sposta giù', 1]] as const) {
-        const button = document.createElement('button'); button.type = 'button'; button.className = 'btn btn-ghost btn-xs';
-        button.setAttribute('aria-label', label); button.textContent = delta < 0 ? '↑' : '↓';
-        button.onclick = event => { event.stopPropagation(); const i = Array.from(this.host.children).indexOf(row); this.move(i, i + delta); };
-        actions.append(button);
+        const button = createComponent(GigsawButtonComponent, { environmentInjector: this.environment });
+        button.setInput('tone', 'ghost');
+        button.setInput('buttonClass', 'btn-xs');
+        button.location.nativeElement.setAttribute('aria-label', label);
+        button.location.nativeElement.addEventListener('click', (event: MouseEvent) => {
+          event.stopPropagation();
+          const i = Array.from(this.host.children).indexOf(row);
+          this.move(i, i + delta);
+        });
+        this.application.attachView(button.hostView);
+        button.changeDetectorRef.detectChanges();
+        const nativeButton = button.location.nativeElement.querySelector('button');
+        if (!nativeButton) throw new Error('GigsawButtonComponent did not render a button');
+        nativeButton.textContent = delta < 0 ? '↑' : '↓';
+        actions.append(button.location.nativeElement);
+        this.buttons.add(button);
       }
       row.append(actions);
     });
+    for (const button of this.buttons) {
+      if (!this.host.contains(button.location.nativeElement)) this.destroyButton(button);
+    }
+  }
+  private destroyButton(button: ComponentRef<GigsawButtonComponent>): void {
+    this.application.detachView(button.hostView);
+    button.destroy();
+    this.buttons.delete(button);
   }
   private index(target: EventTarget | null): number {
     const row = Array.from(this.host.children).find(child => child.contains(target as Node));
@@ -118,28 +146,63 @@ function dialogShell(label: string): { dialog: HTMLDialogElement; box: HTMLDivEl
 }
 @Injectable({ providedIn: 'root' })
 export class DialogService {
+  private readonly application = inject(ApplicationRef);
+  private readonly environment = inject(EnvironmentInjector);
+
   async create(options: DialogOptions): Promise<{ present: () => Promise<void> }> {
     return { present: async () => {
       const { dialog, box } = dialogShell(options.header || 'Conferma');
       const title = document.createElement('h2'); title.className = 'text-xl font-semibold'; title.textContent = options.header || ''; box.append(title);
       const message = document.createElement('p'); message.className = 'py-4 whitespace-pre-line'; message.textContent = options.message || ''; box.append(message);
       const fields = new Map<string, HTMLInputElement>();
+      const fieldComponents: Array<ComponentRef<GigsawInputComponent>> = [];
+      const buttonComponents: Array<ComponentRef<GigsawButtonComponent>> = [];
       for (const field of options.inputs || []) {
         const label = document.createElement('label'); label.className = 'form-control block my-3';
         label.textContent = field.label || field.placeholder || field.name || '';
-        const input = document.createElement('input'); input.className = 'input w-full'; input.type = field.type || 'text'; input.value = String(field.value ?? ''); input.placeholder = field.placeholder || ''; label.append(input); box.append(label); fields.set(field.name || '', input);
+        const input = createComponent(GigsawInputComponent, { environmentInjector: this.environment });
+        input.setInput('type', field.type || 'text');
+        input.setInput('name', field.name || '');
+        input.setInput('value', field.value ?? '');
+        input.setInput('placeholder', field.placeholder || '');
+        this.application.attachView(input.hostView);
+        input.changeDetectorRef.detectChanges();
+        const nativeInput = input.location.nativeElement.querySelector('input');
+        if (!nativeInput) throw new Error('GigsawInputComponent did not render an input');
+        label.append(input.location.nativeElement);
+        box.append(label);
+        fields.set(field.name || '', nativeInput);
+        fieldComponents.push(input);
       }
-      const close = (): void => { dialog.close(); dialog.remove(); };
+      const close = (): void => {
+        dialog.close();
+        dialog.remove();
+        for (const input of fieldComponents) {
+          this.application.detachView(input.hostView);
+          input.destroy();
+        }
+        for (const button of buttonComponents) {
+          this.application.detachView(button.hostView);
+          button.destroy();
+        }
+      };
       const buttons = options.buttons?.length ? options.buttons : ['OK'];
       const actions = document.createElement('div'); actions.className = 'modal-action'; box.append(actions);
       for (const item of buttons) {
         const option = typeof item === 'string' ? { text: item } : item;
-        const button = document.createElement('button'); button.type = 'button'; button.textContent = option.text;
-        button.className = `btn ${option.role === 'cancel' ? 'btn-ghost' : option.role === 'destructive' ? 'btn-error' : 'btn-primary'}`;
-        button.onclick = async () => {
+        const button = createComponent(GigsawButtonComponent, { environmentInjector: this.environment });
+        button.setInput('tone', option.role === 'cancel' ? 'ghost' : option.role === 'destructive' ? 'error' : 'primary');
+        button.location.nativeElement.addEventListener('click', async () => {
           const result = await option.handler?.(Object.fromEntries(Array.from(fields, ([name, input]) => [name, input.value])));
           if (result !== false) close();
-        }; actions.append(button);
+        });
+        this.application.attachView(button.hostView);
+        button.changeDetectorRef.detectChanges();
+        const nativeButton = button.location.nativeElement.querySelector('button');
+        if (!nativeButton) throw new Error('GigsawButtonComponent did not render a button');
+        nativeButton.textContent = option.text;
+        actions.append(button.location.nativeElement);
+        buttonComponents.push(button);
       }
       dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
       dialog.addEventListener('click', event => { if (event.target === dialog) close(); });
@@ -185,5 +248,5 @@ export class OverlayService {
   async dismiss(data?: unknown, role?: string): Promise<void> { this.stack.at(-1)?.(data, role); }
 }
 
-@NgModule({ imports: [SymbolComponent, BackDirective, SelectDirective, ReorderDirective, DialogComponent], exports: [SymbolComponent, BackDirective, SelectDirective, ReorderDirective, DialogComponent] })
+@NgModule({ imports: [SymbolComponent, BackDirective, SelectDirective, ReorderDirective, DialogComponent, GigsawButtonComponent], exports: [SymbolComponent, BackDirective, SelectDirective, ReorderDirective, DialogComponent, GigsawButtonComponent] })
 export class NativeUiModule {}

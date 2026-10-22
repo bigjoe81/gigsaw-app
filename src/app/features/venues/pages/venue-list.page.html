@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button></div>
     <h1 class="grow text-xl">Luoghi</h1>
   </div>
 </header>
@@ -11,22 +11,22 @@
       <div><p class="mb-[5px] text-[.72rem] font-extrabold uppercase tracking-[.12em] text-[var(--ui-color-primary)]">Anagrafica</p><h1 class="m-0 text-[clamp(1.45rem,2.4vw,2rem)] font-extrabold" id="library-title">I tuoi luoghi</h1></div>
       <div class="flex items-center gap-3 max-[700px]:w-full max-[700px]:flex-wrap max-[700px]:justify-end">
         @if (!loading() && !error()) { <span class="rounded-full border border-[var(--gigsaw-border)] px-[11px] py-[7px] text-[.78rem] font-bold text-[var(--gigsaw-muted)]">{{ locationCount() }} {{ locationCount() === 1 ? 'luogo' : 'luoghi' }}</span> }
-        <button class="btn btn-outline font-bold [--border-color:var(--ui-color-brand-blue)] [--border-radius:9px] [--color:var(--ui-color-brand-blue)]" [routerLink]="['sala', 'nuova']" type="button"><app-symbol name="add" aria-hidden="true"  />Sala prove</button>
-        <button class="btn btn-primary font-extrabold [--background:var(--ui-color-primary)] [--border-radius:9px] [--color:var(--ui-color-primary-contrast)]" [routerLink]="['locale', 'nuovo']" type="button"><app-symbol name="add" aria-hidden="true"  />Venue concerto</button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline font-bold [--border-color:var(--ui-color-brand-blue)] [--border-radius:9px] [--color:var(--ui-color-brand-blue)]" [routerLink]="['sala', 'nuova']" type="button"><app-symbol name="add" aria-hidden="true"  />Sala prove</app-gigsaw-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary font-extrabold [--background:var(--ui-color-primary)] [--border-radius:9px] [--color:var(--ui-color-primary-contrast)]" [routerLink]="['locale', 'nuovo']" type="button"><app-symbol name="add" aria-hidden="true"  />Venue concerto</app-gigsaw-button>
       </div>
     </header>
 
     @if (!loading() && !error() && locationCount()) {
       <section class="mb-3 ml-1 mr-1 grid grid-cols-[1fr_minmax(280px,420px)] items-center gap-4 rounded-xl border border-[var(--gigsaw-border)] bg-[#101d30] p-3 max-[700px]:grid-cols-1">
         <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--gigsaw-muted)]"><span><strong class="mr-1 text-xl font-bold text-[var(--gigsaw-text)]">{{ venues().length }}</strong> venue</span><span><strong class="mr-1 text-xl font-bold text-[var(--gigsaw-text)]">{{ rehearsalRooms().length }}</strong> sale prove</span><span><strong class="mr-1 text-xl font-bold text-[var(--gigsaw-text)]">{{ cityCount() }}</strong> città</span></div>
-        <input class="input w-full" type="search" aria-label="Cerca luoghi" name="locationSearch" placeholder="Cerca per nome, indirizzo o città" [value]="query()" (input)="query.set($any($event.target).value ?? '')"  />
+        <app-gigsaw-input type="search" aria-label="Cerca luoghi" name="locationSearch" placeholder="Cerca per nome, indirizzo o città" [value]="query()" (valueChange)="query.set($any($event))" />
       </section>
     }
 
     @if (loading()) {
       <section class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-loading size="lg" /><span class="text-[var(--gigsaw-muted)]">Caricamento luoghi…</span></section>
     } @else if (error()) {
-      <section class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message><button class="btn btn-outline" (click)="load()" type="button">Riprova</button></section>
+      <section class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button></section>
     } @else if (!visibleLocations().length) {
       <section class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-symbol class="text-[44px] text-[var(--ui-color-brand-blue)]" name="business-outline"  /><h2>{{ locationCount() ? 'Nessun risultato' : 'Nessun luogo salvato' }}</h2><p>{{ locationCount() ? 'Modifica i termini della ricerca.' : 'Aggiungi una venue o una sala prove.' }}</p></section>
     } @else {
@@ -40,8 +40,8 @@
             </span>
             <div class="ml-4 flex flex-wrap items-center justify-end gap-1 max-[700px]:ml-2 max-[700px]:max-w-[104px] max-[700px]:gap-2" slot="end">
               <span class="badge min-w-[68px] rounded-full px-2.5 py-1.5 text-center text-[.67rem] font-extrabold uppercase tracking-[.04em] max-[700px]:min-w-0 max-[700px]:w-full max-[700px]:whitespace-normal max-[700px]:px-[7px]">{{ item.kind === 'venue' ? 'Venue concerto' : 'Sala prove' }}</span>
-              <button class="btn btn-ghost" [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']" [attr.aria-label]="'Modifica ' + item.location.name" type="button"><app-symbol name="pencil-outline" aria-hidden="true"  /></button>
-              <button class="btn btn-ghost btn-error" [disabled]="deletingKey() !== null" (click)="confirmDelete(item.kind, item.location)" [attr.aria-label]="'Elimina ' + item.location.name" type="button">@if (deletingKey() === item.kind + '-' + item.location.id) { <span class="loading loading-spinner" aria-label="Eliminazione in corso"  role="status" aria-label="Caricamento"></span> } @else { <app-symbol name="trash-outline" aria-hidden="true"  /> }</button>
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost" [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']" [attr.aria-label]="'Modifica ' + item.location.name" type="button"><app-symbol name="pencil-outline" aria-hidden="true"  /></app-gigsaw-button>
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-error" [disabled]="deletingKey() !== null" (click)="confirmDelete(item.kind, item.location)" [attr.aria-label]="'Elimina ' + item.location.name" type="button">@if (deletingKey() === item.kind + '-' + item.location.id) { <span class="loading loading-spinner" aria-label="Eliminazione in corso"  role="status" aria-label="Caricamento"></span> } @else { <app-symbol name="trash-outline" aria-hidden="true"  /> }</app-gigsaw-button>
             </div>
           </app-gigsaw-list-item>
         }

@@ -1,28 +1,28 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div>
     <h1 class="grow text-xl">{{ editing ? 'Modifica template' : 'Nuovo template' }}</h1>
     <div class="flex items-center gap-2" slot="end">
-      <button class="btn btn-primary" (click)="save()" [disabled]="saving" type="button">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="save()" [disabled]="saving" type="button">
         @if (saving) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Salva }
-      </button>
+      </app-gigsaw-button>
     </div>
   </div>
 </header>
 <section class="app-content">
   <form [formGroup]="form" (ngSubmit)="save()">
-    <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Nome *</span><input class="input w-full" formControlName="name"  /></label>
-    <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Descrizione</span><textarea class="textarea w-full" formControlName="description" ></textarea></label>
+    <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Nome *</span><app-gigsaw-input formControlName="name" /></label>
+    <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Descrizione</span><app-gigsaw-textarea formControlName="description" /></label>
     <div class="grid gap-[18px]">
       <section class="grid gap-2.5 py-0.5">
         <h3 class="m-0 text-base font-bold">Obiettivi dello show</h3>
         <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ui-color-medium-shade)]">Valori base per il comportamento della generazione automatica.</p>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Numero indicativo di brani</span><input class="input w-full" type="number" formControlName="targetSongCount"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Numero indicativo di brani</span><app-gigsaw-input type="number" formControlName="targetSongCount" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Numero di brani che vuoi usare come base per una scaletta tipica.</small>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Tag brani da includere</span><input class="input w-full" formControlName="songTagsText" placeholder="marchettone, dance" autocomplete="off" autocapitalize="off" spellcheck="false"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Tag brani da includere</span><app-gigsaw-input formControlName="songTagsText" placeholder="marchettone, dance" autocomplete="off" autocapitalize="off" [spellcheck]="false" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Se valorizzato, il template limita Magic Set ai brani che hanno almeno uno di questi tag.</small>
         @if (availableSongTags.length) { <div class="flex flex-wrap gap-2 px-4 pt-1">@for (tag of availableSongTags; track tag) {<span class="badge badge-outline" (click)="applySongTag(tag)" [class.badge-outline]="!hasSongTag(tag)">{{ tag }}</span>}</div> }
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Durata totale desiderata dello show (ore:minuti)</span><input class="input w-full" formControlName="totalShowDurationText" placeholder="2:30" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" [style.--highlight-color-focused]="showTotalShowDurationError() ? 'var(--ui-color-danger)' : null" (blur)="normalizeTotalShowDuration()"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Durata totale desiderata dello show (ore:minuti)</span><app-gigsaw-input formControlName="totalShowDurationText" placeholder="2:30" inputMode="numeric" autocomplete="off" autocapitalize="off" [spellcheck]="false" enterKeyHint="next" [style.--highlight-color-focused]="showTotalShowDurationError() ? 'var(--ui-color-danger)' : null" (blurred)="normalizeTotalShowDuration()" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Esempio: 1:45 per 1 ora e 45 minuti. Verrà convertita in secondi per il backend.</small>
         @if (showTotalShowDurationError()) { <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-danger)]">Usa il formato hh:mm, per esempio 1:45 o 2:30.</small> }
       </section>
@@ -30,12 +30,12 @@
       <section class="grid gap-2.5 py-0.5">
         <h3 class="m-0 text-base font-bold">Struttura dei set</h3>
         <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ui-color-medium-shade)]">Se prevedi piu blocchi, qui definisci durata e pause.</p>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Numero di set desiderati</span><input class="input w-full" type="number" formControlName="setCount"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Numero di set desiderati</span><app-gigsaw-input type="number" formControlName="setCount" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Quanti blocchi vuoi generare quando crei una scaletta da questo template.</small>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Durata desiderata di ogni set (ore:minuti, CSV)</span><input class="input w-full" formControlName="setTargetsText" placeholder="0:45, 0:50" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" [style.--highlight-color-focused]="showSetTargetsError() ? 'var(--ui-color-danger)' : null" (blur)="normalizeSetTargets()"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Durata desiderata di ogni set (ore:minuti, CSV)</span><app-gigsaw-input formControlName="setTargetsText" placeholder="0:45, 0:50" inputMode="numeric" autocomplete="off" autocapitalize="off" [spellcheck]="false" enterKeyHint="next" [style.--highlight-color-focused]="showSetTargetsError() ? 'var(--ui-color-danger)' : null" (blurred)="normalizeSetTargets()" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Inserisci valori tipo 0:45, 0:50, 1:00, uno per ogni set.</small>
         @if (showSetTargetsError()) { <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-danger)]">Usa valori hh:mm separati da virgola, per esempio 0:45, 0:50, 1:00.</small> }
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Pausa tra i set (minuti:secondi)</span><input class="input w-full" formControlName="breakDurationText" placeholder="15:00" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" [class.invalid-field]="showBreakDurationError()" (blur)="normalizeBreakDuration()"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Pausa tra i set (minuti:secondi)</span><app-gigsaw-input formControlName="breakDurationText" placeholder="15:00" inputMode="numeric" autocomplete="off" autocapitalize="off" [spellcheck]="false" enterKeyHint="done" [controlClass]="showBreakDurationError() ? 'invalid-field' : ''" (blurred)="normalizeBreakDuration()" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Esempio: 10:30 per dieci minuti e trenta secondi.</small>
         @if (showBreakDurationError()) { <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-danger)]">Usa il formato mm:ss, per esempio 15:00 o 10:30.</small> }
       </section>
@@ -43,15 +43,15 @@
       <section class="grid gap-2.5 py-0.5">
         <h3 class="m-0 text-base font-bold">Vincoli musicali</h3>
         <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ui-color-medium-shade)]">Il motore usa questi limiti per scegliere brani piu equilibrati.</p>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Novita minima rispetto alla scaletta precedente (0-1)</span><input class="input w-full" type="number" formControlName="minDifferenceRatio"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Novita minima rispetto alla scaletta precedente (0-1)</span><app-gigsaw-input type="number" formControlName="minDifferenceRatio" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Più alto = piu cambiamenti rispetto all'ultima scaletta simile.</small>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Soglia BPM per considerare un brano lento</span><input class="input w-full" type="number" formControlName="slowSongBpmThreshold"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Soglia BPM per considerare un brano lento</span><app-gigsaw-input type="number" formControlName="slowSongBpmThreshold" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Sotto questa soglia il brano viene trattato come lento nella generazione.</small>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Evita due brani consecutivi nella stessa tonalita</span><input class="toggle toggle-primary" formControlName="avoidAdjacentSameKey"  type="checkbox" /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Evita due brani consecutivi nella stessa tonalita</span><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="avoidAdjacentSameKey" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Serve a evitare passaggi troppo simili e monotoni.</small>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Evita due brani lenti consecutivi</span><input class="toggle toggle-primary" formControlName="avoidAdjacentSlowSongs"  type="checkbox" /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Evita due brani lenti consecutivi</span><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="avoidAdjacentSlowSongs" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Aiuta a distribuire i brani lenti nel corso del live.</small>
-        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Massimo numero di brani lenti consecutivi</span><input class="input w-full" type="number" formControlName="maxConsecutiveSlowSongs"  /></label>
+        <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Massimo numero di brani lenti consecutivi</span><app-gigsaw-input type="number" formControlName="maxConsecutiveSlowSongs" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Limite massimo di lenti di fila prima di forzare un cambio di energia.</small>
       </section>
     </div>
@@ -81,7 +81,7 @@
         <app-gigsaw-list>
           @for (song of songs; track song.id) {
             <app-gigsaw-list-item>
-              <input class="checkbox checkbox-primary" [checked]="segmentSelected('opening', song)" (change)="toggleSegmentSong('opening', song)"  type="checkbox" />
+              <app-gigsaw-checkbox controlClass="checkbox checkbox-primary" [checked]="segmentSelected('opening', song)" (checkedChange)="toggleSegmentSong('opening', song)" />
               <div class="list-col-grow">
                 <h2>{{ song.title }}</h2>
                 <p>{{ songMeta(song) }}</p>
@@ -98,7 +98,7 @@
         <app-gigsaw-list>
           @for (song of songs; track song.id) {
             <app-gigsaw-list-item>
-              <input class="checkbox checkbox-primary" [checked]="segmentSelected('closing', song)" (change)="toggleSegmentSong('closing', song)"  type="checkbox" />
+              <app-gigsaw-checkbox controlClass="checkbox checkbox-primary" [checked]="segmentSelected('closing', song)" (checkedChange)="toggleSegmentSong('closing', song)" />
               <div class="list-col-grow">
                 <h2>{{ song.title }}</h2>
                 <p>{{ songMeta(song) }}</p>
@@ -115,7 +115,7 @@
         <app-gigsaw-list>
           @for (song of songs; track song.id) {
             <app-gigsaw-list-item>
-              <input class="checkbox checkbox-primary" [checked]="segmentSelected('encore', song)" (change)="toggleSegmentSong('encore', song)"  type="checkbox" />
+              <app-gigsaw-checkbox controlClass="checkbox checkbox-primary" [checked]="segmentSelected('encore', song)" (checkedChange)="toggleSegmentSong('encore', song)" />
               <div class="list-col-grow">
                 <h2>{{ song.title }}</h2>
                 <p>{{ songMeta(song) }}</p>
@@ -127,6 +127,6 @@
     </article>
 
     @if (error) { <small class="text-sm text-error block p-4">{{ error }}</small> }
-    <button class="btn btn-primary my-4" type="submit" [disabled]="saving">Salva template</button>
+    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary my-4" type="submit" [disabled]="saving">Salva template</app-gigsaw-button>
   </form>
 </section>

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
@@ -15,7 +16,7 @@ import { MapboxGeocodingService } from '../services/mapbox-geocoding.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, ReactiveFormsModule, FormPageHeaderComponent, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, FormPageHeaderComponent, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, ],
   templateUrl: './venue-form.page.html',
   styleUrls: ['./venue-form.page.scss'],
 })

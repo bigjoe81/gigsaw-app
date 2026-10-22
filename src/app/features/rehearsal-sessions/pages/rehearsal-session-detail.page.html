@@ -1,8 +1,8 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div>
     <h1 class="grow text-xl">Riepilogo prova</h1>
-    <div class="flex items-center gap-2" slot="end"><button class="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica</button></div>
+    <div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica</app-gigsaw-button></div>
   </div>
 </header>
 <section class="app-content">
@@ -17,7 +17,7 @@
       <section class="grid justify-items-center gap-[18px] px-5 py-[60px] text-center">
         <h1 class="m-0 text-[clamp(1.6rem,4vw,2.3rem)] font-extrabold [overflow-wrap:anywhere]">Prova non disponibile</h1>
         <small class="text-sm text-error" role="alert">{{ error() || 'La prova non è stata trovata.' }}</small>
-        <button class="btn btn-outline" (click)="load()" type="button">Riprova</button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
       </section>
     } @else {
       @let current = session!;
@@ -53,10 +53,10 @@
           @if (current.songs?.length) {
             <ol class="pl-6 leading-[2]">@for (song of current.songs; track song.id) { <li>{{ song.title }}</li> }</ol>
           } @else { <p class="m-0 leading-[1.7] text-[var(--gigsaw-muted)]">Apri la modifica per consultare i brani selezionati.</p> }
-          <button class="btn btn-outline btn-sm mt-4" [routerLink]="['modifica']" type="button">Gestisci brani</button>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm mt-4" [routerLink]="['modifica']" type="button">Gestisci brani</app-gigsaw-button>
         </section>
       }
-      <footer class="mt-[26px] flex items-center justify-between gap-5 border-t border-[var(--gigsaw-border)] pt-[18px] text-[.85rem] text-[var(--gigsaw-muted)] max-[680px]:items-start max-[680px]:flex-col max-[680px]:gap-3"><span>Vuoi aggiornare i dettagli della prova?</span><div class="flex gap-1.5 max-[680px]:w-full max-[680px]:justify-between"><button class="btn btn-ghost btn-error" (click)="confirmDelete()" type="button">Elimina prova</button><button class="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica prova</button></div></footer>
+      <footer class="mt-[26px] flex items-center justify-between gap-5 border-t border-[var(--gigsaw-border)] pt-[18px] text-[.85rem] text-[var(--gigsaw-muted)] max-[680px]:items-start max-[680px]:flex-col max-[680px]:gap-3"><span>Vuoi aggiornare i dettagli della prova?</span><div class="flex gap-1.5 max-[680px]:w-full max-[680px]:justify-between"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-error" (click)="confirmDelete()" type="button">Elimina prova</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica prova</app-gigsaw-button></div></footer>
     }
   </main>
 </section>

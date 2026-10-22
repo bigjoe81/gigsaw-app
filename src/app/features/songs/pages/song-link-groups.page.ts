@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit, computed, signal } from '@angular/core';
@@ -11,7 +12,7 @@ import { SongService } from '../services/song.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, ReactiveFormsModule, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, ],
   templateUrl: './song-link-groups.page.html',
   styleUrls: ['./song-link-groups.page.scss'],
 })

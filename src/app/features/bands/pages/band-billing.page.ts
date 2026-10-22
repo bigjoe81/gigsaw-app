@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { DatePipe, CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -18,9 +19,9 @@ interface Billing {
 interface Plan { monthly_available: boolean; yearly_available: boolean; id: number; name: string; description: string | null; type: string; currency: string; monthly_price_cents: number | null; yearly_price_cents: number | null; }
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
  standalone: true,
- imports: [NativeUiModule, DatePipe, CurrencyPipe, FormsModule, RouterLink, ],
+ imports: [NativeUiModule, GigsawFormControlsModule, DatePipe, CurrencyPipe, FormsModule, RouterLink, ],
  template: `
- <header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button></div><h1 class="grow text-xl">Abbonamento</h1></div></header>
+ <header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button></div><h1 class="grow text-xl">Abbonamento</h1></div></header>
  <section class="app-content p-4">
  <a [routerLink]="settingsUrl">← Impostazioni della band</a>
  @if (loading()) { <p>Caricamento…</p> }
@@ -31,25 +32,25 @@ interface Plan { monthly_available: boolean; yearly_available: boolean; id: numb
  <p>Stato: {{ statusLabel(state.status) }}</p>
  @if (state.ends_at) { <p>{{ state.status === 'beta' || state.status === 'trialing' ? 'Periodo gratuito fino al' : 'Scadenza' }} {{ state.ends_at | date:'dd/MM/yyyy' }}</p> }
  @if (state.status === 'beta' || state.status === 'expired') { <p>La Beta non genera addebiti automatici. Per attivare un piano a pagamento, un amministratore deve completare il checkout Stripe.</p> }
- @if (isAdmin && state.can_manage_payments && state.payments_enabled) { <button class="btn btn-primary" (click)="portal()" [disabled]="busy()" type="button">Gestisci pagamenti e fatture</button> }
- <button class="btn btn-outline" (click)="load()" [disabled]="busy()" type="button">Aggiorna stato</button>
+ @if (isAdmin && state.can_manage_payments && state.payments_enabled) { <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="portal()" [disabled]="busy()" type="button">Gestisci pagamenti e fatture</app-gigsaw-button> }
+ <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" [disabled]="busy()" type="button">Aggiorna stato</app-gigsaw-button>
  </div></article>
  @if (isAdmin && state.payments_enabled && (state.status === 'beta' || state.status === 'free' || state.status === 'expired' || state.status === 'unassigned')) {
- <input class="input w-full" label="Email di fatturazione" type="email" [(ngModel)]="email"  />
+ <app-gigsaw-input controlClass="w-full" aria-label="Email di fatturazione" type="email" [(ngModel)]="email" />
  <select class="select w-full" label="Periodo" [(ngModel)]="interval"><option value="monthly">Mensile</option><option value="yearly">Annuale</option></select>
  @for (plan of plans(); track plan.id) {
  @if (amount(plan) !== null) {
  <article class="card bg-base-200 border border-base-300 my-4"><header class="px-6 pt-6"><h2 class="card-title">{{ plan.name }}</h2></header><div class="card-body">
  <p>{{ plan.description }}</p><p>{{ (amount(plan) || 0) / 100 | currency:plan.currency.toUpperCase() }} / {{ interval === 'monthly' ? 'mese' : 'anno' }}</p>
  <p>Stripe mostrerà importo e data del primo addebito prima della conferma.</p>
- <button class="btn btn-primary" (click)="checkout(plan)" [disabled]="busy() || !email" type="button">Continua su Stripe</button>
+ <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="checkout(plan)" [disabled]="busy() || !email" type="button">Continua su Stripe</app-gigsaw-button>
  </div></article>
  }
  }
  @if (!plans().length) { <p>I piani a pagamento saranno disponibili al termine della Beta.</p> }
  } @else if (!state.payments_enabled) { <p>I pagamenti non sono ancora disponibili.</p> }
  }
- @if (!billing() && !loading()) { <button class="btn btn-primary" (click)="load()" type="button">Riprova</button> }
+ @if (!billing() && !loading()) { <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="load()" type="button">Riprova</app-gigsaw-button> }
  </section>`,
 })
 export class BandBillingPage {

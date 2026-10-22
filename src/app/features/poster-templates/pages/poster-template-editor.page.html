@@ -1,33 +1,33 @@
-<header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button></div><h1 class="grow text-xl">Editor locandina</h1><div class="flex items-center gap-2" slot="end"><button class="btn btn-primary" (click)="save()" type="button">Salva</button></div></div></header>
+<header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div><h1 class="grow text-xl">Editor locandina</h1><div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="save()" type="button">Salva</app-gigsaw-button></div></div></header>
 <section class="app-content">
   <div class="grid w-full grid-cols-[minmax(220px,1fr)_minmax(320px,2fr)_minmax(220px,1fr)] gap-4 max-[900px]:grid-cols-1">
     <div>
       <div class="ui-list grid gap-2">
         <h2 class="text-lg font-semibold"><span class="ui-label">Template</span></h2>
-        <div class="ui-item flex items-center gap-3 py-3"><input class="input w-full" aria-label="Nome locandina" [(ngModel)]="name"  /></div>
+        <div class="ui-item flex items-center gap-3 py-3"><app-gigsaw-input aria-label="Nome locandina" [(ngModel)]="name" /></div>
         <div class="ui-item flex items-center gap-3 py-3"><label class="gigsaw-select-field"><span>Variante del formato</span><select class="select w-full" [ngModel]="document.format.id" (ngModelChange)="changeFormat($event)" aria-label="Formato">@for (format of formats; track format.id) {<option [ngValue]="format.id">{{ format.label }} · {{ format.width }}×{{ format.height }}</option>}</select></label></div>
         <small class="text-sm">Seleziona un formato per aprire la sua variante o crearla da quella corrente. Ogni variante mantiene il proprio sfondo e layout. Salva per conservare tutti i formati modificati.</small>
-        <div class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Sfondo PNG o JPG</span><button class="btn btn-outline" slot="end" (click)="backgroundInput.click()" type="button">Sfoglia</button></div>
+        <div class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Sfondo PNG o JPG</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" slot="end" (click)="backgroundInput.click()" type="button">Sfoglia</app-gigsaw-button></div>
         <input #backgroundInput hidden type="file" accept="image/png,image/jpeg" (change)="uploadBackground($event)" />
       </div>
       <h2 class="text-lg font-semibold"><span class="ui-label">Campi dinamici</span></h2>
-      @for (preset of presets; track preset.key) {<button class="btn btn-outline btn-sm" [disabled]="hasField(preset.key)" (click)="addField(preset.key)" type="button">+ {{ preset.label }}</button>}
+      @for (preset of presets; track preset.key) {<app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm" [disabled]="hasField(preset.key)" (click)="addField(preset.key)" type="button">+ {{ preset.label }}</app-gigsaw-button>}
     </div>
     <div class="self-start overflow-auto"><app-poster-canvas [document]="document" [selectedId]="selectedId" (selectedIdChange)="selectedId = $event" /></div>
     <div>
       <div class="ui-list grid gap-2">
         <h2 class="text-lg font-semibold"><span class="ui-label">Stile campo</span></h2>
         @if (selected) {
-          <div class="ui-item flex items-center gap-3 py-3"><input class="input w-full" label="Valore di esempio" [(ngModel)]="selected.sampleValue" (ngModelChange)="updateSelected()"  /></div>
+          <div class="ui-item flex items-center gap-3 py-3"><app-gigsaw-input aria-label="Valore di esempio" [(ngModel)]="selected.sampleValue" (ngModelChange)="updateSelected()" /></div>
           <div class="ui-item flex items-center gap-3 py-3"><label class="gigsaw-select-field"><span>Font</span><select class="select w-full" [(ngModel)]="selected.fontFamily" (ngModelChange)="updateSelected()" aria-label="Font">@for (font of fonts; track font) {<option [ngValue]="font">{{ font }}</option>}</select></label></div>
-          <div class="ui-item flex items-center gap-3 py-3"><input class="input w-full" label="Dimensione" type="number" min="16" max="220" [(ngModel)]="selected.fontSize" (ngModelChange)="updateSelected()"  /></div>
-          <div class="ui-item flex items-center gap-3 py-3"><input class="input w-full" label="Colore (HEX)" [(ngModel)]="selected.color" (ngModelChange)="updateSelected()"  /></div>
+          <div class="ui-item flex items-center gap-3 py-3"><app-gigsaw-input aria-label="Dimensione" controlClass="w-full" type="number" min="16" max="220" [(ngModel)]="selected.fontSize" (ngModelChange)="updateSelected()" /></div>
+          <div class="ui-item flex items-center gap-3 py-3"><app-gigsaw-input aria-label="Colore (HEX)" [(ngModel)]="selected.color" (ngModelChange)="updateSelected()" /></div>
           <div class="ui-item flex items-center gap-3 py-3"><label class="gigsaw-select-field"><span>Allineamento</span><select class="select w-full" [(ngModel)]="selected.textAlign" (ngModelChange)="updateSelected()" aria-label="Allineamento"><option value="left">Sinistra</option><option value="center">Centro</option><option value="right">Destra</option></select></label></div>
-          <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><input class="checkbox checkbox-primary" [(ngModel)]="selected.uppercase" (ngModelChange)="updateSelected()" type="checkbox" /><span>Maiuscolo</span></label></div>
-          <button class="btn btn-outline btn-error" (click)="removeSelected()" type="button">Rimuovi campo</button>
+          <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox [(ngModel)]="selected.uppercase" (ngModelChange)="updateSelected()" /><span>Maiuscolo</span></label></div>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-error" (click)="removeSelected()" type="button">Rimuovi campo</app-gigsaw-button>
         } @else {<small class="text-sm">Seleziona un campo sulla locandina per modificarlo.</small>}
       </div>
-      <button class="btn btn-primary" (click)="exportPng()" type="button">Esporta PNG {{ document.format.width }}×{{ document.format.height }}</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="exportPng()" type="button">Esporta PNG {{ document.format.width }}×{{ document.format.height }}</app-gigsaw-button>
     </div>
   </div>
 </section>

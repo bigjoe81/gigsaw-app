@@ -1,14 +1,14 @@
-<header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button></div><h1 class="grow text-xl">Importa brani</h1></div></header>
+<header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div><h1 class="grow text-xl">Importa brani</h1></div></header>
 <section class="app-content p-4">
   <article class="card bg-base-200 border border-base-300 my-4">
     <header class="px-6 pt-6"><h2 class="card-title">Importa repertorio da PDF</h2></header>
     <div class="card-body">
       <p>Controlla i brani trovati prima di salvarli.</p>
       <input #pdfInput hidden type="file" accept="application/pdf,.pdf" (change)="onFileSelected($event)" />
-      <button class="btn btn-primary" [disabled]="analyzing() || importing()" (click)="chooseFile(pdfInput)" type="button">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [disabled]="analyzing() || importing()" (click)="chooseFile(pdfInput)" type="button">
         @if (analyzing()) { <span class="loading loading-spinner" slot="start"  role="status" aria-label="Caricamento"></span> Analisi in corso… }
         @else { <app-symbol name="cloud-upload-outline"  /> Scegli PDF }
-      </button>
+      </app-gigsaw-button>
     </div>
   </article>
   @if (error()) { <small class="text-sm text-error my-3 block">{{ error() }}</small> }
@@ -19,7 +19,7 @@
       <div class="ui-item flex items-center gap-3 py-3"><span class="ui-label">AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti</span></div>
       @for (row of data.rows; track row.row_number) {
         <div class="ui-item flex items-center gap-3 py-3">
-          <input class="checkbox checkbox-primary" slot="start" [checked]="isSelected(row)" [disabled]="row.duplicate_existing || !row.ready" (change)="toggle(row)"  type="checkbox" />
+          <app-gigsaw-checkbox controlClass="checkbox checkbox-primary" slot="start" [checked]="isSelected(row)" [disabled]="row.duplicate_existing || !row.ready" (checkedChange)="toggle(row)" />
           <span class="ui-label">
             <h2>{{ row.input.title || 'Titolo mancante' }}</h2>
             <p>{{ row.input.performed_by || 'Artista non indicato' }} · {{ row.input.key || '—' }} · {{ row.input.bpm || '—' }} BPM</p>
@@ -30,8 +30,8 @@
         </div>
       }
     </div>
-    <button class="btn btn-primary" [disabled]="!selectedRows().size || importing()" (click)="confirm()" type="button">
+    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [disabled]="!selectedRows().size || importing()" (click)="confirm()" type="button">
       @if (importing()) { <span class="loading loading-spinner" slot="start"  role="status" aria-label="Caricamento"></span> Importazione… } @else { Importa {{ selectedRows().size }} brani }
-    </button>
+    </app-gigsaw-button>
   }
 </section>

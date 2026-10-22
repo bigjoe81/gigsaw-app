@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
@@ -12,7 +13,7 @@ import { CommitmentService } from '../services/commitment.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, ReactiveFormsModule, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, ],
   templateUrl: './commitment-form.page.html',
   styleUrls: ['./commitment-form.page.scss'],
 })

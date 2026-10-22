@@ -20,24 +20,23 @@
     <form class="flex w-full flex-col gap-4" (submit)="submit(); $event.preventDefault()">
       <div aria-hidden="true" inert style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;">
         <label for="registration-website">Sito web</label>
-        <input id="registration-website" name="website" type="text" autocomplete="off" tabindex="-1"
-          [value]="website()" (input)="website.set($any($event.target).value)" />
+        <app-gigsaw-input id="registration-website" name="website" type="text" autocomplete="off" tabindex="-1"
+          [value]="website()" (valueChange)="website.set($any($event))" />
       </div>
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Nome e cognome</span>
-        <input class="input w-full min-h-12 w-full font-normal"
-
+        <app-gigsaw-input
           aria-label="Nome e cognome"
           autocapitalize="words"
-          [class.is-touched]="touched()"
+          [controlClass]="'min-h-12 font-normal ' + (touched() ? 'is-touched' : '')"
           [disabled]="loading"
           name="name"
           autocomplete="name"
           placeholder="Nome e cognome"
           [value]="name()"
-          [class.is-invalid]="touched() && !nameValid()"
-          (input)="updateName($any($event.target).value ?? '')"
-       />
+          [invalid]="touched() && !nameValid()"
+          (valueChange)="updateName($event)"
+        />
       </label>
       @if (touched() && !nameValid()) {
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci il nome.</app-gigsaw-message>
@@ -45,22 +44,21 @@
 
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Email</span>
-        <input class="input w-full min-h-12 w-full font-normal"
-
+        <app-gigsaw-input
           aria-label="Email"
-          inputmode="email"
+          inputMode="email"
           autocapitalize="off"
           [spellcheck]="false"
-          [class.is-touched]="touched()"
+          [controlClass]="'min-h-12 font-normal ' + (touched() ? 'is-touched' : '')"
           [disabled]="loading"
           type="email"
           name="email"
           autocomplete="email"
           placeholder="es. mario.rossi@gmail.com"
           [value]="email()"
-          [class.is-invalid]="touched() && !emailValid()"
-          (input)="updateEmail($any($event.target).value ?? '')"
-       />
+          [invalid]="touched() && !emailValid()"
+          (valueChange)="updateEmail($event)"
+        />
       </label>
       @if (touched() && !emailValid()) {
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-gigsaw-message>

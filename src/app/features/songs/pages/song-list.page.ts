@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { OverlayService, DialogService, ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, computed, signal } from '@angular/core';
@@ -13,7 +14,7 @@ import { GigsawIconComponent, GigsawListComponent, GigsawListItemComponent } fro
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule,
+  imports: [NativeUiModule, GigsawFormControlsModule,
     RouterLink,
     GigsawIconComponent,
     GigsawListComponent,

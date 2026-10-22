@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
-import { JsonPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { PosterTemplateService } from '../services/poster-template.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, JsonPipe, FormsModule, PosterCanvasComponent, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, FormsModule, PosterCanvasComponent, ],
   templateUrl: './poster-template-editor.page.html',
   styleUrl: './poster-template-editor.page.scss',
 })

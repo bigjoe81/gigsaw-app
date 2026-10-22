@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button></div>
     <h1 class="grow text-xl">Locandine</h1>
   </div>
 </header>
@@ -12,7 +12,7 @@
         <h1 class="my-2 text-[clamp(1.8rem,3vw,2.3rem)] font-extrabold tracking-[-.04em]">Locandine</h1>
         <p class="m-0 leading-[1.6] text-[var(--gigsaw-muted)]">Crea il tuo layout una volta. Riutilizzalo per ogni concerto.</p>
       </div>
-      <button class="btn btn-primary shrink-0 max-[600px]:m-0" routerLink="nuova" type="button"><app-symbol name="add"  />Nuovo template</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary shrink-0 max-[600px]:m-0" routerLink="nuova" type="button"><app-symbol name="add"  />Nuovo template</app-gigsaw-button>
     </header>
 
     @if (!templates.length) {
@@ -21,7 +21,7 @@
         <p class="m-0 text-[.72rem] font-extrabold uppercase tracking-[.12em] text-[var(--gigsaw-orange)]">Il prossimo live comincia qui</p>
         <h2 class="my-3 text-[clamp(1.5rem,3vw,2rem)] font-extrabold tracking-[-.03em]">Dai una veste ai tuoi concerti</h2>
         <p class="mx-auto mb-6 mt-0 max-w-[540px] leading-[1.7] text-[var(--gigsaw-muted)]">Uno sfondo, i dettagli dell’evento e lo stile della tua band.<br>Crea il primo template e prepara locandine pronte per i social e la stampa.</p>
-        <button class="btn btn-primary" routerLink="nuova" type="button"><app-symbol name="add"  />Crea il primo template</button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" routerLink="nuova" type="button"><app-symbol name="add"  />Crea il primo template</app-gigsaw-button>
         <div class="mx-auto mt-9 flex max-w-[640px] justify-center gap-12 border-t border-[var(--gigsaw-border)] pt-7 max-[600px]:gap-5" aria-label="Formati disponibili">
           @for (item of formats; track item.id) {
             <div class="flex flex-1 flex-col items-center justify-end gap-2 text-[.8rem] max-[600px]:text-[.7rem]">
@@ -38,13 +38,13 @@
           <h2 class="flex items-center gap-2.5 m-0 text-[1.1rem] font-extrabold">I tuoi template <span class="rounded-lg bg-[var(--gigsaw-input-background)] px-[9px] py-1 text-[.8rem] text-[var(--gigsaw-muted)]">{{ groups.length }}</span></h2>
           <label class="flex w-[300px] max-w-full items-center gap-2.5 rounded-[10px] border border-[var(--gigsaw-input-border)] bg-[var(--gigsaw-input-background)] px-3 text-[var(--gigsaw-muted)] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--gigsaw-input-border-focus)] max-[600px]:w-full">
             <app-symbol name="search-outline" aria-hidden="true"  />
-            <input class="h-11 min-w-0 w-full border-0 bg-transparent text-[.88rem] text-[var(--gigsaw-text)] outline-none placeholder:text-[var(--gigsaw-muted)]" type="search" [(ngModel)]="search" placeholder="Cerca un template…" aria-label="Cerca un template" />
+            <app-gigsaw-input type="search" controlClass="h-11 min-w-0 border-0 bg-transparent text-[.88rem] text-[var(--gigsaw-text)] outline-none placeholder:text-[var(--gigsaw-muted)]" [(ngModel)]="search" placeholder="Cerca un template…" aria-label="Cerca un template" />
           </label>
         </div>
         <div class="my-5 mb-3 flex flex-wrap gap-2" aria-label="Filtra per formato">
-          <button type="button" [class]="'cursor-pointer rounded-[9px] border px-3.5 py-[9px] font-[inherit] text-[.8rem] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--gigsaw-orange)] ' + (format === '' ? 'border-[rgba(var(--ui-color-primary-rgb),.45)] bg-[rgba(var(--ui-color-primary-rgb),.1)] text-[var(--gigsaw-orange)]' : 'border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] text-[var(--gigsaw-muted)]')" [attr.aria-pressed]="format === ''" (click)="format = ''">Tutti</button>
+          <app-gigsaw-button tone="unstyled" type="button" [class]="'cursor-pointer rounded-[9px] border px-3.5 py-[9px] font-[inherit] text-[.8rem] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--gigsaw-orange)] ' + (format === '' ? 'border-[rgba(var(--ui-color-primary-rgb),.45)] bg-[rgba(var(--ui-color-primary-rgb),.1)] text-[var(--gigsaw-orange)]' : 'border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] text-[var(--gigsaw-muted)]')" [attr.aria-pressed]="format === ''" (click)="format = ''">Tutti</app-gigsaw-button>
           @for (item of formats; track item.id) {
-            <button type="button" [class]="'cursor-pointer rounded-[9px] border px-3.5 py-[9px] font-[inherit] text-[.8rem] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--gigsaw-orange)] ' + (format === item.id ? 'border-[rgba(var(--ui-color-primary-rgb),.45)] bg-[rgba(var(--ui-color-primary-rgb),.1)] text-[var(--gigsaw-orange)]' : 'border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] text-[var(--gigsaw-muted)]')" [attr.aria-pressed]="format === item.id" (click)="format = item.id">{{ item.label }}</button>
+            <app-gigsaw-button tone="unstyled" type="button" [class]="'cursor-pointer rounded-[9px] border px-3.5 py-[9px] font-[inherit] text-[.8rem] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--gigsaw-orange)] ' + (format === item.id ? 'border-[rgba(var(--ui-color-primary-rgb),.45)] bg-[rgba(var(--ui-color-primary-rgb),.1)] text-[var(--gigsaw-orange)]' : 'border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] text-[var(--gigsaw-muted)]')" [attr.aria-pressed]="format === item.id" (click)="format = item.id">{{ item.label }}</app-gigsaw-button>
           }
         </div>
         <p class="mb-[18px] mt-0 text-[.78rem] text-[var(--gigsaw-muted)]" aria-live="polite">{{ filteredGroups.length }} {{ filteredGroups.length === 1 ? 'template disponibile' : 'template disponibili' }}</p>
@@ -70,7 +70,7 @@
               </div>
               <footer class="mx-[18px] flex items-center justify-between gap-2 border-t border-[var(--gigsaw-border)] py-2.5 text-[.72rem] text-[var(--gigsaw-muted)]">
                 <span>Aggiornato il {{ template.updatedAt | date:'dd/MM/yyyy' }}</span>
-                <button type="button" class="grid size-11 cursor-pointer place-items-center rounded-lg border-0 bg-transparent text-lg text-inherit hover:bg-[rgba(var(--ui-color-danger-rgb),.1)] hover:text-[var(--ui-color-danger)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--gigsaw-orange)]" (click)="remove(template, $event)" [attr.aria-label]="'Elimina ' + template.name" title="Elimina template"><app-symbol name="trash-outline" aria-hidden="true"  /></button>
+                <app-gigsaw-button tone="unstyled" type="button" buttonClass="grid size-11 cursor-pointer place-items-center rounded-lg border-0 bg-transparent text-lg text-inherit hover:bg-[rgba(var(--ui-color-danger-rgb),.1)] hover:text-[var(--ui-color-danger)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--gigsaw-orange)]" (click)="remove(template, $event)" [attr.aria-label]="'Elimina ' + template.name" title="Elimina template"><app-symbol name="trash-outline" aria-hidden="true"  /></app-gigsaw-button>
               </footer>
             </article>
           } @empty {
@@ -78,7 +78,7 @@
               <app-symbol class="text-[32px] text-[var(--gigsaw-muted)]" name="search-outline" aria-hidden="true"  />
               <h3>Nessun template trovato</h3>
               <p class="text-[.8rem] leading-[1.6] text-[var(--gigsaw-muted)]">Prova un altro nome oppure visualizza tutti i formati.</p>
-              <button class="btn btn-outline" (click)="search = ''; format = ''" type="button">Mostra tutti i template</button>
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="search = ''; format = ''" type="button">Mostra tutti i template</app-gigsaw-button>
             </section>
           }
         </div>

@@ -16,22 +16,21 @@
     <form class="flex w-full flex-col gap-4" (submit)="submit(); $event.preventDefault()">
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Email</span>
-      <input class="input w-full min-h-12 w-full font-normal"
-
-          aria-label="Email"
-          inputmode="email"
-          autocapitalize="off"
-          [spellcheck]="false"
-          [class.is-touched]="touched()"
-          [disabled]="loading"
-          type="email"
-          name="email"
-          placeholder="es. mario.rossi@gmail.com"
-          autocomplete="email"
-          [value]="email()"
-          [class.is-invalid]="touched() && !emailValid()"
-          (input)="updateEmail($any($event.target).value ?? '')"
-       />
+      <app-gigsaw-input
+        aria-label="Email"
+        inputMode="email"
+        autocapitalize="off"
+        [spellcheck]="false"
+        [controlClass]="'min-h-12 font-normal ' + (touched() ? 'is-touched' : '')"
+        [disabled]="loading"
+        type="email"
+        name="email"
+        placeholder="es. mario.rossi@gmail.com"
+        autocomplete="email"
+        [value]="email()"
+        [invalid]="touched() && !emailValid()"
+        (valueChange)="updateEmail($event)"
+      />
       </label>
       @if (touched() && !emailValid()) {
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-gigsaw-message>

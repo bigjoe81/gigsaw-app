@@ -2,9 +2,9 @@
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
       @if (isModal) {
-        <button class="btn btn-primary" aria-label="Chiudi dettagli" (click)="close()" type="button"><app-symbol name="close"  /></button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" aria-label="Chiudi dettagli" (click)="close()" type="button"><app-symbol name="close"  /></app-gigsaw-button>
       } @else {
-        <button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button>
       }
     </div>
     <h1 class="grow text-xl">Dettagli brano</h1>
@@ -78,8 +78,8 @@
   <footer class="page-footer flex-none bg-[var(--gigsaw-toolbar)]">
     <div class="navbar gap-3 [--min-height:72px]">
       <div class="flex justify-end gap-2.5 px-5 py-2.5 pb-[max(10px,env(safe-area-inset-bottom))] max-[520px]:[&_.btn]:min-w-0 max-[520px]:[&_.btn]:flex-1 [&_.btn]:m-0 [&_.btn]:min-w-28">
-        <button class="btn btn-outline btn-error" (click)="confirmDelete()" type="button">Elimina</button>
-        <button class="btn btn-primary" (click)="edit()" type="button">Modifica</button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-error" (click)="confirmDelete()" type="button">Elimina</app-gigsaw-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="edit()" type="button">Modifica</app-gigsaw-button>
       </div>
     </div>
   </footer>

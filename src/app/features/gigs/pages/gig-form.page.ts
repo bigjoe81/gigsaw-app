@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewChild, computed, signal } from '@angular/core';
@@ -34,6 +35,7 @@ import { GigPostersComponent, GigPosterValues } from '../../poster-templates/com
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
   imports: [NativeUiModule,
+  GigsawFormControlsModule,
     GigPostersComponent,
     ReactiveFormsModule,
     RouterLink,

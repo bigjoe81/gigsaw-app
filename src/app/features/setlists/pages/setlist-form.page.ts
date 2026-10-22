@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
@@ -15,7 +16,7 @@ import { cloneWorkspace, LocalSetlistRepository, moveItemBefore, setDuration, Se
 import { SetlistValidationService } from '../services/setlist-validation.service';
 import { SetlistService } from '../services/setlist.service';
 
-@Component({ changeDetection: ChangeDetectionStrategy.Default, standalone: true, imports: [NativeUiModule, CommonModule, FormsModule, ], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
+@Component({ changeDetection: ChangeDetectionStrategy.Default, standalone: true, imports: [NativeUiModule, GigsawFormControlsModule, CommonModule, FormsModule, ], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
 export class SetlistFormPage implements OnInit, OnDestroy {
   readonly savingToServer = signal(false);
   readonly savedToServer = signal(false);

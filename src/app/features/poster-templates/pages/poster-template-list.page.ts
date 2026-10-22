@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { DialogService, NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +11,7 @@ import { PosterTemplateService } from '../services/poster-template.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, DatePipe, FormsModule, RouterLink, PosterCanvasComponent, ],
+  imports: [NativeUiModule, GigsawFormControlsModule, DatePipe, FormsModule, RouterLink, PosterCanvasComponent, ],
   templateUrl: './poster-template-list.page.html',
   styleUrl: './poster-template-list.page.scss',
 })

@@ -54,10 +54,10 @@ export interface GigPosterValues {
           <strong>{{ poster.name }} · {{ poster.document.format.label }}</strong>
           <app-poster-canvas class="poster-thumbnail" [document]="poster.document" [interactive]="false" />
           <div>
-            @if (!readOnly) { <button class="btn btn-outline" type="button" (click)="refresh(index)">Aggiorna dai dati del concerto</button> }
-            <button class="btn btn-primary" type="button" [disabled]="exporting" (click)="download(index)">
+            @if (!readOnly) { <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" type="button" (click)="refresh(index)">Aggiorna dai dati del concerto</app-gigsaw-button> }
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" [disabled]="exporting" (click)="download(index)">
               Esporta {{ poster.document.format.id === 'a4' ? 'PDF A4' : 'PNG' }}
-            </button>
+            </app-gigsaw-button>
           </div>
         </article>
       }

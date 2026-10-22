@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService, ReorderEvent } from '../../../shared/ui/native-ui';
 
 import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, inject, signal } from '@angular/core';
@@ -20,7 +21,7 @@ import { GigsawBadgeComponent, GigsawListComponent, GigsawListItemComponent, Gig
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule,
+  imports: [NativeUiModule, GigsawFormControlsModule,
     ReactiveFormsModule,
     RouterLink,
     GigsawBadgeComponent,
@@ -642,13 +643,10 @@ export class BandManagePage implements OnInit, OnDestroy {
     })).present();
   }
 
-  onSettingsFilesSelected(event: Event, kind: 'logo' | 'photos'): void {
-    const picker = event.target as HTMLInputElement;
-    const files = Array.from(picker.files ?? []);
+  onSettingsFilesSelected(files: File[], kind: 'logo' | 'photos'): void {
     if (!files.length) return;
     if (kind === 'logo') this.onLogoFilesSelected(files);
     else this.onPressPhotoFilesSelected(files);
-    picker.value = '';
   }
 
   startStagePlotDrag(index: number, event: PointerEvent): void {

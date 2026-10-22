@@ -1,10 +1,10 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../" type="button" appBack>←</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../" type="button" appBack>←</app-gigsaw-button></div>
     <h1 class="grow text-xl">{{ config.singular }}</h1>
     <div class="flex items-center gap-2" slot="end">
-      <button class="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica</button>
-      <button class="btn btn-primary btn-error" (click)="confirmDelete()" type="button">Elimina</button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica</app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-error" (click)="confirmDelete()" type="button">Elimina</app-gigsaw-button>
     </div>
   </div>
 </header>
@@ -18,7 +18,7 @@
     </article>
   } @else if(error()){
     <small class="text-sm text-error p-4" role="alert">{{ error() }}</small>
-    <button class="btn btn-outline" (click)="load()" type="button">Riprova</button>
+    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
   } @else if(item()){
     <app-gigsaw-list listClass="mx-auto my-[34px] w-[min(760px,calc(100%-40px))] rounded-2xl border border-[var(--gigsaw-border)] bg-[#101d30] p-2 max-[600px]:mx-3 max-[600px]:my-5 max-[600px]:w-auto [&_.ui-item]:[--background:transparent] [&_.ui-item]:[--color:var(--gigsaw-text)] [&_.ui-item]:[--border-color:var(--gigsaw-border)] [&_.ui-item]:[--padding-start:14px] [&_.ui-item]:[--inner-padding-end:14px] [&_.ui-item]:min-h-[70px]">
       @for (field of config.fields; track field) {

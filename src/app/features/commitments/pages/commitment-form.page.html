@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" [defaultHref]="listUrl"  type="button" appBack>←</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" [defaultHref]="listUrl"  type="button" appBack>←</app-gigsaw-button></div>
     <h1 class="grow text-xl">{{ editing() ? 'Modifica impegno' : 'Nuovo impegno' }}</h1>
   </div>
 </header>
@@ -20,7 +20,7 @@
         <div class="grid grid-cols-2 gap-5 max-[720px]:grid-cols-1">
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750] col-span-full">
             <span>Titolo (facoltativo)</span>
-            <input class="input w-full" formControlName="title" placeholder="Es. Sessione in studio"  />
+            <app-gigsaw-input formControlName="title" placeholder="Es. Sessione in studio" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
@@ -48,27 +48,27 @@
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Data *</span>
-            <input class="input w-full" type="date" formControlName="date"  />
+            <app-gigsaw-datepicker formControlName="date" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Luogo</span>
-            <input class="input w-full" formControlName="location" placeholder="Es. Studio, o indirizzo"  />
+            <app-gigsaw-input formControlName="location" placeholder="Es. Studio, o indirizzo" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Ora inizio</span>
-            <input class="input w-full" type="time" formControlName="startTime"  />
+            <app-gigsaw-time-input formControlName="startTime" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Ora fine</span>
-            <input class="input w-full" type="time" formControlName="endTime"  />
+            <app-gigsaw-time-input formControlName="endTime" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750] col-span-full">
             <span>Note</span>
-            <textarea class="textarea w-full" formControlName="notes" [rows]="5" placeholder="Dettagli utili per la band" ></textarea>
+            <app-gigsaw-textarea formControlName="notes" [rows]="5" placeholder="Dettagli utili per la band" />
           </label>
         </div>
 
@@ -78,12 +78,12 @@
 
         <footer class="mt-7 grid grid-cols-[auto_1fr_auto] items-center gap-3 max-[720px]:grid-cols-1 max-[720px]:[&>span]:hidden max-[720px]:[&>.btn]:w-full">
           @if (editing()) {
-            <button class="btn btn-ghost btn-error" type="button" (click)="remove()">Elimina</button>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-error" type="button" (click)="remove()">Elimina</app-gigsaw-button>
           }
           <span></span>
-          <button class="btn btn-primary" type="submit" [disabled]="saving()">
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="submit" [disabled]="saving()">
             {{ saving() ? 'Salvataggio…' : 'Salva impegno' }}
-          </button>
+          </app-gigsaw-button>
         </footer>
       </form>
     }

@@ -1,12 +1,12 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div>
     <h1 class="grow text-xl">Template setlist</h1>
-    <div class="flex items-center gap-2" slot="end"><button class="btn btn-primary" [routerLink]="['nuovo']" type="button"><app-symbol name="add"  /></button></div>
+    <div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" type="button"><app-symbol name="add"  /></app-gigsaw-button></div>
   </div>
 </header>
 <section class="app-content">
-  <button type="button" class="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</button>
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</app-gigsaw-button>
   @if (loading) {
     <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {
@@ -14,9 +14,9 @@
       }
     </app-gigsaw-list>
   } @else if (error) {
-    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center"><app-symbol class="text-[44px] text-[var(--ui-color-medium)]" name="alert-circle"  /><span class=" text-error">{{ error }}</span><button class="btn btn-outline" (click)="load()" type="button">Riprova</button></div>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center"><app-symbol class="text-[44px] text-[var(--ui-color-medium)]" name="alert-circle"  /><span class=" text-error">{{ error }}</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button></div>
   } @else if (!templates.length) {
-    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center"><app-symbol class="text-[44px] text-[var(--ui-color-medium)]" name="library"  /><span>Nessun template presente.</span><button class="btn btn-primary" [routerLink]="['nuovo']" type="button">Crea template</button></div>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center"><app-symbol class="text-[44px] text-[var(--ui-color-medium)]" name="library"  /><span>Nessun template presente.</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" type="button">Crea template</app-gigsaw-button></div>
   } @else {
     <app-gigsaw-list>
       @for (template of templates; track template.id) {
