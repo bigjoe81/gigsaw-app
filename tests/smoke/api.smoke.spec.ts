@@ -2,8 +2,9 @@ import { expect, test } from '@playwright/test';
 
 test('Laravel API is reachable from the deployed app environment', async ({ request }) => {
   const apiBaseUrl = process.env['GIGSAW_API_URL'] ?? 'https://api.gigsaw.it';
-  const response = await request.get(`${apiBaseUrl}/api/v1/user`, {
+  const response = await request.get(`${apiBaseUrl}/api/v1/me`, {
     failOnStatusCode: false,
+    headers: { Accept: 'application/json' },
   });
 
   // The endpoint is authenticated: 401 is healthy for an anonymous smoke request.
