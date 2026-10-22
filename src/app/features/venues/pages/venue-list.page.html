@@ -6,40 +6,40 @@
 </ion-header>
 
 <ion-content>
-  <main class="library" aria-labelledby="library-title">
-    <header class="library-header">
-      <div><p>Anagrafica</p><h1 id="library-title">I tuoi luoghi</h1></div>
-      <div class="library-actions">
-        @if (!loading() && !error()) { <span class="location-count">{{ locationCount() }} {{ locationCount() === 1 ? 'luogo' : 'luoghi' }}</span> }
-        <ion-button class="library-secondary" fill="outline" [routerLink]="['sala', 'nuova']"><ion-icon slot="start" name="add" aria-hidden="true" />Sala prove</ion-button>
-        <ion-button class="library-add" [routerLink]="['locale', 'nuovo']"><ion-icon slot="start" name="add" aria-hidden="true" />Venue concerto</ion-button>
+  <main class="box-border w-full p-6 pb-14 text-[var(--gigsaw-text)] max-[700px]:px-3 max-[700px]:pb-9 max-[700px]:pt-5" aria-labelledby="library-title">
+    <header class="mb-[18px] flex items-end justify-between gap-5 px-1 max-[700px]:items-start max-[700px]:flex-col">
+      <div><p class="mb-[5px] text-[.72rem] font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Anagrafica</p><h1 class="m-0 text-[clamp(1.45rem,2.4vw,2rem)] font-extrabold" id="library-title">I tuoi luoghi</h1></div>
+      <div class="flex items-center gap-3 max-[700px]:w-full max-[700px]:flex-wrap max-[700px]:justify-end">
+        @if (!loading() && !error()) { <span class="rounded-full border border-[var(--gigsaw-border)] px-[11px] py-[7px] text-[.78rem] font-bold text-[var(--gigsaw-muted)]">{{ locationCount() }} {{ locationCount() === 1 ? 'luogo' : 'luoghi' }}</span> }
+        <ion-button class="font-bold [--border-color:var(--ion-color-brand-blue)] [--border-radius:9px] [--color:var(--ion-color-brand-blue)]" fill="outline" [routerLink]="['sala', 'nuova']"><ion-icon slot="start" name="add" aria-hidden="true" />Sala prove</ion-button>
+        <ion-button class="font-extrabold [--background:var(--ion-color-primary)] [--border-radius:9px] [--color:var(--ion-color-primary-contrast)]" [routerLink]="['locale', 'nuovo']"><ion-icon slot="start" name="add" aria-hidden="true" />Venue concerto</ion-button>
       </div>
     </header>
 
     @if (!loading() && !error() && locationCount()) {
-      <section class="search-toolbar">
+      <section class="mb-3 ml-1 mr-1 grid grid-cols-[1fr_minmax(280px,420px)] items-center gap-4 rounded-xl border border-[var(--gigsaw-border)] bg-[#101d30] p-3 max-[700px]:grid-cols-1">
         <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--gigsaw-muted)]"><span><strong class="mr-1 text-xl font-bold text-[var(--gigsaw-text)]">{{ venues().length }}</strong> venue</span><span><strong class="mr-1 text-xl font-bold text-[var(--gigsaw-text)]">{{ rehearsalRooms().length }}</strong> sale prove</span><span><strong class="mr-1 text-xl font-bold text-[var(--gigsaw-text)]">{{ cityCount() }}</strong> città</span></div>
         <ion-input type="search" aria-label="Cerca luoghi" name="locationSearch" placeholder="Cerca per nome, indirizzo o città" [value]="query()" (ionInput)="query.set($event.detail.value ?? '')" />
       </section>
     }
 
     @if (loading()) {
-      <section class="state"><app-gigsaw-loading size="lg" /><span>Caricamento luoghi…</span></section>
+      <section class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-loading size="lg" /><span class="text-[var(--gigsaw-muted)]">Caricamento luoghi…</span></section>
     } @else if (error()) {
-      <section class="state"><app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
+      <section class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
     } @else if (!visibleLocations().length) {
-      <section class="state"><ion-icon name="business-outline" /><h2>{{ locationCount() ? 'Nessun risultato' : 'Nessun luogo salvato' }}</h2><p>{{ locationCount() ? 'Modifica i termini della ricerca.' : 'Aggiungi una venue o una sala prove.' }}</p></section>
+      <section class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><ion-icon class="text-[44px] text-[var(--ion-color-brand-blue)]" name="business-outline" /><h2>{{ locationCount() ? 'Nessun risultato' : 'Nessun luogo salvato' }}</h2><p>{{ locationCount() ? 'Modifica i termini della ricerca.' : 'Aggiungi una venue o una sala prove.' }}</p></section>
     } @else {
-      <app-gigsaw-list listClass="location-list" ariaLabel="Luoghi della band">
+      <app-gigsaw-list listClass="grid gap-2.5 bg-transparent p-0" ariaLabel="Luoghi della band">
         @for (item of visibleLocations(); track item.kind + '-' + item.location.id) {
-          <app-gigsaw-list-item itemClass="location-row">
-            <span class="location-icon" slot="start"><ion-icon [name]="item.kind === 'venue' ? 'business-outline' : 'musical-notes-outline'" aria-hidden="true" /></span>
-            <ion-label class="location-copy">
-              <h2><a [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']">{{ item.location.name }}</a></h2>
-              <p>{{ address(item.location) }}</p>
+          <app-gigsaw-list-item itemClass="min-h-[94px] overflow-hidden rounded-[15px] border border-[var(--gigsaw-border)] [--min-height:94px] [--padding-start:14px] [--inner-padding-end:14px] [--background:#101d30] [--color:var(--gigsaw-text)] max-[700px]:min-h-[86px] max-[700px]:[--min-height:86px] max-[700px]:[--padding-start:10px] max-[700px]:[--inner-padding-end:10px]">
+            <span class="mr-4 grid size-12 shrink-0 place-items-center rounded-[13px] bg-[rgba(var(--ion-color-primary-rgb),.12)] text-[var(--ion-color-primary)] max-[700px]:mr-[11px] max-[700px]:size-[42px]" slot="start"><ion-icon class="text-2xl" [name]="item.kind === 'venue' ? 'business-outline' : 'musical-notes-outline'" aria-hidden="true" /></span>
+            <ion-label class="min-w-0">
+              <h2 class="m-0 whitespace-normal [overflow-wrap:anywhere] font-extrabold"><a class="text-inherit no-underline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--gigsaw-input-border-focus)]" [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']">{{ item.location.name }}</a></h2>
+              <p class="mt-1 whitespace-normal [overflow-wrap:anywhere]">{{ address(item.location) }}</p>
             </ion-label>
-            <div class="location-actions" slot="end">
-              <ion-badge [color]="item.kind === 'venue' ? 'primary' : 'medium'">{{ item.kind === 'venue' ? 'Venue concerto' : 'Sala prove' }}</ion-badge>
+            <div class="ml-4 flex flex-wrap items-center justify-end gap-1 max-[700px]:ml-2 max-[700px]:max-w-[104px] max-[700px]:gap-2" slot="end">
+              <ion-badge class="min-w-[68px] rounded-full px-2.5 py-1.5 text-center text-[.67rem] font-extrabold uppercase tracking-[.04em] max-[700px]:min-w-0 max-[700px]:w-full max-[700px]:whitespace-normal max-[700px]:px-[7px]" [color]="item.kind === 'venue' ? 'primary' : 'medium'">{{ item.kind === 'venue' ? 'Venue concerto' : 'Sala prove' }}</ion-badge>
               <ion-button fill="clear" [routerLink]="[item.kind === 'venue' ? 'locale' : 'sala', item.location.id, 'modifica']" [attr.aria-label]="'Modifica ' + item.location.name"><ion-icon slot="icon-only" name="pencil-outline" aria-hidden="true" /></ion-button>
               <ion-button fill="clear" [disabled]="deletingKey() !== null" color="danger" (click)="confirmDelete(item.kind, item.location)" [attr.aria-label]="'Elimina ' + item.location.name">@if (deletingKey() === item.kind + '-' + item.location.id) { <ion-spinner name="crescent" aria-label="Eliminazione in corso" /> } @else { <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true" /> }</ion-button>
             </div>

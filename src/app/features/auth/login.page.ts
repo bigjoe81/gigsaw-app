@@ -1,10 +1,18 @@
 import {Component, computed, signal} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {IonContent, IonInput} from '@ionic/angular/standalone';
+import {AlertController, IonContent, IonInput} from '@ionic/angular/standalone';
 import {AuthService} from '../../core/auth/auth.service';
 import {GigsawButtonComponent, GigsawMessageComponent} from '../../shared/ui/gigsaw';
 
 import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
+
+type LoginError = {
+  status?: number;
+  error?: {
+    message?: string;
+    errors?: { email?: string[] };
+  };
+};
 
 @Component({
   standalone: true,
@@ -20,7 +28,12 @@ export class LoginPage {
   error = '';
   readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/band';
 
-  constructor(private readonly auth: AuthService, private readonly router: Router, private readonly route: ActivatedRoute) {
+  constructor(
+    private readonly auth: AuthService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly alert: AlertController,
+  ) {
   }
 
   updateEmail(email: string): void {
@@ -46,9 +59,13 @@ export class LoginPage {
           returnUrl: this.returnUrl,
         },
       }),
-      error: (error: { error?: { message?: string } }) => {
-        this.error = error.error?.message || 'Invio codice non riuscito.';
+      error: (error: LoginError) => {
         this.loading = false;
+        if (this.isAccountNotFound(error)) {
+          void this.offerRegistration(email);
+          return;
+        }
+        this.error = error.error?.message || 'Invio codice non riuscito.';
       },
     });
   }
@@ -59,5 +76,29 @@ export class LoginPage {
 
   loginWithGoogle(): void {
     this.auth.startGoogleLogin(this.returnUrl);
+  }
+
+  private isAccountNotFound(error: LoginError): boolean {
+    return error.status === 422
+      && error.error?.errors?.email?.some((message) =>
+        /^We could not find an account for this email address\.?$/i.test(message.trim()),
+      ) === true;
+  }
+
+  private async offerRegistration(email: string): Promise<void> {
+    const dialog = await this.alert.create({
+      header: 'Account non trovato',
+      message: 'Non risulta un account associato a questo indirizzo email. Vuoi crearne uno?',
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        {
+          text: 'Registrati',
+          handler: () => this.router.navigate(['/registrati'], {
+            queryParams: { email, returnUrl: this.returnUrl },
+          }),
+        },
+      ],
+    });
+    await dialog.present();
   }
 }

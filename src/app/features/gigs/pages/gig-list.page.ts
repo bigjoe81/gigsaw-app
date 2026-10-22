@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -27,7 +28,7 @@ type GigFilter = 'upcoming' | 'past' | 'all';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonLabel, IonMenuButton, IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonSkeletonText, IonText, IonTitle, IonToolbar],
+  imports: [NgClass, RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonLabel, IonMenuButton, IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonSkeletonText, IonText, IonTitle, IonToolbar],
   templateUrl: './gig-list.page.html',
   styleUrl: './gig-list.page.scss',
 })

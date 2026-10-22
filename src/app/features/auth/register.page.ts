@@ -21,7 +21,7 @@ export class RegisterPage implements OnInit {
   readonly spamPreparing = signal(false);
   readonly website = signal('');
   readonly name = signal('');
-  readonly email = signal('');
+  readonly email = signal(this.route.snapshot.queryParamMap.get('email') || '');
   readonly touched = signal(false);
   readonly nameValid = computed(() => this.name().trim().length > 0);
   readonly emailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim()));

@@ -17,7 +17,7 @@
     <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {
         <app-gigsaw-list-item>
-          <div class="list-col-grow">
+          <div class="min-w-0 flex-1">
             <ion-skeleton-text [animated]="true" style="width: 55%" />
             <ion-skeleton-text [animated]="true" style="width: 35%" />
           </div>
@@ -25,14 +25,14 @@
       }
     </app-gigsaw-list>
   } @else if (error) {
-    <div class="state">
-      <ion-icon name="alert-circle" />
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center">
+      <ion-icon class="text-[44px] text-[var(--ion-color-medium)]" name="alert-circle" />
       <ion-text color="danger">{{ error }}</ion-text>
       <ion-button fill="outline" (click)="load()">Riprova</ion-button>
     </div>
   } @else if (!items.length) {
-    <div class="state">
-      <ion-icon name="musical-notes" />
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center">
+      <ion-icon class="text-[44px] text-[var(--ion-color-medium)]" name="musical-notes" />
       <ion-text>Nessun{{ config.singular === 'brano' ? ' brano' : 'a ' + config.singular }} presente.</ion-text>
       <ion-button [routerLink]="['nuova']">Crea {{ config.singular }}</ion-button>
     </div>
@@ -40,7 +40,7 @@
     <app-gigsaw-list>
       @for (item of items; track item) {
         <app-gigsaw-list-item [interactive]="true" [routerLink]="[item.id]">
-          <div class="list-col-grow">
+          <div class="min-w-0 flex-1">
             <h2>{{ title(item) }}</h2>
             <p>{{ subtitle(item) }}</p>
           </div>

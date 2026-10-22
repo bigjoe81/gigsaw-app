@@ -1,25 +1,25 @@
-<ion-content class="invitation-content" [fullscreen]="true">
-  <main class="invitation-shell">
-    <img class="brand-logo" src="assets/logo-hor.png" alt="GigSaw" />
+<ion-content class="[--background:var(--gigsaw-background)]" [fullscreen]="true">
+  <main class="grid min-h-full place-items-center content-center gap-[34px] px-[18px] pt-[max(28px,var(--ion-safe-area-top))] pb-[max(28px,var(--ion-safe-area-bottom))]">
+    <img class="h-auto w-[min(220px,58vw)]" src="assets/logo-hor.png" alt="GigSaw" />
 
-    <section class="invitation-card">
-      <span class="invitation-icon"><ion-icon name="people-outline" aria-hidden="true" /></span>
-      <p class="eyebrow">Invito alla band</p>
-      <h1>@if (inviteeName) { Ciao {{ inviteeName }}! } Sei stato invitato in {{ bandName }}</h1>
-      <p class="description">Entra nello spazio condiviso per repertorio, prove, concerti e scalette.</p>
+    <section class="w-full max-w-[520px] rounded-3xl border border-[var(--gigsaw-border)] bg-[var(--ion-card-background)] p-[clamp(28px,6vw,48px)] text-center shadow-[0_24px_70px_rgba(0,0,0,.24)]">
+      <span class="mx-auto mb-[22px] grid size-[68px] place-items-center rounded-[20px] bg-[color-mix(in_srgb,var(--ion-color-primary)_14%,transparent)] text-[2rem] text-[var(--ion-color-primary)]"><ion-icon name="people-outline" aria-hidden="true" /></span>
+      <p class="m-0 text-xs font-extrabold tracking-[.14em] text-[var(--ion-color-primary)] uppercase">Invito alla band</p>
+      <h1 class="mt-[10px] mb-0 text-[clamp(1.65rem,5vw,2.35rem)] leading-[1.12] font-black tracking-[-.035em] text-[var(--gigsaw-text)]">@if (inviteeName) { Ciao {{ inviteeName }}! } Sei stato invitato in {{ bandName }}</h1>
+      <p class="mx-auto mt-[18px] mb-0 leading-[1.6] text-[var(--gigsaw-muted)]">Entra nello spazio condiviso per repertorio, prove, concerti e scalette.</p>
 
       @if (error()) {
         <app-gigsaw-message tone="error" messageClass="mt-5">{{ error() }}</app-gigsaw-message>
       }
 
       @if (sessionLoading()) {
-        <span class="loading loading-spinner loading-lg text-primary" aria-label="Controllo accesso"></span>
+        <span class="loading loading-spinner loading-lg mx-auto mt-[30px] block text-primary" aria-label="Controllo accesso"></span>
       } @else {
-        <app-gigsaw-button buttonClass="participate-button" tone="primary" type="button" [loading]="joining()" (click)="participate()">
+        <app-gigsaw-button buttonClass="mt-7 w-full" tone="primary" type="button" [loading]="joining()" (click)="participate()">
           Partecipa
         </app-gigsaw-button>
         @if (!authenticated()) {
-          <p class="auth-note">Accedi o crea il tuo account: al termine tornerai automaticamente qui.</p>
+          <p class="mt-[14px] mb-0 text-[.82rem] leading-[1.45] text-[var(--gigsaw-muted)]">Accedi o crea il tuo account: al termine tornerai automaticamente qui.</p>
         }
       }
     </section>

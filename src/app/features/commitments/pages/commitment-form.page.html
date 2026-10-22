@@ -6,24 +6,24 @@
 </ion-header>
 
 <ion-content>
-  <main class="form-shell">
-    <header>
-      <span class="eyebrow">Agenda band</span>
-      <h1>{{ editing() ? 'Modifica impegno' : 'Aggiungi un impegno' }}</h1>
-      <p>Per appuntamenti diversi da prove e live: studio, shooting, interviste, riunioni e trasferte.</p>
+  <main class="w-full px-[clamp(20px,5vw,72px)] pt-[42px] pb-[100px] text-[var(--gigsaw-text)] max-[720px]:px-[18px] max-[720px]:pt-7 max-[720px]:pb-[90px]">
+    <header class="mb-[30px]">
+      <span class="text-[var(--ion-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Agenda band</span>
+      <h1 class="my-2 text-[1.8rem]">{{ editing() ? 'Modifica impegno' : 'Aggiungi un impegno' }}</h1>
+      <p class="m-0 text-[var(--gigsaw-muted)]">Per appuntamenti diversi da prove e live: studio, shooting, interviste, riunioni e trasferte.</p>
     </header>
 
     @if (loading()) {
-      <div class="state">Caricamento…</div>
+      <div class="grid min-h-[240px] place-items-center text-[var(--gigsaw-muted)]">Caricamento…</div>
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()">
-        <div class="field-grid">
-          <label class="wide">
+      <form class="max-w-[980px]" [formGroup]="form" (ngSubmit)="save()">
+        <div class="grid grid-cols-2 gap-5 max-[720px]:grid-cols-1">
+          <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750] col-span-full">
             <span>Titolo (facoltativo)</span>
             <ion-input formControlName="title" placeholder="Es. Sessione in studio" />
           </label>
 
-          <label>
+          <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Tipo *</span>
             <ion-select formControlName="type" interface="popover">
               <ion-select-option value="photo_shoot">Shoot fotografico</ion-select-option>
@@ -36,7 +36,7 @@
             </ion-select>
           </label>
 
-          <label>
+          <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Stato *</span>
             <ion-select formControlName="status" interface="popover">
               <ion-select-option value="scheduled">Da confermare</ion-select-option>
@@ -46,37 +46,37 @@
             </ion-select>
           </label>
 
-          <label>
+          <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Data *</span>
             <ion-input type="date" formControlName="date" />
           </label>
 
-          <label>
+          <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Luogo</span>
             <ion-input formControlName="location" placeholder="Es. Studio, locale o indirizzo" />
           </label>
 
-          <label>
+          <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Ora inizio</span>
             <ion-input type="time" formControlName="startTime" />
           </label>
 
-          <label>
+          <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Ora fine</span>
             <ion-input type="time" formControlName="endTime" />
           </label>
 
-          <label class="wide">
+          <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750] col-span-full">
             <span>Note</span>
             <ion-textarea formControlName="notes" [rows]="5" [autoGrow]="true" placeholder="Dettagli utili per la band" />
           </label>
         </div>
 
         @if (error()) {
-          <p class="error">{{ error() }}</p>
+          <p class="mt-5 rounded-lg bg-[#351a21] px-[14px] py-3 text-[#ffbbc3]">{{ error() }}</p>
         }
 
-        <footer>
+        <footer class="mt-7 grid grid-cols-[auto_1fr_auto] items-center gap-3 max-[720px]:grid-cols-1 max-[720px]:[&>span]:hidden max-[720px]:[&>ion-button]:w-full">
           @if (editing()) {
             <ion-button type="button" fill="clear" color="danger" (click)="remove()">Elimina</ion-button>
           }

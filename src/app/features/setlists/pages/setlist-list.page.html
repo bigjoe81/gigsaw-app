@@ -11,10 +11,10 @@
 
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
-  <main class="setlists-page">
-    <section class="page-heading">
-      <div><p class="eyebrow">Live workspace</p><h1>Le scalette della band</h1><p>Prepara i set, controlla tempi e passaggi, porta il PDF sul palco.</p></div>
-      <div class="heading-actions">
+  <main class="w-full px-6 py-[34px] pb-14 text-[var(--gigsaw-text)] max-[760px]:px-3 max-[760px]:py-5 max-[760px]:pb-9">
+    <section class="mb-5 flex items-end justify-between gap-5 max-[760px]:items-start max-[760px]:flex-col">
+      <div><p class="m-0 text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Live workspace</p><h1 class="my-1 text-[clamp(1.6rem,3vw,2.15rem)] font-extrabold">Le scalette della band</h1><p class="m-0 text-[var(--ion-color-medium)]">Prepara i set, controlla tempi e passaggi, porta il PDF sul palco.</p></div>
+      <div class="flex gap-2 max-[760px]:hidden">
         <ion-button fill="outline" [routerLink]="['modelli']"><ion-icon slot="start" name="library-outline" />Template</ion-button>
         <ion-button [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Nuova scaletta</ion-button>
       </div>
@@ -23,30 +23,30 @@
   
 
     @if (!loading() && !error() && setlists().length) {
-      <section class="summary-card" aria-label="Riepilogo scalette">
-        <div><strong>{{ setlists().length }}</strong><span>scalette salvate</span></div>
-        <div><strong>{{ totalSongs() }}</strong><span>brani complessivi</span></div>
+      <section class="mb-[18px] flex gap-9 rounded-[14px] border border-[var(--gigsaw-border)] bg-[#101d30] px-[18px] py-4 max-[760px]:justify-between max-[760px]:gap-[18px]" aria-label="Riepilogo scalette">
+        <div class="flex items-baseline gap-2 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-0"><strong class="text-[1.35rem] text-[var(--ion-color-primary)]">{{ setlists().length }}</strong><span class="text-sm text-[var(--ion-color-medium)]">scalette salvate</span></div>
+        <div class="flex items-baseline gap-2 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-0"><strong class="text-[1.35rem] text-[var(--ion-color-primary)]">{{ totalSongs() }}</strong><span class="text-sm text-[var(--ion-color-medium)]">brani complessivi</span></div>
       </section>
     }
 
     @if (loading()) {
-      <section class="setlist-grid" aria-label="Caricamento scalette">
+      <section class="grid grid-cols-2 gap-[14px] max-[760px]:grid-cols-1" aria-label="Caricamento scalette">
         @for (item of [1, 2, 3]; track item) {
-          <article class="setlist-card skeleton"><ion-skeleton-text [animated]="true" style="width: 28%" /><ion-skeleton-text [animated]="true" style="width: 66%" /><ion-skeleton-text [animated]="true" style="width: 48%" /></article>
+          <article class="flex min-h-[230px] flex-col gap-4 rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5"><ion-skeleton-text [animated]="true" style="width: 28%" /><ion-skeleton-text [animated]="true" style="width: 66%" /><ion-skeleton-text [animated]="true" style="width: 48%" /></article>
         }
       </section>
     } @else if (error()) {
-      <section class="state"><ion-icon name="alert-circle-outline" /><h2>Caricamento non riuscito</h2><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
+      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><ion-icon class="text-[50px] text-[var(--ion-color-medium)]" name="alert-circle-outline" /><h2 class="m-0">Caricamento non riuscito</h2><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
     } @else if (!setlists().length) {
-      <section class="state empty-state"><span class="state-icon"><ion-icon name="musical-notes-outline" /></span><h2>Il palco è ancora vuoto</h2><p>Crea la prima scaletta partendo dal repertorio della band.</p><ion-button [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Crea scaletta</ion-button></section>
+      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><span class="grid h-[72px] w-[72px] place-items-center rounded-[22px] bg-[rgba(var(--ion-color-primary-rgb),.12)] text-[var(--ion-color-primary)]"><ion-icon class="text-4xl" name="musical-notes-outline" /></span><h2 class="m-0">Il palco è ancora vuoto</h2><p class="m-0 text-[var(--ion-color-medium)]">Crea la prima scaletta partendo dal repertorio della band.</p><ion-button [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Crea scaletta</ion-button></section>
     } @else {
-      <section class="setlist-grid">
+      <section class="grid grid-cols-2 gap-[14px] max-[760px]:grid-cols-1">
         @for (setlist of setlists(); track setlist.id) {
-          <a class="setlist-card" [routerLink]="[setlist.id]">
-            <div class="card-topline"><span class="setlist-badge"><ion-icon name="list-outline" />Scaletta</span><span class="date"><ion-icon name="calendar-outline" />{{ date(setlist) }}</span></div>
-            <div class="card-copy"><h2>{{ setlist.title }}</h2>@if (setlist.notes) { <p>{{ setlist.notes }}</p> }</div>
-            <div class="metrics"><span><strong>{{ songCount(setlist) }}</strong> brani</span><span><strong>{{ setCount(setlist) || '—' }}</strong> set</span></div>
-            <div class="card-actions">
+          <a class="flex min-h-[230px] flex-col rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5 text-inherit no-underline transition-[border-color,transform,box-shadow] duration-[180ms] hover:-translate-y-0.5 hover:border-[rgba(var(--ion-color-primary-rgb),.55)] hover:shadow-[0_12px_30px_rgba(0,0,0,.16)]" [routerLink]="[setlist.id]">
+            <div class="flex items-center justify-between gap-3 max-[760px]:items-start max-[760px]:flex-col"><span class="inline-flex items-center gap-1.5 rounded-full bg-[rgba(var(--ion-color-primary-rgb),.12)] px-[9px] py-[5px] text-xs font-bold uppercase text-[var(--ion-color-primary)]"><ion-icon name="list-outline" />Scaletta</span><span class="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--ion-color-medium)]"><ion-icon name="calendar-outline" />{{ date(setlist) }}</span></div>
+            <div class="flex-1 py-[18px] pb-[14px]"><h2 class="m-0 text-[1.2rem] font-extrabold">{{ setlist.title }}</h2>@if (setlist.notes) { <p class="mt-[7px] line-clamp-2 overflow-hidden text-[.86rem] leading-[1.45] text-[var(--ion-color-medium)]">{{ setlist.notes }}</p> }</div>
+            <div class="flex gap-[18px] border-t border-[var(--gigsaw-border)] py-3 text-[.82rem] text-[var(--ion-color-medium)]"><span><strong class="text-[var(--gigsaw-text)]">{{ songCount(setlist) }}</strong> brani</span><span><strong class="text-[var(--gigsaw-text)]">{{ setCount(setlist) || '—' }}</strong> set</span></div>
+            <div class="flex gap-2 pt-3 [&_ion-button]:[--background:rgba(var(--ion-color-primary-rgb),.1)] [&_ion-button]:[--color:var(--ion-color-primary)] [&_ion-button]:[--border-radius:9px] [&_ion-button]:text-[.78rem] [&_ion-button]:font-bold [&_ion-button]:hover:[--background:rgba(var(--ion-color-primary-rgb),.18)] [&_ion-button:disabled]:cursor-wait [&_ion-button:disabled]:opacity-55">
               <ion-button type="button" (click)="requestPdf(setlist, 'download', $event)" [disabled]="pdfAction() !== null">
                 @if (pdfAction() === 'download-' + setlist.id) { <ion-spinner name="crescent" slot="start" aria-label="Preparazione PDF" /> } @else { <ion-icon name="download-outline" /> }
                 Scarica PDF

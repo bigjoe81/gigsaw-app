@@ -1,5 +1,5 @@
 import { Component, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   AlertController,
   IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonSpinner,
@@ -46,6 +46,7 @@ import { BandCreatePage } from './band-create.page';
 export class BandSelectionPage {
   private readonly bandService = inject(BandService);
   private readonly bandContext = inject(BandContextService);
+  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly alert = inject(AlertController);
@@ -77,8 +78,8 @@ export class BandSelectionPage {
       next: (bands) => {
         this.bands.set(bands);
         this.loading.set(false);
-        if (!bands.length && this.onboarding.shouldShow()) {
-          void this.router.navigateByUrl('/inizia');
+        if (!bands.length && this.route.snapshot.queryParamMap.get('seleziona') !== '1') {
+          void this.router.navigate(['/inizia'], { queryParams: { mode: 'create' } });
         } else if (bands.length && this.onboarding.shouldShow()) {
           this.onboarding.complete();
         }

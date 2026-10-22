@@ -18,7 +18,7 @@
       <ion-button class="ion-margin-top" expand="block" fill="outline" type="button" (click)="load()">Riprova</ion-button>
     </div>
   } @else {
-    <div class="notification-settings-page">
+    <div class="w-full p-5 max-[760px]:p-4">
       <a class="mb-4 inline-flex text-sm font-semibold no-underline" [routerLink]="settingsUrl">← Tutte le impostazioni</a>
 
       <div class="mb-5">
@@ -27,7 +27,7 @@
         <p class="mt-1 text-sm text-[var(--ion-color-medium)]">Scegli quali cambiamenti importanti comunicare ai membri della band.</p>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="save()">
+      <form class="grid gap-6" [formGroup]="form" (ngSubmit)="save()">
         <ion-card>
           <ion-card-header>
             <ion-card-title>Invio email</ion-card-title>

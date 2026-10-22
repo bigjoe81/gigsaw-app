@@ -1,4 +1,4 @@
-<ion-header class="repertoire-header">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button menu="band-menu" />
@@ -9,11 +9,11 @@
         <ion-button fill="clear" [routerLink]="['importa']"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
       }
       <ion-button fill="clear" color="secondary" [routerLink]="['gruppi-collegati']">Medley</ion-button>
-      <ion-button class="create-song" [routerLink]="['nuovo']" aria-label="Crea brano"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" /> Nuovo</ion-button>
+      <ion-button class="[--background:var(--ion-color-primary)] [--color:var(--ion-color-primary-contrast)] [--box-shadow:0_8px_20px_rgba(var(--ion-color-primary-rgb),.22)] max-[700px]:text-[.82rem]" [routerLink]="['nuovo']" aria-label="Crea brano"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" /> Nuovo</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content class="repertoire-content">
+<ion-content class="[--background:var(--gigsaw-background)]">
   <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
   @if (loading()) {
     <app-gigsaw-list>
@@ -22,42 +22,43 @@
       }
     </app-gigsaw-list>
   } @else if (error()) {
-    <div class="state"><app-gigsaw-icon [icon]="icons.alert" aria-hidden="true" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ion-color-brand-blue)]" [icon]="icons.alert" aria-hidden="true" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
   } @else if (!songs().length) {
-    <div class="state"><app-gigsaw-icon [icon]="icons.music" aria-hidden="true" /><ion-text class="font-bold">Nessun brano presente</ion-text>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ion-color-brand-blue)]" [icon]="icons.music" aria-hidden="true" /><ion-text class="font-bold">Nessun brano presente</ion-text>
       <ion-button [routerLink]="['nuovo']">
         <app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true"></app-gigsaw-icon>
         Crea brano
       </ion-button>
     </div>
   } @else {
-    <section class="library" aria-labelledby="library-title">
-      <header class="library-header">
+    <section class="w-full px-6 pb-14 pt-[34px] max-[700px]:px-3 max-[700px]:pb-9 max-[700px]:pt-5" aria-labelledby="library-title">
+      <header class="mb-[18px] flex items-end justify-between gap-5 px-1 max-[700px]:items-start max-[700px]:flex-col">
         <div>
-          <p>Repertorio</p>
-          <h1 id="library-title">I tuoi brani</h1>
+          <p class="mb-[5px] mt-0 text-[.72rem] font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Repertorio</p>
+          <h1 class="m-0 text-[clamp(1.45rem,2.4vw,2rem)] font-extrabold text-[var(--gigsaw-text)]" id="library-title">I tuoi brani</h1>
         </div>
-        <div class="library-actions">
-          <span class="song-count">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>
+        <div class="flex items-center gap-3 max-[700px]:w-full max-[700px]:flex-wrap max-[700px]:justify-end">
+          <span class="rounded-full border border-[var(--gigsaw-border)] px-[11px] py-[7px] text-[.78rem] font-bold text-[var(--gigsaw-muted)]">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>
           @if (importEnabled) {
-            <ion-button class="library-import" fill="outline" [routerLink]="['importa']"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
+            <ion-button class="[--border-color:var(--ion-color-primary)] [--color:var(--ion-color-primary)] [--border-radius:9px] font-bold" fill="outline" [routerLink]="['importa']"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
           }
-          <ion-button class="library-medleys" fill="outline" [routerLink]="['gruppi-collegati']">Gestisci medley</ion-button>
-          <ion-button class="library-add" [routerLink]="['nuovo']"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" />Aggiungi brano</ion-button>
+          <ion-button class="[--border-color:var(--ion-color-brand-blue)] [--color:var(--ion-color-brand-blue)] [--border-radius:9px] font-bold" fill="outline" [routerLink]="['gruppi-collegati']">Gestisci medley</ion-button>
+          <ion-button class="[--background:var(--ion-color-primary)] [--color:var(--ion-color-primary-contrast)] [--border-radius:9px] font-extrabold" [routerLink]="['nuovo']"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" />Aggiungi brano</ion-button>
         </div>
       </header>
 
-      <div class="selection-toolbar" [class.has-selection]="selectedCount() > 0">
+      <div class="mx-1 mb-3 flex min-h-12 items-center gap-3.5 rounded-xl border border-[var(--gigsaw-border)] bg-[#101d30] px-3 py-2" [style.border-color]="selectedCount() ? 'color-mix(in srgb, var(--ion-color-primary) 55%, var(--gigsaw-border))' : null">
         <ion-checkbox
+          class="text-[.84rem] font-bold text-[var(--gigsaw-text)]"
           aria-label="Seleziona tutti i brani"
           [checked]="allSelected()"
           [indeterminate]="selectedCount() > 0 && !allSelected()"
           [disabled]="deleting()"
           (ionChange)="toggleAll($event.detail.checked)"
         >Seleziona tutti</ion-checkbox>
-        <span class="selection-count">{{ selectedCount() }} selezionati</span>
+        <span class="text-[.78rem] text-[var(--gigsaw-muted)]">{{ selectedCount() }} selezionati</span>
         <ion-button
-          class="delete-selected"
+          class="ms-auto font-bold"
           color="danger"
           fill="outline"
           size="small"
@@ -69,29 +70,29 @@
         </ion-button>
       </div>
 
-      <app-gigsaw-list listClass="song-list">
+      <app-gigsaw-list listClass="grid gap-[10px] bg-transparent p-0">
         @for (song of songs(); track song.id) {
-          <app-gigsaw-list-item itemClass="song-row" [interactive]="true" [disabled]="deleting()" (selected)="openSong(song.id)">
+          <app-gigsaw-list-item itemClass="my-0 min-h-[94px] overflow-hidden rounded-[15px] border border-[var(--gigsaw-border)] [--min-height:94px] [--padding-start:14px] [--inner-padding-end:14px] [--background:#101d30] [--color:var(--gigsaw-text)] transition-colors duration-[180ms] hover:[--background:var(--gigsaw-list-hover-background,#2a3648)] max-[700px]:min-h-[86px] max-[700px]:[--min-height:86px] max-[700px]:[--padding-start:10px] max-[700px]:[--inner-padding-end:10px] [&_h2]:m-0 [&_h2]:font-extrabold [&_h2]:text-[var(--gigsaw-text)] [&_p]:my-1 [&_p]:text-[var(--gigsaw-muted)] [&_.artist]:text-[.86rem] [&_.artist]:text-[var(--gigsaw-text)] [&_.artist]:opacity-80 [&_.metadata]:text-[.78rem]" [interactive]="true" [disabled]="deleting()" (selected)="openSong(song.id)">
             <ion-checkbox
-              class="song-selector"
+              class="me-3.5 flex-none max-[700px]:me-2.5"
               slot="start"
               aria-label="Seleziona {{ song.title }}"
               [checked]="selectedIds().has(song.id)"
               (click)="$event.stopPropagation()"
               (ionChange)="toggleSong(song.id, $event.detail.checked)"
             />
-            <span class="song-icon" slot="start"><app-gigsaw-icon [icon]="icons.music" aria-hidden="true" /></span>
-            <ion-label class="song-copy">
-              <div class="song-heading">
+            <span class="me-4 grid h-12 w-12 flex-none place-items-center rounded-[13px] bg-[rgba(var(--ion-color-primary-rgb),.12)] text-[var(--ion-color-primary)] max-[700px]:hidden" slot="start"><app-gigsaw-icon class="text-2xl" [icon]="icons.music" aria-hidden="true" /></span>
+            <ion-label>
+              <div class="flex items-center gap-2.5 max-[700px]:gap-1.5">
                 <h2>{{ song.title }}</h2>
               </div>
               @if (song.performedBy) { <p class="artist">{{ song.performedBy }}</p> }
-              <p class="metadata"><span class="metadata-desktop">{{ subtitle(song) }}</span><span class="metadata-mobile">{{ subtitle(song, false) }}</span></p>
-              <ion-badge class="song-status-mobile" [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
+              <p class="text-[.78rem]"><span class="max-[700px]:hidden">{{ subtitle(song) }}</span><span class="hidden max-[700px]:inline">{{ subtitle(song, false) }}</span></p>
+              <ion-badge class="mt-2 hidden min-w-[68px] rounded-full px-2.5 py-1.5 text-center text-[.67rem] font-extrabold uppercase tracking-[.04em] max-[700px]:inline-block max-[700px]:min-w-0 max-[700px]:px-[7px]" [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
             </ion-label>
-            <div class="song-actions" slot="end">
-              <ion-badge [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
-              <span class="open-song" aria-hidden="true"><app-gigsaw-icon [icon]="icons.forward" aria-hidden="true" /></span>
+            <div class="ms-4 flex items-center gap-3.5 max-[700px]:ms-2 max-[700px]:gap-2" slot="end">
+              <ion-badge class="min-w-[68px] rounded-full px-2.5 py-1.5 text-center text-[.67rem] font-extrabold uppercase tracking-[.04em] max-[700px]:hidden" [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
+              <span class="grid h-[34px] w-[34px] place-items-center rounded-full bg-[rgba(var(--ion-color-secondary-rgb),.1)] text-[var(--ion-color-brand-blue)]" aria-hidden="true"><app-gigsaw-icon [icon]="icons.forward" aria-hidden="true" /></span>
             </div>
           </app-gigsaw-list-item>
         }

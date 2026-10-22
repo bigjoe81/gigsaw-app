@@ -10,53 +10,53 @@
     <ion-title>Dettagli brano</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="[--background:var(--gigsaw-background)]">
   @if (loading()) {
-    <ion-card><ion-card-content><ion-skeleton-text [animated]="true" style="width:70%" /><ion-skeleton-text [animated]="true" style="width:90%" /></ion-card-content></ion-card>
+    <ion-card class="border border-[var(--gigsaw-border)] rounded-2xl bg-[#101d30]"><ion-card-content><ion-skeleton-text [animated]="true" style="width:70%" /><ion-skeleton-text [animated]="true" style="width:90%" /></ion-card-content></ion-card>
   } @else if (!song()) {
-    <ion-note class="ion-padding">{{ loadError() || 'Brano non trovato.' }}</ion-note>
+    <ion-note class="block p-4">{{ loadError() || 'Brano non trovato.' }}</ion-note>
   } @else {
-    <article class="song-sheet">
-      <header class="song-hero">
-        <span class="song-art"><ion-icon name="musical-notes-outline" /></span>
-        <div class="song-identity">
-          <span class="eyebrow">{{ statusLabel(song()!.status) }}</span>
-          <h1>{{ song()!.title }}</h1>
-          <p>{{ song()!.performedBy || 'Artista non specificato' }}</p>
-          @if (song()!.album) { <small>{{ song()!.album }}</small> }
+    <article class="p-7 max-[520px]:px-4 max-[520px]:py-5">
+      <header class="flex items-center gap-5">
+        <span class="grid h-[88px] w-[88px] flex-none place-items-center rounded-3xl [background:var(--ion-gradient-brand-reversed)] text-white shadow-[0_14px_35px_rgba(var(--ion-color-primary-rgb),.2)] max-[520px]:h-[68px] max-[520px]:w-[68px] max-[520px]:rounded-[19px]"><ion-icon class="text-[42px] max-[520px]:text-[34px]" name="musical-notes-outline" /></span>
+        <div>
+          <span class="text-[.7rem] font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">{{ statusLabel(song()!.status) }}</span>
+          <h1 class="my-[3px] mb-1 block text-[clamp(1.65rem,5vw,2.4rem)] leading-[1.1] text-[var(--gigsaw-text)]">{{ song()!.title }}</h1>
+          <p class="m-0 block text-base text-[var(--gigsaw-text)]">{{ song()!.performedBy || 'Artista non specificato' }}</p>
+          @if (song()!.album) { <small class="mt-[5px] block text-[var(--gigsaw-muted)]">{{ song()!.album }}</small> }
         </div>
       </header>
 
       @if (song()!.key || song()!.bpm || song()!.duration) {
-        <div class="musical-data">
-          @if (song()!.key) { <span><small>Tonalità</small><strong>{{ song()!.key }}</strong></span> }
-          @if (song()!.bpm) { <span><small>Tempo</small><strong>{{ song()!.bpm }} BPM</strong></span> }
-          @if (song()!.duration) { <span><small>Durata</small><strong>{{ formatSeconds(song()!.duration) }}</strong></span> }
+        <div class="mt-[26px] grid grid-cols-3 gap-[10px] max-[520px]:grid-cols-1">
+          @if (song()!.key) { <span class="rounded-[13px] border border-[var(--gigsaw-border)] bg-[#101d30] px-4 py-[14px]"><small class="mb-1 block text-[.72rem] text-[var(--gigsaw-muted)]">Tonalità</small><strong>{{ song()!.key }}</strong></span> }
+          @if (song()!.bpm) { <span class="rounded-[13px] border border-[var(--gigsaw-border)] bg-[#101d30] px-4 py-[14px]"><small class="mb-1 block text-[.72rem] text-[var(--gigsaw-muted)]">Tempo</small><strong>{{ song()!.bpm }} BPM</strong></span> }
+          @if (song()!.duration) { <span class="rounded-[13px] border border-[var(--gigsaw-border)] bg-[#101d30] px-4 py-[14px]"><small class="mb-1 block text-[.72rem] text-[var(--gigsaw-muted)]">Durata</small><strong>{{ formatSeconds(song()!.duration) }}</strong></span> }
         </div>
       }
 
       @if (song()!.musicBy || song()!.lyricsBy) {
-        <section class="detail-section"><h2>Crediti</h2><div class="credit-grid">
-          @if (song()!.musicBy) { <p><span>Musica</span><strong>{{ song()!.musicBy }}</strong></p> }
-          @if (song()!.lyricsBy) { <p><span>Testo</span><strong>{{ song()!.lyricsBy }}</strong></p> }
+        <section class="mt-7 border-t border-[var(--gigsaw-border)] pt-[22px]"><h2 class="mb-[14px] mt-0 text-[.95rem] text-[var(--gigsaw-text)]">Crediti</h2><div class="grid grid-cols-2 gap-4 max-[520px]:grid-cols-1">
+          @if (song()!.musicBy) { <p class="m-0"><span class="mb-1 block text-[.72rem] text-[var(--gigsaw-muted)]">Musica</span><strong class="block">{{ song()!.musicBy }}</strong></p> }
+          @if (song()!.lyricsBy) { <p class="m-0"><span class="mb-1 block text-[.72rem] text-[var(--gigsaw-muted)]">Testo</span><strong class="block">{{ song()!.lyricsBy }}</strong></p> }
         </div></section>
       }
 
       @if (song()!.linkGroup || song()!.tags?.length) {
-        <section class="detail-section"><h2>Organizzazione</h2><div class="tags">
-          @if (song()!.linkGroup) { <span class="tag link-group">{{ song()!.linkGroup }}</span> }
-          @for (tag of song()!.tags ?? []; track tag) { <span class="tag">{{ tag }}</span> }
+        <section class="mt-7 border-t border-[var(--gigsaw-border)] pt-[22px]"><h2 class="mb-[14px] mt-0 text-[.95rem] text-[var(--gigsaw-text)]">Organizzazione</h2><div class="flex flex-wrap gap-2">
+          @if (song()!.linkGroup) { <span class="rounded-full bg-[rgba(var(--ion-color-primary-rgb),.12)] px-[10px] py-1.5 text-xs font-bold text-[var(--ion-color-primary)]">{{ song()!.linkGroup }}</span> }
+          @for (tag of song()!.tags ?? []; track tag) { <span class="rounded-full bg-[rgba(var(--ion-color-secondary-rgb),.12)] px-[10px] py-1.5 text-xs font-bold text-[var(--gigsaw-text)]">{{ tag }}</span> }
         </div></section>
       }
 
       @if (song()!.notes) {
-        <section class="detail-section notes"><h2>Note</h2><p>{{ song()!.notes }}</p></section>
+        <section class="mt-7 border-t border-[var(--gigsaw-border)] pt-[22px]"><h2 class="mb-[14px] mt-0 text-[.95rem] text-[var(--gigsaw-text)]">Note</h2><p class="m-0 whitespace-pre-wrap leading-[1.65] text-[var(--gigsaw-muted)]">{{ song()!.notes }}</p></section>
       }
 
     </article>
 
     @if (linkedSongs().length) {
-      <ion-card>
+      <ion-card class="md:mx-6 border border-[var(--gigsaw-border)] rounded-2xl bg-[#101d30] [&_ion-item]:[--background:#101d30] [&_ion-item]:[--border-color:var(--gigsaw-border)] [&_ion-item]:[--color:var(--gigsaw-text)] [&_ion-label_p]:text-[var(--gigsaw-muted)]">
         <ion-card-header><ion-card-title>Brani collegati</ion-card-title></ion-card-header>
         <ion-card-content>
           <app-gigsaw-list>
@@ -75,9 +75,9 @@
   }
 </ion-content>
 @if (song()) {
-  <ion-footer class="detail-footer">
-    <ion-toolbar>
-      <div class="detail-actions">
+  <ion-footer class="flex-none bg-[var(--gigsaw-toolbar)]">
+    <ion-toolbar class="[--min-height:72px]">
+      <div class="flex justify-end gap-2.5 px-5 py-2.5 pb-[max(10px,env(safe-area-inset-bottom))] max-[520px]:[&_ion-button]:min-w-0 max-[520px]:[&_ion-button]:flex-1 [&_ion-button]:m-0 [&_ion-button]:min-w-28">
         <ion-button fill="outline" color="danger" (click)="confirmDelete()">Elimina</ion-button>
         <ion-button (click)="edit()">Modifica</ion-button>
       </div>

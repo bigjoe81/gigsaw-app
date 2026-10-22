@@ -14,9 +14,9 @@
       }
     </app-gigsaw-list>
   } @else if (error) {
-    <div class="state"><ion-icon name="alert-circle" /><ion-text color="danger">{{ error }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center"><ion-icon class="text-[44px] text-[var(--ion-color-medium)]" name="alert-circle" /><ion-text color="danger">{{ error }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
   } @else if (!templates.length) {
-    <div class="state"><ion-icon name="library" /><ion-text>Nessun template presente.</ion-text><ion-button [routerLink]="['nuovo']">Crea template</ion-button></div>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center"><ion-icon class="text-[44px] text-[var(--ion-color-medium)]" name="library" /><ion-text>Nessun template presente.</ion-text><ion-button [routerLink]="['nuovo']">Crea template</ion-button></div>
   } @else {
     <app-gigsaw-list>
       @for (template of templates; track template.id) {

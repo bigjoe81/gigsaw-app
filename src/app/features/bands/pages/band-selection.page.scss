@@ -5,34 +5,7 @@ ion-header ion-toolbar {
   --padding-start: max(20px, env(safe-area-inset-left));
   --padding-end: max(12px, env(safe-area-inset-right));
 }
-.brand-logo { width: 132px; max-height: 42px; object-fit: contain; }
-.selection-shell { width: min(1100px, 100%); margin: 0 auto; padding: 40px 24px 64px; }
-.page-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
-.page-heading h1 { margin: 0; font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.15; }
-.page-heading p { margin: 8px 0 0; color: var(--ion-color-medium); }
-.page-heading ion-button { flex: none; margin: 0; }
-.band-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; align-items: stretch; }
-.band-grid ion-card { width: 100%; min-height: 220px; margin: 0; border: 1px solid var(--gigsaw-border, #303b4b); border-radius: 12px; box-shadow: none; cursor: pointer; transition: border-color .15s ease, transform .15s ease; }
-.band-grid ion-card:hover, .band-grid ion-card:focus-visible { border-color: var(--ion-color-primary); transform: translateY(-2px); outline: none; }
-.band-card ion-card-content { display: flex; min-height: 220px; flex-direction: column; padding: 22px; }
-.band-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.band-logo { display: grid; width: 64px; height: 64px; place-items: center; overflow: hidden; border-radius: 10px; background: var(--ion-color-step-100); color: var(--ion-color-primary); font-size: 30px; }
-.band-logo img { width: 100%; height: 100%; object-fit: cover; }
-.band-card h2 { overflow: hidden; margin: 18px 0 2px; font-size: 1.2rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-.band-card p { overflow: hidden; margin: 0; color: var(--ion-color-medium); text-overflow: ellipsis; white-space: nowrap; }
-.band-footer { display: flex; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 20px; color: var(--ion-color-medium); font-size: .85rem; }
-.open-label { display: inline-flex; align-items: center; color: var(--ion-color-primary); font-weight: 600; }
-.new-band-card { border-style: dashed !important; }
-.new-band-card ion-card-content { display: flex; min-height: 220px; flex-direction: column; align-items: center; justify-content: center; padding: 22px; text-align: center; }
-.new-band-card ion-icon { font-size: 32px; color: var(--ion-color-primary); }
-.new-band-card h2 { margin: 12px 0 4px; font-size: 1.1rem; font-weight: 700; }
-.new-band-card p { margin: 0; color: var(--ion-color-medium); }
-.state-panel { display: flex; min-height: 240px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--ion-color-medium); }
 ion-modal.create-band-modal { --width: min(1120px, calc(100vw - 48px)); --height: min(860px, calc(100vh - 48px)); --border-radius: 16px; }
 @media (max-width: 700px) {
-  .selection-shell { padding: 24px 16px 48px; }
-  .page-heading { align-items: stretch; flex-direction: column; gap: 18px; }
-  .page-heading ion-button { align-self: flex-start; }
-  .band-grid { grid-template-columns: 1fr; }
   ion-modal.create-band-modal { --width: 100%; --height: 100%; --border-radius: 0; }
 }

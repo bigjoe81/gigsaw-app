@@ -8,11 +8,11 @@
     ariaLabel="Creazione brano"
     (sectionChange)="goToStep($event)"
   />
-<ion-content class="song-content" [scrollY]="true" [forceOverscroll]="true">
-  <main class="song-shell">
-    <section class="song-panel">
+<ion-content class="song-content [--background:var(--gigsaw-background)] [--navy:#e5edf7] [--blue:var(--ion-color-brand-blue)] [--muted:#9aabc1] [&_ion-button]:[--border-radius:9px] [&_ion-button]:font-bold" [scrollY]="true" [forceOverscroll]="true">
+  <main class="min-h-full w-full">
+    <section class="w-full min-w-0 px-[clamp(20px,5vw,72px)] pb-[max(96px,calc(48px_+_env(safe-area-inset-bottom,0px)))] pt-12 max-[800px]:px-5 max-[800px]:pb-[max(88px,calc(40px_+_env(safe-area-inset-bottom,0px)))] max-[800px]:pt-8">
       @if (loading()) {
-        <div class="loading-state">
+        <div class="flex min-h-[350px] items-center justify-center gap-3 text-[var(--gigsaw-muted)]">
           <ion-spinner name="crescent"/>
           Caricamento brano…
         </div>
@@ -20,46 +20,46 @@
         <form class="gigsaw-outlined-form" [formGroup]="form" (ngSubmit)="save()">
           @if (step() === 1) {
             <section class="form-step magic-step" [formGroup]="magicForm">
-              <header><span class="step-kicker"><ion-icon name="sparkles-outline"/> Magic Song</span>
-                <h2>Cerca, scegli, completa.</h2>
-                <p>Inserisci titolo e artista: cercheremo la registrazione sui servizi musicali disponibili.</p>
+              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-extrabold uppercase tracking-[.11em] text-[var(--blue)]"><ion-icon name="sparkles-outline"/> Magic Song</span>
+                <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Cerca, scegli, completa.</h2>
+                <p class="m-0 text-[var(--muted)]">Inserisci titolo e artista: cercheremo la registrazione sui servizi musicali disponibili.</p>
               </header>
-              <div class="field-grid two-columns"><label><span>Titolo *</span>
+              <div class="field-grid grid-cols-2 max-[800px]:grid-cols-1 [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750]"><label><span>Titolo *</span>
                 <ion-input formControlName="title" placeholder="Es. Come Together"/>
               </label><label><span>Artista</span>
                 <ion-input formControlName="artist" placeholder="Es. The Beatles"/>
               </label></div>
-              <div class="magic-actions">
+              <div class="mt-7 flex items-center justify-between gap-3.5">
                 <ion-button type="button" (click)="searchMagicSong()" [disabled]="magicLoading()">@if (magicLoading()) {
                   <ion-spinner name="crescent"/>
                 } @else {
                   <ion-icon slot="start" name="search-outline"/>
                 } Cerca brano
                 </ion-button>
-                <ion-button type="button" fill="clear" class="text-action" (click)="continueManually()">Inserisci manualmente</ion-button>
+                <ion-button type="button" fill="clear" class="border-0 bg-transparent font-bold text-[var(--blue)] [--background:transparent] [--background-hover:rgba(var(--ion-color-secondary-rgb),.08)] [--box-shadow:none] [--color:var(--blue)]" (click)="continueManually()">Inserisci manualmente</ion-button>
               </div>@if (magicError()) {
-              <p class="inline-error">{{ magicError() }}</p>
+              <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ magicError() }}</p>
             }
               @if (metadataResults().length) {
-                <div class="metadata-results">@for (result of metadataResults(); track result.externalId) {
-                  <button type="button" class="metadata-card" (click)="chooseMetadata(result)"
+                <div class="mt-7 grid gap-2.5">@for (result of metadataResults(); track result.externalId) {
+                  <button type="button" class="grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ion-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)"
                           [disabled]="detailLoading()">@if (result.artworkUrl) {
                     <img [src]="result.artworkUrl" alt=""/>
                   } @else {
-                    <span class="cover-placeholder"><ion-icon name="musical-notes-outline"/></span>
+                    <span class="grid h-[62px] w-[62px] place-items-center rounded-[9px] bg-[#172b49] text-[var(--blue)] max-[640px]:h-14 max-[640px]:w-14"><ion-icon name="musical-notes-outline"/></span>
                   }<span
-                    class="metadata-copy"><strong>{{ result.title }}</strong><small>{{ result.artist || 'Artista sconosciuto' }}</small><small>{{ result.album }}</small></span><span
-                    class="provider">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
+                    class="grid min-w-0 gap-[3px]"><strong class="overflow-hidden text-ellipsis whitespace-nowrap">{{ result.title }}</strong><small class="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--muted)]">{{ result.artist || 'Artista sconosciuto' }}</small><small class="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--muted)]">{{ result.album }}</small></span><span
+                    class="provider rounded-full bg-[#12372f] px-2 py-[5px] text-[.68rem] font-extrabold text-[#6ee7b7] max-[800px]:hidden max-[640px]:col-start-2 max-[640px]:justify-self-start max-[640px]:mt-0.5">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
                   </button>
                 }</div>
               }</section>
           }
           @if (step() === 2) {
             <section class="form-step">
-              <header><span class="step-kicker">Dettagli musicali</span>
-                <h2>Controlla le informazioni.</h2>
-                <p>I dati trovati restano sempre modificabili.</p></header>
-              <div class="metadata-complete-action">
+              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-extrabold uppercase tracking-[.11em] text-[var(--blue)]">Dettagli musicali</span>
+                <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Controlla le informazioni.</h2>
+                <p class="m-0 text-[var(--muted)]">I dati trovati restano sempre modificabili.</p></header>
+              <div class="mb-3.5 flex flex-wrap items-center gap-3">
                 <ion-button type="button" fill="outline" (click)="completeMetadataFromForm()" [disabled]="magicLoading() || !form.controls.title.value.trim()">
                   @if (magicLoading()) {
                     <ion-spinner name="crescent"/>
@@ -68,31 +68,31 @@
                   }
                   Completa i metadati
                 </ion-button>
-                <small>Cerca titolo e artista sui servizi musicali e completa i campi trovati.</small>
+                <small class="leading-[1.35] opacity-[.62]">Cerca titolo e artista sui servizi musicali e completa i campi trovati.</small>
               </div>
               @if (magicError()) {
-                <p class="inline-error">{{ magicError() }}</p>
+                <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ magicError() }}</p>
               }
               @if (metadataResults().length) {
-                <div class="metadata-results metadata-results-inline">
+                <div class="mt-7 mb-[18px] grid gap-2.5">
                   @for (result of metadataResults(); track result.externalId) {
-                    <button type="button" class="metadata-card" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
+                    <button type="button" class="grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ion-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
                       @if (result.artworkUrl) {
                         <img [src]="result.artworkUrl" alt=""/>
                       } @else {
-                        <span class="cover-placeholder"><ion-icon name="musical-notes-outline"/></span>
+                        <span class="grid h-[62px] w-[62px] place-items-center rounded-[9px] bg-[#172b49] text-[var(--blue)] max-[640px]:h-14 max-[640px]:w-14"><ion-icon name="musical-notes-outline"/></span>
                       }
-                      <span class="metadata-copy">
-                        <strong>{{ result.title }}</strong>
-                        <small>{{ result.artist || 'Artista sconosciuto' }}</small>
-                        <small>{{ result.album }}</small>
+                      <span class="grid min-w-0 gap-[3px]">
+                        <strong class="overflow-hidden text-ellipsis whitespace-nowrap">{{ result.title }}</strong>
+                        <small class="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--muted)]">{{ result.artist || 'Artista sconosciuto' }}</small>
+                        <small class="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--muted)]">{{ result.album }}</small>
                       </span>
-                      <span class="provider">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
+                      <span class="provider rounded-full bg-[#12372f] px-2 py-[5px] text-[.68rem] font-extrabold text-[#6ee7b7] max-[800px]:hidden max-[640px]:col-start-2 max-[640px]:justify-self-start max-[640px]:mt-0.5">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
                     </button>
                   }
                 </div>
               }
-              <div class="field-grid two-columns"><label class="wide"><span>Titolo *</span>
+              <div class="field-grid grid-cols-2 max-[800px]:grid-cols-1 [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750] [&_.wide]:col-span-full max-[800px]:[&_.wide]:col-span-auto"><label class="wide"><span>Titolo *</span>
                 <ion-input formControlName="title"/>
               </label><label><span>Eseguito da</span>
                 <ion-input formControlName="performedBy"/>
@@ -102,27 +102,28 @@
                 <ion-input formControlName="musicBy"/>
               </label><label><span>Testo di</span>
                 <ion-input formControlName="lyricsBy"/>
-              </label><div class="musical-controls wide">
-                <div class="field-stack">
+              </label><div class="wide grid grid-cols-2 items-start gap-5 max-[800px]:grid-cols-1">
+                <div class="grid gap-5">
                   <label><span>Tonalità *</span><ion-input formControlName="key"/></label>
                   <label><span>Durata * (mm:ss)</span><ion-input formControlName="duration" inputmode="numeric" placeholder="3:45"/></label>
                 </div>
-                <div class="bpm-control">
+                <div class="grid gap-2 rounded-[14px] border border-[var(--gigsaw-border)] bg-[color-mix(in_srgb,var(--gigsaw-input-background)_58%,transparent)] p-3.5">
                   <label><span>BPM</span><ion-input type="number" formControlName="bpm"/></label>
-                  <ion-button type="button" class="tap-tempo-button" (click)="tapTempo()" [class.is-active]="tapCount() > 0"
+                  <ion-button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl border border-[#2b3b52] bg-[#0f172a] px-3 py-[9px] text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] focus-visible:border-[var(--ion-color-brand-blue)] focus-visible:outline-none active:scale-[.985] [--background:transparent] [--color:#e5edf7] [--box-shadow:none] [--border-radius:12px]" (click)="tapTempo()" [style.border-color]="tapCount() > 0 ? 'var(--ion-color-brand-blue)' : null" [style.background]="tapCount() > 0 ? '#132442' : null"
                           aria-label="Batti il tempo per calcolare i BPM">
-                    <span class="tap-tempo-beat" aria-hidden="true">TAP</span>
-                    <span class="tap-tempo-copy"><strong>{{ tappedBpm() ?? 'Tap tempo' }}</strong><small>@if (tappedBpm()) { BPM rilevati } @else if (tapCount()) { Continua a battere } @else { Tocca a tempo }</small></span>
+                    <span class="grid h-11 w-11 flex-none place-items-center rounded-full [background:var(--ion-gradient-brand)] text-[.72rem] font-black tracking-[.08em] text-white" aria-hidden="true">TAP</span>
+                    <span class="grid gap-0.5"><strong class="text-[.94rem]">{{ tappedBpm() ?? 'Tap tempo' }}</strong><small class="text-[.72rem] font-semibold text-[var(--muted)]">@if (tappedBpm()) { BPM rilevati } @else if (tapCount()) { Continua a battere } @else { Tocca a tempo }</small></span>
                   </ion-button>
-                  <small class="tap-tempo-help">Desktop: barra spaziatrice · Mobile: tocca il pulsante</small>
+                  <small class="text-[.72rem] font-semibold text-[var(--muted)]">Desktop: barra spaziatrice · Mobile: tocca il pulsante</small>
                   @if (spotifyEmbedUrl(); as playerUrl) {
-                    <div class="spotify-tap-player">
-                      <span>Anteprima Spotify per il tap tempo</span>
+                    <div class="mt-1 grid gap-[7px]">
+                      <span class="text-[.72rem] font-bold text-[var(--muted)]">Anteprima Spotify per il tap tempo</span>
                       <iframe
                         [src]="playerUrl"
                         title="Player Spotify per il tap tempo"
                         width="100%"
                         height="152"
+                        class="block rounded-xl border-0 bg-[#121212]"
                         frameborder="0"
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                         loading="lazy">
@@ -131,9 +132,9 @@
                   }
                 </div>
               </div></div>@if (error()) {
-              <p class="inline-error">{{ error() }}</p>
+              <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ error() }}</p>
             }
-              <footer class="step-actions form-action-bar">
+              <footer class="mt-7 flex items-center justify-between gap-3.5">
                 <ion-button type="button" fill="clear" (click)="goToStep(1)" [disabled]="editing">Indietro</ion-button>
                 <ion-button type="button" (click)="goToStep(3)">Continua</ion-button>
               </footer>
@@ -141,10 +142,10 @@
           }
           @if (step() === 3) {
             <section class="form-step">
-              <header><span class="step-kicker">Organizzazione</span>
-                <h2>Preparalo per la band.</h2>
-                <p>Imposta stato, medley e indicazioni utili per prove e scalette.</p></header>
-              <div class="field-grid"><label><span>Stato</span>
+              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-extrabold uppercase tracking-[.11em] text-[var(--blue)]">Organizzazione</span>
+                <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Preparalo per la band.</h2>
+                <p class="m-0 text-[var(--muted)]">Imposta stato, medley e indicazioni utili per prove e scalette.</p></header>
+              <div class="field-grid [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750]"><label><span>Stato</span>
                 <ion-select formControlName="status" interface="popover">
                   <ion-select-option value="draft">Bozza</ion-select-option>
                   <ion-select-option value="active">Attivo</ion-select-option>
@@ -166,15 +167,15 @@
               }<label><span>Tag</span>
                 <ion-input formControlName="tagsText" placeholder="Dance, acustico, anni 90"/>
               </label>@if (existingTags.length) {
-                <div class="suggestions"><small>Tag usati</small>@for (tag of existingTags; track tag) {
+                <div class="flex flex-wrap items-center gap-2"><small class="w-full text-[var(--muted)]">Tag usati</small>@for (tag of existingTags; track tag) {
                   <ion-chip (click)="applyTag(tag)" [outline]="!hasTag(tag)">{{ tag }}</ion-chip>
                 }</div>
               }<label><span>Note</span>
                 <ion-textarea formControlName="notes" [autoGrow]="true" [rows]="4"/>
               </label></div>@if (error()) {
-              <p class="inline-error">{{ error() }}</p>
+              <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ error() }}</p>
             }
-              <footer class="step-actions form-action-bar">
+              <footer class="mt-7 flex items-center justify-between gap-3.5">
                 <ion-button type="button" fill="clear" (click)="goToStep(2)">Indietro</ion-button>
                 @if (!editing) {
                   <ion-button type="button" fill="outline" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</ion-button>

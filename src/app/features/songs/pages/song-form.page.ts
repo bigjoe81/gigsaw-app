@@ -17,24 +17,6 @@ import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models
   imports: [ReactiveFormsModule, FormPageHeaderComponent, IonButton, IonChip, IonContent, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea],
   templateUrl: './song-form.page.html',
   styleUrls: ['./song-form.page.scss'],
-  styles: [`
-    :host { width: 100%; }
-    .song-content { --background: #fff; }
-    .song-shell {
-      width: 100%;
-      max-width: none;
-      min-height: 100%;
-      margin: 0;
-      box-shadow: none;
-    }
-    .field-grid ion-select::part(icon) {
-      position: absolute;
-      top: 50%;
-      right: 16px;
-      margin: 0;
-      transform: translateY(-50%);
-    }
-  `],
 })
 export class SongFormPage implements OnInit, OnDestroy {
   readonly songSections: FormPageHeaderSection[] = [{ id: 1, label: 'Cerca' }, { id: 2, label: 'Dettagli' }, { id: 3, label: 'Organizza' }];

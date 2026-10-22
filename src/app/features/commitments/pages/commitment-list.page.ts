@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -47,6 +48,7 @@ interface CalendarDay {
 @Component({
   standalone: true,
   imports: [
+    NgClass,
     RouterLink,
     IonButton,
     IonButtons,

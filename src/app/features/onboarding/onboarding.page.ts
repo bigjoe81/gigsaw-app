@@ -6,12 +6,13 @@ import {
   arrowBackOutline,
   checkmarkCircleOutline,
   chevronForwardOutline,
+  cloudUploadOutline,
   musicalNotesOutline,
   peopleOutline,
   personAddOutline,
   sparklesOutline,
 } from 'ionicons/icons';
-import { catchError, finalize, Observable, of, switchMap } from 'rxjs';
+import { catchError, finalize, Observable, of } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { BandContextService } from '../../core/services/band-context.service';
 import { OnboardingService } from '../../core/services/onboarding.service';
@@ -20,13 +21,12 @@ import { BandService } from '../bands/services/band.service';
 import { GenreService } from '../bands/services/genre.service';
 
 type OnboardingMode = 'create' | 'invite';
-type OnboardingStep = 'welcome' | 'profile' | 'band' | 'invite' | 'complete';
+type OnboardingStep = 'welcome' | 'profile' | 'band' | 'invite' | 'complete' | 'songs';
 
 @Component({
   standalone: true,
   imports: [IonButton, IonChip, IonContent, IonIcon, IonInput, IonSpinner],
   templateUrl: './onboarding.page.html',
-  styleUrls: ['./onboarding.page.scss'],
 })
 export class OnboardingPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -49,13 +49,34 @@ export class OnboardingPage implements OnInit {
   bandName = '';
   joinCode = '';
   customInstrument = '';
+  instrumentFilter = '';
+  genreFilter = '';
   currentBand?: Band;
+
+  get filteredGenres(): BandGenre[] {
+    const query = this.normalizeSearch(this.genreFilter.trim());
+    const selectedGenreIds = new Set(this.selectedGenreIds());
+
+    return this.genres()
+      .filter((genre) => genre.name && this.normalizeSearch(genre.name).includes(query))
+      .sort((first, second) => Number(selectedGenreIds.has(second.id ?? -1)) - Number(selectedGenreIds.has(first.id ?? -1)));
+  }
+
+  get filteredInstrumentPresets(): string[] {
+    const query = this.normalizeSearch(this.instrumentFilter.trim());
+    if (!query) return this.instrumentPresets;
+
+    return this.instrumentPresets.filter((instrument) =>
+      this.normalizeSearch(instrument).includes(query),
+    );
+  }
 
   constructor() {
     addIcons({
       arrowBackOutline,
       checkmarkCircleOutline,
       chevronForwardOutline,
+      cloudUploadOutline,
       musicalNotesOutline,
       peopleOutline,
       personAddOutline,
@@ -67,6 +88,11 @@ export class OnboardingPage implements OnInit {
     this.genresService.list().pipe(
       catchError(() => of([])),
     ).subscribe((genres) => this.genres.set(genres));
+
+    if (this.route.snapshot.queryParamMap.get('mode') === 'create') {
+      this.mode.set('create');
+      this.step.set('band');
+    }
 
     const bandId = Number(this.route.snapshot.queryParamMap.get('bandId'));
     if (Number.isInteger(bandId) && bandId > 0) {
@@ -96,15 +122,15 @@ export class OnboardingPage implements OnInit {
   get progress(): number {
     const current = this.step();
     if (current === 'welcome') return 1;
-    if (current === 'complete') return 4;
-    if (current === 'profile') return this.mode() === 'invite' && this.currentBand ? 3 : 2;
-    return 3;
+    if (current === 'complete' || current === 'songs') return 4;
+    if (current === 'profile' && this.currentBand) return 3;
+    return 2;
   }
 
   chooseMode(mode: OnboardingMode): void {
     this.mode.set(mode);
     this.error.set('');
-    this.step.set(mode === 'create' ? 'profile' : 'invite');
+    this.step.set(mode === 'create' ? 'band' : 'invite');
   }
 
   continueFromProfile(): void {
@@ -122,6 +148,10 @@ export class OnboardingPage implements OnInit {
       : [...current, instrument]);
   }
 
+  private normalizeSearch(value: string): string {
+    return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLocaleLowerCase();
+  }
+
   toggleGenre(id?: number): void {
     if (!Number.isInteger(id)) return;
     this.selectedGenreIds.update((current) => current.includes(id!)
@@ -134,8 +164,9 @@ export class OnboardingPage implements OnInit {
   }
 
   createBand(): void {
+    if (this.loading()) return;
     const name = this.bandName.trim();
-    if (!name || this.loading()) {
+    if (!name) {
       this.error.set('Inserisci il nome della band.');
       return;
     }
@@ -143,20 +174,14 @@ export class OnboardingPage implements OnInit {
     this.loading.set(true);
     this.error.set('');
     this.bandService.create({ name, genres: this.selectedGenreIds() }).pipe(
-      switchMap((band) => {
-        this.currentBand = band;
-        this.bandContext.setCurrentBand(band.id);
-        return this.saveCurrentMemberInstruments(band);
-      }),
       finalize(() => this.loading.set(false)),
     ).subscribe({
-      next: () => this.step.set('complete'),
+      next: (band) => {
+        this.currentBand = band;
+        this.bandContext.setCurrentBand(band.id);
+        this.step.set('profile');
+      },
       error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
-        if (this.currentBand) {
-          this.step.set('profile');
-          this.error.set('La band è stata creata, ma non sono riuscito a salvare gli strumenti. Riprova.');
-          return;
-        }
         this.error.set(error.error?.errors?.['name']?.[0] || error.error?.message || 'Creazione della band non riuscita.');
       },
     });
@@ -187,8 +212,11 @@ export class OnboardingPage implements OnInit {
 
   back(): void {
     this.error.set('');
-    if (this.step() === 'band') {
-      this.step.set('profile');
+    if (this.step() === 'songs') {
+      this.step.set('complete');
+    } else if (this.step() === 'band') {
+      this.mode.set(null);
+      this.step.set('welcome');
     } else if (this.step() === 'profile' && this.mode() === 'invite' && this.currentBand) {
       this.step.set('complete');
     } else {
@@ -199,6 +227,11 @@ export class OnboardingPage implements OnInit {
   }
 
   backFromProfile(): void {
+    if (this.mode() === 'create' && this.currentBand) {
+      this.step.set('complete');
+      return;
+    }
+
     if (this.mode() === 'invite' && this.currentBand) {
       this.skip();
       return;
@@ -209,12 +242,38 @@ export class OnboardingPage implements OnInit {
 
   skip(): void {
     this.onboarding.complete();
-    void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/panoramica` : '/band');
+    if (!this.currentBand) {
+      void this.router.navigate(['/band'], { queryParams: { seleziona: 1 } });
+      return;
+    }
+    void this.router.navigateByUrl(`/band/${this.currentBand.id}/panoramica`);
   }
 
   finish(): void {
     this.onboarding.complete();
     void this.router.navigateByUrl(this.currentBand ? `/band/${this.currentBand.id}/panoramica` : '/band');
+  }
+
+  continueToSongs(): void {
+    this.step.set('songs');
+  }
+
+  importRepertoire(): void {
+    this.navigateToSongPage('importa');
+  }
+
+  addDraftSong(): void {
+    this.navigateToSongPage('nuovo');
+  }
+
+  private navigateToSongPage(page: 'importa' | 'nuovo'): void {
+    if (!this.currentBand) {
+      this.error.set('Seleziona una band prima di aggiungere brani.');
+      return;
+    }
+
+    this.onboarding.complete();
+    void this.router.navigateByUrl(`/band/${this.currentBand.id}/repertorio/${page}`);
   }
 
   private saveInstruments(): void {

@@ -1,23 +1,23 @@
-<ion-content appAuthKeyboardScroll class="ion-padding register-content" [fullscreen]="true">
-  <div class="auth-shell">
-    <div class="auth-brand">
+<ion-content appAuthKeyboardScroll class="[--padding-start:16px] [--padding-end:16px]" [fullscreen]="true">
+  <div class="mx-auto flex w-full max-w-[340px] min-w-0 flex-col gap-4">
+    <div class="grid justify-items-center gap-[14px] py-2 text-center">
       <picture>
         <source media="(min-width: 768px)" srcset="assets/logo-hor.png" />
         <img
-          class="block h-auto w-[min(260px,70vw)] object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.12)] md:w-[min(300px,48vw)]"
+          class="mx-auto block h-auto w-[min(260px,70vw)] max-w-full object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.12)] md:w-[300px]"
           src="assets/logo-vert.png"
           alt="GigSaw logo"
         />
       </picture>
-      <p class="max-w-96 text-center text-[0.95rem] text-[var(--ion-color-medium)]">
+      <p class="m-0 max-w-96 text-[0.95rem] text-[var(--ion-color-medium)] [overflow-wrap:anywhere]">
         La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong>
       </p>
     </div>
-    <p class="rounded-lg border border-[var(--ion-color-primary)] bg-[var(--ion-card-background)] px-3 py-2.5 text-left text-sm font-medium text-[var(--gigsaw-text)]">
+    <p class="m-0 rounded-lg border border-[var(--ion-color-primary)] bg-[var(--ion-card-background)] px-3 py-2.5 text-left text-sm font-medium text-[var(--gigsaw-text)]">
       Registrati con il tuo nome e cognome.<br />
       Il nome della band potrai inserirlo successivamente.
     </p>
-    <form class="auth-form" (submit)="submit(); $event.preventDefault()">
+    <form class="flex w-full flex-col gap-4" (submit)="submit(); $event.preventDefault()">
       <div aria-hidden="true" inert style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;">
         <label for="registration-website">Sito web</label>
         <input id="registration-website" name="website" type="text" autocomplete="off" tabindex="-1"
@@ -25,7 +25,7 @@
       </div>
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Nome e cognome</span>
-        <ion-input class="auth-ion-input login-style-field w-full font-normal"
+        <ion-input class="min-h-12 w-full font-normal"
           mode="md"
           aria-label="Nome e cognome"
           autocapitalize="words"
@@ -45,7 +45,7 @@
 
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Email</span>
-        <ion-input class="auth-ion-input login-style-field w-full font-normal"
+        <ion-input class="min-h-12 w-full font-normal"
           mode="md"
           aria-label="Email"
           inputmode="email"
@@ -76,6 +76,6 @@
 
       <app-gigsaw-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading" [disabled]="spamPreparing()">Invia codice OTP</app-gigsaw-button>
     </form>
-    <a class="btn btn-ghost auth-link" routerLink="/accedi" [queryParams]="{ returnUrl }">Hai già un account? Accedi</a>
+    <a class="block w-full rounded-md whitespace-normal text-center" routerLink="/accedi" [queryParams]="{ returnUrl }">Hai già un account? Accedi</a>
   </div>
 </ion-content>

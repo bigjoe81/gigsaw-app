@@ -13,7 +13,6 @@ import { GigsawListComponent, GigsawListItemComponent } from './gigsaw';
   standalone: true,
   imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonMenuButton, IonRefresher, IonRefresherContent, IonSkeletonText, IonText, IonTitle, IonToolbar],
   templateUrl: './resource-list.page.html',
-  styles: ['.state{min-height:55%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}.state ion-icon{font-size:44px;color:var(--ion-color-medium)}'],
 })
 export class ResourceListPage implements OnInit {
   config!: ResourceConfig;

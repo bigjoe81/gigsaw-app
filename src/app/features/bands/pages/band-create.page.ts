@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -35,6 +36,7 @@ import { GigsawBadgeComponent, GigsawTypeaheadComponent, GigsawTypeaheadItem } f
   selector: 'app-band-create',
   standalone: true,
   imports: [
+    NgClass,
     ReactiveFormsModule,
     IonBackButton,
     IonButton,

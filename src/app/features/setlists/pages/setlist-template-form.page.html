@@ -13,46 +13,46 @@
   <form [formGroup]="form" (ngSubmit)="save()">
     <ion-item><ion-label position="stacked">Nome *</ion-label><ion-input formControlName="name" /></ion-item>
     <ion-item><ion-label position="stacked">Descrizione</ion-label><ion-textarea autoGrow formControlName="description" /></ion-item>
-    <div class="generation-sections">
-      <section class="gen-section">
-        <h3>Obiettivi dello show</h3>
-        <p class="gen-intro">Valori base per il comportamento della generazione automatica.</p>
+    <div class="grid gap-[18px]">
+      <section class="grid gap-2.5 py-0.5">
+        <h3 class="m-0 text-base font-bold">Obiettivi dello show</h3>
+        <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ion-color-medium-shade)]">Valori base per il comportamento della generazione automatica.</p>
         <ion-item><ion-label position="stacked">Numero indicativo di brani</ion-label><ion-input type="number" formControlName="targetSongCount" /></ion-item>
-        <ion-note class="field-help">Numero di brani che vuoi usare come base per una scaletta tipica.</ion-note>
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Numero di brani che vuoi usare come base per una scaletta tipica.</ion-note>
         <ion-item><ion-label position="stacked">Tag brani da includere</ion-label><ion-input formControlName="songTagsText" placeholder="marchettone, dance" autocomplete="off" autocapitalize="off" spellcheck="false" /></ion-item>
-        <ion-note class="field-help">Se valorizzato, il template limita Magic Set ai brani che hanno almeno uno di questi tag.</ion-note>
-        @if (availableSongTags.length) { <div class="tag-suggestions">@for (tag of availableSongTags; track tag) {<ion-chip (click)="applySongTag(tag)" [outline]="!hasSongTag(tag)">{{ tag }}</ion-chip>}</div> }
-        <ion-item><ion-label position="stacked">Durata totale desiderata dello show (ore:minuti)</ion-label><ion-input formControlName="totalShowDurationText" placeholder="2:30" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" [class.invalid-field]="showTotalShowDurationError()" (ionBlur)="normalizeTotalShowDuration()" /></ion-item>
-        <ion-note class="field-help">Esempio: 1:45 per 1 ora e 45 minuti. Verrà convertita in secondi per il backend.</ion-note>
-        @if (showTotalShowDurationError()) { <ion-note class="field-error">Usa il formato hh:mm, per esempio 1:45 o 2:30.</ion-note> }
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Se valorizzato, il template limita Magic Set ai brani che hanno almeno uno di questi tag.</ion-note>
+        @if (availableSongTags.length) { <div class="flex flex-wrap gap-2 px-4 pt-1">@for (tag of availableSongTags; track tag) {<ion-chip (click)="applySongTag(tag)" [outline]="!hasSongTag(tag)">{{ tag }}</ion-chip>}</div> }
+        <ion-item><ion-label position="stacked">Durata totale desiderata dello show (ore:minuti)</ion-label><ion-input formControlName="totalShowDurationText" placeholder="2:30" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" [style.--highlight-color-focused]="showTotalShowDurationError() ? 'var(--ion-color-danger)' : null" (ionBlur)="normalizeTotalShowDuration()" /></ion-item>
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Esempio: 1:45 per 1 ora e 45 minuti. Verrà convertita in secondi per il backend.</ion-note>
+        @if (showTotalShowDurationError()) { <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-danger)]">Usa il formato hh:mm, per esempio 1:45 o 2:30.</ion-note> }
       </section>
 
-      <section class="gen-section">
-        <h3>Struttura dei set</h3>
-        <p class="gen-intro">Se prevedi piu blocchi, qui definisci durata e pause.</p>
+      <section class="grid gap-2.5 py-0.5">
+        <h3 class="m-0 text-base font-bold">Struttura dei set</h3>
+        <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ion-color-medium-shade)]">Se prevedi piu blocchi, qui definisci durata e pause.</p>
         <ion-item><ion-label position="stacked">Numero di set desiderati</ion-label><ion-input type="number" formControlName="setCount" /></ion-item>
-        <ion-note class="field-help">Quanti blocchi vuoi generare quando crei una scaletta da questo template.</ion-note>
-        <ion-item><ion-label position="stacked">Durata desiderata di ogni set (ore:minuti, CSV)</ion-label><ion-input formControlName="setTargetsText" placeholder="0:45, 0:50" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" [class.invalid-field]="showSetTargetsError()" (ionBlur)="normalizeSetTargets()" /></ion-item>
-        <ion-note class="field-help">Inserisci valori tipo 0:45, 0:50, 1:00, uno per ogni set.</ion-note>
-        @if (showSetTargetsError()) { <ion-note class="field-error">Usa valori hh:mm separati da virgola, per esempio 0:45, 0:50, 1:00.</ion-note> }
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Quanti blocchi vuoi generare quando crei una scaletta da questo template.</ion-note>
+        <ion-item><ion-label position="stacked">Durata desiderata di ogni set (ore:minuti, CSV)</ion-label><ion-input formControlName="setTargetsText" placeholder="0:45, 0:50" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" [style.--highlight-color-focused]="showSetTargetsError() ? 'var(--ion-color-danger)' : null" (ionBlur)="normalizeSetTargets()" /></ion-item>
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Inserisci valori tipo 0:45, 0:50, 1:00, uno per ogni set.</ion-note>
+        @if (showSetTargetsError()) { <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-danger)]">Usa valori hh:mm separati da virgola, per esempio 0:45, 0:50, 1:00.</ion-note> }
         <ion-item><ion-label position="stacked">Pausa tra i set (minuti:secondi)</ion-label><ion-input formControlName="breakDurationText" placeholder="15:00" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" [class.invalid-field]="showBreakDurationError()" (ionBlur)="normalizeBreakDuration()" /></ion-item>
-        <ion-note class="field-help">Esempio: 10:30 per dieci minuti e trenta secondi.</ion-note>
-        @if (showBreakDurationError()) { <ion-note class="field-error">Usa il formato mm:ss, per esempio 15:00 o 10:30.</ion-note> }
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Esempio: 10:30 per dieci minuti e trenta secondi.</ion-note>
+        @if (showBreakDurationError()) { <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-danger)]">Usa il formato mm:ss, per esempio 15:00 o 10:30.</ion-note> }
       </section>
 
-      <section class="gen-section">
-        <h3>Vincoli musicali</h3>
-        <p class="gen-intro">Il motore usa questi limiti per scegliere brani piu equilibrati.</p>
+      <section class="grid gap-2.5 py-0.5">
+        <h3 class="m-0 text-base font-bold">Vincoli musicali</h3>
+        <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ion-color-medium-shade)]">Il motore usa questi limiti per scegliere brani piu equilibrati.</p>
         <ion-item><ion-label position="stacked">Novita minima rispetto alla scaletta precedente (0-1)</ion-label><ion-input type="number" formControlName="minDifferenceRatio" /></ion-item>
-        <ion-note class="field-help">Più alto = piu cambiamenti rispetto all'ultima scaletta simile.</ion-note>
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Più alto = piu cambiamenti rispetto all'ultima scaletta simile.</ion-note>
         <ion-item><ion-label position="stacked">Soglia BPM per considerare un brano lento</ion-label><ion-input type="number" formControlName="slowSongBpmThreshold" /></ion-item>
-        <ion-note class="field-help">Sotto questa soglia il brano viene trattato come lento nella generazione.</ion-note>
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Sotto questa soglia il brano viene trattato come lento nella generazione.</ion-note>
         <ion-item><ion-label>Evita due brani consecutivi nella stessa tonalita</ion-label><ion-toggle formControlName="avoidAdjacentSameKey" /></ion-item>
-        <ion-note class="field-help">Serve a evitare passaggi troppo simili e monotoni.</ion-note>
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Serve a evitare passaggi troppo simili e monotoni.</ion-note>
         <ion-item><ion-label>Evita due brani lenti consecutivi</ion-label><ion-toggle formControlName="avoidAdjacentSlowSongs" /></ion-item>
-        <ion-note class="field-help">Aiuta a distribuire i brani lenti nel corso del live.</ion-note>
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Aiuta a distribuire i brani lenti nel corso del live.</ion-note>
         <ion-item><ion-label position="stacked">Massimo numero di brani lenti consecutivi</ion-label><ion-input type="number" formControlName="maxConsecutiveSlowSongs" /></ion-item>
-        <ion-note class="field-help">Limite massimo di lenti di fila prima di forzare un cambio di energia.</ion-note>
+        <ion-note class="mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ion-color-medium)]">Limite massimo di lenti di fila prima di forzare un cambio di energia.</ion-note>
       </section>
     </div>
 
@@ -126,7 +126,7 @@
       </ion-card-content>
     </ion-card>
 
-    @if (error) { <ion-note class="ion-padding" color="danger">{{ error }}</ion-note> }
-    <ion-button class="ion-margin" type="submit" expand="block" [disabled]="saving">Salva template</ion-button>
+    @if (error) { <ion-note class="block p-4" color="danger">{{ error }}</ion-note> }
+    <ion-button class="my-4" type="submit" expand="block" [disabled]="saving">Salva template</ion-button>
   </form>
 </ion-content>

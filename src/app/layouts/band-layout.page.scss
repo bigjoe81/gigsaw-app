@@ -23,16 +23,9 @@ ion-router-outlet#band-content {
 
 ion-menu {
   --width: var(--band-menu-width);
-  --background: var(--gigsaw-background);
-  border-right: 1px solid var(--gigsaw-border);
 }
 
-ion-menu ion-content {
-  --background: var(--gigsaw-background);
-}
-
-/* Ionic can miss the menu-pane-visible state when this nested routed layout is
-   restored from the router outlet. The split pane state remains authoritative. */
+/* Keep Ionic's nested routed split pane visible after router restoration. */
 ion-split-pane.split-pane-visible > ion-menu {
   position: relative;
   display: flex !important;
@@ -53,39 +46,6 @@ ion-split-pane.menu-collapsed {
   --band-menu-width: 76px;
 }
 
-ion-split-pane.menu-collapsed .menu-brand {
-  justify-content: center;
-  padding: 16px 8px 10px;
-}
-
-ion-split-pane.menu-collapsed ion-item ion-label {
-  display: none;
-}
-
-ion-split-pane.menu-collapsed .menu-brand__logo {
-  width: 56px;
-}
-
-ion-split-pane.menu-collapsed .current-band {
-  justify-content: center;
-  margin-inline: 8px;
-  padding: 8px;
-}
-
-ion-split-pane.menu-collapsed .current-band__copy {
-  display: none;
-}
-
-ion-split-pane.menu-collapsed ion-list {
-  padding-inline: 8px;
-}
-
-ion-split-pane.menu-collapsed ion-item {
-  --padding-start: 0;
-  --inner-padding-end: 0;
-  margin-inline: 0;
-}
-
 ion-split-pane.menu-collapsed ion-item::part(native) {
   justify-content: center;
   padding-inline: 0;
@@ -102,10 +62,6 @@ ion-split-pane:not(.menu-collapsed) ion-item ion-icon[slot='start'] {
   margin-inline-end: 22px;
 }
 
-ion-split-pane.menu-collapsed ion-item.is-active {
-  --border-radius: 8px;
-}
-
 ion-split-pane.split-pane-visible > .split-pane-main {
   margin: 0 !important;
   transform: none !important;
@@ -118,123 +74,6 @@ ion-split-pane.split-pane-visible > .menu-content-open {
   pointer-events: auto !important;
 }
 
-.menu-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 18px 10px;
-}
-
-.menu-brand__logo {
-  display: block;
-  width: 168px;
-  max-width: 100%;
-  height: auto;
-}
-
-.current-band {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 11px;
-  margin: 6px 12px 10px;
-  padding: 11px;
-  border: 1px solid var(--gigsaw-border);
-  border-radius: 8px;
-  background: var(--gigsaw-surface);
-}
-
-.current-band__avatar {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  place-items: center;
-  border-radius: 7px;
-  object-fit: cover;
-}
-
-.current-band__initials {
-  color: #fff;
-  background: color-mix(in srgb, var(--ion-color-primary) 18%, var(--gigsaw-surface));
-  font-size: .78rem;
-  font-weight: 900;
-  letter-spacing: .04em;
-}
-
-.current-band__copy {
-  display: grid;
-  min-width: 0;
-  gap: 1px;
-}
-
-.current-band__copy small {
-  color: var(--gigsaw-muted);
-  font-size: .62rem;
-  font-weight: 800;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.current-band__copy strong,
-.current-band__copy > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.current-band__copy strong {
-  color: var(--gigsaw-text);
-  font-size: .88rem;
-}
-
-.current-band__copy > span {
-  color: var(--gigsaw-muted);
-  font-size: .7rem;
-}
-
-ion-list {
-  padding: 8px;
-  background: transparent;
-}
-
-.menu-nav {
-  padding-top: 4px;
-}
-
-ion-item {
-  --min-height: 44px;
-  --padding-start: 20px;
-  --inner-padding-end: 12px;
-  --background: transparent;
-  --border-radius: 6px;
-  margin: 2px 0;
-  font-weight: 600;
-}
-
-ion-item ion-icon {
-  color: var(--ion-color-medium);
-  font-size: 20px;
-}
-
-ion-item.is-active {
-  --background: color-mix(in srgb, var(--ion-color-primary) 10%, var(--gigsaw-surface));
-  --border-radius: 6px;
-  --color: var(--gigsaw-text);
-  position: relative;
-}
-
 ion-item.is-active::part(native) {
   border-left: 2px solid var(--ion-color-primary);
-}
-
-ion-item.is-active ion-icon {
-  color: var(--ion-color-primary);
-}
-
-.menu-footer {
-  position: absolute;
-  right: 0;
-  bottom: 10px;
-  left: 0;
 }

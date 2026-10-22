@@ -45,7 +45,6 @@ import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui
     IonToolbar
 ],
   templateUrl: './setlist-template-list.page.html',
-  styles: ['.state{min-height:55%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}.state ion-icon{font-size:44px;color:var(--ion-color-medium)}'],
 })
 export class SetlistTemplateListPage implements OnInit {
   templates: SetlistTemplate[] = [];

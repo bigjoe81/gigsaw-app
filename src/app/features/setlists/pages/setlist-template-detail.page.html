@@ -12,7 +12,7 @@
   @if (loading) {
     <ion-card><ion-card-content><ion-skeleton-text [animated]="true" style="width:70%" /><ion-skeleton-text [animated]="true" style="width:90%" /></ion-card-content></ion-card>
   } @else if (!template) {
-    <ion-note class="ion-padding">Template non trovato.</ion-note>
+    <ion-note class="block p-4">Template non trovato.</ion-note>
   } @else {
     <app-gigsaw-list>
       <app-gigsaw-list-item><div class="list-col-grow"><p>Nome</p><h2>{{ template.name }}</h2></div></app-gigsaw-list-item>

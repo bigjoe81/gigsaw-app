@@ -7,7 +7,6 @@ import { AuthService } from '../../core/auth/auth.service';
   standalone: true,
   imports: [IonButton, IonContent, IonNote, IonSpinner],
   templateUrl: './google-callback.page.html',
-  styles: ['.state{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}'],
 })
 export class GoogleCallbackPage implements OnInit {
   error = '';

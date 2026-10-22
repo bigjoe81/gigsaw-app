@@ -1,5 +1,5 @@
 <ion-header><ion-toolbar><ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons><ion-title>Importa brani</ion-title></ion-toolbar></ion-header>
-<ion-content class="ion-padding">
+<ion-content class="p-4">
   <ion-card>
     <ion-card-header><ion-card-title>Importa repertorio da PDF</ion-card-title></ion-card-header>
     <ion-card-content>
@@ -11,8 +11,8 @@
       </ion-button>
     </ion-card-content>
   </ion-card>
-  @if (error()) { <ion-note color="danger">{{ error() }}</ion-note> }
-  @if (result()) { <ion-note color="success">{{ result() }}</ion-note> }
+  @if (error()) { <ion-note class="my-3 block" color="danger">{{ error() }}</ion-note> }
+  @if (result()) { <ion-note class="my-3 block" color="success">{{ result() }}</ion-note> }
   @if (review(); as data) {
     <ion-list>
       <ion-list-header><ion-label>Anteprima · {{ data.summary.total_rows }} righe, {{ data.summary.ready_rows }} pronte</ion-label></ion-list-header>
