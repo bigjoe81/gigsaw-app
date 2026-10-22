@@ -1,30 +1,8 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, of, timeout } from 'rxjs';
-import {
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonMenuButton,
-  IonSpinner,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  addOutline,
-  calendarOutline,
-  chevronForwardOutline,
-  clipboardOutline,
-  listOutline,
-  locationOutline,
-  micOutline,
-  musicalNotesOutline,
-  peopleOutline,
-  ticketOutline,
-  timeOutline,
-} from 'ionicons/icons';
 import { AuthService } from '../../../core/auth/auth.service';
 import {
   Commitment,
@@ -58,19 +36,11 @@ interface OperationalEvent {
   ready: boolean;
 }
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     RouterLink,
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonIcon,
-    IonMenuButton,
-    IonSpinner,
-    IonTitle,
-    IonToolbar,
-  ],
+    ],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
 })
@@ -113,22 +83,10 @@ export class DashboardPage {
   ];
 
   constructor() {
-    addIcons({
-      addOutline,
-      calendarOutline,
-      chevronForwardOutline,
-      clipboardOutline,
-      listOutline,
-      locationOutline,
-      micOutline,
-      musicalNotesOutline,
-      peopleOutline,
-      ticketOutline,
-      timeOutline,
-    });
+
   }
 
-  ionViewWillEnter(): void {
+  ngOnInit(): void {
     this.loadDashboard();
   }
 

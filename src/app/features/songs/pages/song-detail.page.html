@@ -1,26 +1,26 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start">
       @if (isModal) {
-        <ion-button aria-label="Chiudi dettagli" (click)="close()"><ion-icon name="close" /></ion-button>
+        <button class="btn btn-primary" aria-label="Chiudi dettagli" (click)="close()" type="button"><app-symbol name="close"  /></button>
       } @else {
-        <ion-back-button defaultHref="../" />
+        <button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button>
       }
-    </ion-buttons>
-    <ion-title>Dettagli brano</ion-title>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="[--background:var(--gigsaw-background)]">
+    </div>
+    <h1 class="grow text-xl">Dettagli brano</h1>
+  </div>
+</header>
+<section class="app-content [--background:var(--gigsaw-background)]">
   @if (loading()) {
-    <ion-card class="border border-[var(--gigsaw-border)] rounded-2xl bg-[#101d30]"><ion-card-content><ion-skeleton-text [animated]="true" style="width:70%" /><ion-skeleton-text [animated]="true" style="width:90%" /></ion-card-content></ion-card>
+    <article class="card bg-base-200 border border-base-300 my-4 border border-[var(--gigsaw-border)] rounded-2xl bg-[#101d30]"><div class="card-body"><span class="skeleton block h-4 my-2" style="width:70%" ></span><span class="skeleton block h-4 my-2" style="width:90%" ></span></div></article>
   } @else if (!song()) {
-    <ion-note class="block p-4">{{ loadError() || 'Brano non trovato.' }}</ion-note>
+    <small class="text-sm block p-4">{{ loadError() || 'Brano non trovato.' }}</small>
   } @else {
     <article class="p-7 max-[520px]:px-4 max-[520px]:py-5">
       <header class="flex items-center gap-5">
-        <span class="grid h-[88px] w-[88px] flex-none place-items-center rounded-3xl [background:var(--ion-gradient-brand-reversed)] text-white shadow-[0_14px_35px_rgba(var(--ion-color-primary-rgb),.2)] max-[520px]:h-[68px] max-[520px]:w-[68px] max-[520px]:rounded-[19px]"><ion-icon class="text-[42px] max-[520px]:text-[34px]" name="musical-notes-outline" /></span>
+        <span class="grid h-[88px] w-[88px] flex-none place-items-center rounded-3xl [background:var(--ui-gradient-brand-reversed)] text-white shadow-[0_14px_35px_rgba(var(--ui-color-primary-rgb),.2)] max-[520px]:h-[68px] max-[520px]:w-[68px] max-[520px]:rounded-[19px]"><app-symbol class="text-[42px] max-[520px]:text-[34px]" name="musical-notes-outline"  /></span>
         <div>
-          <span class="text-[.7rem] font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">{{ statusLabel(song()!.status) }}</span>
+          <span class="text-[.7rem] font-extrabold uppercase tracking-[.12em] text-[var(--ui-color-primary)]">{{ statusLabel(song()!.status) }}</span>
           <h1 class="my-[3px] mb-1 block text-[clamp(1.65rem,5vw,2.4rem)] leading-[1.1] text-[var(--gigsaw-text)]">{{ song()!.title }}</h1>
           <p class="m-0 block text-base text-[var(--gigsaw-text)]">{{ song()!.performedBy || 'Artista non specificato' }}</p>
           @if (song()!.album) { <small class="mt-[5px] block text-[var(--gigsaw-muted)]">{{ song()!.album }}</small> }
@@ -44,8 +44,8 @@
 
       @if (song()!.linkGroup || song()!.tags?.length) {
         <section class="mt-7 border-t border-[var(--gigsaw-border)] pt-[22px]"><h2 class="mb-[14px] mt-0 text-[.95rem] text-[var(--gigsaw-text)]">Organizzazione</h2><div class="flex flex-wrap gap-2">
-          @if (song()!.linkGroup) { <span class="rounded-full bg-[rgba(var(--ion-color-primary-rgb),.12)] px-[10px] py-1.5 text-xs font-bold text-[var(--ion-color-primary)]">{{ song()!.linkGroup }}</span> }
-          @for (tag of song()!.tags ?? []; track tag) { <span class="rounded-full bg-[rgba(var(--ion-color-secondary-rgb),.12)] px-[10px] py-1.5 text-xs font-bold text-[var(--gigsaw-text)]">{{ tag }}</span> }
+          @if (song()!.linkGroup) { <span class="rounded-full bg-[rgba(var(--ui-color-primary-rgb),.12)] px-[10px] py-1.5 text-xs font-bold text-[var(--ui-color-primary)]">{{ song()!.linkGroup }}</span> }
+          @for (tag of song()!.tags ?? []; track tag) { <span class="rounded-full bg-[rgba(var(--ui-color-secondary-rgb),.12)] px-[10px] py-1.5 text-xs font-bold text-[var(--gigsaw-text)]">{{ tag }}</span> }
         </div></section>
       }
 
@@ -56,9 +56,9 @@
     </article>
 
     @if (linkedSongs().length) {
-      <ion-card class="md:mx-6 border border-[var(--gigsaw-border)] rounded-2xl bg-[#101d30] [&_ion-item]:[--background:#101d30] [&_ion-item]:[--border-color:var(--gigsaw-border)] [&_ion-item]:[--color:var(--gigsaw-text)] [&_ion-label_p]:text-[var(--gigsaw-muted)]">
-        <ion-card-header><ion-card-title>Brani collegati</ion-card-title></ion-card-header>
-        <ion-card-content>
+      <article class="card bg-base-200 border border-base-300 my-4 md:mx-6 border border-[var(--gigsaw-border)] rounded-2xl bg-[#101d30] [&_.ui-item]:[--background:#101d30] [&_.ui-item]:[--border-color:var(--gigsaw-border)] [&_.ui-item]:[--color:var(--gigsaw-text)] [&_ion-label_p]:text-[var(--gigsaw-muted)]">
+        <header class="px-6 pt-6"><h2 class="card-title">Brani collegati</h2></header>
+        <div class="card-body">
           <app-gigsaw-list>
             @for (linkedSong of linkedSongs(); track linkedSong.id) {
               <app-gigsaw-list-item [interactive]="true" [routerLink]="['..', linkedSong.id]">
@@ -69,18 +69,18 @@
               </app-gigsaw-list-item>
             }
           </app-gigsaw-list>
-        </ion-card-content>
-      </ion-card>
+        </div>
+      </article>
     }
   }
-</ion-content>
+</section>
 @if (song()) {
-  <ion-footer class="flex-none bg-[var(--gigsaw-toolbar)]">
-    <ion-toolbar class="[--min-height:72px]">
-      <div class="flex justify-end gap-2.5 px-5 py-2.5 pb-[max(10px,env(safe-area-inset-bottom))] max-[520px]:[&_ion-button]:min-w-0 max-[520px]:[&_ion-button]:flex-1 [&_ion-button]:m-0 [&_ion-button]:min-w-28">
-        <ion-button fill="outline" color="danger" (click)="confirmDelete()">Elimina</ion-button>
-        <ion-button (click)="edit()">Modifica</ion-button>
+  <footer class="page-footer flex-none bg-[var(--gigsaw-toolbar)]">
+    <div class="navbar gap-3 [--min-height:72px]">
+      <div class="flex justify-end gap-2.5 px-5 py-2.5 pb-[max(10px,env(safe-area-inset-bottom))] max-[520px]:[&_.btn]:min-w-0 max-[520px]:[&_.btn]:flex-1 [&_.btn]:m-0 [&_.btn]:min-w-28">
+        <button class="btn btn-outline btn-error" (click)="confirmDelete()" type="button">Elimina</button>
+        <button class="btn btn-primary" (click)="edit()" type="button">Modifica</button>
       </div>
-    </ion-toolbar>
-  </ion-footer>
+    </div>
+  </footer>
 }

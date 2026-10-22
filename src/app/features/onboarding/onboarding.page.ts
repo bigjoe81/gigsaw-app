@@ -1,17 +1,7 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../shared/ui/native-ui';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonButton, IonChip, IonContent, IonIcon, IonInput, IonSpinner } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  arrowBackOutline,
-  checkmarkCircleOutline,
-  chevronForwardOutline,
-  cloudUploadOutline,
-  musicalNotesOutline,
-  peopleOutline,
-  personAddOutline,
-  sparklesOutline,
-} from 'ionicons/icons';
 import { catchError, finalize, Observable, of } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { BandContextService } from '../../core/services/band-context.service';
@@ -23,9 +13,9 @@ import { GenreService } from '../bands/services/genre.service';
 type OnboardingMode = 'create' | 'invite';
 type OnboardingStep = 'welcome' | 'profile' | 'band' | 'invite' | 'complete' | 'songs';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [IonButton, IonChip, IonContent, IonIcon, IonInput, IonSpinner],
+  imports: [NativeUiModule],
   templateUrl: './onboarding.page.html',
 })
 export class OnboardingPage implements OnInit {
@@ -72,16 +62,7 @@ export class OnboardingPage implements OnInit {
   }
 
   constructor() {
-    addIcons({
-      arrowBackOutline,
-      checkmarkCircleOutline,
-      chevronForwardOutline,
-      cloudUploadOutline,
-      musicalNotesOutline,
-      peopleOutline,
-      personAddOutline,
-      sparklesOutline,
-    });
+
   }
 
   ngOnInit(): void {

@@ -1,18 +1,18 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>Template</ion-title>
-    <ion-buttons slot="end">
-      <ion-button [routerLink]="['modifica']">Modifica</ion-button>
-      <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button></div>
+    <h1 class="grow text-xl">Template</h1>
+    <div class="flex items-center gap-2" slot="end">
+      <button class="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica</button>
+      <button class="btn btn-primary btn-error" (click)="confirmDelete()" type="button">Elimina</button>
+    </div>
+  </div>
+</header>
+<section class="app-content">
   @if (loading) {
-    <ion-card><ion-card-content><ion-skeleton-text [animated]="true" style="width:70%" /><ion-skeleton-text [animated]="true" style="width:90%" /></ion-card-content></ion-card>
+    <article class="card bg-base-200 border border-base-300 my-4"><div class="card-body"><span class="skeleton block h-4 my-2" style="width:70%" ></span><span class="skeleton block h-4 my-2" style="width:90%" ></span></div></article>
   } @else if (!template) {
-    <ion-note class="block p-4">Template non trovato.</ion-note>
+    <small class="text-sm block p-4">Template non trovato.</small>
   } @else {
     <app-gigsaw-list>
       <app-gigsaw-list-item><div class="list-col-grow"><p>Nome</p><h2>{{ template.name }}</h2></div></app-gigsaw-list-item>
@@ -28,4 +28,4 @@
       <app-gigsaw-list-item><div class="list-col-grow"><p>Encore IDs</p><h2>{{ template.encoreSongIds?.join(', ') || '—' }}</h2></div></app-gigsaw-list-item>
     </app-gigsaw-list>
   }
-</ion-content>
+</section>

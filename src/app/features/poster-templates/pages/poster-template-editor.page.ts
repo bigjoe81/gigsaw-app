@@ -1,15 +1,17 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { JsonPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonSelect, IonSelectOption, IonCheckbox, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { PosterCanvasComponent } from '../components/poster-canvas.component';
 import { POSTER_FIELD_PRESETS, POSTER_FORMATS, PosterField, PosterFieldKey, PosterFormatId, PosterTemplateDocument, PosterTemplate } from '../models/poster-template.models';
 import { PosterTemplateService } from '../services/poster-template.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [JsonPipe, FormsModule, PosterCanvasComponent, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonSelect, IonSelectOption, IonCheckbox, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonTitle, IonToolbar],
+  imports: [NativeUiModule, JsonPipe, FormsModule, PosterCanvasComponent, ],
   templateUrl: './poster-template-editor.page.html',
   styleUrl: './poster-template-editor.page.scss',
 })
@@ -27,7 +29,7 @@ export class PosterTemplateEditorPage {
   selectedId: string | null = null;
   document: PosterTemplateDocument = this.emptyDocument('instagram-post');
 
-  constructor(route: ActivatedRoute, private readonly router: Router, private readonly storage: PosterTemplateService, private readonly toast: ToastController) {
+  constructor(route: ActivatedRoute, private readonly router: Router, private readonly storage: PosterTemplateService, private readonly toast: ToastService) {
     this.bandId = route.snapshot.parent?.parent?.paramMap.get('bandId') ?? '';
     this.templateId = route.snapshot.paramMap.get('templateId');
     const stored = this.templateId ? storage.get(this.bandId, this.templateId) : undefined;

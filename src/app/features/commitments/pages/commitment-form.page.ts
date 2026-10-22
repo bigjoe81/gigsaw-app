@@ -1,30 +1,18 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  AlertController,
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonSelect,
-  IonSelectOption,
-  IonTextarea,
-  IonTitle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { finalize } from 'rxjs';
 import { Commitment, CommitmentStatus, CommitmentType } from '../../../core/models/band-resources.models';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { CommitmentService } from '../services/commitment.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar],
+  imports: [NativeUiModule, ReactiveFormsModule, ],
   templateUrl: './commitment-form.page.html',
   styleUrls: ['./commitment-form.page.scss'],
 })
@@ -33,8 +21,8 @@ export class CommitmentFormPage {
   private readonly api = inject(CommitmentService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastController);
-  private readonly alert = inject(AlertController);
+  private readonly toast = inject(ToastService);
+  private readonly alert = inject(DialogService);
   private readonly bandContext = inject(BandContextService);
 
   readonly loading = signal(false);
@@ -54,7 +42,7 @@ export class CommitmentFormPage {
     notes: '',
   });
 
-  ionViewWillEnter(): void {
+  ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.id = id;
     this.editing.set(Boolean(id));

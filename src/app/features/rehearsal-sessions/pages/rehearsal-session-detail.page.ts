@@ -1,12 +1,13 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonNote, IonSkeletonText, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { RehearsalSession } from '../../../core/models/band-resources.models';
 import { ResourceDetailPage } from '../../../shared/ui/resource-detail.page';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [RouterLink, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [NativeUiModule, RouterLink, ],
   templateUrl: './rehearsal-session-detail.page.html',
   styleUrl: './rehearsal-session-detail.page.scss',
 })

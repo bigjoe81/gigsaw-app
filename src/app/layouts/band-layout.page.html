@@ -1,6 +1,6 @@
-<ion-split-pane contentId="band-content" when="(min-width: 600px)" [class.menu-collapsed]="menuCollapsed()" (click)="handleLayoutClick($event)">
-  <ion-menu class="[--background:var(--gigsaw-background)] border-r border-[var(--gigsaw-border)]" contentId="band-content" menuId="band-menu">
-    <ion-content>
+<div class="band-layout" [class.menu-collapsed]="menuCollapsed()" [class.menu-open]="menuCollapsed()" (click)="handleLayoutClick($event)">
+  <aside class="band-menu [--background:var(--gigsaw-background)] border-r border-[var(--gigsaw-border)]">
+    <section class="app-content">
       <header
         class="flex items-center justify-center px-[var(--menu-brand-padding-x)] pt-[var(--menu-brand-padding-top)] pb-[10px]"
         [style.--menu-brand-padding-x]="menuCollapsed() ? '8px' : '18px'"
@@ -21,7 +21,7 @@
           @if (band.logo) {
             <img class="grid size-10 shrink-0 place-items-center rounded-[7px] object-cover" [src]="band.logo" [alt]="'Logo ' + band.name" />
           } @else {
-            <span class="grid size-10 shrink-0 place-items-center rounded-[7px] bg-[color-mix(in_srgb,var(--ion-color-primary)_18%,var(--gigsaw-surface))] text-[.78rem] font-black tracking-[.04em] text-white" aria-hidden="true">{{ bandInitials(band.name) }}</span>
+            <span class="grid size-10 shrink-0 place-items-center rounded-[7px] bg-[color-mix(in_srgb,var(--ui-color-primary)_18%,var(--gigsaw-surface))] text-[.78rem] font-black tracking-[.04em] text-white" aria-hidden="true">{{ bandInitials(band.name) }}</span>
           }
           <span class="grid min-w-0 gap-px" [class.hidden]="menuCollapsed()">
             <small class="text-[.62rem] font-extrabold uppercase tracking-[.08em] text-[var(--gigsaw-muted)]">Band corrente</small>
@@ -47,43 +47,43 @@
         </div>
       }
 
-      <ion-list class="bg-transparent p-2 pt-1" lines="none">
+      <div class="ui-list grid gap-2 bg-transparent p-2 pt-1">
         @for (section of sections; track section.key) {
-          <ion-menu-toggle [autoHide]="false">
-            <ion-item
-              [detail]="false"
-              [routerLink]="sectionHref(section.key)"
+          <div class="menu-toggle">
+            <div
+
+              [routerLink]="sectionHref(section.key)" (click)="closeMobileMenu()"
               routerLinkActive="is-active"
               [routerLinkActiveOptions]="{ exact: false }"
               [title]="section.label"
-              class="my-0.5 mx-0 font-semibold [--min-height:44px] [--padding-start:var(--menu-item-padding-start)] [--inner-padding-end:var(--menu-item-padding-end)] [--background:transparent] [--border-radius:6px] [&.is-active]:relative [&.is-active]:[--background:color-mix(in_srgb,var(--ion-color-primary)_10%,var(--gigsaw-surface))] [&.is-active]:[--border-radius:6px] [&.is-active]:[--color:var(--gigsaw-text)] [&.is-active_ion-icon]:text-[var(--ion-color-primary)]"
+              class="ui-item flex items-center gap-3 py-3 my-0.5 mx-0 font-semibold [--min-height:44px] [--padding-start:var(--menu-item-padding-start)] [--inner-padding-end:var(--menu-item-padding-end)] [--background:transparent] [--border-radius:6px] [&.is-active]:relative [&.is-active]:[--background:color-mix(in_srgb,var(--ui-color-primary)_10%,var(--gigsaw-surface))] [&.is-active]:[--border-radius:6px] [&.is-active]:[--color:var(--gigsaw-text)] [&.is-active_app-symbol]:text-[var(--ui-color-primary)]"
               [style.--menu-item-padding-start]="menuCollapsed() ? '0px' : '20px'"
               [style.--menu-item-padding-end]="menuCollapsed() ? '0px' : '12px'"
             >
-              <ion-icon class="text-xl text-[var(--ion-color-medium)]" aria-hidden="true" slot="start" [name]="section.icon" />
-              <ion-label [class.hidden]="menuCollapsed()">{{ section.label }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
+              <app-symbol class="text-xl text-[var(--ui-color-medium)]" aria-hidden="true" [name]="section.icon"  />
+              <span class="ui-label" [class.hidden]="menuCollapsed()">{{ section.label }}</span>
+            </div>
+          </div>
         }
-      </ion-list>
+      </div>
 
-      <ion-list class="absolute inset-x-0 bottom-[10px] bg-transparent p-2" lines="none">
-        <ion-menu-toggle [autoHide]="false">
-          <ion-item
-            class="my-0.5 mx-0 font-semibold [--min-height:44px] [--padding-start:var(--menu-item-padding-start)] [--inner-padding-end:var(--menu-item-padding-end)] [--background:transparent] [--border-radius:6px]"
+      <div class="ui-list grid gap-2 absolute inset-x-0 bottom-[10px] bg-transparent p-2">
+        <div class="menu-toggle">
+          <div
+            class="ui-item flex items-center gap-3 py-3 my-0.5 mx-0 font-semibold [--min-height:44px] [--padding-start:var(--menu-item-padding-start)] [--inner-padding-end:var(--menu-item-padding-end)] [--background:transparent] [--border-radius:6px]"
             [style.--menu-item-padding-start]="menuCollapsed() ? '0px' : '20px'"
             [style.--menu-item-padding-end]="menuCollapsed() ? '0px' : '12px'"
-            [detail]="false"
+
             routerLink="/band"
             title="Cambia band"
           >
-            <ion-icon class="text-xl text-[var(--ion-color-medium)]" aria-hidden="true" slot="start" name="arrow-back-outline" />
-            <ion-label [class.hidden]="menuCollapsed()">Cambia band</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
+            <app-symbol class="text-xl text-[var(--ui-color-medium)]" aria-hidden="true" name="arrow-back-outline"  />
+            <span class="ui-label" [class.hidden]="menuCollapsed()">Cambia band</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </aside>
 
-  <ion-router-outlet id="band-content" [animated]="pageTransitionsEnabled" />
-</ion-split-pane>
+  <router-outlet id="band-content"  />
+</div>

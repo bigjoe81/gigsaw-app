@@ -1,16 +1,17 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../shared/ui/native-ui';
 import { Component, computed, signal, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { switchMap, timer, map } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonContent, IonInput } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
 import { GigsawButtonComponent, GigsawMessageComponent } from '../../shared/ui/gigsaw';
 
 import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, IonContent, IonInput],
+  imports: [NativeUiModule, AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, ],
   templateUrl: './register.page.html',
   styleUrls: ['./auth-layout.scss'],
 })

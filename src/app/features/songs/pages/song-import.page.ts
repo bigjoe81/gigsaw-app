@@ -1,15 +1,14 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { arrowBack, cloudUploadOutline, documentTextOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { PdfSongImportReview, SongImportRow, SongService } from '../services/song.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [RouterLink, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSpinner, IonTitle, IonToolbar],
+  imports: [NativeUiModule, RouterLink, ],
   templateUrl: './song-import.page.html',
 })
 export class SongImportPage {
@@ -25,7 +24,7 @@ export class SongImportPage {
     private readonly bandContext: BandContextService,
     private readonly router: Router,
   ) {
-    addIcons({ arrowBack, cloudUploadOutline, documentTextOutline });
+
   }
 
   chooseFile(input: HTMLInputElement): void {

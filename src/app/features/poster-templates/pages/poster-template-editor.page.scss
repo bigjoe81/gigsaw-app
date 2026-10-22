@@ -1,6 +1,6 @@
 :host { display: block; width: 100%; max-width: none; }
 
-ion-content {
+.app-content {
   width: 100%;
   max-width: none;
   --padding-start: 24px;
@@ -10,7 +10,7 @@ ion-content {
 }
 
 @media (max-width: 900px) {
-  ion-content {
+  .app-content {
     --padding-start: 16px;
     --padding-end: 16px;
     --padding-top: 16px;

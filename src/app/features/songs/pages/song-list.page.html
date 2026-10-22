@@ -1,102 +1,102 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="band-menu" />
-    </ion-buttons>
-    <ion-title>Brani</ion-title>
-    <ion-buttons slot="end">
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start">
+      <button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button>
+    </div>
+    <h1 class="grow text-xl">Brani</h1>
+    <div class="flex items-center gap-2" slot="end">
       @if (importEnabled) {
-        <ion-button fill="clear" [routerLink]="['importa']"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
+        <button class="btn btn-ghost" [routerLink]="['importa']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</button>
       }
-      <ion-button fill="clear" color="secondary" [routerLink]="['gruppi-collegati']">Medley</ion-button>
-      <ion-button class="[--background:var(--ion-color-primary)] [--color:var(--ion-color-primary-contrast)] [--box-shadow:0_8px_20px_rgba(var(--ion-color-primary-rgb),.22)] max-[700px]:text-[.82rem]" [routerLink]="['nuovo']" aria-label="Crea brano"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" /> Nuovo</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="[--background:var(--gigsaw-background)]">
-  <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+      <button class="btn btn-ghost btn-secondary" [routerLink]="['gruppi-collegati']" type="button">Medley</button>
+      <button class="btn btn-primary [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] [--box-shadow:0_8px_20px_rgba(var(--ui-color-primary-rgb),.22)] max-[700px]:text-[.82rem]" [routerLink]="['nuovo']" aria-label="Crea brano" type="button"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" /> Nuovo</button>
+    </div>
+  </div>
+</header>
+<section class="app-content [--background:var(--gigsaw-background)]">
+  <button type="button" class="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</button>
   @if (loading()) {
     <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {
-        <app-gigsaw-list-item><div class="list-col-grow"><ion-skeleton-text [animated]="true" style="width:55%" /><ion-skeleton-text [animated]="true" style="width:35%" /></div></app-gigsaw-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><span class="skeleton block h-4 my-2" style="width:55%" ></span><span class="skeleton block h-4 my-2" style="width:35%" ></span></div></app-gigsaw-list-item>
       }
     </app-gigsaw-list>
   } @else if (error()) {
-    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ion-color-brand-blue)]" [icon]="icons.alert" aria-hidden="true" /><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></div>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ui-color-brand-blue)]" [icon]="icons.alert" aria-hidden="true" /><span class=" text-error">{{ error() }}</span><button class="btn btn-outline" (click)="load()" type="button">Riprova</button></div>
   } @else if (!songs().length) {
-    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ion-color-brand-blue)]" [icon]="icons.music" aria-hidden="true" /><ion-text class="font-bold">Nessun brano presente</ion-text>
-      <ion-button [routerLink]="['nuovo']">
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center text-[var(--gigsaw-text)]"><app-gigsaw-icon class="text-[44px] text-[var(--ui-color-brand-blue)]" [icon]="icons.music" aria-hidden="true" /><span class="font-bold">Nessun brano presente</span>
+      <button class="btn btn-primary" [routerLink]="['nuovo']" type="button">
         <app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true"></app-gigsaw-icon>
         Crea brano
-      </ion-button>
+      </button>
     </div>
   } @else {
     <section class="w-full px-6 pb-14 pt-[34px] max-[700px]:px-3 max-[700px]:pb-9 max-[700px]:pt-5" aria-labelledby="library-title">
       <header class="mb-[18px] flex items-end justify-between gap-5 px-1 max-[700px]:items-start max-[700px]:flex-col">
         <div>
-          <p class="mb-[5px] mt-0 text-[.72rem] font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Repertorio</p>
+          <p class="mb-[5px] mt-0 text-[.72rem] font-extrabold uppercase tracking-[.12em] text-[var(--ui-color-primary)]">Repertorio</p>
           <h1 class="m-0 text-[clamp(1.45rem,2.4vw,2rem)] font-extrabold text-[var(--gigsaw-text)]" id="library-title">I tuoi brani</h1>
         </div>
         <div class="flex items-center gap-3 max-[700px]:w-full max-[700px]:flex-wrap max-[700px]:justify-end">
           <span class="rounded-full border border-[var(--gigsaw-border)] px-[11px] py-[7px] text-[.78rem] font-bold text-[var(--gigsaw-muted)]">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>
           @if (importEnabled) {
-            <ion-button class="[--border-color:var(--ion-color-primary)] [--color:var(--ion-color-primary)] [--border-radius:9px] font-bold" fill="outline" [routerLink]="['importa']"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</ion-button>
+            <button class="btn btn-outline [--border-color:var(--ui-color-primary)] [--color:var(--ui-color-primary)] [--border-radius:9px] font-bold" [routerLink]="['importa']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.upload" aria-hidden="true" />Importa</button>
           }
-          <ion-button class="[--border-color:var(--ion-color-brand-blue)] [--color:var(--ion-color-brand-blue)] [--border-radius:9px] font-bold" fill="outline" [routerLink]="['gruppi-collegati']">Gestisci medley</ion-button>
-          <ion-button class="[--background:var(--ion-color-primary)] [--color:var(--ion-color-primary-contrast)] [--border-radius:9px] font-extrabold" [routerLink]="['nuovo']"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" />Aggiungi brano</ion-button>
+          <button class="btn btn-outline [--border-color:var(--ui-color-brand-blue)] [--color:var(--ui-color-brand-blue)] [--border-radius:9px] font-bold" [routerLink]="['gruppi-collegati']" type="button">Gestisci medley</button>
+          <button class="btn btn-primary [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] [--border-radius:9px] font-extrabold" [routerLink]="['nuovo']" type="button"><app-gigsaw-icon slot="start" [icon]="icons.add" aria-hidden="true" />Aggiungi brano</button>
         </div>
       </header>
 
-      <div class="mx-1 mb-3 flex min-h-12 items-center gap-3.5 rounded-xl border border-[var(--gigsaw-border)] bg-[#101d30] px-3 py-2" [style.border-color]="selectedCount() ? 'color-mix(in srgb, var(--ion-color-primary) 55%, var(--gigsaw-border))' : null">
-        <ion-checkbox
-          class="text-[.84rem] font-bold text-[var(--gigsaw-text)]"
+      <div class="mx-1 mb-3 flex min-h-12 items-center gap-3.5 rounded-xl border border-[var(--gigsaw-border)] bg-[#101d30] px-3 py-2" [style.border-color]="selectedCount() ? 'color-mix(in srgb, var(--ui-color-primary) 55%, var(--gigsaw-border))' : null">
+        <input
+          class="checkbox checkbox-primary text-[.84rem] font-bold text-[var(--gigsaw-text)]"
           aria-label="Seleziona tutti i brani"
           [checked]="allSelected()"
           [indeterminate]="selectedCount() > 0 && !allSelected()"
           [disabled]="deleting()"
-          (ionChange)="toggleAll($event.detail.checked)"
-        >Seleziona tutti</ion-checkbox>
+          (change)="toggleAll($any($event.target).checked)"
+         type="checkbox" />Seleziona tutti
         <span class="text-[.78rem] text-[var(--gigsaw-muted)]">{{ selectedCount() }} selezionati</span>
-        <ion-button
-          class="ms-auto font-bold"
-          color="danger"
-          fill="outline"
-          size="small"
+        <button
+          class="btn btn-outline btn-error btn-sm ms-auto font-bold"
+
+
+
           [disabled]="!selectedCount() || deleting()"
           (click)="confirmDeleteSelected()"
-        >
+         type="button">
           <app-gigsaw-icon slot="start" [icon]="icons.trash" aria-hidden="true" />
           {{ deleting() ? 'Eliminazione…' : 'Elimina' }}
-        </ion-button>
+        </button>
       </div>
 
       <app-gigsaw-list listClass="grid gap-[10px] bg-transparent p-0">
         @for (song of songs(); track song.id) {
           <app-gigsaw-list-item itemClass="my-0 min-h-[94px] overflow-hidden rounded-[15px] border border-[var(--gigsaw-border)] [--min-height:94px] [--padding-start:14px] [--inner-padding-end:14px] [--background:#101d30] [--color:var(--gigsaw-text)] transition-colors duration-[180ms] hover:[--background:var(--gigsaw-list-hover-background,#2a3648)] max-[700px]:min-h-[86px] max-[700px]:[--min-height:86px] max-[700px]:[--padding-start:10px] max-[700px]:[--inner-padding-end:10px] [&_h2]:m-0 [&_h2]:font-extrabold [&_h2]:text-[var(--gigsaw-text)] [&_p]:my-1 [&_p]:text-[var(--gigsaw-muted)] [&_.artist]:text-[.86rem] [&_.artist]:text-[var(--gigsaw-text)] [&_.artist]:opacity-80 [&_.metadata]:text-[.78rem]" [interactive]="true" [disabled]="deleting()" (selected)="openSong(song.id)">
-            <ion-checkbox
-              class="me-3.5 flex-none max-[700px]:me-2.5"
+            <input
+              class="checkbox checkbox-primary me-3.5 flex-none max-[700px]:me-2.5"
               slot="start"
               aria-label="Seleziona {{ song.title }}"
               [checked]="selectedIds().has(song.id)"
               (click)="$event.stopPropagation()"
-              (ionChange)="toggleSong(song.id, $event.detail.checked)"
-            />
-            <span class="me-4 grid h-12 w-12 flex-none place-items-center rounded-[13px] bg-[rgba(var(--ion-color-primary-rgb),.12)] text-[var(--ion-color-primary)] max-[700px]:hidden" slot="start"><app-gigsaw-icon class="text-2xl" [icon]="icons.music" aria-hidden="true" /></span>
-            <ion-label>
+              (change)="toggleSong(song.id, $any($event.target).checked)"
+             type="checkbox" />
+            <span class="me-4 grid h-12 w-12 flex-none place-items-center rounded-[13px] bg-[rgba(var(--ui-color-primary-rgb),.12)] text-[var(--ui-color-primary)] max-[700px]:hidden" slot="start"><app-gigsaw-icon class="text-2xl" [icon]="icons.music" aria-hidden="true" /></span>
+            <span class="ui-label">
               <div class="flex items-center gap-2.5 max-[700px]:gap-1.5">
                 <h2>{{ song.title }}</h2>
               </div>
               @if (song.performedBy) { <p class="artist">{{ song.performedBy }}</p> }
               <p class="text-[.78rem]"><span class="max-[700px]:hidden">{{ subtitle(song) }}</span><span class="hidden max-[700px]:inline">{{ subtitle(song, false) }}</span></p>
-              <ion-badge class="mt-2 hidden min-w-[68px] rounded-full px-2.5 py-1.5 text-center text-[.67rem] font-extrabold uppercase tracking-[.04em] max-[700px]:inline-block max-[700px]:min-w-0 max-[700px]:px-[7px]" [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
-            </ion-label>
+              <span class="badge mt-2 hidden min-w-[68px] rounded-full px-2.5 py-1.5 text-center text-[.67rem] font-extrabold uppercase tracking-[.04em] max-[700px]:inline-block max-[700px]:min-w-0 max-[700px]:px-[7px]">{{ statusLabel(song.status) }}</span>
+            </span>
             <div class="ms-4 flex items-center gap-3.5 max-[700px]:ms-2 max-[700px]:gap-2" slot="end">
-              <ion-badge class="min-w-[68px] rounded-full px-2.5 py-1.5 text-center text-[.67rem] font-extrabold uppercase tracking-[.04em] max-[700px]:hidden" [color]="song.status === 'active' ? 'primary' : 'medium'">{{ statusLabel(song.status) }}</ion-badge>
-              <span class="grid h-[34px] w-[34px] place-items-center rounded-full bg-[rgba(var(--ion-color-secondary-rgb),.1)] text-[var(--ion-color-brand-blue)]" aria-hidden="true"><app-gigsaw-icon [icon]="icons.forward" aria-hidden="true" /></span>
+              <span class="badge min-w-[68px] rounded-full px-2.5 py-1.5 text-center text-[.67rem] font-extrabold uppercase tracking-[.04em] max-[700px]:hidden">{{ statusLabel(song.status) }}</span>
+              <span class="grid h-[34px] w-[34px] place-items-center rounded-full bg-[rgba(var(--ui-color-secondary-rgb),.1)] text-[var(--ui-color-brand-blue)]" aria-hidden="true"><app-gigsaw-icon [icon]="icons.forward" aria-hidden="true" /></span>
             </div>
           </app-gigsaw-list-item>
         }
       </app-gigsaw-list>
     </section>
   }
-</ion-content>
+</section>

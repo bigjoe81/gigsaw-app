@@ -1,19 +1,10 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewChild, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonIcon,
-  IonInput,
-  IonNote,
-  IonSpinner,
-  IonTextarea,
-  ToastController,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, locationOutline } from 'ionicons/icons';
 import {
   catchError,
   debounceTime,
@@ -40,20 +31,13 @@ import { VenueService } from '../../venues/services/venue.service';
 import { GigService } from '../services/gig.service';
 import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     GigPostersComponent,
     ReactiveFormsModule,
     RouterLink,
     FormPageHeaderComponent,
-    IonButton,
-    IonContent,
-    IonIcon,
-    IonInput,
-    IonNote,
-    IonSpinner,
-    IonTextarea,
     GigsawTypeaheadComponent,
   ],
   templateUrl: './gig-form.page.html',
@@ -106,9 +90,9 @@ export class GigFormPage implements OnInit, OnDestroy {
     private readonly mapbox: MapboxGeocodingService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly toast: ToastController,
+    private readonly toast: ToastService,
   ) {
-    addIcons({ calendarOutline, locationOutline });
+
   }
 
   private lastSuggestedTitle = '';

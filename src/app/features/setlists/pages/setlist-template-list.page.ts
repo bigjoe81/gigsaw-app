@@ -1,49 +1,19 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonRefresher,
-  IonRefresherContent,
-  IonSkeletonText,
-  IonText,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { add, alertCircle, library } from 'ionicons/icons';
 import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     RouterLink,
     GigsawListComponent,
     GigsawListItemComponent,
-    IonBackButton,
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonIcon,
-    IonItem,
-    IonLabel,
-    IonRefresher,
-    IonRefresherContent,
-    IonSkeletonText,
-    IonText,
-    IonTitle,
-    IonToolbar
-],
+    ],
   templateUrl: './setlist-template-list.page.html',
 })
 export class SetlistTemplateListPage implements OnInit {
@@ -52,7 +22,7 @@ export class SetlistTemplateListPage implements OnInit {
   error = '';
 
   constructor(private readonly setlistsApi: SetlistService) {
-    addIcons({ add, alertCircle, library });
+
   }
 
   ngOnInit(): void {

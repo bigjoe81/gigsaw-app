@@ -1,17 +1,11 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, forkJoin, of, Subscription, switchMap, throwError } from 'rxjs';
-import {
-  IonContent,
-  IonIcon,
-  IonInput,
-  IonSelect,
-  IonTextarea,
-  IonSelectOption,
-  ToastController,
-} from '@ionic/angular/standalone';
 import {
   RehearsalRoom,
   RehearsalSession,
@@ -29,9 +23,9 @@ import { SongService } from '../../songs/services/song.service';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, IonContent, IonIcon, IonInput, IonSelect, IonTextarea, IonSelectOption],
+  imports: [NativeUiModule, ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, ],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })
@@ -64,7 +58,7 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
     private readonly songService: SongService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly toast: ToastController,
+    private readonly toast: ToastService,
   ) {}
 
   private lastSuggestedTitle = '';
@@ -93,9 +87,10 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
       if (!title.trim()) this.updateSuggestedTitle();
     }));
     this.updateSuggestedTitle();
+    this.load();
   }
 
-  ionViewWillEnter(): void {
+  load(): void {
     this.loading.set(true);
     this.error.set('');
     this.step.set(1);

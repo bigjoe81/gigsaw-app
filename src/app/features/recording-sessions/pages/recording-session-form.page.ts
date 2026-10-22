@@ -1,14 +1,16 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonNote, IonSpinner, IonTextarea, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { RecordingSession } from '../../../core/models/band-resources.models';
 import { RecordingSessionService } from '../services/recording-session.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonNote, IonSpinner, IonTextarea, IonTitle, IonToolbar],
+  imports: [NativeUiModule, ReactiveFormsModule, ],
   templateUrl: './recording-session-form.page.html',
 })
 export class RecordingSessionFormPage implements OnInit {
@@ -19,7 +21,7 @@ export class RecordingSessionFormPage implements OnInit {
   private id?: number;
   private bandId?: number;
 
-  constructor(private readonly fb: FormBuilder, private readonly recordingSessions: RecordingSessionService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastController) {}
+  constructor(private readonly fb: FormBuilder, private readonly recordingSessions: RecordingSessionService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastService) {}
 
   ngOnInit(): void {
     this.bandId = this.getBandId();
@@ -47,9 +49,6 @@ export class RecordingSessionFormPage implements OnInit {
     return Number.isFinite(parsed) ? parsed : null;
   }
 
-  onDateChange(event: CustomEvent<{ value?: string | string[] | null }>): void {
-    this.form.patchValue({ date: this.normalizeDate(event.detail.value) }, { emitEvent: false });
-  }
 
   private normalizeDate(value: string | string[] | null | undefined): string {
     if (Array.isArray(value)) {

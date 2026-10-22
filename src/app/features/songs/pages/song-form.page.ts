@@ -1,20 +1,20 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, computed, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonButton, IonChip, IonContent, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea, ToastController } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline } from 'ionicons/icons';
 import { finalize, forkJoin, of } from 'rxjs';
 import { Song, SongStatus } from '../../../core/models/band-resources.models';
 import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../services/song.service';
 import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, FormPageHeaderComponent, IonButton, IonChip, IonContent, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner, IonTextarea],
+  imports: [NativeUiModule, ReactiveFormsModule, FormPageHeaderComponent, ],
   templateUrl: './song-form.page.html',
   styleUrls: ['./song-form.page.scss'],
 })
@@ -50,8 +50,8 @@ export class SongFormPage implements OnInit, OnDestroy {
   private id?: number;
   private bandId?: number;
 
-  constructor(private readonly fb: FormBuilder, private readonly songs: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastController, private readonly sanitizer: DomSanitizer) {
-    addIcons({ checkmarkCircleOutline, musicalNotesOutline, searchOutline, sparklesOutline });
+  constructor(private readonly fb: FormBuilder, private readonly songs: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastService, private readonly sanitizer: DomSanitizer) {
+
   }
 
   ngOnInit(): void {
@@ -123,7 +123,7 @@ export class SongFormPage implements OnInit, OnDestroy {
 
   private isTypingTarget(event: KeyboardEvent): boolean {
     return event.composedPath().some((target) => target instanceof HTMLElement && (
-      target.isContentEditable || target.matches('input, textarea, select, button, ion-input, ion-textarea, ion-select')
+      target.isContentEditable || target.matches('input, textarea, select, button, .input, .textarea, .select')
     ));
   }
 
@@ -338,8 +338,7 @@ export class SongFormPage implements OnInit, OnDestroy {
     this.form.patchValue({ linkGroup: group });
   }
 
-  onLinkGroupChoice(event: CustomEvent<{ value: string }>): void {
-    const value = event.detail.value;
+  onLinkGroupChoice(value: string): void {
     this.creatingLinkGroup = value === '__new__';
     this.form.patchValue({ linkGroup: this.creatingLinkGroup ? '' : value });
   }

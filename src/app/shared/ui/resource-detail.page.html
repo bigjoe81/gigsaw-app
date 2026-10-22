@@ -1,26 +1,26 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../"/></ion-buttons>
-    <ion-title>{{ config.singular }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button [routerLink]="['modifica']">Modifica</ion-button>
-      <ion-button color="danger" (click)="confirmDelete()">Elimina</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="bg-[var(--gigsaw-background)]">
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../" type="button" appBack>←</button></div>
+    <h1 class="grow text-xl">{{ config.singular }}</h1>
+    <div class="flex items-center gap-2" slot="end">
+      <button class="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica</button>
+      <button class="btn btn-primary btn-error" (click)="confirmDelete()" type="button">Elimina</button>
+    </div>
+  </div>
+</header>
+<section class="app-content bg-[var(--gigsaw-background)]">
   @if(loading()){
-    <ion-card class="[--background:#101d30] border-[var(--gigsaw-border)]">
-      <ion-card-content>
-        <ion-skeleton-text [animated]="true" style="width:70%"/>
-        <ion-skeleton-text [animated]="true" style="width:90%"/>
-      </ion-card-content>
-    </ion-card>
+    <article class="card bg-base-200 border border-base-300 my-4 [--background:#101d30] border-[var(--gigsaw-border)]">
+      <div class="card-body">
+        <span class="skeleton block h-4 my-2" style="width:70%"></span>
+        <span class="skeleton block h-4 my-2" style="width:90%"></span>
+      </div>
+    </article>
   } @else if(error()){
-    <ion-note class="p-4" color="danger" role="alert">{{ error() }}</ion-note>
-    <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+    <small class="text-sm text-error p-4" role="alert">{{ error() }}</small>
+    <button class="btn btn-outline" (click)="load()" type="button">Riprova</button>
   } @else if(item()){
-    <app-gigsaw-list listClass="mx-auto my-[34px] w-[min(760px,calc(100%-40px))] rounded-2xl border border-[var(--gigsaw-border)] bg-[#101d30] p-2 max-[600px]:mx-3 max-[600px]:my-5 max-[600px]:w-auto [&_ion-item]:[--background:transparent] [&_ion-item]:[--color:var(--gigsaw-text)] [&_ion-item]:[--border-color:var(--gigsaw-border)] [&_ion-item]:[--padding-start:14px] [&_ion-item]:[--inner-padding-end:14px] [&_ion-item]:min-h-[70px]">
+    <app-gigsaw-list listClass="mx-auto my-[34px] w-[min(760px,calc(100%-40px))] rounded-2xl border border-[var(--gigsaw-border)] bg-[#101d30] p-2 max-[600px]:mx-3 max-[600px]:my-5 max-[600px]:w-auto [&_.ui-item]:[--background:transparent] [&_.ui-item]:[--color:var(--gigsaw-text)] [&_.ui-item]:[--border-color:var(--gigsaw-border)] [&_.ui-item]:[--padding-start:14px] [&_.ui-item]:[--inner-padding-end:14px] [&_.ui-item]:min-h-[70px]">
       @for (field of config.fields; track field) {
         <app-gigsaw-list-item>
           <div class="min-w-0 flex-1">
@@ -31,6 +31,6 @@
       }
     </app-gigsaw-list>
   } @else {
-    <ion-note class="p-4">Record non trovato.</ion-note>
+    <small class="text-sm p-4">Record non trovato.</small>
   }
-</ion-content>
+</section>

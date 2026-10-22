@@ -1,49 +1,21 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import {
-  IonBadge,
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonMenuButton,
-  IonSelect,
-  IonSelectOption,
-  IonSpinner,
-  IonTextarea,
-  IonToolbar,
-} from '@ionic/angular/standalone';
 import {
   SupportTicket,
   SupportTicketCategory,
 } from '../models/support-ticket.models';
 import { SupportTicketService } from '../services/support-ticket.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     DatePipe,
     FormsModule,
-    IonBadge,
-    IonButton,
-    IonContent,
-    IonHeader,
-    IonInput,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonMenuButton,
-    IonSelect,
-    IonSelectOption,
-    IonSpinner,
-    IonTextarea,
-    IonToolbar,
-  ],
+    ],
   templateUrl: './support.page.html',
   styleUrls: ['./support.page.scss'],
 })

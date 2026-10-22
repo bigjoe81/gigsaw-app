@@ -1,40 +1,40 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>Concerto</ion-title>
-    <ion-buttons slot="end">
-      <ion-button [routerLink]="['modifica']"><ion-icon slot="start" name="pencil-outline" />Modifica</ion-button>
-      <ion-button color="danger" (click)="confirmDelete()"><ion-icon slot="icon-only" name="trash-outline" /></ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</button></div>
+    <h1 class="grow text-xl">Concerto</h1>
+    <div class="flex items-center gap-2" slot="end">
+      <button class="btn btn-primary" [routerLink]="['modifica']" type="button"><app-symbol name="pencil-outline"  />Modifica</button>
+      <button class="btn btn-primary btn-error" (click)="confirmDelete()" type="button"><app-symbol name="trash-outline"  /></button>
+    </div>
+  </div>
+</header>
 
-<ion-content>
+<section class="app-content">
   <main class="mx-auto max-w-[950px] px-5 pt-[34px] pb-14 text-[var(--gigsaw-text)] max-[680px]:px-3 max-[680px]:pt-[18px] max-[680px]:pb-9">
     @if (loading()) {
-      <section class="min-h-[190px] rounded-[18px] border border-[var(--gigsaw-border)] bg-[linear-gradient(135deg,rgba(var(--ion-color-primary-rgb),.15),#101d30_62%)] p-7 max-[680px]:px-[18px] max-[680px]:py-[21px]">
-        <ion-skeleton-text [animated]="true" style="width: 36%" /><ion-skeleton-text [animated]="true" style="width: 72%" /><ion-skeleton-text [animated]="true" style="width: 54%" />
+      <section class="min-h-[190px] rounded-[18px] border border-[var(--gigsaw-border)] bg-[linear-gradient(135deg,rgba(var(--ui-color-primary-rgb),.15),#101d30_62%)] p-7 max-[680px]:px-[18px] max-[680px]:py-[21px]">
+        <span class="skeleton block h-4 my-2" style="width: 36%" ></span><span class="skeleton block h-4 my-2" style="width: 72%" ></span><span class="skeleton block h-4 my-2" style="width: 54%" ></span>
       </section>
     } @else if (error() || !gig()) {
-      <ion-note class="block p-[18px] text-center" color="danger">{{ error() || 'Concerto non trovato.' }}</ion-note>
+      <small class="text-sm text-error block p-[18px] text-center">{{ error() || 'Concerto non trovato.' }}</small>
     } @else {
       @let currentGig = gig()!;
-      <section class="rounded-[18px] border border-[var(--gigsaw-border)] bg-[linear-gradient(135deg,rgba(var(--ion-color-primary-rgb),.15),#101d30_62%)] p-7 max-[680px]:px-[18px] max-[680px]:py-[21px]">
-        <p class="m-0 text-[var(--ion-color-primary)] text-xs font-extrabold tracking-[.12em] uppercase">Data live</p>
+      <section class="rounded-[18px] border border-[var(--gigsaw-border)] bg-[linear-gradient(135deg,rgba(var(--ui-color-primary-rgb),.15),#101d30_62%)] p-7 max-[680px]:px-[18px] max-[680px]:py-[21px]">
+        <p class="m-0 text-[var(--ui-color-primary)] text-xs font-extrabold tracking-[.12em] uppercase">Data live</p>
         <h1 class="mt-[5px] mb-[14px] text-[clamp(1.7rem,4vw,2.5rem)] !font-[850]">{{ currentGig.title || currentGig.venue?.name || 'Concerto' }}</h1>
-        <div class="flex flex-wrap gap-[14px] text-[var(--ion-color-medium)]"><span class="flex items-center gap-[7px]"><ion-icon name="calendar-outline" />{{ date(currentGig.date) }}</span>@if (time(currentGig.date); as gigTime) { <span class="flex items-center gap-[7px]"><ion-icon name="time-outline" />{{ gigTime }}</span> }</div>
+        <div class="flex flex-wrap gap-[14px] text-[var(--ui-color-medium)]"><span class="flex items-center gap-[7px]"><app-symbol name="calendar-outline"  />{{ date(currentGig.date) }}</span>@if (time(currentGig.date); as gigTime) { <span class="flex items-center gap-[7px]"><app-symbol name="time-outline"  />{{ gigTime }}</span> }</div>
       </section>
 
       <section class="mt-[14px] grid grid-cols-2 gap-[14px] max-[680px]:grid-cols-1">
         <article class="flex min-h-[145px] gap-[13px] rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5">
-          <div class="grid h-[42px] flex-[0_0_42px] place-items-center rounded-[11px] bg-[rgba(var(--ion-color-primary-rgb),.12)] text-[var(--ion-color-primary)] text-[22px]"><ion-icon name="location-outline" /></div>
-          <div><p class="m-0 text-[var(--ion-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Venue</p><h2 class="mt-[7px] mb-0 text-base !font-[750]">{{ currentGig.venue?.name || 'Venue non disponibile' }}</h2>@if (venueAddress(currentGig)) { <span class="mt-[5px] block text-[var(--ion-color-medium)] text-[.88rem]">{{ venueAddress(currentGig) }}</span> }</div>
+          <div class="grid h-[42px] flex-[0_0_42px] place-items-center rounded-[11px] bg-[rgba(var(--ui-color-primary-rgb),.12)] text-[var(--ui-color-primary)] text-[22px]"><app-symbol name="location-outline"  /></div>
+          <div><p class="m-0 text-[var(--ui-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Venue</p><h2 class="mt-[7px] mb-0 text-base !font-[750]">{{ currentGig.venue?.name || 'Venue non disponibile' }}</h2>@if (venueAddress(currentGig)) { <span class="mt-[5px] block text-[var(--ui-color-medium)] text-[.88rem]">{{ venueAddress(currentGig) }}</span> }</div>
         </article>
         <article class="flex min-h-[145px] gap-[13px] rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5">
-          <div><p class="m-0 text-[var(--ion-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Note organizzative</p><h2 class="mt-[7px] mb-0 text-base !font-[750] whitespace-pre-wrap">{{ currentGig.notes || 'Nessuna nota inserita.' }}</h2></div>
+          <div><p class="m-0 text-[var(--ui-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Note organizzative</p><h2 class="mt-[7px] mb-0 text-base !font-[750] whitespace-pre-wrap">{{ currentGig.notes || 'Nessuna nota inserita.' }}</h2></div>
         </article>
       </section>
       <app-gig-posters [readOnly]="true" [bandId]="posterBandId" [gigId]="currentGig.id" [values]="posterValues" />
     }
   </main>
-</ion-content>
+</section>

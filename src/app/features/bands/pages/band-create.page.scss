@@ -3,33 +3,33 @@
   height: 100%;
   --create-yellow: #f5b942;
   --create-navy: #e5edf7;
-  --create-blue: var(--ion-color-brand-blue);
+  --create-blue: var(--ui-color-brand-blue);
   --create-blue-soft: #172b49;
   --create-border: #2b3b52;
   --create-muted: #9aabc1;
 }
 
 :host ::ng-deep app-gigsaw-typeahead .gigsaw-typeahead,
-:host ::ng-deep app-gigsaw-typeahead ion-input {
+:host ::ng-deep app-gigsaw-typeahead .input {
   width: 100%;
 }
 
-:host ::ng-deep app-gigsaw-typeahead ion-input {
+:host ::ng-deep app-gigsaw-typeahead .input {
   min-height: 48px;
   font-size: 1rem;
   font-weight: 400;
 }
 
-:host ::ng-deep app-gigsaw-typeahead .dropdown-overlay ion-list {
+:host ::ng-deep app-gigsaw-typeahead .dropdown-overlay .ui-list {
   max-height: 312px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--ion-card-background);
+  background: var(--ui-card-background);
   border-color: var(--create-border);
   box-shadow: 0 18px 38px rgba(0, 0, 0, .34);
 }
 
-:host ::ng-deep app-gigsaw-typeahead .dropdown-overlay ion-item {
-  --background: var(--ion-card-background);
+:host ::ng-deep app-gigsaw-typeahead .dropdown-overlay .ui-item {
+  --background: var(--ui-card-background);
   --color: var(--gigsaw-text);
 }

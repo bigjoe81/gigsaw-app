@@ -1,54 +1,21 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, EventEmitter, Input, OnDestroy, Output, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonInput,
-  IonSpinner,
-  IonTextarea,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  arrowBackOutline,
-  checkmark,
-  close,
-  cloudUploadOutline,
-  imageOutline,
-  musicalNotesOutline,
-  peopleOutline,
-  settingsOutline,
-} from 'ionicons/icons';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { Band, BandGenre } from '../models/band.models';
 import { BandService } from '../services/band.service';
 import { GenreService } from '../services/genre.service';
 import { GigsawBadgeComponent, GigsawTypeaheadComponent, GigsawTypeaheadItem } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-band-create',
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     NgClass,
     ReactiveFormsModule,
-    IonBackButton,
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonIcon,
-    IonInput,
-    IonSpinner,
-    IonTextarea,
-    IonTitle,
-    IonToolbar,
     GigsawTypeaheadComponent,
     GigsawBadgeComponent,
   ],
@@ -86,16 +53,7 @@ export class BandCreatePage implements OnDestroy {
 
   constructor() {
     console.log('[BandCreatePage] Componente istanziato');
-    addIcons({
-      arrowBackOutline,
-      checkmark,
-      close,
-      cloudUploadOutline,
-      imageOutline,
-      musicalNotesOutline,
-      peopleOutline,
-      settingsOutline,
-    });
+
     this.loadGenres();
   }
 

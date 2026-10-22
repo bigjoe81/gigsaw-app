@@ -1,9 +1,11 @@
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { PosterField, PosterTemplateDocument } from '../models/poster-template.models';
 
 type Interaction = { id: string; mode: 'move' | 'resize'; startX: number; startY: number; fieldX: number; fieldY: number; fieldWidth: number };
 
 @Component({
+  imports: [NativeUiModule],
   selector: 'app-poster-canvas',
   standalone: true,
   styles: [':host(.poster-thumbnail) canvas { width: auto; height: auto; max-height: 240px; max-width: 100%; margin: auto; border-radius: 4px; }'],

@@ -1,79 +1,9 @@
-:host {
-  --band-menu-width: 260px;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-ion-split-pane {
-  width: 100%;
-  height: 100%;
-  --border: 0;
-  --side-width: var(--band-menu-width);
-  --side-max-width: var(--band-menu-width);
-  --side-min-width: var(--band-menu-width);
-}
-
-ion-router-outlet#band-content {
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
-  overflow: hidden;
-}
-
-ion-menu {
-  --width: var(--band-menu-width);
-}
-
-/* Keep Ionic's nested routed split pane visible after router restoration. */
-ion-split-pane.split-pane-visible > ion-menu {
-  position: relative;
-  display: flex !important;
-  flex: 0 0 var(--band-menu-width);
-  width: var(--band-menu-width);
-  min-width: var(--band-menu-width);
-  max-width: var(--band-menu-width);
-  transform: none !important;
-}
-
-ion-split-pane.split-pane-visible > ion-menu::part(container) {
-  width: var(--band-menu-width);
-  transform: none !important;
-  box-shadow: none;
-}
-
-ion-split-pane.menu-collapsed {
-  --band-menu-width: 76px;
-}
-
-ion-split-pane.menu-collapsed ion-item::part(native) {
-  justify-content: center;
-  padding-inline: 0;
-}
-
-ion-split-pane.menu-collapsed ion-item ion-icon {
-  position: absolute;
-  left: 50%;
-  margin: 0;
-  transform: translateX(-50%);
-}
-
-ion-split-pane:not(.menu-collapsed) ion-item ion-icon[slot='start'] {
-  margin-inline-end: 22px;
-}
-
-ion-split-pane.split-pane-visible > .split-pane-main {
-  margin: 0 !important;
-  transform: none !important;
-}
-
-ion-split-pane.split-pane-visible > .menu-content-open {
-  overflow: hidden !important;
-  cursor: auto !important;
-  touch-action: auto !important;
-  pointer-events: auto !important;
-}
-
-ion-item.is-active::part(native) {
-  border-left: 2px solid var(--ion-color-primary);
-}
+:host { display: flex; flex: 1; min-height: 0; }
+.band-layout { display: flex; width: 100%; min-height: 0; flex: 1; }
+.band-menu { display: flex; flex-direction: column; position: relative; flex: 0 0 260px; min-height: 0; }
+.band-menu .app-content { padding-bottom: 80px; }
+.band-menu .ui-item { cursor: pointer; padding: 12px; border-radius: 8px; }
+.band-menu .ui-item:hover { background: var(--gigsaw-surface); }
+.band-menu .ui-item.is-active { background: var(--gigsaw-surface); border-left: 2px solid var(--ui-color-primary); }
+.menu-collapsed .band-menu { flex-basis: 76px; }
+@media(max-width:599px) { .band-menu { display: none; } .band-layout.menu-open .band-menu { display: flex; position: absolute; inset: 0 auto 0 0; width: min(85vw, 280px); z-index: 200; background: var(--gigsaw-background); box-shadow: 0 0 0 100vmax #0008; } .band-layout.menu-open .band-menu .hidden { display: grid; } }

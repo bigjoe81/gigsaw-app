@@ -1,81 +1,81 @@
-<ion-header>
-  <ion-toolbar>
+<header class="page-header">
+  <div class="navbar gap-3">
     <img class="max-h-[42px] w-[132px] object-contain" slot="start" src="assets/logo-hor.png" alt="GigSaw" />
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="openOnboarding()" aria-label="Guida introduttiva">
-        <ion-icon slot="icon-only" name="help-circle-outline" />
-      </ion-button>
-      <ion-button fill="clear" (click)="logout()" aria-label="Esci">
-        <ion-icon slot="icon-only" name="log-out-outline" />
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+    <div class="flex items-center gap-2" slot="end">
+      <button class="btn btn-ghost" (click)="openOnboarding()" aria-label="Guida introduttiva" type="button">
+        <app-symbol name="help-circle-outline"  />
+      </button>
+      <button class="btn btn-ghost" (click)="logout()" aria-label="Esci" type="button">
+        <app-symbol name="log-out-outline"  />
+      </button>
+    </div>
+  </div>
+</header>
 
-<ion-content>
+<section class="app-content">
   <main class="mx-auto w-[min(1100px,100%)] px-6 pt-10 pb-16 max-[700px]:px-4 max-[700px]:pt-6 max-[700px]:pb-12">
     <section class="mb-7 flex items-end justify-between gap-6 max-[700px]:items-stretch max-[700px]:flex-col max-[700px]:gap-[18px]">
       <div>
         <h1 class="m-0 text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.15] font-bold">Scegli la tua band</h1>
-        <p class="mt-2 mb-0 text-[var(--ion-color-medium)]">Seleziona il workspace in cui vuoi lavorare.</p>
+        <p class="mt-2 mb-0 text-[var(--ui-color-medium)]">Seleziona il workspace in cui vuoi lavorare.</p>
       </div>
-      <ion-button class="m-0 shrink-0 max-[700px]:self-start" (click)="openCreateModal()">
-        <ion-icon slot="start" name="add" /> Crea una band
-      </ion-button>
+      <button class="btn btn-primary m-0 shrink-0 max-[700px]:self-start" (click)="openCreateModal()" type="button">
+        <app-symbol name="add"  /> Crea una band
+      </button>
     </section>
 
     @if (loading()) {
-      <div class="flex min-h-[240px] flex-col items-center justify-center gap-3 text-[var(--ion-color-medium)]" aria-live="polite">
-        <ion-spinner name="crescent" />
+      <div class="flex min-h-[240px] flex-col items-center justify-center gap-3 text-[var(--ui-color-medium)]" aria-live="polite">
+        <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span>
         <p>Caricamento band…</p>
       </div>
     } @else if (error()) {
-      <div class="flex min-h-[240px] flex-col items-center justify-center gap-3 text-[var(--ion-color-medium)]">
+      <div class="flex min-h-[240px] flex-col items-center justify-center gap-3 text-[var(--ui-color-medium)]">
         <app-gigsaw-message tone="error">{{ error() }}</app-gigsaw-message>
-        <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+        <button class="btn btn-outline" (click)="load()" type="button">Riprova</button>
       </div>
     } @else {
       <section class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] items-stretch gap-4 max-[700px]:grid-cols-1" aria-label="Le tue band">
         @for (band of bands(); track band.id) {
-          <ion-card class="m-0 w-full min-h-[220px] cursor-pointer rounded-xl border border-[var(--gigsaw-border,#303b4b)] shadow-none transition-[border-color,transform] duration-150 hover:-translate-y-0.5 hover:border-[var(--ion-color-primary)] focus-visible:-translate-y-0.5 focus-visible:border-[var(--ion-color-primary)] focus-visible:outline-none" button tabindex="0" role="button"
+          <article class="card bg-base-200 border border-base-300 my-4 m-0 w-full min-h-[220px] cursor-pointer rounded-xl border border-[var(--gigsaw-border,#303b4b)] shadow-none transition-[border-color,transform] duration-150 hover:-translate-y-0.5 hover:border-[var(--ui-color-primary)] focus-visible:-translate-y-0.5 focus-visible:border-[var(--ui-color-primary)] focus-visible:outline-none" tabindex="0" role="button"
                     [attr.aria-label]="'Apri ' + band.name"
                     (click)="selectBand(band)"
                     (keydown.enter)="selectBand(band)"
                     (keydown.space)="$event.preventDefault(); selectBand(band)">
-            <ion-card-content class="flex min-h-[220px] flex-col p-[22px]">
+            <div class="card-body flex min-h-[220px] flex-col p-[22px]">
               <div class="flex items-start justify-between gap-3">
-                <span class="grid size-16 place-items-center overflow-hidden rounded-[10px] bg-[var(--ion-color-step-100)] text-[30px] text-[var(--ion-color-primary)]">
+                <span class="grid size-16 place-items-center overflow-hidden rounded-[10px] bg-[var(--ui-color-step-100)] text-[30px] text-[var(--ui-color-primary)]">
                   @if (band.logo) { <img class="size-full object-cover" [src]="band.logo" [alt]="band.name" /> }
-                  @else { <ion-icon aria-hidden="true" name="musical-notes" /> }
+                  @else { <app-symbol aria-hidden="true" name="musical-notes"  /> }
                 </span>
-                <ion-badge color="medium">{{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}</ion-badge>
+                <span class="badge text-base-content/60">{{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}</span>
               </div>
               <h2 class="mt-[18px] mb-0.5 overflow-hidden text-ellipsis text-[1.2rem] font-bold whitespace-nowrap">{{ band.name }}</h2>
-              <p class="m-0 overflow-hidden text-ellipsis text-[var(--ion-color-medium)] whitespace-nowrap">{{ formatGenres(band) }}</p>
-              <div class="mt-auto flex justify-between gap-3 pt-5 text-[.85rem] text-[var(--ion-color-medium)]">
+              <p class="m-0 overflow-hidden text-ellipsis text-[var(--ui-color-medium)] whitespace-nowrap">{{ formatGenres(band) }}</p>
+              <div class="mt-auto flex justify-between gap-3 pt-5 text-[.85rem] text-[var(--ui-color-medium)]">
                 <span>{{ band.membersCount || band.members?.length || 1 }} {{ (band.membersCount || band.members?.length || 1) === 1 ? 'membro' : 'membri' }}</span>
-                <span class="inline-flex items-center font-semibold text-[var(--ion-color-primary)]">Apri <ion-icon name="chevron-forward-outline" /></span>
+                <span class="inline-flex items-center font-semibold text-[var(--ui-color-primary)]">Apri <app-symbol name="chevron-forward-outline"  /></span>
               </div>
-            </ion-card-content>
-          </ion-card>
+            </div>
+          </article>
         }
-        <ion-card class="m-0 min-h-[220px] cursor-pointer rounded-xl border !border-dashed border-[var(--gigsaw-border,#303b4b)] shadow-none transition-[border-color,transform] duration-150 hover:-translate-y-0.5 hover:border-[var(--ion-color-primary)] focus-visible:-translate-y-0.5 focus-visible:border-[var(--ion-color-primary)] focus-visible:outline-none" button tabindex="0" role="button" aria-label="Crea una nuova band"
+        <article class="card bg-base-200 border border-base-300 my-4 m-0 min-h-[220px] cursor-pointer rounded-xl border !border-dashed border-[var(--gigsaw-border,#303b4b)] shadow-none transition-[border-color,transform] duration-150 hover:-translate-y-0.5 hover:border-[var(--ui-color-primary)] focus-visible:-translate-y-0.5 focus-visible:border-[var(--ui-color-primary)] focus-visible:outline-none" tabindex="0" role="button" aria-label="Crea una nuova band"
                   (click)="openCreateModal()"
                   (keydown.enter)="openCreateModal()"
                   (keydown.space)="$event.preventDefault(); openCreateModal()">
-          <ion-card-content class="flex min-h-[220px] flex-col items-center justify-center p-[22px] text-center">
-            <ion-icon class="text-[32px] text-[var(--ion-color-primary)]" name="add" />
+          <div class="card-body flex min-h-[220px] flex-col items-center justify-center p-[22px] text-center">
+            <app-symbol class="text-[32px] text-[var(--ui-color-primary)]" name="add"  />
             <h2 class="mt-3 mb-1 text-[1.1rem] font-bold">Crea una nuova band</h2>
-            <p class="m-0 text-[var(--ion-color-medium)]">Configura un nuovo workspace</p>
-          </ion-card-content>
-        </ion-card>
+            <p class="m-0 text-[var(--ui-color-medium)]">Configura un nuovo workspace</p>
+          </div>
+        </article>
       </section>
     }
   </main>
-</ion-content>
+</section>
 
-<ion-modal #createBandModal class="create-band-modal" [isOpen]="createModalOpen()" [backdropDismiss]="true" (didDismiss)="closeCreateModal()">
+<app-dialog #createBandModal class="create-band-modal" [isOpen]="createModalOpen()" (closed)="closeCreateModal()">
   <ng-template>
     <app-band-create [embedded]="true" (cancelled)="closeCreateModal()" (created)="onBandCreated($event)" />
   </ng-template>
-</ion-modal>
+</app-dialog>

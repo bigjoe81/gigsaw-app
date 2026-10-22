@@ -1,13 +1,14 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../shared/ui/native-ui';
 import { Component } from '@angular/core';
 
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSpinner, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSpinner, IonTitle, IonToolbar],
+  imports: [NativeUiModule, ReactiveFormsModule, RouterLink, ],
   templateUrl: './reset-password.page.html',
 })
 export class ResetPasswordPage {

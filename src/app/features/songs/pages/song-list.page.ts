@@ -1,26 +1,9 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { OverlayService, DialogService, ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonBadge,
-  IonButtons,
-  IonContent,
-  IonCheckbox,
-  IonHeader,
-  IonItem,
-  IonLabel,
-  IonMenuButton,
-  ModalController,
-  IonRefresher,
-  IonRefresherContent,
-  IonSkeletonText,
-  IonText,
-  IonTitle,
-  IonToolbar,
-  AlertController,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { faPlus, faCircleExclamation, faChevronRight, faCloudArrowUp, faMusic, faTrash } from '@fortawesome/pro-light-svg-icons';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
@@ -28,29 +11,14 @@ import { SongService } from '../services/song.service';
 import { SongDetailPage } from './song-detail.page';
 import { GigsawIconComponent, GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     RouterLink,
     GigsawIconComponent,
     GigsawListComponent,
     GigsawListItemComponent,
-    IonBadge,
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonCheckbox,
-    IonHeader,
-      IonItem,
-    IonLabel,
-    IonMenuButton,
-    IonRefresher,
-    IonRefresherContent,
-    IonSkeletonText,
-    IonText,
-    IonTitle,
-    IonToolbar
-  ],
+    ],
   templateUrl: './song-list.page.html',
   styleUrls: ['./song-list.page.scss'],
 })
@@ -67,14 +35,14 @@ export class SongListPage {
 
   constructor(
     private readonly songsApi: SongService,
-    private readonly modalController: ModalController,
+    private readonly modalController: OverlayService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly alertController: AlertController,
-    private readonly toastController: ToastController,
+    private readonly alertController: DialogService,
+    private readonly toastController: ToastService,
   ) {}
 
-  ionViewWillEnter(): void {
+  ngOnInit(): void {
     this.load();
   }
 

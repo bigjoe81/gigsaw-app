@@ -1,23 +1,8 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  AlertController,
-  IonBadge,
-  IonLabel,
-  IonButtons,
-  IonButton,
-  IonInput,
-  IonSpinner,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonMenuButton,
-  IonTitle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { add, businessOutline, musicalNotesOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { finalize, forkJoin } from 'rxjs';
 import { RehearsalRoom, Venue } from '../../../core/models/band-resources.models';
 import { RehearsalRoomService } from '../../rehearsal-sessions/services/rehearsal-room.service';
@@ -29,27 +14,15 @@ import {
 } from '../../../shared/ui/gigsaw';
 import { VenueService } from '../services/venue.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     RouterLink,
-    IonBadge,
-    IonLabel,
     GigsawListComponent,
     GigsawListItemComponent,
     GigsawLoadingComponent,
     GigsawMessageComponent,
-    IonButtons,
-    IonButton,
-    IonInput,
-    IonSpinner,
-    IonContent,
-    IonHeader,
-    IonIcon,
-    IonMenuButton,
-    IonTitle,
-    IonToolbar,
-  ],
+    ],
   templateUrl: './venue-list.page.html',
   styleUrl: './venue-list.page.scss',
 })
@@ -77,13 +50,13 @@ export class VenueListPage {
   constructor(
     private readonly venuesApi: VenueService,
     private readonly rehearsalRoomsApi: RehearsalRoomService,
-    private readonly alert: AlertController,
-    private readonly toast: ToastController,
+    private readonly alert: DialogService,
+    private readonly toast: ToastService,
   ) {
-    addIcons({ add, businessOutline, musicalNotesOutline, pencilOutline, trashOutline });
+
   }
 
-  ionViewWillEnter(): void {
+  ngOnInit(): void {
     this.load();
   }
 

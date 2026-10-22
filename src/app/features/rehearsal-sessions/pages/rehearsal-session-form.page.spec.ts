@@ -1,10 +1,10 @@
+import { ToastService } from '../../../shared/ui/native-ui';
 import { FormBuilder } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
-import { ToastController } from '@ionic/angular/standalone';
 import { of } from 'rxjs';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
@@ -18,14 +18,13 @@ describe('RehearsalSessionFormPage', () => {
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), FormBuilder,
         { provide: BandContextService, useValue: { getCurrentBand: () => 7 } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: (key: string) => key === 'id' ? '1' : '7' } } } },
-        { provide: ToastController, useValue: { create: () => Promise.resolve({ present: () => Promise.resolve() }) } },
+        { provide: ToastService, useValue: { create: () => Promise.resolve({ present: () => Promise.resolve() }) } },
       ],
     });
     await TestBed.compileComponents();
     const fixture = TestBed.createComponent(RehearsalSessionFormPage);
     const http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    fixture.componentInstance.ionViewWillEnter();
     http.expectOne('/api/v1/rehearsal-rooms').flush([{ id: 5, name: 'Sala' }]);
     http.expectOne('/api/v1/songs?bandId=7').flush([{ id: 2, title: 'A' }, { id: 3, title: 'B' }]);
     http.expectOne('/api/v1/rehearses/1').flush({ id: 1, date: '2026-10-03', status: 'confirmed', rehearsal_room_id: 5, song_ids: [2, 3] });
@@ -34,7 +33,7 @@ describe('RehearsalSessionFormPage', () => {
     fixture.detectChanges();
     fixture.nativeElement.querySelector('label.song-option').click();
     fixture.detectChanges();
-    const buttons = Array.from(fixture.nativeElement.querySelectorAll('app-gigsaw-button')) as HTMLElement[];
+    const buttons = Array.from(fixture.nativeElement.querySelectorAll('app-gigsaw-button button')) as HTMLElement[];
     buttons.find((button) => button.textContent?.includes('Salva modifiche'))!.click();
     const request = http.expectOne('/api/v1/rehearses/1');
     expect(request.request.method).toBe('PUT');
@@ -70,10 +69,10 @@ describe('RehearsalSessionFormPage', () => {
       imports: [RehearsalSessionFormPage],
       providers: [provideRouter([]), FormBuilder,
         { provide: RehearsalSessionService, useValue: sessions },
-        { provide: RehearsalRoomService, useValue: {} },
-        { provide: SongService, useValue: {} },
+        { provide: RehearsalRoomService, useValue: { list: () => of([]) } },
+        { provide: SongService, useValue: { list: () => of([]) } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: (key: string) => key === 'id' ? '1' : null } } } },
-        { provide: ToastController, useValue: { create: () => Promise.resolve({ present: () => Promise.resolve() }) } },
+        { provide: ToastService, useValue: { create: () => Promise.resolve({ present: () => Promise.resolve() }) } },
       ],
     });
     await TestBed.compileComponents();
@@ -112,10 +111,9 @@ describe('RehearsalSessionFormPage', () => {
       { list: () => of([{ id: 2, title: 'A' }, { id: 3, title: 'B' }]) } as unknown as SongService,
       route as unknown as ActivatedRoute,
       { navigateByUrl: () => Promise.resolve(true) } as unknown as Router,
-      { create: () => Promise.resolve({ present: () => Promise.resolve() }) } as unknown as ToastController,
+      { create: () => Promise.resolve({ present: () => Promise.resolve() }) } as unknown as ToastService,
     );
     page.ngOnInit();
-    page.ionViewWillEnter();
     expect(page.form.controls.rehearsalRoomId.value).toBe('');
     expect(page.error()).toContain('non è più disponibile');
     page.save();
@@ -124,12 +122,12 @@ describe('RehearsalSessionFormPage', () => {
     page.toggleSong(2, false);
     page.save();
     expect(sessions.update).toHaveBeenCalledWith(1, jasmine.objectContaining({ songIds: [3] }));
-    page.ionViewWillEnter();
+    page.load();
     expect(page.selectedSongIds()).toEqual([3]);
     page.toggleSong(3, false);
     page.save();
     expect(sessions.update).toHaveBeenCalledWith(1, jasmine.objectContaining({ songIds: [] }));
-    page.ionViewWillEnter();
+    page.load();
     expect(page.selectedSongIds()).toEqual([]);
   });
 });

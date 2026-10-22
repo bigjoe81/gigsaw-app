@@ -9,45 +9,45 @@
     ariaLabel="Creazione brano"
     (sectionChange)="goToStep($event)"
   />
-<ion-content class="song-content [--background:var(--gigsaw-background)] [--navy:#e5edf7] [--blue:var(--ion-color-brand-blue)] [--muted:#9aabc1] [&_ion-button]:[--border-radius:9px] [&_ion-button]:font-bold" [scrollY]="true" [forceOverscroll]="true">
+<section class="app-content song-content [--background:var(--gigsaw-background)] [--navy:#e5edf7] [--blue:var(--ui-color-brand-blue)] [--muted:#9aabc1] [&_.btn]:[--border-radius:9px] [&_.btn]:font-bold"  >
   <main class="min-h-full w-full">
     <section class="form-container w-full min-w-0 px-[clamp(20px,5vw,72px)] pb-[max(96px,calc(48px_+_env(safe-area-inset-bottom,0px)))] pt-12 max-[800px]:px-5 max-[800px]:pb-[max(88px,calc(40px_+_env(safe-area-inset-bottom,0px)))] max-[800px]:pt-8">
       @if (loading()) {
         <div class="flex min-h-[350px] items-center justify-center gap-3 text-[var(--gigsaw-muted)]">
-          <ion-spinner name="crescent"/>
+          <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
           Caricamento brano…
         </div>
       } @else {
         <form class="gigsaw-outlined-form" [formGroup]="form" (ngSubmit)="save()">
           @if (step() === 1) {
             <section class="form-step form-group magic-step" [formGroup]="magicForm">
-              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-semibold tracking-[.02em] text-[var(--blue)]"><ion-icon name="sparkles-outline"/> Magic Song</span>
+              <header class="mb-[34px]"><span class="flex items-center gap-[7px] text-[.76rem] font-semibold tracking-[.02em] text-[var(--blue)]"><app-symbol name="sparkles-outline" /> Magic Song</span>
                 <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Cerca, scegli, completa.</h2>
                 <p class="m-0 text-[var(--muted)]">Inserisci titolo e artista: cercheremo la registrazione sui servizi musicali disponibili.</p>
               </header>
               <div class="field-grid grid-cols-2 max-[800px]:grid-cols-1 [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750]"><label><span>Titolo *</span>
-                <ion-input aria-label="Titolo" formControlName="title" placeholder="Es. Come Together"/>
+                <input class="input w-full" aria-label="Titolo" formControlName="title" placeholder="Es. Come Together" />
               </label><label><span>Artista</span>
-                <ion-input aria-label="Artista" formControlName="artist" placeholder="Es. The Beatles"/>
+                <input class="input w-full" aria-label="Artista" formControlName="artist" placeholder="Es. The Beatles" />
               </label></div>
               <div class="search-actions mt-7 flex items-center justify-between gap-3.5">
-                <ion-button type="button" (click)="searchMagicSong()" [disabled]="magicLoading()">@if (magicLoading()) {
-                  <ion-spinner name="crescent"/>
+                <button class="btn btn-primary" type="button" (click)="searchMagicSong()" [disabled]="magicLoading()">@if (magicLoading()) {
+                  <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
                 } @else {
-                  <ion-icon slot="start" name="search-outline"/>
+                  <app-symbol name="search-outline" />
                 } Cerca brano
-                </ion-button>
-                <ion-button type="button" fill="clear" class="border-0 bg-transparent font-bold text-[var(--blue)] [--background:transparent] [--background-hover:rgba(var(--ion-color-secondary-rgb),.08)] [--box-shadow:none] [--color:var(--blue)]" (click)="continueManually()">Inserisci manualmente</ion-button>
+                </button>
+                <button type="button" class="btn btn-ghost border-0 bg-transparent font-bold text-[var(--blue)] [--background:transparent] [--background-hover:rgba(var(--ui-color-secondary-rgb),.08)] [--box-shadow:none] [--color:var(--blue)]" (click)="continueManually()">Inserisci manualmente</button>
               </div>@if (magicError()) {
               <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ magicError() }}</p>
             }
               @if (metadataResults().length) {
                 <div class="mt-7 grid gap-2.5">@for (result of metadataResults(); track result.externalId) {
-                  <button type="button" class="metadata-result grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ion-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)"
+                  <button type="button" class="metadata-result grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ui-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ui-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)"
                           [disabled]="detailLoading()">@if (result.artworkUrl) {
                     <img class="result-artwork" [src]="result.artworkUrl" alt=""/>
                   } @else {
-                    <span class="grid h-[62px] w-[62px] place-items-center rounded-[9px] bg-[#172b49] text-[var(--blue)] max-[640px]:h-14 max-[640px]:w-14"><ion-icon name="musical-notes-outline"/></span>
+                    <span class="grid h-[62px] w-[62px] place-items-center rounded-[9px] bg-[#172b49] text-[var(--blue)] max-[640px]:h-14 max-[640px]:w-14"><app-symbol name="musical-notes-outline" /></span>
                   }<span
                     class="grid min-w-0 gap-[3px]"><strong class="overflow-hidden text-ellipsis whitespace-nowrap">{{ result.title }}</strong><small class="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--muted)]">{{ result.artist || 'Artista sconosciuto' }}</small><small class="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--muted)]">{{ result.album }}</small></span><span
                     class="provider rounded-full bg-[#12372f] px-2 py-[5px] text-[.68rem] font-extrabold text-[#6ee7b7] max-[800px]:hidden max-[640px]:col-start-2 max-[640px]:justify-self-start max-[640px]:mt-0.5">{{ result.provider === 'spotify' ? 'Spotify' : result.provider === 'apple_music' ? 'Apple Music' : 'MusicBrainz' }}</span>
@@ -61,14 +61,14 @@
                 <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Controlla le informazioni.</h2>
                 <p class="m-0 text-[var(--muted)]">I dati trovati restano sempre modificabili.</p></header>
               <div class="mb-3.5 flex flex-wrap items-center gap-3">
-                <ion-button type="button" fill="outline" (click)="completeMetadataFromForm()" [disabled]="magicLoading() || !form.controls.title.value.trim()">
+                <button class="btn btn-outline" type="button" (click)="completeMetadataFromForm()" [disabled]="magicLoading() || !form.controls.title.value.trim()">
                   @if (magicLoading()) {
-                    <ion-spinner name="crescent"/>
+                    <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
                   } @else {
-                    <ion-icon slot="start" name="sparkles-outline"/>
+                    <app-symbol name="sparkles-outline" />
                   }
                   Completa i metadati
-                </ion-button>
+                </button>
                 <small class="leading-[1.35] opacity-[.62]">Cerca titolo e artista sui servizi musicali e completa i campi trovati.</small>
               </div>
               @if (magicError()) {
@@ -77,11 +77,11 @@
               @if (metadataResults().length) {
                 <div class="mt-7 mb-[18px] grid gap-2.5">
                   @for (result of metadataResults(); track result.externalId) {
-                    <button type="button" class="metadata-result grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ion-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
+                    <button type="button" class="metadata-result grid w-full grid-cols-[62px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-[#2b3b52] bg-[#0f172a] p-2.5 text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ui-color-brand-blue)] hover:bg-[#13203a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ui-color-brand-blue)] active:scale-[.995] disabled:cursor-wait disabled:opacity-60 max-[800px]:[&_.provider]:hidden max-[640px]:grid-cols-[56px_minmax(0,1fr)] max-[640px]:gap-3" (click)="chooseMetadata(result)" [disabled]="detailLoading()">
                       @if (result.artworkUrl) {
                         <img class="result-artwork" [src]="result.artworkUrl" alt=""/>
                       } @else {
-                        <span class="grid h-[62px] w-[62px] place-items-center rounded-[9px] bg-[#172b49] text-[var(--blue)] max-[640px]:h-14 max-[640px]:w-14"><ion-icon name="musical-notes-outline"/></span>
+                        <span class="grid h-[62px] w-[62px] place-items-center rounded-[9px] bg-[#172b49] text-[var(--blue)] max-[640px]:h-14 max-[640px]:w-14"><app-symbol name="musical-notes-outline" /></span>
                       }
                       <span class="grid min-w-0 gap-[3px]">
                         <strong class="overflow-hidden text-ellipsis whitespace-nowrap">{{ result.title }}</strong>
@@ -94,27 +94,27 @@
                 </div>
               }
               <div class="field-grid grid-cols-2 max-[800px]:grid-cols-1 [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750] [&_.wide]:col-span-full max-[800px]:[&_.wide]:col-span-auto"><label class="wide"><span>Titolo *</span>
-                <ion-input aria-label="Titolo" formControlName="title"/>
+                <input class="input w-full" aria-label="Titolo" formControlName="title" />
               </label><label><span>Eseguito da</span>
-                <ion-input aria-label="Eseguito da" formControlName="performedBy"/>
+                <input class="input w-full" aria-label="Eseguito da" formControlName="performedBy" />
               </label><label><span>Album</span>
-                <ion-input aria-label="Album" formControlName="album"/>
+                <input class="input w-full" aria-label="Album" formControlName="album" />
               </label><label><span>Musica di</span>
-                <ion-input aria-label="Musica di" formControlName="musicBy"/>
+                <input class="input w-full" aria-label="Musica di" formControlName="musicBy" />
               </label><label><span>Testo di</span>
-                <ion-input aria-label="Testo di" formControlName="lyricsBy"/>
+                <input class="input w-full" aria-label="Testo di" formControlName="lyricsBy" />
               </label><div class="wide grid grid-cols-2 items-start gap-5 max-[800px]:grid-cols-1">
                 <div class="grid gap-5">
-                  <label><span>Tonalità *</span><ion-input aria-label="Tonalità" formControlName="key"/></label>
-                  <label><span>Durata * (mm:ss)</span><ion-input aria-label="Durata in minuti e secondi" formControlName="duration" inputmode="numeric" placeholder="3:45"/></label>
+                  <label><span>Tonalità *</span><input class="input w-full" aria-label="Tonalità" formControlName="key" /></label>
+                  <label><span>Durata * (mm:ss)</span><input class="input w-full" aria-label="Durata in minuti e secondi" formControlName="duration" inputmode="numeric" placeholder="3:45" /></label>
                 </div>
                 <div class="grid gap-2 rounded-[14px] border border-[var(--gigsaw-border)] bg-[color-mix(in_srgb,var(--gigsaw-input-background)_58%,transparent)] p-3.5">
-                  <label><span>BPM</span><ion-input type="number" aria-label="BPM" formControlName="bpm"/></label>
-                  <ion-button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-xl border border-[#2b3b52] bg-[#0f172a] px-3 py-[9px] text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ion-color-brand-blue)] focus-visible:border-[var(--ion-color-brand-blue)] focus-visible:outline-none active:scale-[.985] [--background:transparent] [--color:#e5edf7] [--box-shadow:none] [--border-radius:12px]" (click)="tapTempo()" [style.border-color]="tapCount() > 0 ? 'var(--ion-color-brand-blue)' : null" [style.background]="tapCount() > 0 ? '#132442' : null"
+                  <label><span>BPM</span><input class="input w-full" type="number" aria-label="BPM" formControlName="bpm" /></label>
+                  <button type="button" class="btn btn-primary flex min-h-14 w-full items-center gap-3 rounded-xl border border-[#2b3b52] bg-[#0f172a] px-3 py-[9px] text-left text-[#e5edf7] transition-[border-color,background,transform] duration-150 hover:border-[var(--ui-color-brand-blue)] focus-visible:border-[var(--ui-color-brand-blue)] focus-visible:outline-none active:scale-[.985] [--background:transparent] [--color:#e5edf7] [--box-shadow:none] [--border-radius:12px]" (click)="tapTempo()" [style.border-color]="tapCount() > 0 ? 'var(--ui-color-brand-blue)' : null" [style.background]="tapCount() > 0 ? '#132442' : null"
                           aria-label="Batti il tempo per calcolare i BPM">
-                    <span class="grid h-11 w-11 flex-none place-items-center rounded-full [background:var(--ion-gradient-brand)] text-[.72rem] font-black tracking-[.08em] text-white" aria-hidden="true">TAP</span>
+                    <span class="grid h-11 w-11 flex-none place-items-center rounded-full [background:var(--ui-gradient-brand)] text-[.72rem] font-black tracking-[.08em] text-white" aria-hidden="true">TAP</span>
                     <span class="grid gap-0.5"><strong class="text-[.94rem]">{{ tappedBpm() ?? 'Tap tempo' }}</strong><small class="text-[.72rem] font-semibold text-[var(--muted)]">@if (tappedBpm()) { BPM rilevati } @else if (tapCount()) { Continua a battere } @else { Tocca a tempo }</small></span>
-                  </ion-button>
+                  </button>
                   <small class="text-[.72rem] font-semibold text-[var(--muted)]">Desktop: barra spaziatrice · Mobile: tocca il pulsante</small>
                   @if (spotifyEmbedUrl(); as playerUrl) {
                     <div class="mt-1 grid gap-[7px]">
@@ -136,8 +136,8 @@
               <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ error() }}</p>
             }
               <footer class="step-actions mt-7 flex items-center justify-between gap-3.5">
-                <ion-button type="button" fill="clear" (click)="goToStep(1)" [disabled]="editing">Indietro</ion-button>
-                <ion-button type="button" (click)="goToStep(3)">Continua</ion-button>
+                <button class="btn btn-ghost" type="button" (click)="goToStep(1)" [disabled]="editing">Indietro</button>
+                <button class="btn btn-primary" type="button" (click)="goToStep(3)">Continua</button>
               </footer>
             </section>
           }
@@ -147,46 +147,46 @@
                 <h2 class="mb-[7px] mt-2.5 text-[1.75rem] text-[var(--navy)]">Preparalo per la band.</h2>
                 <p class="m-0 text-[var(--muted)]">Imposta stato, medley e indicazioni utili per prove e scalette.</p></header>
               <div class="field-grid [&_label]:text-[#e5edf7] [&_label]:text-[.82rem] [&_label]:font-[750]"><label><span>Stato</span>
-                <ion-select aria-label="Stato" formControlName="status" interface="popover">
-                  <ion-select-option value="draft">Bozza</ion-select-option>
-                  <ion-select-option value="active">Attivo</ion-select-option>
-                  <ion-select-option value="archived">Archiviato</ion-select-option>
-                </ion-select>
+                <select class="select w-full" aria-label="Stato" formControlName="status">
+                  <option value="draft">Bozza</option>
+                  <option value="active">Attivo</option>
+                  <option value="archived">Archiviato</option>
+                </select>
               </label><label><span>Medley</span>
-                <ion-select aria-label="Medley" [value]="creatingLinkGroup ? '__new__' : form.controls.linkGroup.value"
-                            interface="popover" placeholder="Nessun medley" (ionChange)="onLinkGroupChoice($event)">
-                  <ion-select-option value="">Nessun medley
-                  </ion-select-option>@for (group of existingLinkGroups; track group) {
-                  <ion-select-option [value]="group">{{ group }}</ion-select-option>
+                <select class="select w-full" aria-label="Medley" [appSelectValue]="creatingLinkGroup ? '__new__' : form.controls.linkGroup.value"
+                            placeholder="Nessun medley" (selectionChange)="onLinkGroupChoice($event)" appSelect>
+                  <option value="">Nessun medley
+                  </option>@for (group of existingLinkGroups; track group) {
+                  <option [value]="group">{{ group }}</option>
                 }
-                  <ion-select-option value="__new__">+ Crea nuovo medley</ion-select-option>
-                </ion-select>
+                  <option value="__new__">+ Crea nuovo medley</option>
+                </select>
               </label>@if (creatingLinkGroup) {
                 <label><span>Nome del nuovo medley</span>
-                  <ion-input aria-label="Nome medley" formControlName="linkGroup" placeholder="Es. Medley anni '80"/>
+                  <input class="input w-full" aria-label="Nome medley" formControlName="linkGroup" placeholder="Es. Medley anni '80" />
                 </label>
               }<label><span>Tag</span>
-                <ion-input aria-label="Tag" formControlName="tagsText" placeholder="Dance, acustico, anni 90"/>
+                <input class="input w-full" aria-label="Tag" formControlName="tagsText" placeholder="Dance, acustico, anni 90" />
               </label>@if (existingTags.length) {
                 <div class="flex flex-wrap items-center gap-2"><small class="w-full text-[var(--muted)]">Tag usati</small>@for (tag of existingTags; track tag) {
-                  <ion-chip (click)="applyTag(tag)" [outline]="!hasTag(tag)">{{ tag }}</ion-chip>
+                  <span class="badge badge-outline" (click)="applyTag(tag)" [class.badge-outline]="!hasTag(tag)">{{ tag }}</span>
                 }</div>
               }<label><span>Note</span>
-                <ion-textarea aria-label="Note" formControlName="notes" [autoGrow]="true" [rows]="4"/>
+                <textarea class="textarea w-full" aria-label="Note" formControlName="notes" [rows]="4"></textarea>
               </label></div>@if (error()) {
               <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ error() }}</p>
             }
               <footer class="step-actions mt-7 flex items-center justify-between gap-3.5">
-                <ion-button type="button" fill="clear" (click)="goToStep(2)">Indietro</ion-button>
+                <button class="btn btn-ghost" type="button" (click)="goToStep(2)">Indietro</button>
                 @if (!editing) {
-                  <ion-button type="button" fill="outline" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</ion-button>
+                  <button class="btn btn-outline" type="button" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</button>
                 }
-                <ion-button type="submit" [disabled]="saving()">@if (saving()) {
-                  <ion-spinner name="crescent"/>
+                <button class="btn btn-primary" type="submit" [disabled]="saving()">@if (saving()) {
+                  <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
                 } @else {
-                  <ion-icon slot="start" name="checkmark-circle-outline"/>
+                  <app-symbol name="checkmark-circle-outline" />
                 } Salva brano
-                </ion-button>
+                </button>
               </footer>
             </section>
           }
@@ -194,4 +194,4 @@
       }
     </section>
   </main>
-</ion-content>
+</section>

@@ -10,10 +10,10 @@ describe('RehearsalSessionListPage', () => {
     api.list.and.returnValues(of([]), of([session]));
     const page = new RehearsalSessionListPage(api);
 
-    page.ionViewWillEnter();
+    page.ngOnInit();
     expect(page.sessions()).toEqual([]);
 
-    page.ionViewWillEnter();
+    page.ngOnInit();
     expect(api.list).toHaveBeenCalledTimes(2);
     expect(page.sessions()).toEqual([session]);
     expect(page.loading()).toBeFalse();

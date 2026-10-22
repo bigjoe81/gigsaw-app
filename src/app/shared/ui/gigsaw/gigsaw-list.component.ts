@@ -1,19 +1,18 @@
+import { NativeUiModule } from '../native-ui';
 import { Component, input, output } from '@angular/core';
-import { IonItem, IonList } from '@ionic/angular/standalone';
-
 @Component({
   selector: 'app-gigsaw-list',
   standalone: true,
-  imports: [IonList],
+  imports: [NativeUiModule],
   host: { '[class]': 'listClass()' },
   template: `
-    <ion-list [attr.aria-label]="ariaLabel() || heading() || null">
+    <div class="ui-list grid gap-2" [attr.aria-label]="ariaLabel() || heading() || null">
       <ng-content />
-    </ion-list>
+    </div>
   `,
   styles: [`
     :host { display: block; }
-    ion-list { display: grid; gap: 10px; padding: 0; background: transparent; }
+    .ui-list { display: grid; gap: 10px; padding: 0; background: transparent; }
   `],
 })
 export class GigsawListComponent {
@@ -27,28 +26,28 @@ export class GigsawListComponent {
 @Component({
   selector: 'app-gigsaw-list-item, [app-gigsaw-list-item]',
   standalone: true,
-  imports: [IonItem],
-  host: { '[class]': 'itemClass()' },
+  imports: [],
+  host: { '[class]': 'itemClass()', '[attr.role]': "interactive() ? 'button' : null", '[attr.tabindex]': 'interactive() && !disabled() ? 0 : null', '(keydown)': 'handleKeydown($event)' },
   template: `
-    <ion-item
-      lines="none"
-      [button]="interactive()"
-      [disabled]="disabled()"
-      [detail]="interactive()"
+    <div class="ui-item flex items-center gap-3 py-3"
+
+
+      [attr.aria-disabled]="disabled()"
+
       (click)="activate()">
       <ng-content />
-    </ion-item>
+    </div>
   `,
   styles: [`
     :host { display: block; min-width: 0; }
-    ion-item {
+    .ui-item {
       width: 100%;
       --inner-border-width: 0;
       --background-hover-opacity: 0;
     }
     @media (hover: hover) {
-      :host(:hover) ion-item:not(.item-disabled) {
-        --background: var(--gigsaw-list-hover-background, #2a3648);
+      :host(:hover) .ui-item:not(.item-disabled) {
+        background: var(--gigsaw-list-hover-background, #2a3648);
       }
     }
   `],
@@ -58,6 +57,11 @@ export class GigsawListItemComponent {
   readonly interactive = input(false);
   readonly disabled = input(false);
   readonly selected = output<void>();
+
+  handleKeydown(event: KeyboardEvent): void {
+    if (event.target !== event.currentTarget || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault(); this.activate();
+  }
 
   activate(): void {
     if (this.interactive() && !this.disabled()) this.selected.emit();

@@ -1,30 +1,10 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonChip,
-  IonCheckbox,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonSpinner,
-  IonTextarea,
-  IonTitle,
-  IonToggle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { forkJoin, of } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../../songs/services/song.service';
@@ -32,9 +12,9 @@ import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonCheckbox, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSpinner, IonTextarea, IonTitle, IonToggle, IonToolbar],
+  imports: [NativeUiModule, ReactiveFormsModule, GigsawListComponent, GigsawListItemComponent, ],
   templateUrl: './setlist-template-form.page.html',
 })
 export class SetlistTemplateFormPage implements OnInit {
@@ -78,7 +58,7 @@ export class SetlistTemplateFormPage implements OnInit {
     private readonly songsApi: SongService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly toast: ToastController,
+    private readonly toast: ToastService,
   ) {}
 
   ngOnInit(): void {

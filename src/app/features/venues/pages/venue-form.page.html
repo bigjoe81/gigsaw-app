@@ -5,48 +5,48 @@
   backHref="../"
 />
 
-<ion-content>
+<section class="app-content">
   <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
     <section class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
       <form id="location-form" [formGroup]="form" (ngSubmit)="save()" class="w-full pb-28 text-[var(--gigsaw-text)]">
         <header class="mb-9">
-          <span class="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Dettagli {{ locationLabel }}</span>
+          <span class="text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ui-color-primary)]">Dettagli {{ locationLabel }}</span>
           <h1 class="my-2.5 text-[clamp(1.55rem,3vw,2rem)]">{{ editing ? 'Modifica ' + locationLabel : 'Nuova ' + locationLabel }}</h1>
           <p class="m-0 text-[var(--gigsaw-muted)]">Inserisci nome e indirizzo del luogo. Le coordinate sono facoltative.</p>
         </header>
 
         @if (loading) {
-          <div class="flex min-h-[240px] items-center justify-center gap-2.5 text-[var(--ion-color-medium)]"><app-gigsaw-loading /><span>Caricamento luogo…</span></div>
+          <div class="flex min-h-[240px] items-center justify-center gap-2.5 text-[var(--ui-color-medium)]"><app-gigsaw-loading /><span>Caricamento luogo…</span></div>
         } @else {
           <section class="grid gap-5 pb-[30px]">
             <div class="flex items-start gap-3">
-              <ion-icon class="shrink-0 rounded-[10px] bg-[rgba(var(--ion-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ion-color-primary)]" [name]="kind === 'venue' ? 'business-outline' : 'musical-notes-outline'" />
-              <div><h2 class="m-0 text-base font-extrabold">Informazioni principali</h2><p class="mt-0.5 text-sm text-[var(--ion-color-medium)]">Identifica il luogo nell’anagrafica della band.</p></div>
+              <app-symbol class="shrink-0 rounded-[10px] bg-[rgba(var(--ui-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ui-color-primary)]" [name]="kind === 'venue' ? 'business-outline' : 'musical-notes-outline'"  />
+              <div><h2 class="m-0 text-base font-extrabold">Informazioni principali</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Identifica il luogo nell’anagrafica della band.</p></div>
             </div>
 
-            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ion-color-danger)] [&_strong]:text-[var(--ion-color-danger)]">
+            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ui-color-danger)] [&_strong]:text-[var(--ui-color-danger)]">
               <span>Nome <strong>*</strong></span>
-              <ion-input formControlName="name" aria-label="Nome" [placeholder]="kind === 'venue' ? 'Es. Bloom' : 'Es. Sound Factory'" />
+              <input class="input w-full" formControlName="name" aria-label="Nome" [placeholder]="kind === 'venue' ? 'Es. Bloom' : 'Es. Sound Factory'"  />
               @if (form.controls.name.touched && form.controls.name.invalid) { <small>Inserisci il nome del luogo.</small> }
             </label>
 
-            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ion-color-danger)] [&_strong]:text-[var(--ion-color-danger)]">
+            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ui-color-danger)] [&_strong]:text-[var(--ui-color-danger)]">
               <span>Indirizzo <strong>*</strong></span>
-              <ion-input formControlName="address" aria-label="Indirizzo" placeholder="Es. Via Giuseppe Verdi 12" autocomplete="street-address" />
+              <input class="input w-full" formControlName="address" aria-label="Indirizzo" placeholder="Es. Via Giuseppe Verdi 12" autocomplete="street-address"  />
               @if (form.controls.address.touched && form.controls.address.invalid) { <small>Inserisci l’indirizzo.</small> }
             </label>
 
-            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ion-color-danger)] [&_strong]:text-[var(--ion-color-danger)]">
+            <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ui-color-danger)] [&_strong]:text-[var(--ui-color-danger)]">
               <span>Città <strong>*</strong></span>
-              <ion-input formControlName="city" aria-label="Città" placeholder="Es. Milano" autocomplete="address-level2" />
+              <input class="input w-full" formControlName="city" aria-label="Città" placeholder="Es. Milano" autocomplete="address-level2"  />
               @if (form.controls.city.touched && form.controls.city.invalid) { <small>Inserisci la città.</small> }
             </label>
           </section>
 
           <section class="grid gap-5 border-t border-[var(--gigsaw-border)] py-[30px]">
             <div class="flex items-start gap-3">
-              <ion-icon class="shrink-0 rounded-[10px] bg-[rgba(var(--ion-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ion-color-primary)]" name="navigate-outline" />
-              <div><h2 class="m-0 text-base font-extrabold">Coordinate</h2><p class="mt-0.5 text-sm text-[var(--ion-color-medium)]">Facoltative, utili per localizzare con precisione il luogo.</p></div>
+              <app-symbol class="shrink-0 rounded-[10px] bg-[rgba(var(--ui-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ui-color-primary)]" name="navigate-outline"  />
+              <div><h2 class="m-0 text-base font-extrabold">Coordinate</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Facoltative, utili per localizzare con precisione il luogo.</p></div>
             </div>
             <div class="flex flex-wrap items-center gap-3">
               <app-gigsaw-button tone="outline" [loading]="geocoding" (click)="geocodeAddress()">Ricava dall’indirizzo</app-gigsaw-button>
@@ -55,8 +55,8 @@
               }
             </div>
             <div class="grid grid-cols-2 gap-3.5 max-[680px]:grid-cols-1">
-              <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]"><span>Latitudine</span><ion-input formControlName="latitude" aria-label="Latitudine" type="number" placeholder="Es. 45.4642" inputmode="decimal" /></label>
-              <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]"><span>Longitudine</span><ion-input formControlName="longitude" aria-label="Longitudine" type="number" placeholder="Es. 9.1900" inputmode="decimal" /></label>
+              <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]"><span>Latitudine</span><input class="input w-full" formControlName="latitude" aria-label="Latitudine" type="number" placeholder="Es. 45.4642" inputmode="decimal"  /></label>
+              <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]"><span>Longitudine</span><input class="input w-full" formControlName="longitude" aria-label="Longitudine" type="number" placeholder="Es. 9.1900" inputmode="decimal"  /></label>
             </div>
           </section>
 
@@ -69,12 +69,12 @@
   @if (!loading) {
     <div slot="fixed" class="floating-action-toolbar absolute inset-x-[clamp(20px,5vw,72px)] bottom-[max(16px,env(safe-area-inset-bottom))] z-[100] w-auto overflow-hidden rounded-2xl border border-[#243244] bg-[#333] shadow-[0_14px_38px_rgba(0,0,0,.34)] backdrop-blur-[14px] max-[800px]:inset-x-5" role="toolbar" aria-label="Azioni del form">
       <div class="flex items-center justify-between gap-2.5 p-2.5">
-        <ion-button type="button" fill="outline" [disabled]="saving" (click)="cancel()">Annulla</ion-button>
-        <ion-button type="submit" form="location-form" [disabled]="saving">
-          @if (saving) { <ion-spinner slot="start" name="crescent" /> }
+        <button class="btn btn-outline" type="button" [disabled]="saving" (click)="cancel()">Annulla</button>
+        <button class="btn btn-primary" type="submit" form="location-form" [disabled]="saving">
+          @if (saving) { <span class="loading loading-spinner" slot="start"  role="status" aria-label="Caricamento"></span> }
           {{ editing ? 'Salva modifiche' : 'Crea ' + locationLabel }}
-        </ion-button>
+        </button>
       </div>
     </div>
   }
-</ion-content>
+</section>

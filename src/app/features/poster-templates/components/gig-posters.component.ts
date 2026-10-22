@@ -1,5 +1,5 @@
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, Input, OnChanges, ViewChildren, QueryList } from '@angular/core';
-import { IonButton, IonNote, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { PosterCanvasComponent } from './poster-canvas.component';
 import { PosterTemplateDocument } from '../models/poster-template.models';
 import { PosterTemplateService } from '../services/poster-template.service';
@@ -17,7 +17,7 @@ export interface GigPosterValues {
 
 @Component({
   selector: 'app-gig-posters', standalone: true,
-  imports: [IonButton, IonNote, IonSelect, IonSelectOption, PosterCanvasComponent],
+  imports: [NativeUiModule, PosterCanvasComponent],
   template: `
     <section class="grid gap-5 border-t border-[var(--gigsaw-border)] py-[30px]">
       <h2 class="m-0 text-base font-extrabold">Locandine del concerto</h2>
@@ -26,42 +26,42 @@ export interface GigPosterValues {
       @for (group of modelGroups; track group[0].groupId) {
         <label class="grid gap-2 text-sm font-semibold text-[var(--gigsaw-text)]">
           <span>{{ group[0].name }}</span>
-          <ion-select [attr.aria-label]="'Formati di ' + group[0].name" interface="alert" [multiple]="true"
-            [value]="selectedFor(group)" (ionChange)="selectGroup(group, $event.detail.value)">
+          <select class="select w-full" [attr.aria-label]="'Formati di ' + group[0].name" [multiple]="true"
+            [appSelectValue]="selectedFor(group)" (selectionChange)="selectGroup(group, $event)" appSelect>
             @for (model of group; track model.id) {
-              <ion-select-option [value]="model.id">{{ model.document.format.label }}</ion-select-option>
+              <option [value]="model.id">{{ model.document.format.label }}</option>
             }
-          </ion-select>
+          </select>
         </label>
       }
       @if (missingModels.length) {
         <label class="grid gap-2 text-sm font-semibold">
           <span>Copie salvate senza modello</span>
-          <ion-select aria-label="Copie salvate senza modello" interface="alert" [multiple]="true"
-            [value]="missingModelsIds" (ionChange)="selectMissing($event.detail.value)">
+          <select class="select w-full" aria-label="Copie salvate senza modello" [multiple]="true"
+            [appSelectValue]="missingModelsIds" (selectionChange)="selectMissing($event)" appSelect>
             @for (poster of missingModels; track poster.templateId) {
-              <ion-select-option [value]="poster.templateId">{{ poster.name }} · {{ poster.document.format.label }}</ion-select-option>
+              <option [value]="poster.templateId">{{ poster.name }} · {{ poster.document.format.label }}</option>
             }
-          </ion-select>
+          </select>
         </label>
       }
-      @if (!models.length) { <ion-note>Crea un modello nella sezione Modelli di locandina per aggiungere nuove locandine.</ion-note> }
-      <ion-note>Le copie compilate vengono assegnate al concerto quando lo salvi e restano disponibili in questo browser.</ion-note>
+      @if (!models.length) { <small class="text-sm">Crea un modello nella sezione Modelli di locandina per aggiungere nuove locandine.</small> }
+      <small class="text-sm">Le copie compilate vengono assegnate al concerto quando lo salvi e restano disponibili in questo browser.</small>
       }
-      @if (readOnly && !posters.length) { <ion-note>Nessuna locandina assegnata a questo concerto.</ion-note> }
+      @if (readOnly && !posters.length) { <small class="text-sm">Nessuna locandina assegnata a questo concerto.</small> }
       @for (poster of posters; track poster.templateId; let index = $index) {
         <article class="grid gap-3">
           <strong>{{ poster.name }} · {{ poster.document.format.label }}</strong>
           <app-poster-canvas class="poster-thumbnail" [document]="poster.document" [interactive]="false" />
           <div>
-            @if (!readOnly) { <ion-button type="button" fill="outline" (click)="refresh(index)">Aggiorna dai dati del concerto</ion-button> }
-            <ion-button type="button" [disabled]="exporting" (click)="download(index)">
+            @if (!readOnly) { <button class="btn btn-outline" type="button" (click)="refresh(index)">Aggiorna dai dati del concerto</button> }
+            <button class="btn btn-primary" type="button" [disabled]="exporting" (click)="download(index)">
               Esporta {{ poster.document.format.id === 'a4' ? 'PDF A4' : 'PNG' }}
-            </ion-button>
+            </button>
           </div>
         </article>
       }
-      @if (error) { <ion-note color="danger" role="alert">{{ error }}</ion-note> }
+      @if (error) { <small class="text-sm text-error" role="alert">{{ error }}</small> }
     </section>`,
 })
 export class GigPostersComponent implements OnChanges {

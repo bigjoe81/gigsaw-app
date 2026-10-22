@@ -1,3 +1,5 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { DatePipe, CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -5,7 +7,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin, finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonNote, IonInput, IonSelect, IonSelectOption, IonButtons, IonMenuButton } from '@ionic/angular/standalone';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandService } from '../services/band.service';
@@ -15,41 +16,41 @@ interface Billing {
  ends_at: string | null; payments_enabled: boolean; can_manage_payments: boolean;
 }
 interface Plan { monthly_available: boolean; yearly_available: boolean; id: number; name: string; description: string | null; type: string; currency: string; monthly_price_cents: number | null; yearly_price_cents: number | null; }
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
  standalone: true,
- imports: [DatePipe, CurrencyPipe, FormsModule, RouterLink, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonNote, IonInput, IonSelect, IonSelectOption, IonButtons, IonMenuButton],
+ imports: [NativeUiModule, DatePipe, CurrencyPipe, FormsModule, RouterLink, ],
  template: `
- <ion-header><ion-toolbar><ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons><ion-title>Abbonamento</ion-title></ion-toolbar></ion-header>
- <ion-content class="ion-padding">
+ <header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><button class="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button></div><h1 class="grow text-xl">Abbonamento</h1></div></header>
+ <section class="app-content p-4">
  <a [routerLink]="settingsUrl">← Impostazioni della band</a>
  @if (loading()) { <p>Caricamento…</p> }
- @if (error()) { <p><ion-note color="danger">{{ error() }}</ion-note></p> }
+ @if (error()) { <p><small class="text-sm text-error">{{ error() }}</small></p> }
  @if (returnedFromCheckout) { <p>Il checkout è terminato. La conferma dell’abbonamento può richiedere qualche istante: aggiorna lo stato prima di riprovare.</p> }
  @if (billing(); as state) {
- <ion-card><ion-card-header><ion-card-title>{{ state.plan?.name || 'Abbonamento della band' }}</ion-card-title></ion-card-header><ion-card-content>
+ <article class="card bg-base-200 border border-base-300 my-4"><header class="px-6 pt-6"><h2 class="card-title">{{ state.plan?.name || 'Abbonamento della band' }}</h2></header><div class="card-body">
  <p>Stato: {{ statusLabel(state.status) }}</p>
  @if (state.ends_at) { <p>{{ state.status === 'beta' || state.status === 'trialing' ? 'Periodo gratuito fino al' : 'Scadenza' }} {{ state.ends_at | date:'dd/MM/yyyy' }}</p> }
  @if (state.status === 'beta' || state.status === 'expired') { <p>La Beta non genera addebiti automatici. Per attivare un piano a pagamento, un amministratore deve completare il checkout Stripe.</p> }
- @if (isAdmin && state.can_manage_payments && state.payments_enabled) { <ion-button (click)="portal()" [disabled]="busy()">Gestisci pagamenti e fatture</ion-button> }
- <ion-button fill="outline" (click)="load()" [disabled]="busy()">Aggiorna stato</ion-button>
- </ion-card-content></ion-card>
+ @if (isAdmin && state.can_manage_payments && state.payments_enabled) { <button class="btn btn-primary" (click)="portal()" [disabled]="busy()" type="button">Gestisci pagamenti e fatture</button> }
+ <button class="btn btn-outline" (click)="load()" [disabled]="busy()" type="button">Aggiorna stato</button>
+ </div></article>
  @if (isAdmin && state.payments_enabled && (state.status === 'beta' || state.status === 'free' || state.status === 'expired' || state.status === 'unassigned')) {
- <ion-input label="Email di fatturazione" labelPlacement="stacked" type="email" [(ngModel)]="email" />
- <ion-select label="Periodo" [(ngModel)]="interval"><ion-select-option value="monthly">Mensile</ion-select-option><ion-select-option value="yearly">Annuale</ion-select-option></ion-select>
+ <input class="input w-full" label="Email di fatturazione" type="email" [(ngModel)]="email"  />
+ <select class="select w-full" label="Periodo" [(ngModel)]="interval"><option value="monthly">Mensile</option><option value="yearly">Annuale</option></select>
  @for (plan of plans(); track plan.id) {
  @if (amount(plan) !== null) {
- <ion-card><ion-card-header><ion-card-title>{{ plan.name }}</ion-card-title></ion-card-header><ion-card-content>
+ <article class="card bg-base-200 border border-base-300 my-4"><header class="px-6 pt-6"><h2 class="card-title">{{ plan.name }}</h2></header><div class="card-body">
  <p>{{ plan.description }}</p><p>{{ (amount(plan) || 0) / 100 | currency:plan.currency.toUpperCase() }} / {{ interval === 'monthly' ? 'mese' : 'anno' }}</p>
  <p>Stripe mostrerà importo e data del primo addebito prima della conferma.</p>
- <ion-button (click)="checkout(plan)" [disabled]="busy() || !email">Continua su Stripe</ion-button>
- </ion-card-content></ion-card>
+ <button class="btn btn-primary" (click)="checkout(plan)" [disabled]="busy() || !email" type="button">Continua su Stripe</button>
+ </div></article>
  }
  }
  @if (!plans().length) { <p>I piani a pagamento saranno disponibili al termine della Beta.</p> }
  } @else if (!state.payments_enabled) { <p>I pagamenti non sono ancora disponibili.</p> }
  }
- @if (!billing() && !loading()) { <ion-button (click)="load()">Riprova</ion-button> }
- </ion-content>`,
+ @if (!billing() && !loading()) { <button class="btn btn-primary" (click)="load()" type="button">Riprova</button> }
+ </section>`,
 })
 export class BandBillingPage {
  private readonly http = inject(HttpClient);

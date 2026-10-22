@@ -112,7 +112,7 @@ export class AuthService {
     );
   }
 
-  /** Starts the server-side OAuth flow. Google credentials never reach the Ionic bundle. */
+  /** Starts the server-side OAuth flow. Google credentials never reach the browser bundle. */
   startGoogleLogin(returnUrl = '/band'): void {
     localStorage.setItem(GOOGLE_RETURN_URL_KEY, returnUrl);
     window.location.assign(`${environment.apiUrl}${environment.googleAuthPath}`);

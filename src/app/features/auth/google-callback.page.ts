@@ -1,11 +1,12 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../shared/ui/native-ui';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonButton, IonContent, IonNote, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [IonButton, IonContent, IonNote, IonSpinner],
+  imports: [NativeUiModule],
   templateUrl: './google-callback.page.html',
 })
 export class GoogleCallbackPage implements OnInit {

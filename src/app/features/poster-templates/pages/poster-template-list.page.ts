@@ -1,17 +1,16 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { DialogService, NativeUiModule } from '../../../shared/ui/native-ui';
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { add, colorPaletteOutline, trashOutline, searchOutline, arrowForwardOutline } from 'ionicons/icons';
 import { POSTER_FORMATS, PosterFormatId, PosterTemplate } from '../models/poster-template.models';
 import { PosterCanvasComponent } from '../components/poster-canvas.component';
 import { PosterTemplateService } from '../services/poster-template.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [DatePipe, FormsModule, RouterLink, PosterCanvasComponent, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton, IonTitle, IonToolbar],
+  imports: [NativeUiModule, DatePipe, FormsModule, RouterLink, PosterCanvasComponent, ],
   templateUrl: './poster-template-list.page.html',
   styleUrl: './poster-template-list.page.scss',
 })
@@ -37,15 +36,16 @@ export class PosterTemplateListPage implements OnInit {
     return group.find(item => item.document.format.id === this.format) ?? group[0];
   }
   readonly bandId: string;
-  constructor(route: ActivatedRoute, private readonly storage: PosterTemplateService) {
+  constructor(route: ActivatedRoute, private readonly storage: PosterTemplateService, private readonly dialog: DialogService) {
     this.bandId = route.snapshot.parent?.parent?.paramMap.get('bandId') ?? route.snapshot.paramMap.get('bandId') ?? '';
-    addIcons({ add, colorPaletteOutline, trashOutline, searchOutline, arrowForwardOutline });
+
   }
-  ngOnInit(): void { this.refresh(); }
-  ionViewWillEnter(): void { this.refresh(); }
-  remove(template: PosterTemplate, event: Event): void {
+  ngOnInit(): void { this.refresh();
+  }
+  async remove(template: PosterTemplate, event: Event): Promise<void> {
     event.preventDefault(); event.stopPropagation();
-    if (confirm(`Eliminare “${template.name}” e tutti i suoi formati?`)) { this.storage.deleteGroup(this.bandId, template.groupId ?? template.id); this.refresh(); }
+    const dialog = await this.dialog.create({ header: 'Eliminare il modello?', message: `Eliminare “${template.name}” e tutti i suoi formati?`, buttons: [{ text: 'Annulla', role: 'cancel' }, { text: 'Elimina', role: 'destructive', handler: () => { this.storage.deleteGroup(this.bandId, template.groupId ?? template.id); this.refresh(); } }] });
+    await dialog.present();
   }
   private refresh(): void { this.templates = this.storage.list(this.bandId); }
 }

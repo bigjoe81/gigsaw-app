@@ -1,17 +1,17 @@
 @if (!embedded) {
-<ion-header class="hidden max-[900px]:block">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/band" text="Band" icon="arrow-back-outline" />
-    </ion-buttons>
-    <ion-title>Nuova band</ion-title>
-  </ion-toolbar>
-</ion-header>
+<header class="page-header hidden max-[900px]:block">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start">
+      <button class="btn btn-ghost btn-square" defaultHref="/band" icon="arrow-back-outline"  type="button" appBack>←</button>
+    </div>
+    <h1 class="grow text-xl">Nuova band</h1>
+  </div>
+</header>
 }
 
-<ion-content class="[--background:var(--gigsaw-background)]">
+<section class="app-content [--background:var(--gigsaw-background)]">
   <main class="grid min-h-full grid-cols-[minmax(320px,.8fr)_minmax(560px,1.35fr)] text-[var(--create-navy)] max-[900px]:block" [ngClass]="embedded ? 'grid-cols-[310px_minmax(0,1fr)]' : ''">
-    <aside class="relative sticky top-0 flex min-h-screen flex-col self-start overflow-hidden bg-[var(--ion-gradient-brand)] p-[clamp(36px,5vw,72px)] text-white after:absolute after:-right-[110px] after:-bottom-[110px] after:h-[310px] after:w-[310px] after:rounded-full after:border after:border-[rgba(255,255,255,.12)] after:shadow-[0_0_0_48px_rgba(255,255,255,.035),0_0_0_96px_rgba(255,255,255,.02)] after:content-[''] max-[900px]:min-h-0 max-[900px]:px-6 max-[900px]:py-7 max-[900px]:[&>picture]:hidden max-[900px]:[&>.intro-copy]:hidden max-[900px]:[&>ol]:hidden max-[900px]:[&>div]:hidden max-[560px]:hidden" [ngClass]="embedded ? 'min-h-full px-[30px] py-[34px] max-[900px]:hidden' : ''" aria-labelledby="create-band-title">
+    <aside class="relative sticky top-0 flex min-h-screen flex-col self-start overflow-hidden bg-[var(--ui-gradient-brand)] p-[clamp(36px,5vw,72px)] text-white after:absolute after:-right-[110px] after:-bottom-[110px] after:h-[310px] after:w-[310px] after:rounded-full after:border after:border-[rgba(255,255,255,.12)] after:shadow-[0_0_0_48px_rgba(255,255,255,.035),0_0_0_96px_rgba(255,255,255,.02)] after:content-[''] max-[900px]:min-h-0 max-[900px]:px-6 max-[900px]:py-7 max-[900px]:[&>picture]:hidden max-[900px]:[&>.intro-copy]:hidden max-[900px]:[&>ol]:hidden max-[900px]:[&>div]:hidden max-[560px]:hidden" [ngClass]="embedded ? 'min-h-full px-[30px] py-[34px] max-[900px]:hidden' : ''" aria-labelledby="create-band-title">
       <picture>
          <img class="relative z-[1] block w-[148px]" [ngClass]="embedded ? 'w-[118px]' : ''" src="assets/logo-hor.png" alt="GigSaw" />
       </picture>
@@ -24,21 +24,21 @@
 
       <ol class="relative z-[1] mt-14 mb-10 grid max-w-[460px] list-none gap-[22px] p-0" [ngClass]="embedded ? 'mt-9 mb-7 gap-[17px]' : ''" aria-label="Passaggi di configurazione">
         <li class="grid grid-cols-[44px_1fr] items-center gap-[14px] text-white" [ngClass]="embedded ? 'grid-cols-[38px_1fr] gap-[11px]' : ''">
-          <span class="grid h-11 w-11 place-items-center rounded-[14px] border border-[rgba(255,255,255,.24)] bg-[rgba(255,255,255,.08)] text-xl text-[#071434] shadow-[0_12px_30px_rgba(245,185,66,.22)] [background:var(--create-yellow)] [border-color:var(--create-yellow)]" [ngClass]="embedded ? 'h-[38px] w-[38px] rounded-[11px] text-[1.05rem]' : ''"><ion-icon name="musical-notes-outline" aria-hidden="true" /></span>
+          <span class="grid h-11 w-11 place-items-center rounded-[14px] border border-[rgba(255,255,255,.24)] bg-[rgba(255,255,255,.08)] text-xl text-[#071434] shadow-[0_12px_30px_rgba(245,185,66,.22)] [background:var(--create-yellow)] [border-color:var(--create-yellow)]" [ngClass]="embedded ? 'h-[38px] w-[38px] rounded-[11px] text-[1.05rem]' : ''"><app-symbol name="musical-notes-outline" aria-hidden="true"  /></span>
           <span><strong class="block text-[.98rem]" [ngClass]="embedded ? 'text-[.86rem]' : ''">Identità della band</strong><small class="mt-1 block text-[.8rem]" [ngClass]="embedded ? 'text-[.72rem]' : ''">Le informazioni essenziali</small></span>
         </li>
         <li class="grid grid-cols-[44px_1fr] items-center gap-[14px] text-[rgba(255,255,255,.56)]" [ngClass]="embedded ? 'grid-cols-[38px_1fr] gap-[11px]' : ''">
-          <span class="grid h-11 w-11 place-items-center rounded-[14px] border border-[rgba(255,255,255,.24)] bg-[rgba(255,255,255,.08)] text-xl" [ngClass]="embedded ? 'h-[38px] w-[38px] rounded-[11px] text-[1.05rem]' : ''"><ion-icon name="settings-outline" aria-hidden="true" /></span>
+          <span class="grid h-11 w-11 place-items-center rounded-[14px] border border-[rgba(255,255,255,.24)] bg-[rgba(255,255,255,.08)] text-xl" [ngClass]="embedded ? 'h-[38px] w-[38px] rounded-[11px] text-[1.05rem]' : ''"><app-symbol name="settings-outline" aria-hidden="true"  /></span>
           <span><strong class="block text-[.98rem]" [ngClass]="embedded ? 'text-[.86rem]' : ''">Completa il profilo</strong><small class="mt-1 block text-[.8rem]" [ngClass]="embedded ? 'text-[.72rem]' : ''">Contatti, press kit e scheda tecnica</small></span>
         </li>
         <li class="grid grid-cols-[44px_1fr] items-center gap-[14px] text-[rgba(255,255,255,.56)]" [ngClass]="embedded ? 'grid-cols-[38px_1fr] gap-[11px]' : ''">
-          <span class="grid h-11 w-11 place-items-center rounded-[14px] border border-[rgba(255,255,255,.24)] bg-[rgba(255,255,255,.08)] text-xl" [ngClass]="embedded ? 'h-[38px] w-[38px] rounded-[11px] text-[1.05rem]' : ''"><ion-icon name="people-outline" aria-hidden="true" /></span>
+          <span class="grid h-11 w-11 place-items-center rounded-[14px] border border-[rgba(255,255,255,.24)] bg-[rgba(255,255,255,.08)] text-xl" [ngClass]="embedded ? 'h-[38px] w-[38px] rounded-[11px] text-[1.05rem]' : ''"><app-symbol name="people-outline" aria-hidden="true"  /></span>
           <span><strong class="block text-[.98rem]" [ngClass]="embedded ? 'text-[.86rem]' : ''">Invita i musicisti</strong><small class="mt-1 block text-[.8rem]" [ngClass]="embedded ? 'text-[.72rem]' : ''">Ruoli e accessi si impostano dopo</small></span>
         </li>
       </ol>
 
       <div class="relative z-[1] mt-auto flex max-w-[460px] items-center gap-2.5 border-t border-[rgba(255,255,255,.14)] pt-6 text-[rgba(255,255,255,.72)] text-[.86rem]" [ngClass]="embedded ? 'pt-[18px] text-[.76rem]' : ''">
-        <ion-icon class="shrink-0 text-[var(--create-yellow)] text-xl" name="checkmark" aria-hidden="true" />
+        <app-symbol class="shrink-0 text-[var(--create-yellow)] text-xl" name="checkmark" aria-hidden="true"  />
         <span>Diventerai automaticamente amministratore della band.</span>
       </div>
     </aside>
@@ -67,17 +67,17 @@
             <div class="relative grid h-[110px] w-[110px] shrink-0 place-items-center overflow-visible rounded-3xl border-2 border-dashed border-[#aebbd0] bg-[#111827] text-[#71809a] text-[2.3rem] max-[560px]:h-[88px] max-[560px]:w-[88px] max-[560px]:rounded-[20px]" [ngClass]="(logoPreviewUrl ? 'border-solid border-[var(--create-border)] ' : '') + (embedded ? 'h-[86px] w-[86px] rounded-[19px]' : '')">
               @if (logoPreviewUrl) {
                 <img class="h-full w-full rounded-[22px] object-cover max-[560px]:rounded-[18px]" [ngClass]="embedded ? 'rounded-[17px]' : ''" [src]="logoPreviewUrl" alt="Anteprima del logo selezionato" />
-                <ion-button class="absolute -top-2.5 -right-2.5 grid h-[30px] w-[30px] place-items-center rounded-full [--background:#071434] [--color:#fff] [--box-shadow:0_5px_14px_rgba(7,20,52,.24)]" type="button" aria-label="Rimuovi logo" (click)="removeLogo()">
-                  <ion-icon name="close" aria-hidden="true" />
-                </ion-button>
+                <button class="btn btn-primary absolute -top-2.5 -right-2.5 grid h-[30px] w-[30px] place-items-center rounded-full [--background:#071434] [--color:#fff] [--box-shadow:0_5px_14px_rgba(7,20,52,.24)]" type="button" aria-label="Rimuovi logo" (click)="removeLogo()">
+                  <app-symbol name="close" aria-hidden="true"  />
+                </button>
               } @else {
-                <ion-icon class="text-[2.3rem]" name="image-outline" aria-hidden="true" />
+                <app-symbol class="text-[2.3rem]" name="image-outline" aria-hidden="true"  />
               }
             </div>
 
             <div class="flex min-w-0 flex-col items-start gap-[7px]">
               <label class="inline-flex min-h-11 items-center gap-[9px] rounded-[10px] border border-[var(--create-border)] bg-[#111827] px-4 text-[var(--create-navy)] text-[.88rem] font-extrabold shadow-[0_4px_14px_rgba(27,50,89,.05)] cursor-pointer hover:border-[var(--create-blue)] hover:text-[var(--create-blue)] max-[560px]:px-3" for="band-logo">
-                <ion-icon name="cloud-upload-outline" aria-hidden="true" />
+                <app-symbol name="cloud-upload-outline" aria-hidden="true"  />
                 {{ logoPreviewUrl ? 'Sostituisci logo' : 'Carica un logo' }}
               </label>
               <input
@@ -107,17 +107,17 @@
             </div>
           </div>
 
-          <ion-input
+          <input
             id="band-name"
-            class="w-full min-h-12 text-base font-normal"
-            mode="md"
+            class="input w-full w-full min-h-12 text-base font-normal"
+
             formControlName="name"
             placeholder="Es. Crossroads Blues Trio"
-            [maxlength]="120"
+            [attr.maxlength]="120"
             autocomplete="organization"
             enterkeyhint="next"
-            [ngClass]="nameControl.touched && nameControl.invalid ? 'border-[var(--ion-color-danger)]' : ''"
-          />
+            [ngClass]="nameControl.touched && nameControl.invalid ? 'border-[var(--ui-color-danger)]' : ''"
+           />
           <div class="mt-[7px] flex min-h-[22px] justify-between gap-3 text-[var(--create-muted)] text-[.72rem]">
             <span>
               @if (nameControl.touched && nameControl.hasError('required')) {
@@ -187,7 +187,7 @@
           @if (genresError) {
             <div class="flex items-center justify-between gap-4 rounded-xl bg-[#3b3015] px-[14px] py-3 text-[#f6d887] text-[.82rem]" role="status">
               <span>{{ genresError }}</span>
-              <ion-button type="button" (click)="loadGenres()">Riprova</ion-button>
+              <button class="btn btn-primary" type="button" (click)="loadGenres()">Riprova</button>
             </div>
           }
         </div>
@@ -201,17 +201,17 @@
             <span class="shrink-0 rounded-full bg-[#1b293d] px-2.5 py-[5px] text-[var(--create-muted)] text-[.68rem] font-bold whitespace-nowrap">Facoltativo</span>
           </div>
 
-          <ion-textarea
+          <textarea
             id="band-description"
-            class="min-h-[118px] w-full text-base font-normal"
+            class="textarea w-full min-h-[118px] w-full text-base font-normal"
             [ngClass]="embedded ? 'min-h-[92px]' : ''"
-            mode="md"
+
             formControlName="bioShort"
             placeholder="Es. Blues, rhythm & blues e rock ’n’ roll tra Chicago e New Orleans."
             [maxlength]="500"
-            [autoGrow]="true"
+
             [rows]="4"
-          />
+          ></textarea>
           <div class="mt-[7px] flex min-h-[22px] justify-end gap-3 text-[var(--create-muted)] text-[.72rem]"><span>{{ bioLength }}/500</span></div>
         </div>
 
@@ -220,19 +220,19 @@
         }
 
         <footer class="form-action-bar flex items-center justify-between gap-3" [ngClass]="embedded ? '!sticky bottom-0 z-[3] mx-[-42px] my-0 px-[42px] py-4 shadow-[0_-12px_28px_rgba(30,48,79,.08)] backdrop-blur-[12px] [background:#333] max-[900px]:mx-[-28px] max-[900px]:px-7 max-[560px]:mx-[-18px] max-[560px]:px-[18px] max-[560px]:pb-[calc(16px+env(safe-area-inset-bottom))]' : ''">
-          <ion-button type="button" fill="clear" color="medium" (click)="cancel()" [disabled]="saving()">
+          <button class="btn btn-ghost btn-neutral" type="button" (click)="cancel()" [disabled]="saving()">
             Annulla
-          </ion-button>
-          <ion-button class="min-h-[50px] min-w-[190px] font-extrabold [--background:var(--create-blue)] [--border-radius:11px] [--box-shadow:0_12px_24px_rgba(7,91,216,.2)] max-[560px]:min-w-0 max-[560px]:flex-1" type="submit" [disabled]="saving()">
+          </button>
+          <button class="btn btn-primary min-h-[50px] min-w-[190px] font-extrabold [--background:var(--create-blue)] [--border-radius:11px] [--box-shadow:0_12px_24px_rgba(7,91,216,.2)] max-[560px]:min-w-0 max-[560px]:flex-1" type="submit" [disabled]="saving()">
             @if (saving()) {
-              <ion-spinner name="crescent" />
+              <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span>
               Creazione in corso…
             } @else {
               Crea workspace
             }
-          </ion-button>
+          </button>
         </footer>
       </form>
     </section>
   </main>
-</ion-content>
+</section>

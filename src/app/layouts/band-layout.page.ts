@@ -1,62 +1,30 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { NativeUiModule } from '../shared/ui/native-ui';
 import { Component, EnvironmentInjector, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
-import {
-  IonContent,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonMenu,
-  IonMenuToggle,
-  IonRouterOutlet,
-  IonSplitPane,
-  isPlatform,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  arrowBackOutline,
-  colorPaletteOutline,
-  helpCircleOutline,
-  homeOutline,
-  listOutline,
-  micOutline,
-  musicalNotesOutline,
-  pinOutline,
-  radioOutline,
-  calendarOutline,
-  settingsOutline,
-} from 'ionicons/icons';
 import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
 
 type BandSection = 'panoramica' | 'repertorio' | 'prove' | 'concerti' | 'impegni' | 'luoghi' | 'scalette' | 'locandine' | 'assistenza' | 'impostazioni';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-band-layout',
   templateUrl: './band-layout.page.html',
   styleUrls: ['./band-layout.page.scss'],
   standalone: true,
-  imports: [
+  imports: [RouterOutlet, NativeUiModule,
     RouterLink,
     RouterLinkActive,
-    IonContent,
-    IonIcon,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonMenu,
-    IonMenuToggle,
-    IonRouterOutlet,
-    IonSplitPane,
-  ],
+    ],
 })
 export class BandLayoutPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
   private readonly route = inject(ActivatedRoute);
   private readonly bandContext = inject(BandContextService);
   private readonly bandService = inject(BandService);
-  readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
+  readonly pageTransitionsEnabled = false;
   readonly menuCollapsed = signal(false);
   readonly currentBand = signal<Band | null>(null);
   readonly currentBandLoading = signal(true);
@@ -79,19 +47,7 @@ export class BandLayoutPage implements OnInit {
   ];
 
   constructor() {
-    addIcons({
-      arrowBackOutline,
-      colorPaletteOutline,
-      helpCircleOutline,
-      homeOutline,
-      listOutline,
-      micOutline,
-      musicalNotesOutline,
-      pinOutline,
-      radioOutline,
-      calendarOutline,
-      settingsOutline,
-    });
+
   }
 
   ngOnInit(): void {
@@ -126,10 +82,11 @@ export class BandLayoutPage implements OnInit {
     return bandId ? `/band/${bandId}/${section}` : '/band';
   }
 
+  closeMobileMenu(): void { if (window.innerWidth < 600) this.menuCollapsed.set(false); }
+
   handleLayoutClick(event: MouseEvent): void {
-    if (!window.matchMedia('(min-width: 600px)').matches) return;
     const path = event.composedPath();
-    const menuButtonClicked = path.some((target) => target instanceof HTMLElement && target.tagName === 'ION-MENU-BUTTON');
+    const menuButtonClicked = path.some((target) => target instanceof HTMLElement && target.hasAttribute('data-menu-toggle'));
     if (!menuButtonClicked) return;
     event.preventDefault();
     event.stopPropagation();

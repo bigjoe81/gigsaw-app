@@ -1,36 +1,10 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { ToastService, ReorderEvent } from '../../../shared/ui/native-ui';
 
 import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonSelect,
-  IonTextarea,
-  IonItem,
-  IonLabel,
-  IonMenuButton,
-  IonNote,
-  IonIcon,
-  IonReorder,
-  IonReorderGroup,
-  IonSkeletonText,
-  IonSpinner,
-  IonSelectOption,
-  IonTitle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
-import type { ItemReorderCustomEvent } from '@ionic/angular';
-import { addIcons } from 'ionicons';
-import { personCircleOutline, optionsOutline, imagesOutline, peopleOutline, addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, notificationsOutline, removeCircleOutline, shareOutline, trashOutline } from 'ionicons/icons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
@@ -44,39 +18,16 @@ import { BandMediaPackService } from '../services/band-media-pack.service';
 import { BandTechRiderService } from '../services/band-tech-rider.service';
 import { GigsawBadgeComponent, GigsawListComponent, GigsawListItemComponent, GigsawTypeaheadComponent, GigsawTypeaheadItem } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     ReactiveFormsModule,
     RouterLink,
     GigsawBadgeComponent,
     GigsawListComponent,
     GigsawListItemComponent,
     GigsawTypeaheadComponent,
-    IonButton,
-    IonButtons,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonContent,
-    IonHeader,
-    IonInput,
-  IonSelect,
-  IonTextarea,
-  IonItem,
-    IonIcon,
-    IonLabel,
-    IonMenuButton,
-    IonNote,
-    IonReorder,
-    IonReorderGroup,
-    IonSkeletonText,
-    IonSpinner,
-    IonSelectOption,
-    IonTitle,
-    IonToolbar
-],
+    ],
   templateUrl: './band-manage.page.html',
   styleUrl: './band-manage.page.scss',
 
@@ -143,7 +94,7 @@ export class BandManagePage implements OnInit, OnDestroy {
   private readonly techRiderService = inject(BandTechRiderService);
   private readonly auth = inject(AuthService);
   private readonly fb = inject(FormBuilder);
-  private readonly toast = inject(ToastController);
+  private readonly toast = inject(ToastService);
 
   readonly inviteForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -265,7 +216,7 @@ export class BandManagePage implements OnInit, OnDestroy {
   }
 
   constructor() {
-    addIcons({ personCircleOutline, optionsOutline, imagesOutline, peopleOutline, addCircleOutline, cloudUpload, copyOutline, downloadOutline, imageOutline, logoWhatsapp, mailOutline, notificationsOutline, removeCircleOutline, shareOutline, trashOutline });
+
   }
 
   ngOnInit(): void {
@@ -552,7 +503,7 @@ export class BandManagePage implements OnInit, OnDestroy {
     this.renumberInputChannels();
   }
 
-  reorderInputChannels(event: ItemReorderCustomEvent): void {
+  reorderInputChannels(event: ReorderEvent): void {
     const controls = [...this.inputChannels.controls];
     const moved = controls.splice(event.detail.from, 1)[0];
     controls.splice(event.detail.to, 0, moved);

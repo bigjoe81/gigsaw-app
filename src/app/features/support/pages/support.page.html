@@ -1,60 +1,60 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-menu-button slot="start" menu="band-menu" />
+<header class="page-header">
+  <div class="navbar gap-3">
+    <button class="btn btn-ghost btn-square" slot="start"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</button>
     <div class="flex flex-col gap-0.5 py-2">
       <span class="font-extrabold">Feedback e assistenza</span>
       <small class="text-[.72rem] opacity-60">Parla direttamente con il team GigSaw</small>
     </div>
-  </ion-toolbar>
-</ion-header>
+  </div>
+</header>
 
-<ion-content>
+<section class="app-content">
   <main class="mx-auto w-[min(1180px,calc(100%-32px))] pb-24 pt-8 max-[800px]:w-[min(100%-24px,1180px)] max-[800px]:pt-[22px]">
     <section class="mb-6 flex items-end justify-between gap-6 max-[800px]:items-stretch max-[800px]:flex-col">
       <div class="max-w-[760px]">
-        <span class="inline-flex rounded-full bg-[color-mix(in_srgb,var(--ion-color-primary)_14%,transparent)] px-[9px] py-[5px] text-[.7rem] font-extrabold tracking-[.08em] text-[var(--ion-color-primary)]">BETA</span>
+        <span class="inline-flex rounded-full bg-[color-mix(in_srgb,var(--ui-color-primary)_14%,transparent)] px-[9px] py-[5px] text-[.7rem] font-extrabold tracking-[.08em] text-[var(--ui-color-primary)]">BETA</span>
         <h1 class="mb-2 mt-3 text-[clamp(2rem,5vw,3rem)] leading-none tracking-[-.04em]">Come possiamo aiutarti?</h1>
         <p class="m-0 leading-[1.55] opacity-65">Segnala un problema, proponi una funzione o chiedi assistenza. Qui trovi anche tutte le risposte del team.</p>
       </div>
-      <ion-button (click)="startNewTicket()">Nuovo ticket</ion-button>
+      <button class="btn btn-primary" (click)="startNewTicket()" type="button">Nuovo ticket</button>
     </section>
 
     @if (error()) {
-      <div class="mb-4 rounded-xl bg-[color-mix(in_srgb,var(--ion-color-danger)_12%,transparent)] px-3.5 py-3 text-[var(--ion-color-danger)]">{{ error() }}</div>
+      <div class="mb-4 rounded-xl bg-[color-mix(in_srgb,var(--ui-color-danger)_12%,transparent)] px-3.5 py-3 text-[var(--ui-color-danger)]">{{ error() }}</div>
     }
 
     <div class="grid grid-cols-[minmax(300px,.8fr)_minmax(0,1.4fr)] items-start gap-[18px] max-[800px]:grid-cols-1">
-      <section class="overflow-hidden rounded-[18px] border border-[color-mix(in_srgb,currentColor_12%,transparent)] bg-[var(--ion-background-color)] p-3">
+      <section class="overflow-hidden rounded-[18px] border border-[color-mix(in_srgb,currentColor_12%,transparent)] bg-[var(--ui-background-color)] p-3">
         <div class="flex items-center justify-between gap-3 px-2 pb-3.5 pt-2">
           <h2 class="m-0 text-[1.05rem]">I miei ticket</h2>
           <span class="inline-grid h-7 min-w-7 place-items-center rounded-full bg-[color-mix(in_srgb,currentColor_8%,transparent)] px-2 text-[.8rem] font-bold">{{ tickets().length }}</span>
         </div>
 
         @if (loading()) {
-          <div class="grid min-h-[260px] place-items-center content-center p-6 text-center"><ion-spinner name="crescent" /></div>
+          <div class="grid min-h-[260px] place-items-center content-center p-6 text-center"><span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span></div>
         } @else if (!tickets().length) {
           <div class="grid min-h-[260px] place-items-center content-center p-6 text-center">
             <strong>Nessun ticket aperto</strong>
             <p class="m-0 leading-[1.55] opacity-65">Quando hai bisogno di noi, aprine uno da qui.</p>
           </div>
         } @else {
-          <ion-list class="bg-transparent" lines="none">
+          <div class="ui-list grid gap-2 bg-transparent">
             @for (ticket of tickets(); track ticket.id) {
-              <ion-item button [detail]="false" [class]="selectedTicket()?.id === ticket.id ? 'mb-1 [--background:color-mix(in_srgb,var(--ion-color-primary)_10%,transparent)] [--border-radius:12px]' : 'mb-1 [--background:transparent] [--border-radius:12px]'" (click)="openTicket(ticket)">
-                <ion-label>
+              <div class="ui-item flex items-center gap-3 py-3" [class]="selectedTicket()?.id === ticket.id ? 'mb-1 [--background:color-mix(in_srgb,var(--ui-color-primary)_10%,transparent)] [--border-radius:12px]' : 'mb-1 [--background:transparent] [--border-radius:12px]'" (click)="openTicket(ticket)">
+                <span class="ui-label">
                   <div class="flex items-center justify-between gap-3">
                     <strong class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">#{{ ticket.id }} · {{ ticket.subject }}</strong>
-                    <ion-badge class="shrink-0">{{ statusLabel(ticket.status) }}</ion-badge>
+                    <span class="badge shrink-0">{{ statusLabel(ticket.status) }}</span>
                   </div>
                   <p class="mt-1 text-[.78rem] opacity-60">{{ categoryLabel(ticket.category) }} · {{ ticket.updated_at | date:'dd/MM/yyyy HH:mm' }}</p>
-                </ion-label>
-              </ion-item>
+                </span>
+              </div>
             }
-          </ion-list>
+          </div>
         }
       </section>
 
-      <section class="min-h-[540px] overflow-hidden rounded-[18px] border border-[color-mix(in_srgb,currentColor_12%,transparent)] bg-[var(--ion-background-color)] p-5 max-[800px]:min-h-0">
+      <section class="min-h-[540px] overflow-hidden rounded-[18px] border border-[color-mix(in_srgb,currentColor_12%,transparent)] bg-[var(--ui-background-color)] p-5 max-[800px]:min-h-0">
         @if (creating()) {
           <div class="flex items-center justify-between gap-3 px-2 pb-3.5 pt-2">
             <div>
@@ -65,38 +65,38 @@
 
           <div class="grid min-w-0 gap-5 pt-2.5">
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
-              <span>Oggetto <strong class="text-[var(--ion-color-danger)]">*</strong></span>
-              <ion-input
+              <span>Oggetto <strong class="text-[var(--ui-color-danger)]">*</strong></span>
+              <input
                 aria-label="Oggetto"
-                class="font-normal"
+                class="input w-full font-normal"
                 [(ngModel)]="subject"
                 placeholder="Es. Import PDF bloccato"
                 [required]="true"
-              />
+               />
             </label>
 
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
               <span>Categoria</span>
-              <ion-select aria-label="Categoria" class="font-normal" interface="popover" [(ngModel)]="category">
-                <ion-select-option value="bug">Bug</ion-select-option>
-                <ion-select-option value="question">Domanda</ion-select-option>
-                <ion-select-option value="feature">Suggerimento</ion-select-option>
-                <ion-select-option value="billing">Pagamenti</ion-select-option>
-                <ion-select-option value="other">Altro</ion-select-option>
-              </ion-select>
+              <select aria-label="Categoria" class="select w-full font-normal" [(ngModel)]="category">
+                <option value="bug">Bug</option>
+                <option value="question">Domanda</option>
+                <option value="feature">Suggerimento</option>
+                <option value="billing">Pagamenti</option>
+                <option value="other">Altro</option>
+              </select>
             </label>
 
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
-              <span>Messaggio <strong class="text-[var(--ion-color-danger)]">*</strong></span>
-              <ion-textarea
+              <span>Messaggio <strong class="text-[var(--ui-color-danger)]">*</strong></span>
+              <textarea
                 aria-label="Messaggio"
-                class="font-normal"
-                [autoGrow]="true"
+                class="textarea w-full font-normal"
+
                 [rows]="7"
                 [(ngModel)]="message"
                 placeholder="Descrivi il problema con più dettagli possibile"
                 [required]="true"
-              />
+              ></textarea>
             </label>
 
             <div class="grid gap-2.5">
@@ -105,7 +105,7 @@
                 <small class="text-[.72rem] font-medium opacity-55">JPG o PNG · max 5 file · 5 MB ciascuno</small>
               </div>
 
-              <label class="relative grid cursor-pointer gap-[3px] rounded-[14px] border border-dashed border-[color-mix(in_srgb,currentColor_25%,transparent)] p-4 transition-colors hover:border-[var(--ion-color-primary)] hover:bg-[color-mix(in_srgb,var(--ion-color-primary)_5%,transparent)] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--ion-color-primary)]">
+              <label class="relative grid cursor-pointer gap-[3px] rounded-[14px] border border-dashed border-[color-mix(in_srgb,currentColor_25%,transparent)] p-4 transition-colors hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_5%,transparent)] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--ui-color-primary)]">
                 <input
                   class="pointer-events-none absolute h-px w-px opacity-0"
                   type="file"
@@ -115,7 +115,7 @@
                   [disabled]="saving()"
                   (change)="onScreenshotsSelected($event)"
                 />
-                <strong class="text-[var(--ion-color-primary)]">Allega screenshot</strong>
+                <strong class="text-[var(--ui-color-primary)]">Allega screenshot</strong>
                 <span class="text-[.78rem] opacity-60">Seleziona immagini dal dispositivo</span>
               </label>
 
@@ -135,9 +135,9 @@
               }
             </div>
 
-            <ion-button expand="block" (click)="createTicket()" [disabled]="saving() || !subject.trim() || !message.trim()">
-              @if (saving()) { <ion-spinner name="crescent" /> } @else { Apri ticket }
-            </ion-button>
+            <button class="btn btn-primary" (click)="createTicket()" [disabled]="saving() || !subject.trim() || !message.trim()" type="button">
+              @if (saving()) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Apri ticket }
+            </button>
           </div>
         } @else if (selectedTicket(); as ticket) {
           <div class="flex items-start justify-between gap-3 border-b border-[color-mix(in_srgb,currentColor_10%,transparent)] pb-[18px]">
@@ -145,7 +145,7 @@
               <small class="mb-1 block opacity-55">#{{ ticket.id }} · {{ categoryLabel(ticket.category) }}</small>
               <h2 class="m-0 text-[1.05rem]">{{ ticket.subject }}</h2>
             </div>
-            <ion-badge>{{ statusLabel(ticket.status) }}</ion-badge>
+            <span class="badge">{{ statusLabel(ticket.status) }}</span>
           </div>
 
           @if (ticket.screenshot_urls?.length) {
@@ -160,7 +160,7 @@
 
           <div class="grid gap-3 py-5">
             @for (item of ticket.messages ?? []; track item.id) {
-              <article [class]="'max-w-[85%] rounded-[14px] p-3 ' + (item.author_type === 'admin' ? 'ml-auto bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] max-[800px]:max-w-[92%]' : 'bg-[color-mix(in_srgb,currentColor_6%,transparent)] max-[800px]:max-w-[92%]')">
+              <article [class]="'max-w-[85%] rounded-[14px] p-3 ' + (item.author_type === 'admin' ? 'ml-auto bg-[color-mix(in_srgb,var(--ui-color-primary)_12%,transparent)] max-[800px]:max-w-[92%]' : 'bg-[color-mix(in_srgb,currentColor_6%,transparent)] max-[800px]:max-w-[92%]')">
                 <div class="mb-1.5 flex items-center justify-between gap-3 text-[.72rem]">
                   <strong>{{ item.author_type === 'admin' ? 'GigSaw' : 'Tu' }}</strong>
                   <span class="opacity-50">{{ item.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
@@ -173,27 +173,27 @@
           <div class="grid gap-2.5 border-t border-[color-mix(in_srgb,currentColor_10%,transparent)] pt-4">
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)]">
               <span>Rispondi</span>
-              <ion-textarea
+              <textarea
                 aria-label="Rispondi"
-                class="font-normal"
-                [autoGrow]="true"
+                class="textarea w-full font-normal"
+
                 [rows]="4"
                 [(ngModel)]="replyMessage"
                 placeholder="Scrivi una risposta"
-              />
+              ></textarea>
             </label>
-            <ion-button class="justify-self-end" (click)="sendReply()" [disabled]="saving() || !replyMessage.trim()">
-              @if (saving()) { <ion-spinner name="crescent" /> } @else { Invia risposta }
-            </ion-button>
+            <button class="btn btn-primary justify-self-end" (click)="sendReply()" [disabled]="saving() || !replyMessage.trim()" type="button">
+              @if (saving()) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Invia risposta }
+            </button>
           </div>
         } @else {
           <div class="grid min-h-[480px] place-items-center content-center p-6 text-center">
             <strong>Seleziona un ticket</strong>
             <p class="m-0 leading-[1.55] opacity-65">Oppure aprine uno nuovo per contattarci.</p>
-            <ion-button fill="outline" (click)="startNewTicket()">Nuovo ticket</ion-button>
+            <button class="btn btn-outline" (click)="startNewTicket()" type="button">Nuovo ticket</button>
           </div>
         }
       </section>
     </div>
   </main>
-</ion-content>
+</section>

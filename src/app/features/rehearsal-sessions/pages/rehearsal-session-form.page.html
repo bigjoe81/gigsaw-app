@@ -9,7 +9,7 @@
     ariaLabel="Avanzamento creazione prova"
     (sectionChange)="onHeaderSectionChange($event)"
   />
-<ion-content class="bg-[var(--gigsaw-background)]">
+<section class="app-content bg-[var(--gigsaw-background)]">
   <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
     <section class="form-container w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
       @if (loading()) {
@@ -21,39 +21,39 @@
               <div><h2>La prossima prova</h2><p class="section-caption">Quando e dove ritrovarsi.</p></div>
               <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
                 <span>Data <span class="required-mark">*</span></span>
-                <ion-input formControlName="date" aria-label="Data" type="date" />
+                <input class="input w-full" formControlName="date" aria-label="Data" type="date"  />
                 @if (form.controls.date.touched && form.controls.date.invalid) { <small class="field-error" role="alert">Scegli la data della prova.</small> }
               </label>
 
               <div class="grid grid-cols-2 gap-5 max-[800px]:grid-cols-1">
                 <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
                   <span>Ora inizio</span>
-                  <ion-input formControlName="startTime" aria-label="Ora inizio" type="time" />
+                  <input class="input w-full" formControlName="startTime" aria-label="Ora inizio" type="time"  />
                 </label>
                 <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
                   <span>Ora fine</span>
-                  <ion-input formControlName="endTime" aria-label="Ora fine" type="time" />
+                  <input class="input w-full" formControlName="endTime" aria-label="Ora fine" type="time"  />
                 </label>
               </div>
 
               <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
                 <span>Stato</span>
-                <ion-select formControlName="status" interface="popover" aria-label="Stato" placeholder="Seleziona uno stato">
-                  <ion-select-option value="scheduled">Da confermare</ion-select-option>
-                  <ion-select-option value="confirmed">Confermata</ion-select-option>
-                  <ion-select-option value="completed">Completata</ion-select-option>
-                  <ion-select-option value="cancelled">Annullata</ion-select-option>
-                </ion-select>
+                <select class="select w-full" formControlName="status" aria-label="Stato" placeholder="Seleziona uno stato">
+                  <option value="scheduled">Da confermare</option>
+                  <option value="confirmed">Confermata</option>
+                  <option value="completed">Completata</option>
+                  <option value="cancelled">Annullata</option>
+                </select>
               </label>
 
               <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
                 <span>Sala prove <span class="required-mark">*</span></span>
-                <ion-select formControlName="rehearsalRoomId" interface="popover" aria-label="Sala prove" placeholder="Seleziona una sala">
-                  <ion-select-option value="" disabled>Seleziona una sala</ion-select-option>
+                <select class="select w-full" formControlName="rehearsalRoomId" aria-label="Sala prove" placeholder="Seleziona una sala">
+                  <option value="" disabled>Seleziona una sala</option>
                   @for (room of rehearsalRooms(); track room.id) {
-                    <ion-select-option [value]="room.id.toString()">{{ roomLabel(room) }}</ion-select-option>
+                    <option [value]="room.id.toString()">{{ roomLabel(room) }}</option>
                   }
-                </ion-select>
+                </select>
                 @if (!rehearsalRooms().length) { <app-gigsaw-message messageClass="text-[#9aabc1] font-semibold">Nessuna sala prova disponibile.</app-gigsaw-message> }
               </label>
 
@@ -61,32 +61,32 @@
               <section class="form-group grid gap-5">
               <label class="grid gap-2 text-[.82rem] font-[750] text-[#e5edf7]">
                 <span>Titolo</span>
-                <ion-input formControlName="title" aria-label="Titolo"  placeholder="Es. Prove del 5 novembre 2026" />
+                <input class="input w-full" formControlName="title" aria-label="Titolo"  placeholder="Es. Prove del 5 novembre 2026"  />
                 <small class="font-normal text-[var(--gigsaw-muted)]">{{ editing() ? 'Puoi personalizzare il titolo della prova.' : 'Si aggiorna con la data finché non lo personalizzi.' }}</small>
               </label>
               <label class="grid gap-2">
                 <span>Note per la band</span>
-                <ion-textarea formControlName="notes" aria-label="Note" [rows]="4" [autoGrow]="true" placeholder="Aggiungi una nota per la band" />
+                <textarea class="textarea w-full" formControlName="notes" aria-label="Note" [rows]="4" placeholder="Aggiungi una nota per la band" ></textarea>
               </label>
-              @if (error()) { <app-gigsaw-message tone="error" messageClass="mt-4 block rounded-[10px] border border-[rgba(var(--ion-color-danger-rgb),.4)] bg-[rgba(var(--ion-color-danger-rgb),.08)] px-3.5 py-3">{{ error() }}</app-gigsaw-message> }
+              @if (error()) { <app-gigsaw-message tone="error" messageClass="mt-4 block rounded-[10px] border border-[rgba(var(--ui-color-danger-rgb),.4)] bg-[rgba(var(--ui-color-danger-rgb),.08)] px-3.5 py-3">{{ error() }}</app-gigsaw-message> }
             </section>
 
           } @else {
-            <header class="mb-[34px]"><span class="text-xs font-semibold tracking-[.02em] text-[var(--ion-color-primary)]">Repertorio</span><h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">Brani da provare</h1><p class="m-0 text-[#9aabc1]">Seleziona i brani da preparare durante questa prova.</p></header>
+            <header class="mb-[34px]"><span class="text-xs font-semibold tracking-[.02em] text-[var(--ui-color-primary)]">Repertorio</span><h1 class="my-2.5 text-[1.75rem] text-[#e5edf7]">Brani da provare</h1><p class="m-0 text-[#9aabc1]">Seleziona i brani da preparare durante questa prova.</p></header>
             <section class="song-choices grid gap-2.5">
               @if (songs().length) {
                 @for (song of songs(); track song.id) {
-                  <label class="song-option" [class]="'grid min-h-[72px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3.5 rounded-xl border border-solid bg-[#0f172a] px-4 py-3 ' + (selectedSongIds().includes(song.id) ? 'border-[var(--ion-color-brand-blue)]' : 'border-[#2b3b52]')">
-                    <input type="checkbox" class="h-5 w-5 cursor-pointer accent-[var(--ion-color-primary)]" [checked]="selectedSongIds().includes(song.id)" (change)="toggleSong(song.id, $any($event.target).checked)" [attr.aria-label]="song.title" />
+                  <label class="song-option" [class]="'grid min-h-[72px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3.5 rounded-xl border border-solid bg-[#0f172a] px-4 py-3 ' + (selectedSongIds().includes(song.id) ? 'border-[var(--ui-color-brand-blue)]' : 'border-[#2b3b52]')">
+                    <input type="checkbox" class="h-5 w-5 cursor-pointer accent-[var(--ui-color-primary)]" [checked]="selectedSongIds().includes(song.id)" (change)="toggleSong(song.id, $any($event.target).checked)" [attr.aria-label]="song.title" />
                     <span class="grid min-w-0 gap-1"><strong class="overflow-hidden text-ellipsis whitespace-nowrap text-[#e5edf7]">{{ song.title }}</strong><small class="text-[#9aabc1]">{{ song.performedBy || song.album || 'Nessun dettaglio aggiuntivo' }}</small></span>
                     @if (song.key) { <span class="rounded-[7px] bg-[#172554] px-2 py-1 text-xs font-extrabold text-[#93c5fd]">{{ song.key }}</span> }
                   </label>
                 }
               } @else {
-                <div class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[#9aabc1]"><ion-icon class="text-[42px] text-[var(--ion-color-brand-blue)]" name="musical-notes-outline" aria-hidden="true" /><strong class="text-[#e5edf7]">Nessun brano disponibile</strong><span>Aggiungi prima qualche brano al repertorio.</span></div>
+                <div class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[#9aabc1]"><app-symbol class="text-[42px] text-[var(--ui-color-brand-blue)]" name="musical-notes-outline" aria-hidden="true"  /><strong class="text-[#e5edf7]">Nessun brano disponibile</strong><span>Aggiungi prima qualche brano al repertorio.</span></div>
               }
             </section>
-            @if (error()) { <app-gigsaw-message tone="error" messageClass="mt-4 block rounded-[10px] border border-[rgba(var(--ion-color-danger-rgb),.4)] bg-[rgba(var(--ion-color-danger-rgb),.08)] px-3.5 py-3">{{ error() }}</app-gigsaw-message> }
+            @if (error()) { <app-gigsaw-message tone="error" messageClass="mt-4 block rounded-[10px] border border-[rgba(var(--ui-color-danger-rgb),.4)] bg-[rgba(var(--ui-color-danger-rgb),.08)] px-3.5 py-3">{{ error() }}</app-gigsaw-message> }
           }
         </form>
       }
@@ -105,4 +105,4 @@
       </div>
     </div>
   }
-</ion-content>
+</section>

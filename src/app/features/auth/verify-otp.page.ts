@@ -1,15 +1,16 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../shared/ui/native-ui';
 import { Component, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonContent } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
 import { OtpPurpose } from '../../core/auth/auth.models';
 import { GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent } from '../../shared/ui/gigsaw';
 
 import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [AuthKeyboardScrollDirective, RouterLink, GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent, IonContent],
+  imports: [NativeUiModule, AuthKeyboardScrollDirective, RouterLink, GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent, ],
   templateUrl: './verify-otp.page.html',
   styleUrls: ['./auth-layout.scss'],
 })
