@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
+import { finalize, forkJoin, of, Subscription, switchMap, throwError } from 'rxjs';
 import {
   IonContent,
   IonIcon,
@@ -23,6 +23,7 @@ import {
   GigsawLoadingComponent,
   GigsawMessageComponent,
 } from '../../../shared/ui/gigsaw';
+import { eventTitleDate, nextEventTitle } from '../../../shared/utils/event-title';
 import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
@@ -34,7 +35,7 @@ import { RehearsalSessionService } from '../services/rehearsal-session.service';
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })
-export class RehearsalSessionFormPage implements OnInit {
+export class RehearsalSessionFormPage implements OnInit, OnDestroy {
   readonly rehearsalSections: FormPageHeaderSection[] = [{ id: 1, label: 'Dettagli' }, { id: 2, label: 'Brani da provare' }];
   readonly form = this.fb.nonNullable.group({
     title: ['', Validators.maxLength(255)],
@@ -66,10 +67,32 @@ export class RehearsalSessionFormPage implements OnInit {
     private readonly toast: ToastController,
   ) {}
 
+  private lastSuggestedTitle = '';
+  private readonly titleSubscriptions = new Subscription();
+
+  ngOnDestroy(): void {
+    this.titleSubscriptions.unsubscribe();
+  }
+
+  private updateSuggestedTitle(): void {
+    if (this.editing()) return;
+    const date = eventTitleDate(this.form.controls.date.value);
+    const suggestion = date ? `Prove del ${date}` : '';
+    const title = this.form.controls.title;
+    const next = nextEventTitle(title.value, this.lastSuggestedTitle, suggestion);
+    this.lastSuggestedTitle = suggestion;
+    if (next !== title.value) title.setValue(next, { emitEvent: false });
+  }
+
   ngOnInit(): void {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.editing.set(!!this.id);
+    this.titleSubscriptions.add(this.form.controls.date.valueChanges.subscribe(() => this.updateSuggestedTitle()));
+    this.titleSubscriptions.add(this.form.controls.title.valueChanges.subscribe((title) => {
+      if (!title.trim()) this.updateSuggestedTitle();
+    }));
+    this.updateSuggestedTitle();
   }
 
   ionViewWillEnter(): void {
