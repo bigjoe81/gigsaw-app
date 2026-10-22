@@ -39,16 +39,11 @@ jobs:
       - name: Install app dependencies
         run: npm ci
 
-      # Keep the initial smoke-test rollout isolated from the application lockfile.
-      # Once the suite grows into full E2E coverage, Playwright can become a normal devDependency.
-      - name: Install Playwright test runner
-        run: npm install --no-save --package-lock=false @playwright/test@1.63.0
-
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npm exec --no -- playwright install --with-deps chromium
 
       - name: Run smoke tests
-        run: npx playwright test --project=${{ matrix.project }}
+        run: npm exec --no -- playwright test --project=${{ matrix.project }}
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ vars.SMOKE_BASE_URL || 'https://app.gigsaw.it' }}
           GIGSAW_API_URL: ${{ vars.SMOKE_API_URL || 'https://api.gigsaw.it' }}
