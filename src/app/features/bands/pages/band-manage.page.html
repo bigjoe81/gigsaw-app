@@ -1,7 +1,7 @@
 <header class="page-header">
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
-      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">{{ currentSection?.title || 'Impostazioni' }}</h1>
   </div>
@@ -24,10 +24,10 @@
     <div class="mx-5 my-[22px] flex items-center justify-between gap-5 max-[760px]:mx-4 max-[760px]:my-5 max-[760px]:items-start max-[760px]:flex-col">
       <div>
         @if (settingsSection() !== 'overview') {
-          <a class="mb-5 inline-block text-[.85rem] text-[var(--ui-color-primary)] no-underline focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" [routerLink]="settingsUrl()">← Tutte le impostazioni</a>
+          <a class="mb-5 inline-block text-[.85rem] text-[var(--ui-color-primary)] no-underline focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" [routerLink]="settingsUrl()"><app-symbol name="arrow-back-outline" /> Tutte le impostazioni</a>
         }
         <span class="mb-[5px] block text-[.7rem] font-extrabold tracking-[.16em] text-[var(--ui-color-primary)] uppercase">{{ band.name }}</span>
-        <h1 class="m-0 text-[clamp(1.5rem,3vw,2rem)] font-bold">{{ currentSection?.title || 'Impostazioni della band' }}</h1>
+        <h1 class="m-0 text-[clamp(1.5rem,3vw,2rem)]">{{ currentSection?.title || 'Impostazioni della band' }}</h1>
         <p class="mt-2 mb-0 leading-[1.5] text-[var(--gigsaw-muted)]">{{ currentSection?.description || 'Scegli cosa vuoi gestire. Ogni sezione ha il suo spazio.' }}</p>
       </div>
       @if (settingsSection() === 'overview') {
@@ -47,7 +47,7 @@
             ? 'grid size-11 shrink-0 place-items-center rounded-xl bg-[color-mix(in_srgb,var(--ui-color-primary)_12%,transparent)] text-xl text-[var(--ui-color-primary)]'
             : 'grid place-items-center text-xl'"><app-symbol [name]="section.icon" aria-hidden="true"  /></span>
           <span [class]="settingsSection() === 'overview' ? 'grid gap-[7px] text-base font-semibold' : ''">{{ section.title }}@if (settingsSection() === 'overview') { <small class="text-[.85rem] leading-[1.5] font-normal text-[var(--gigsaw-muted)]">{{ section.description }}</small> }</span>
-          @if (settingsSection() === 'overview') { <span class="ml-auto text-[var(--gigsaw-muted)]" aria-hidden="true">→</span> }
+          @if (settingsSection() === 'overview') { <span class="ml-auto text-[var(--gigsaw-muted)]" aria-hidden="true"><app-symbol name="arrow-forward-outline" /></span> }
         </a>
       }
     </nav>
@@ -311,7 +311,7 @@
                       <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-full border border-[rgba(var(--ui-color-primary-rgb),.35)] bg-[rgba(var(--ui-color-primary-rgb),.08)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" (click)="applyInputChannelPreset(preset.id)">{{ preset.label }}</app-gigsaw-button>
                     }
                     @for (preset of drumMergePresets; track preset.id) {
-                      <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-full border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" (click)="mergeDrumMikingPreset(preset.id)">+ {{ preset.label }}</app-gigsaw-button>
+                      <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-full border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" (click)="mergeDrumMikingPreset(preset.id)"><app-symbol name="add" /> {{ preset.label }}</app-gigsaw-button>
                     }
                   </div>
                 </details>
@@ -319,7 +319,7 @@
               <div class="reorder-list" (itemsReordered)="reorderInputChannels($event)" appReorder>
                 @for (channel of inputChannels.controls; track $index) {
                   <div class="grid min-w-[680px] grid-cols-[58px_minmax(150px,1.2fr)_minmax(135px,.8fr)_minmax(160px,1fr)_48px] items-center gap-2 border-b border-[var(--gigsaw-border)] p-2 last:border-0" [formGroupName]="$index">
-                    <div class="flex items-center gap-[7px] text-[var(--gigsaw-muted)]"><span class="cursor-grab">⠿</span><strong class="text-[var(--gigsaw-text)] tabular-nums">{{ $index + 1 }}</strong></div>
+                    <div class="flex items-center gap-[7px] text-[var(--gigsaw-muted)]"><span class="cursor-grab"><app-symbol name="grip-vertical" /></span><strong class="text-[var(--gigsaw-text)] tabular-nums">{{ $index + 1 }}</strong></div>
                     <app-gigsaw-input controlClass="min-h-[46px] min-w-0 font-normal" formControlName="name" placeholder="Nome canale" aria-label="Nome canale" />
                     <app-gigsaw-input controlClass="min-h-[46px] min-w-0 font-normal" formControlName="source" placeholder="Mic / DI / Wireless" aria-label="Microfono o sorgente" />
                     <app-gigsaw-input controlClass="min-h-[46px] min-w-0 font-normal" formControlName="notes" placeholder="Note opzionali" aria-label="Note canale" />
@@ -341,7 +341,7 @@
                 </div>
                 <div class="my-[18px] mb-3 flex flex-wrap gap-[9px] pb-1">
                   @for (item of stageItems; track item.label) {
-                    <app-gigsaw-button tone="unstyled" buttonClass="grid min-w-[82px] shrink-0 place-items-center gap-1.5 rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 font-bold text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" type="button" (click)="addStageItem(item.label, item.instrument)"><span class="grid size-[30px] place-items-center rounded-[9px] bg-[#26344a] text-[var(--ui-color-primary)]">{{ stagePlotIcon(item.instrument) }}</span>{{ item.label }}</app-gigsaw-button>
+                    <app-gigsaw-button tone="unstyled" buttonClass="grid min-w-[82px] shrink-0 place-items-center gap-1.5 rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 font-bold text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" type="button" (click)="addStageItem(item.label, item.instrument)"><span class="grid size-[30px] place-items-center rounded-[9px] bg-[#26344a] text-[var(--ui-color-primary)]"><app-symbol [name]="stagePlotIcon(item.instrument)" /></span>{{ item.label }}</app-gigsaw-button>
                   }
                   <app-gigsaw-button tone="unstyled" buttonClass="grid min-w-[82px] shrink-0 place-items-center gap-1.5 rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 font-bold text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" type="button" (click)="addStagePlotItem()"><span class="grid size-[30px] place-items-center rounded-[9px] bg-[#26344a] text-[var(--ui-color-primary)]">+</span>Altro</app-gigsaw-button>
                 </div>
@@ -367,7 +367,7 @@
                         [style.top.%]="item.get('y')?.value"
                         (pointerdown)="selectStageItem($index); startStagePlotDrag($index, $event)"
                       >
-                        <div class="grid size-[29px] place-items-center rounded-lg bg-[rgba(255,255,255,.1)] font-extrabold">{{ stagePlotIcon(item.get('instrument')?.value || item.get('label')?.value) }}</div>
+                        <div class="grid size-[29px] place-items-center rounded-lg bg-[rgba(255,255,255,.1)] font-extrabold"><app-symbol [name]="stagePlotIcon(item.get('instrument')?.value || item.get('label')?.value)" /></div>
                         <div class="font-bold">{{ item.get('label')?.value || 'Posizione' }}</div>
                       </div>
                     }

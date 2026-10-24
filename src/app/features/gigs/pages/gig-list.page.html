@@ -1,18 +1,17 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button></div>
     <h1 class="grow text-xl">Concerti</h1>
-    <div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" aria-label="Nuovo concerto" type="button"><app-symbol name="add"  /></app-gigsaw-button></div>
   </div>
 </header>
 
 <section class="app-content">
-  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</app-gigsaw-button>
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()"><app-symbol name="refresh-outline" /> Aggiorna</app-gigsaw-button>
   <main class="w-full px-6 pt-[34px] pb-14 text-[var(--gigsaw-text)] max-[760px]:px-3 max-[760px]:pt-5 max-[760px]:pb-9">
     <section class="mb-5 flex items-end justify-between gap-5 max-[760px]:[&>.btn]:hidden">
       <div>
         <p class="m-0 text-[var(--ui-color-primary)] text-xs font-extrabold tracking-[.12em] uppercase">Agenda live</p>
-        <h1 class="mt-1 mb-1.5 text-[clamp(1.6rem,3vw,2.15rem)] !font-[850]">I concerti della band</h1>
+        <h1 class="mt-1 mb-1.5 text-[clamp(1.6rem,3vw,2.15rem)]">I concerti della band</h1>
         <p class="m-0 text-[var(--ui-color-medium)]">Organizza date, venue e informazioni operative in un unico posto.</p>
       </div>
       <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" type="button"><app-symbol name="add"  />Nuovo concerto</app-gigsaw-button>
@@ -49,7 +48,7 @@
             </div>
             <div class="grid min-w-0 flex-1 gap-[5px]">
               <span class="mb-0.5 inline-flex min-h-[26px] w-max max-w-full items-center justify-center box-border rounded-full border border-[rgba(var(--ui-color-success-rgb),.22)] bg-[rgba(var(--ui-color-success-rgb),.1)] px-2.5 py-1.5 text-[var(--ui-color-success)] text-[.7rem] font-extrabold leading-[1.2] uppercase whitespace-nowrap" [ngClass]="!isUpcoming(gig) ? 'bg-[rgba(var(--ui-color-medium-rgb),.12)] text-[var(--ui-color-medium)]' : ''">{{ isUpcoming(gig) ? 'In programma' : 'Concluso' }}</span>
-              <h2 class="mb-[3px] mt-0 overflow-hidden text-ellipsis text-[1.08rem] !font-extrabold leading-[1.3] whitespace-nowrap">{{ gig.title || venue(gig) }}</h2>
+              <h2 class="mb-[3px] mt-0 overflow-hidden text-ellipsis text-[1.08rem] leading-[1.3] whitespace-nowrap">{{ gig.title || venue(gig) }}</h2>
               <p class="m-0 flex items-center gap-[7px] text-[var(--ui-color-medium)] text-[.84rem] leading-[1.35]"><app-symbol class="shrink-0" name="location-outline"  />{{ venue(gig) }}</p>
               <p class="m-0 flex items-center gap-[7px] text-[var(--ui-color-medium)] text-[.84rem] leading-[1.35]"><app-symbol class="shrink-0" name="time-outline"  />{{ fullDate(gig) }}@if (time(gig); as gigTime) { · {{ gigTime }} }</p>
             </div>

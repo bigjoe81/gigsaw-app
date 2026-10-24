@@ -1,4 +1,4 @@
-<header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div><h1 class="grow text-xl">Importa brani</h1></div></header>
+<header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div><h1 class="grow text-xl">Importa brani</h1></div></header>
 <section class="app-content p-4">
   <article class="card bg-base-200 border border-base-300 my-4">
     <header class="px-6 pt-6"><h2 class="card-title">Importa repertorio da PDF</h2></header>
@@ -25,7 +25,7 @@
             <p>{{ row.input.performed_by || 'Artista non indicato' }} · {{ row.input.key || '—' }} · {{ row.input.bpm || '—' }} BPM</p>
             @if (row.duplicate_existing) { <small class="text-sm text-warning">Già presente</small> }
             @if (!row.ready && !row.duplicate_existing) { <small class="text-sm text-error">Da verificare</small> }
-            @if (row.errors?.length) { <p><small class="text-sm text-error">{{ row.errors.join(' · ') }}</small></p> }
+            @if (row.errors.length) { <p><small class="text-sm text-error">{{ row.errors.join(' · ') }}</small></p> }
           </span>
         </div>
       }

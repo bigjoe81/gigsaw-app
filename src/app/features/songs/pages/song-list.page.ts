@@ -5,7 +5,7 @@ import { OverlayService, DialogService, ToastService } from '../../../shared/ui/
 
 import { Component, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { faPlus, faCircleExclamation, faChevronRight, faCloudArrowUp, faMusic, faTrash } from '@fortawesome/pro-light-svg-icons';
+import { faPlus, faCircleExclamation, faChevronRight, faCloudArrowUp, faMusic, faTrash } from '@fortawesome/pro-solid-svg-icons';
 import { catchError, finalize, forkJoin, map, of, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';

@@ -16,7 +16,7 @@
   <main class="mx-auto w-[min(1100px,100%)] px-6 pt-10 pb-16 max-[700px]:px-4 max-[700px]:pt-6 max-[700px]:pb-12">
     <section class="mb-7 flex items-end justify-between gap-6 max-[700px]:items-stretch max-[700px]:flex-col max-[700px]:gap-[18px]">
       <div>
-        <h1 class="m-0 text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.15] font-bold">Scegli la tua band</h1>
+        <h1 class="m-0 text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.15]">Scegli la tua band</h1>
         <p class="mt-2 mb-0 text-[var(--ui-color-medium)]">Seleziona il workspace in cui vuoi lavorare.</p>
       </div>
       <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary m-0 shrink-0 max-[700px]:self-start" (click)="openCreateModal()" type="button">
@@ -50,7 +50,7 @@
                 </span>
                 <span class="badge text-base-content/60">{{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}</span>
               </div>
-              <h2 class="mt-[18px] mb-0.5 overflow-hidden text-ellipsis text-[1.2rem] font-bold whitespace-nowrap">{{ band.name }}</h2>
+              <h2 class="mt-[18px] mb-0.5 overflow-hidden text-ellipsis text-[1.2rem] whitespace-nowrap">{{ band.name }}</h2>
               <p class="m-0 overflow-hidden text-ellipsis text-[var(--ui-color-medium)] whitespace-nowrap">{{ formatGenres(band) }}</p>
               <div class="mt-auto flex justify-between gap-3 pt-5 text-[.85rem] text-[var(--ui-color-medium)]">
                 <span>{{ band.membersCount || band.members?.length || 1 }} {{ (band.membersCount || band.members?.length || 1) === 1 ? 'membro' : 'membri' }}</span>
@@ -65,7 +65,7 @@
                   (keydown.space)="$event.preventDefault(); openCreateModal()">
           <div class="card-body flex min-h-[220px] flex-col items-center justify-center p-[22px] text-center">
             <app-symbol class="text-[32px] text-[var(--ui-color-primary)]" name="add"  />
-            <h2 class="mt-3 mb-1 text-[1.1rem] font-bold">Crea una nuova band</h2>
+            <h2 class="mt-3 mb-1 text-[1.1rem]">Crea una nuova band</h2>
             <p class="m-0 text-[var(--ui-color-medium)]">Configura un nuovo workspace</p>
           </div>
         </article>

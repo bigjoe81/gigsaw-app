@@ -5,13 +5,62 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { BandContextService } from '../../../core/services/band-context.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 import { RehearsalSessionFormPage } from './rehearsal-session-form.page';
 
 describe('RehearsalSessionFormPage', () => {
+  it('crea una sala dal modale e la seleziona per la prova', () => {
+    const createRoom = jasmine.createSpy().and.returnValue(of({ id: 8, name: 'Sala nuova', city: 'Milano' }));
+    const page = new RehearsalSessionFormPage(
+      new FormBuilder(),
+      {} as RehearsalSessionService,
+      { create: createRoom } as unknown as RehearsalRoomService,
+      {} as SongService,
+      { snapshot: { paramMap: { get: () => null } } } as unknown as ActivatedRoute,
+      {} as Router,
+      {} as ToastService,
+    );
+    page.rehearsalRooms.set([{ id: 5, name: 'Sala esistente' }]);
+    page.openRoomModal();
+    page.roomForm.setValue({ name: ' Sala nuova ', address: ' Via Roma ', city: ' Milano ' });
+
+    page.createRoom();
+
+    expect(createRoom).toHaveBeenCalledWith({
+      name: 'Sala nuova',
+      address: 'Via Roma',
+      city: 'Milano',
+    });
+    expect(page.rehearsalRooms().map((room) => room.id)).toEqual([5, 8]);
+    expect(page.form.controls.rehearsalRoomId.value).toBe('8');
+    expect(page.roomModalOpen()).toBeFalse();
+    expect(page.creatingRoom()).toBeFalse();
+  });
+
+  it('mantiene aperto il modale e segnala l’errore se la creazione della sala fallisce', () => {
+    const page = new RehearsalSessionFormPage(
+      new FormBuilder(),
+      {} as RehearsalSessionService,
+      { create: () => throwError(() => new Error('Errore server')) } as unknown as RehearsalRoomService,
+      {} as SongService,
+      { snapshot: { paramMap: { get: () => null } } } as unknown as ActivatedRoute,
+      {} as Router,
+      {} as ToastService,
+    );
+    page.openRoomModal();
+    page.roomForm.controls.name.setValue('Sala nuova');
+
+    page.createRoom();
+
+    expect(page.roomModalOpen()).toBeTrue();
+    expect(page.roomModalError()).toBe('Errore server');
+    expect(page.creatingRoom()).toBeFalse();
+    expect(page.form.controls.rehearsalRoomId.value).toBe('');
+  });
+
   it('invia i brani aggiornati via PUT premendo Salva modifiche', async () => {
     TestBed.configureTestingModule({
       imports: [RehearsalSessionFormPage],
@@ -29,6 +78,15 @@ describe('RehearsalSessionFormPage', () => {
     http.expectOne('/api/v1/songs?bandId=7').flush([{ id: 2, title: 'A' }, { id: 3, title: 'B' }]);
     http.expectOne('/api/v1/rehearses/1').flush({ id: 1, date: '2026-10-03', status: 'confirmed', rehearsal_room_id: 5, song_ids: [2, 3] });
     http.expectOne('/api/v1/songs?bandId=7').flush([{ id: 2, title: 'A' }, { id: 3, title: 'B' }]);
+    fixture.componentInstance.openRoomModal();
+    fixture.detectChanges();
+    const dialog = fixture.nativeElement.querySelector('app-dialog dialog') as HTMLDialogElement;
+    expect(dialog.open).toBeTrue();
+    const modalActions = dialog.querySelector('.room-modal-actions') as HTMLElement;
+    expect(getComputedStyle(modalActions).position).toBe('relative');
+    expect(getComputedStyle(modalActions).position).not.toBe('fixed');
+    fixture.componentInstance.closeRoomModal();
+    fixture.detectChanges();
     fixture.componentInstance.continueToSongs();
     fixture.detectChanges();
     fixture.nativeElement.querySelector('label.song-option').click();

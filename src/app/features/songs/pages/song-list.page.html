@@ -1,7 +1,7 @@
 <header class="page-header">
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
-      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">Brani</h1>
     <div class="flex items-center gap-2" slot="end">
@@ -14,7 +14,7 @@
   </div>
 </header>
 <section class="app-content [--background:var(--gigsaw-background)]">
-  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()">↻ Aggiorna</app-gigsaw-button>
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()"><app-symbol name="refresh-outline" /> Aggiorna</app-gigsaw-button>
   @if (loading()) {
     <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {
@@ -35,7 +35,7 @@
       <header class="mb-[18px] flex items-end justify-between gap-5 px-1 max-[700px]:items-start max-[700px]:flex-col">
         <div>
           <p class="mb-[5px] mt-0 text-[.72rem] font-extrabold uppercase tracking-[.12em] text-[var(--ui-color-primary)]">Repertorio</p>
-          <h1 class="m-0 text-[clamp(1.45rem,2.4vw,2rem)] font-extrabold text-[var(--gigsaw-text)]" id="library-title">I tuoi brani</h1>
+          <h1 class="m-0 text-[clamp(1.45rem,2.4vw,2rem)] text-[var(--gigsaw-text)]" id="library-title">I tuoi brani</h1>
         </div>
         <div class="flex items-center gap-3 max-[700px]:w-full max-[700px]:flex-wrap max-[700px]:justify-end">
           <span class="rounded-full border border-[var(--gigsaw-border)] px-[11px] py-[7px] text-[.78rem] font-bold text-[var(--gigsaw-muted)]">{{ songs().length }} {{ songs().length === 1 ? 'brano' : 'brani' }}</span>

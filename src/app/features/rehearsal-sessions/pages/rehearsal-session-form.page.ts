@@ -49,6 +49,14 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
   readonly songs = signal<Song[]>([]);
   readonly rehearsalRooms = signal<RehearsalRoom[]>([]);
   readonly selectedSongIds = signal<number[]>([]);
+  readonly roomModalOpen = signal(false);
+  readonly creatingRoom = signal(false);
+  readonly roomModalError = signal('');
+  readonly roomForm = this.fb.nonNullable.group({
+    name: ['', Validators.required],
+    address: '',
+    city: '',
+  });
   private id?: number;
   private bandId?: number;
 
@@ -158,6 +166,43 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
       : selectedIds.map(Number).filter((id) => id !== songId));
   }
 
+  openRoomModal(): void {
+    this.roomForm.reset();
+    this.roomModalError.set('');
+    this.roomModalOpen.set(true);
+  }
+
+  closeRoomModal(): void {
+    if (!this.creatingRoom()) this.roomModalOpen.set(false);
+  }
+
+  createRoom(): void {
+    if (this.creatingRoom()) return;
+    this.roomForm.markAllAsTouched();
+    if (this.roomForm.invalid) return;
+
+    this.creatingRoom.set(true);
+    this.roomModalError.set('');
+    const values = this.roomForm.getRawValue();
+    this.rehearsalRoomsApi.create({
+      name: values.name.trim(),
+      address: values.address.trim() || null,
+      city: values.city.trim() || null,
+    }).pipe(
+      finalize(() => this.creatingRoom.set(false)),
+    ).subscribe({
+      next: (room) => {
+        this.rehearsalRooms.update((rooms) => [...rooms, room]);
+        this.form.controls.rehearsalRoomId.setValue(String(room.id));
+        this.form.controls.rehearsalRoomId.markAsTouched();
+        this.roomModalOpen.set(false);
+      },
+      error: (error: unknown) => {
+        this.roomModalError.set(this.apiErrorMessage(error, 'Impossibile creare la sala prove.'));
+      },
+    });
+  }
+
   save(): void {
     this.error.set('');
     if (!this.roomValid()) return;
@@ -214,6 +259,12 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
 
   roomLabel(room: RehearsalRoom): string {
     return [room.name, room.city].filter(Boolean).join(' · ');
+  }
+
+  selectedRoomLabel(): string {
+    const roomId = this.form.controls.rehearsalRoomId.value;
+    const room = this.rehearsalRooms().find((candidate) => candidate.id.toString() === roomId);
+    return room ? this.roomLabel(room) : 'Sala non disponibile';
   }
 
   private roomValid(): boolean {

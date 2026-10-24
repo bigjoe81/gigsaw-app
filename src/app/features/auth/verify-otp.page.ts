@@ -2,11 +2,13 @@ import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../shared/ui/native-ui';
 import { Component, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { OtpPurpose } from '../../core/auth/auth.models';
 import { GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent } from '../../shared/ui/gigsaw';
 
 import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
+import { UpcomingRehearsalPromptService } from './upcoming-rehearsal-prompt.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
@@ -30,7 +32,7 @@ export class VerifyOtpPage {
   challengeId = Number(this.route.snapshot.queryParamMap.get('challengeId') ?? 0);
 
   loading = false;
-  resending = false;
+  readonly resending = signal(false);
   readonly error = signal('');
   success = '';
 
@@ -38,6 +40,7 @@ export class VerifyOtpPage {
     private readonly auth: AuthService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
+    private readonly upcomingRehearsalPrompt: UpcomingRehearsalPromptService,
   ) {}
 
   updateCode(code: string): void {
@@ -68,7 +71,9 @@ export class VerifyOtpPage {
         const destination = this.purpose === 'register' && this.returnUrl === '/band'
           ? '/inizia'
           : this.returnUrl;
-        void this.router.navigateByUrl(destination);
+        void this.router.navigateByUrl(destination).then(() => {
+          if (this.purpose === 'login') this.upcomingRehearsalPrompt.checkForUpcomingRehearsals();
+        });
       },
       error: (error: { error?: { message?: string } }) => {
         this.error.set(error.error?.message || 'Codice non valido.');
@@ -78,25 +83,25 @@ export class VerifyOtpPage {
   }
 
   resend(): void {
-    if (!Number.isInteger(this.challengeId) || this.challengeId <= 0 || this.resending) {
+    if (!Number.isInteger(this.challengeId) || this.challengeId <= 0 || this.resending()) {
       return;
     }
 
-    this.resending = true;
+    this.resending.set(true);
     this.error.set('');
     this.success = '';
     this.auth.resendOtp({
       challengeId: this.challengeId,
       purpose: this.purpose,
-    }).subscribe({
+    }).pipe(finalize(() => this.resending.set(false))).subscribe({
       next: ({ challenge }) => {
         this.challengeId = challenge.challengeId;
+        this.code.set('');
+        this.touched.set(false);
         this.success = 'Nuovo codice inviato.';
-        this.resending = false;
       },
       error: (error: { error?: { message?: string } }) => {
         this.error.set(error.error?.message || 'Invio codice non riuscito.');
-        this.resending = false;
       },
     });
   }

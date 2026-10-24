@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../" type="button" appBack>←</app-gigsaw-button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../" type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div>
     <h1 class="grow text-xl">{{ config.singular }}</h1>
     <div class="flex items-center gap-2" slot="end">
       <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica</app-gigsaw-button>
@@ -25,7 +25,7 @@
         <app-gigsaw-list-item>
           <div class="min-w-0 flex-1">
             <p class="m-0 mb-[5px] text-xs font-bold uppercase tracking-[.04em] text-[var(--gigsaw-muted)]">{{field.label}}</p>
-            <h2 class="m-0 !font-[750] text-[var(--gigsaw-text)]">{{ display(field.key) || '—' }}</h2>
+            <h2 class="m-0 text-[var(--gigsaw-text)]">{{ display(field.key) || '—' }}</h2>
           </div>
         </app-gigsaw-list-item>
       }

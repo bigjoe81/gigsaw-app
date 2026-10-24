@@ -1,7 +1,7 @@
 <header class="page-header">
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
-      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">Impegni</h1>
   </div>
@@ -124,7 +124,7 @@
         <aside class="hidden overflow-y-auto break-words rounded-[14px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-[22px] min-[1024px]:sticky min-[1024px]:top-5 min-[1024px]:block min-[1024px]:max-h-[calc(100vh-110px)]" aria-label="Dettagli dell’impegno">
           <header class="flex items-center justify-between gap-3">
             <span class="text-[var(--ui-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Dettagli {{ eventSourceLabel(item.source) }}</span>
-            <app-gigsaw-button tone="unstyled" type="button" buttonClass="grid h-[38px] w-[38px] place-items-center rounded-lg border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="selectedEventKey.set(null)" aria-label="Chiudi dettagli">×</app-gigsaw-button>
+            <app-gigsaw-button tone="unstyled" type="button" buttonClass="grid h-[38px] w-[38px] place-items-center rounded-lg border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="selectedEventKey.set(null)" aria-label="Chiudi dettagli"><app-symbol name="close" /></app-gigsaw-button>
           </header>
           <h2 class="mt-[18px] mb-2">{{ item.title }}</h2>
           <p class="text-[var(--gigsaw-muted)]">{{ item.meta }}</p>

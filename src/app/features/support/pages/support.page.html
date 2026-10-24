@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" slot="start"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button>
+    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" slot="start"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
     <div class="flex flex-col gap-0.5 py-2">
       <span class="font-extrabold">Feedback e assistenza</span>
       <small class="text-[.72rem] opacity-60">Parla direttamente con il team GigSaw</small>
@@ -127,7 +127,7 @@
                         <strong class="overflow-hidden text-ellipsis whitespace-nowrap text-[.82rem]">{{ file.name }}</strong>
                         <small class="text-[.72rem] opacity-55">{{ fileSize(file) }}</small>
                       </div>
-                      <app-gigsaw-button tone="unstyled" buttonClass="grid size-[30px] shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-[color-mix(in_srgb,currentColor_9%,transparent)] text-inherit text-xl leading-none" type="button" (click)="removeScreenshot(i)" [disabled]="saving()" [attr.aria-label]="'Rimuovi ' + file.name">×</app-gigsaw-button>
+                      <app-gigsaw-button tone="unstyled" buttonClass="grid size-[30px] shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-[color-mix(in_srgb,currentColor_9%,transparent)] text-inherit text-xl leading-none" type="button" (click)="removeScreenshot(i)" [disabled]="saving()" [attr.aria-label]="'Rimuovi ' + file.name"><app-symbol name="close" /></app-gigsaw-button>
                     </div>
                   }
                 </div>
@@ -149,7 +149,7 @@
 
           @if (ticket.screenshot_urls?.length) {
             <div class="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2.5 pt-[18px]">
-              @for (url of ticket.screenshot_urls ?? []; track url) {
+              @for (url of ticket.screenshot_urls; track url) {
                 <a class="block aspect-[16/10] overflow-hidden rounded-xl border border-[color-mix(in_srgb,currentColor_12%,transparent)] bg-[color-mix(in_srgb,currentColor_4%,transparent)]" [href]="url" target="_blank" rel="noopener noreferrer">
                   <img class="block h-full w-full object-cover" [src]="url" alt="Screenshot allegato al ticket" loading="lazy" />
                 </a>

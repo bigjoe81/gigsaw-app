@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div>
     <h1 class="grow text-xl">Concerto</h1>
     <div class="flex items-center gap-2" slot="end">
       <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" type="button"><app-symbol name="pencil-outline"  />Modifica</app-gigsaw-button>
@@ -21,17 +21,17 @@
       @let currentGig = gig()!;
       <section class="rounded-[18px] border border-[var(--gigsaw-border)] bg-[linear-gradient(135deg,rgba(var(--ui-color-primary-rgb),.15),#101d30_62%)] p-7 max-[680px]:px-[18px] max-[680px]:py-[21px]">
         <p class="m-0 text-[var(--ui-color-primary)] text-xs font-extrabold tracking-[.12em] uppercase">Data live</p>
-        <h1 class="mt-[5px] mb-[14px] text-[clamp(1.7rem,4vw,2.5rem)] !font-[850]">{{ currentGig.title || currentGig.venue?.name || 'Concerto' }}</h1>
+        <h1 class="mt-[5px] mb-[14px] text-[clamp(1.7rem,4vw,2.5rem)]">{{ currentGig.title || currentGig.venue?.name || 'Concerto' }}</h1>
         <div class="flex flex-wrap gap-[14px] text-[var(--ui-color-medium)]"><span class="flex items-center gap-[7px]"><app-symbol name="calendar-outline"  />{{ date(currentGig.date) }}</span>@if (time(currentGig.date); as gigTime) { <span class="flex items-center gap-[7px]"><app-symbol name="time-outline"  />{{ gigTime }}</span> }</div>
       </section>
 
       <section class="mt-[14px] grid grid-cols-2 gap-[14px] max-[680px]:grid-cols-1">
         <article class="flex min-h-[145px] gap-[13px] rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5">
           <div class="grid h-[42px] flex-[0_0_42px] place-items-center rounded-[11px] bg-[rgba(var(--ui-color-primary-rgb),.12)] text-[var(--ui-color-primary)] text-[22px]"><app-symbol name="location-outline"  /></div>
-          <div><p class="m-0 text-[var(--ui-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Venue</p><h2 class="mt-[7px] mb-0 text-base !font-[750]">{{ currentGig.venue?.name || 'Venue non disponibile' }}</h2>@if (venueAddress(currentGig)) { <span class="mt-[5px] block text-[var(--ui-color-medium)] text-[.88rem]">{{ venueAddress(currentGig) }}</span> }</div>
+          <div><p class="m-0 text-[var(--ui-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Venue</p><h2 class="mt-[7px] mb-0 text-base">{{ currentGig.venue?.name || 'Venue non disponibile' }}</h2>@if (venueAddress(currentGig)) { <span class="mt-[5px] block text-[var(--ui-color-medium)] text-[.88rem]">{{ venueAddress(currentGig) }}</span> }</div>
         </article>
         <article class="flex min-h-[145px] gap-[13px] rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5">
-          <div><p class="m-0 text-[var(--ui-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Note organizzative</p><h2 class="mt-[7px] mb-0 text-base !font-[750] whitespace-pre-wrap">{{ currentGig.notes || 'Nessuna nota inserita.' }}</h2></div>
+          <div><p class="m-0 text-[var(--ui-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Note organizzative</p><h2 class="mt-[7px] mb-0 text-base whitespace-pre-wrap">{{ currentGig.notes || 'Nessuna nota inserita.' }}</h2></div>
         </article>
       </section>
       <app-gig-posters [readOnly]="true" [bandId]="posterBandId" [gigId]="currentGig.id" [values]="posterValues" />

@@ -2,7 +2,7 @@
 <header class="page-header hidden max-[900px]:block">
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
-      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="/band" icon="arrow-back-outline"  type="button" appBack>←</app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="/band" icon="arrow-back-outline"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">Nuova band</h1>
   </div>
@@ -18,7 +18,7 @@
 
       <div class="relative z-[1] mt-[clamp(70px,12vh,130px)] max-w-[520px]" [ngClass]="embedded ? 'mt-11' : ''">
         <span class="inline-flex items-center gap-2 text-[#ffd56c] text-[.76rem] font-extrabold tracking-[.14em] uppercase">Nuovo workspace</span>
-        <h1 class="my-[14px] mb-[18px] max-w-[510px] text-[clamp(2.4rem,4.3vw,4.65rem)] !font-black leading-[.98] tracking-[-.045em] max-[900px]:hidden" [ngClass]="embedded ? 'mt-3 text-[2.35rem]' : ''" id="create-band-title">Metti in moto la tua band.</h1>
+        <h1 class="my-[14px] mb-[18px] max-w-[510px] text-[clamp(2.4rem,4.3vw,4.65rem)] leading-[.98] tracking-[-.045em] max-[900px]:hidden" [ngClass]="embedded ? 'mt-3 text-[2.35rem]' : ''" id="create-band-title">Metti in moto la tua band.</h1>
         <p class="m-0 max-w-[500px] text-[rgba(255,255,255,.74)] text-[1.04rem] leading-[1.65]" [ngClass]="embedded ? 'text-[.9rem] leading-[1.55]' : ''">Crea lo spazio condiviso da cui gestire repertorio, prove, concerti e materiali della band.</p>
       </div>
 
@@ -48,7 +48,7 @@
         <header class="mb-[38px] flex items-start justify-between gap-8 max-[560px]:block max-[560px]:mb-[26px]" [ngClass]="embedded ? 'mb-6' : ''">
           <div>
             <span class="mb-2.5 hidden text-[var(--create-blue)] text-[.76rem] font-extrabold tracking-[.14em] uppercase max-[900px]:inline-flex">Nuovo workspace</span>
-            <h2 class="m-0 text-[clamp(2rem,3vw,2.8rem)] !font-black leading-[1.05] tracking-[-.035em] max-[560px]:text-[1.85rem]" [ngClass]="embedded ? 'text-[2rem]' : ''" id="form-title">Crea una nuova band</h2>
+            <h2 class="m-0 text-[clamp(2rem,3vw,2.8rem)] leading-[1.05] tracking-[-.035em] max-[560px]:text-[1.85rem]" [ngClass]="embedded ? 'text-[2rem]' : ''" id="form-title">Crea una nuova band</h2>
             <p class="mt-2 mb-0 text-[var(--create-muted)] leading-normal" [ngClass]="embedded ? 'text-[.86rem]' : ''">Bastano pochi dati. Potrai completare tutto con calma nel profilo.</p>
           </div>
           <span class="shrink-0 rounded-full bg-[var(--create-blue-soft)] px-[13px] py-[9px] text-[var(--create-blue)] text-[.72rem] font-bold whitespace-nowrap max-[560px]:mt-4 max-[560px]:inline-flex">Solo il nome è obbligatorio</span>

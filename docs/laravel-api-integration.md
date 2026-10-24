@@ -1,6 +1,6 @@
 # Laravel API integration
 
-The Ionic client uses `environment.apiUrl` plus `environment.apiPath`. In development, `environment.apiUrl` is empty so requests go through the Angular dev proxy. The proxy target defaults to `https://gigsaw.test`; override it with `API_PROXY_TARGET` when starting the dev server (for example, `API_PROXY_TARGET=https://127.0.0.1:8000 npm start`). The proxy rewrites backend cookie attributes so Sanctum session and CSRF cookies are usable from the local frontend origin. Production requests use the backend origin configured in `environment.prod.ts` (or supplied at build time).
+The Ionic client uses `environment.apiUrl` plus `environment.apiPath`. In development, `environment.apiUrl` is empty so API and Sanctum requests go through the Angular dev proxy and remain same-origin with the frontend. The proxy forwards `/api`, `/sanctum` and `/auth` to `https://gigsaw.test` by default (override with `API_PROXY_TARGET`) and rewrites backend cookie attributes so the browser can use Sanctum cookies on localhost. Production requests use the backend origin configured in `environment.prod.ts` (or supplied at build time).
 
 ## Required API contract
 
@@ -23,13 +23,12 @@ For venues, the existing migration requires `name`, `address`, `city`, `latitude
 
 ## Sanctum SPA / CORS
 
-The client sends `withCredentials: true` for all API-origin requests. For stateful Sanctum cookies, Laravel must:
+With the development proxy, API calls are same-origin and do not require browser CORS. For stateful Sanctum cookies, Laravel must:
 
-1. Serve HTTPS in local development when the selected proxy target uses HTTPS.
-2. Include the Ionic dev origin and Vercel deployment domain in `SANCTUM_STATEFUL_DOMAINS` and `config/cors.php` `allowed_origins`.
-3. Set `supports_credentials` to `true`; do not use `*` for credentialed origins.
-4. Add `GET /sanctum/csrf-cookie` before login if using Laravel's standard XSRF-cookie middleware. The current backend login action is cookie-session based but does not expose this flow explicitly.
-5. Set secure cross-site cookie attributes appropriate to the final deployment (`SameSite=None; Secure` when frontend and API are on different sites).
+1. Include `localhost:4200` (or the actual Ionic dev host and port) and the Vercel deployment domain in `SANCTUM_STATEFUL_DOMAINS`.
+2. If the browser calls the API directly instead of using the proxy, allow the frontend origin in `config/cors.php`, set `supports_credentials` to `true`, and do not use `*` for credentialed origins.
+3. Add `GET /sanctum/csrf-cookie` before login if using Laravel's standard XSRF-cookie middleware. The current backend login action is cookie-session based but does not expose this flow explicitly.
+4. Set secure cross-site cookie attributes appropriate to direct cross-site deployments (`SameSite=None; Secure` when frontend and API are on different sites).
 
 The auth service also accepts `{ token }` or `{ accessToken }` login responses and persists that bearer token, but the current Laravel login returns `204`, so normal operation is cookie based.
 

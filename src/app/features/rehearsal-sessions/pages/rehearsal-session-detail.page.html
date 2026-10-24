@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div>
     <h1 class="grow text-xl">Riepilogo prova</h1>
     <div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" type="button">Modifica</app-gigsaw-button></div>
   </div>
@@ -15,7 +15,7 @@
       </section>
     } @else if (error() || !session) {
       <section class="grid justify-items-center gap-[18px] px-5 py-[60px] text-center">
-        <h1 class="m-0 text-[clamp(1.6rem,4vw,2.3rem)] font-extrabold [overflow-wrap:anywhere]">Prova non disponibile</h1>
+        <h1 class="m-0 text-[clamp(1.6rem,4vw,2.3rem)] [overflow-wrap:anywhere]">Prova non disponibile</h1>
         <small class="text-sm text-error" role="alert">{{ error() || 'La prova non è stata trovata.' }}</small>
         <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
       </section>
@@ -25,7 +25,7 @@
         <div class="mb-[26px] flex items-center justify-between gap-5 max-[680px]:items-start max-[680px]:gap-3"><p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Il prossimo incontro, tutti i dettagli</p><span [class]="current.status.toLowerCase() === 'cancelled' ? 'rounded-full border border-[rgba(var(--ui-color-danger-rgb),.3)] bg-[rgba(var(--ui-color-danger-rgb),.1)] px-3 py-1.5 text-[.78rem] font-bold text-[var(--ui-color-danger)]' : 'rounded-full border border-[rgba(var(--ui-color-primary-rgb),.3)] bg-[rgba(var(--ui-color-primary-rgb),.1)] px-3 py-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]'">{{ status(current.status) }}</span></div>
         <div class="flex items-center gap-5 max-[680px]:gap-3.5">
           <div class="grid h-[88px] basis-[76px] shrink-0 place-content-center justify-items-center rounded-2xl border border-[rgba(var(--ui-color-primary-rgb),.25)] bg-[rgba(var(--ui-color-primary-rgb),.08)] text-[var(--ui-color-primary)] max-[680px]:h-[76px] max-[680px]:basis-[62px]" aria-hidden="true"><span class="text-xs font-extrabold uppercase">{{ month(current.date) }}</span><strong class="text-[2.2rem] leading-[1.2]">{{ day(current.date) }}</strong></div>
-          <div><h1 class="m-0 mb-2 text-[clamp(1.6rem,4vw,2.3rem)] font-extrabold [overflow-wrap:anywhere]">{{ current.title || 'Prova della band' }}</h1><p class="m-0 capitalize text-[var(--gigsaw-muted)]">{{ date(current.date) }}</p></div>
+          <div><h1 class="m-0 mb-2 text-[clamp(1.6rem,4vw,2.3rem)] [overflow-wrap:anywhere]">{{ current.title || 'Prova della band' }}</h1><p class="m-0 capitalize text-[var(--gigsaw-muted)]">{{ date(current.date) }}</p></div>
         </div>
         <div class="mt-[26px] flex flex-wrap gap-10 border-t border-[var(--gigsaw-border)] pt-[22px]">
           <div class="grid gap-[7px]"><span class="text-[.78rem] text-[var(--gigsaw-muted)]">Orario</span><strong class="text-xl tabular-nums">{{ time(current) }}</strong></div>
@@ -35,7 +35,7 @@
       <div class="mt-5 grid grid-cols-2 gap-[18px] max-[680px]:grid-cols-1 max-[680px]:gap-3.5">
         <section class="min-w-0 rounded-[20px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface,#101d30)] p-[26px] max-[680px]:px-5 max-[680px]:py-[22px]">
           <p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Dove ci troviamo</p>
-          <h2 class="my-2 mb-3 text-[1.18rem] font-bold [overflow-wrap:anywhere]">{{ current.rehearsalRoom?.name || 'Sala prove' }}</h2>
+          <h2 class="my-2 mb-3 text-[1.18rem] [overflow-wrap:anywhere]">{{ current.rehearsalRoom?.name || 'Sala prove' }}</h2>
           @if (current.rehearsalRoom; as room) {
             <p class="m-0 leading-[1.7] text-[var(--gigsaw-muted)]">{{ room.address }}@if (room.address && room.city) {<br/>}{{ room.city }}</p>
             @if (room.phone) { <a class="mt-4 inline-block text-[var(--ui-color-primary)]" [href]="'tel:' + room.phone">{{ room.phone }}</a> }
@@ -43,13 +43,13 @@
         </section>
         <section class="min-w-0 rounded-[20px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface,#101d30)] p-[26px] max-[680px]:px-5 max-[680px]:py-[22px]">
           <p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Preparazione</p>
-          <h2 class="my-2 mb-3 text-[1.18rem] font-bold [overflow-wrap:anywhere]">Note organizzative</h2>
+          <h2 class="my-2 mb-3 text-[1.18rem] [overflow-wrap:anywhere]">Note organizzative</h2>
           <p [class]="current.notes ? 'm-0 whitespace-pre-wrap leading-[1.7] [overflow-wrap:anywhere]' : 'm-0 leading-[1.7] text-[var(--gigsaw-muted)]'">{{ current.notes || 'Nessuna nota aggiunta per questa prova.' }}</p>
         </section>
       </div>
       @if (current.songIds?.length || current.songs?.length) {
         <section class="mt-[18px] min-w-0 rounded-[20px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface,#101d30)] p-[26px] max-[680px]:px-5 max-[680px]:py-[22px]">
-          <div><p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Il repertorio della prova</p><h2 class="my-2 mb-3 text-[1.18rem] font-bold [overflow-wrap:anywhere]">Brani da provare <span class="ml-1.5 inline-grid min-w-[26px] place-items-center rounded-lg bg-[rgba(var(--ui-color-primary-rgb),.12)] px-[7px] py-[3px] text-[.85rem] text-[var(--ui-color-primary)]">{{ current.songs?.length || current.songIds?.length }}</span></h2></div>
+          <div><p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Il repertorio della prova</p><h2 class="my-2 mb-3 text-[1.18rem] [overflow-wrap:anywhere]">Brani da provare <span class="ml-1.5 inline-grid min-w-[26px] place-items-center rounded-lg bg-[rgba(var(--ui-color-primary-rgb),.12)] px-[7px] py-[3px] text-[.85rem] text-[var(--ui-color-primary)]">{{ current.songs?.length || current.songIds?.length }}</span></h2></div>
           @if (current.songs?.length) {
             <ol class="pl-6 leading-[2]">@for (song of current.songs; track song.id) { <li>{{ song.title }}</li> }</ol>
           } @else { <p class="m-0 leading-[1.7] text-[var(--gigsaw-muted)]">Apri la modifica per consultare i brani selezionati.</p> }

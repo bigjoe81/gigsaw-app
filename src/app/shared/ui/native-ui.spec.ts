@@ -12,6 +12,8 @@ class ButtonFixture {
   clicks = 0;
   increment(): void { this.clicks++; }
 }
+@Component({ changeDetection: ChangeDetectionStrategy.Default, imports: [NativeUiModule], template: `<app-symbol name="musical-notes-outline" />` })
+class SymbolFixture {}
 
 describe('DaisyUI native controls', () => {
   afterEach(() => document.querySelectorAll('body > dialog').forEach(dialog => dialog.remove()));
@@ -44,6 +46,8 @@ describe('DaisyUI native controls', () => {
 
     const button = fixture.nativeElement.querySelector('app-gigsaw-button button') as HTMLButtonElement;
     expect(button.classList.contains('btn-ghost')).toBeTrue();
+    expect(Array.from(button.attributes).some(({ name }) => name.toLowerCase().startsWith('_ng'))).toBeFalse();
+    expect(getComputedStyle(button).display).not.toBe('contents');
     expect(button.getAttribute('aria-label')).toBe('Action');
     button.click();
     expect(fixture.componentInstance.clicks).toBe(1);
@@ -52,6 +56,13 @@ describe('DaisyUI native controls', () => {
     fixture.detectChanges();
     button.click();
     expect(fixture.componentInstance.clicks).toBe(1);
+  });
+  it('renders Font Awesome Solid icons for shared symbols', () => {
+    const fixture = TestBed.createComponent(SymbolFixture);
+    fixture.detectChanges();
+    const icon = fixture.nativeElement.querySelector('svg') as SVGElement;
+    expect(icon.getAttribute('data-prefix')).toBe('fas');
+    expect(icon.getAttribute('data-icon')).toBe('music');
   });
   it('does not execute a destructive action when a confirmation is cancelled', async () => {
     const action = jasmine.createSpy();

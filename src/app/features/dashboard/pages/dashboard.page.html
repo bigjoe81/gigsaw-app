@@ -1,6 +1,6 @@
 <header class="page-header ion-no-border">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button></div>
     <h1 class="grow text-xl">{{ bandName() }}</h1>
   </div>
 </header>
@@ -10,7 +10,7 @@
     <header class="flex flex-wrap items-end justify-between gap-4">
       <div class="min-w-0">
         <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-color-primary)]">Adesso</p>
-        <h1 class="mb-2 mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Ciao {{ userName }}.</h1>
+        <h1 class="mb-2 mt-3 text-3xl tracking-tight sm:text-4xl">Ciao {{ userName }}.</h1>
         <p class="m-0 max-w-2xl text-sm leading-6 text-[var(--gigsaw-muted)]">
           Qui trovi soltanto quello che viene dopo e ciò che serve per arrivarci pronto.
         </p>
@@ -50,7 +50,7 @@
               </div>
 
               <div class="min-w-0">
-                <h2 id="next-event-title" class="m-0 text-3xl font-bold tracking-tight [overflow-wrap:anywhere] sm:text-4xl">{{ next.title }}</h2>
+                <h2 id="next-event-title" class="m-0 text-3xl tracking-tight [overflow-wrap:anywhere] sm:text-4xl">{{ next.title }}</h2>
                 @if (next.location) {
                   <p class="mb-0 mt-4 flex items-center gap-2 text-sm text-[var(--gigsaw-muted)]">
                     <app-symbol name="location-outline" aria-hidden="true"  />

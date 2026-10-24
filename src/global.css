@@ -43,11 +43,17 @@ app-dialog .modal-box:has(.app-content) { display: flex; flex-direction: column;
   margin: 0 !important; padding: 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 16px;
   background: rgba(27,32,40,.92) !important; backdrop-filter: blur(14px); box-shadow: 0 8px 28px rgba(0,0,0,.2);
 }
+.modal-box form > footer.room-modal-actions {
+  position: relative !important; inset: auto !important; z-index: auto !important;
+  width: 100% !important; margin: 0 !important; padding: 1rem !important;
+  border-radius: 0 !important; background: var(--color-base-100) !important;
+  backdrop-filter: none !important; box-shadow: none !important;
+}
 .app-content:has(.floating-action-toolbar, .form-action-bar, form > footer), .app-content:has(~ .save-footer) { padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }
 .save-footer .navbar { background: transparent; }
 .tabs { overflow-x: auto; flex-wrap: nowrap; }
 .tab { white-space: nowrap; }
-:where(h1,h2,h3,h4,h5,h6) { line-height: 1.25; }
+:where(h1,h2,h3,h4,h5,h6) { font-weight: 600; line-height: 1.25; }
 @media(max-width:600px) { .floating-action-toolbar, .form-action-bar, form > footer, .save-footer { left: 20px !important; right: 20px !important; } .song-detail-modal .modal-box { width: 100%; max-width: 100%; max-height: 100dvh; border-radius: 0; } }
 
-@source inline("btn-primary btn-secondary btn-accent btn-ghost btn-outline btn-error badge-neutral badge-primary badge-secondary badge-accent badge-info badge-success badge-warning badge-error badge-xs badge-sm badge-md badge-lg badge-xl badge-outline badge-soft badge-ghost alert-info alert-success alert-warning alert-error loading-xs loading-sm loading-md loading-lg text-info text-success text-warning text-error steps-horizontal steps-vertical");
+@source inline("btn-primary btn-secondary btn-accent btn-ghost btn-outline btn-error badge-neutral badge-primary badge-secondary badge-accent badge-info badge-success badge-warning badge-error badge-xs badge-sm badge-md badge-lg badge-xl badge-outline badge-soft badge-ghost alert-info alert-success alert-warning alert-error loading-xs loading-sm loading-md loading-lg text-info text-success text-warning text-error steps-horizontal steps-vertical step-primary");

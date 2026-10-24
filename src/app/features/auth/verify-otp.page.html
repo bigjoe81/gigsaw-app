@@ -34,7 +34,7 @@
       <app-gigsaw-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Verifica e continua</app-gigsaw-button>
     </form>
 
-    <app-gigsaw-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending || !challengeId" [loading]="resending">Invia un nuovo codice</app-gigsaw-button>
+    <app-gigsaw-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending() || !challengeId" [loading]="resending()">Invia un nuovo codice</app-gigsaw-button>
     <a class="block w-full rounded-md whitespace-normal text-center" [routerLink]="purpose === 'register' ? '/registrati' : '/accedi'">Torna indietro</a>
   </div>
 </section>

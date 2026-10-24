@@ -11,7 +11,7 @@
 .workspace-grid { display: grid; grid-template-columns: minmax(250px, 24%) minmax(420px, 1fr) minmax(270px, 25%); align-items: start; gap: .75rem; max-width: 1600px; margin: 0 auto; padding: .75rem; }
 .panel, .set-panel, .magic-config, .proposal { padding: 1rem; border: 1px solid var(--border); border-radius: 16px; background: var(--panel); }
 .panel { position: sticky; top: 6rem; overflow: auto; max-height: calc(100vh - 8rem); }
-.panel h2, .magic-workspace h2 { margin: .3rem 0 .8rem; font-size: 1rem; font-weight: 800; }
+.panel h2, .magic-workspace h2 { margin: .3rem 0 .8rem; font-size: 1rem; font-weight: 600; }
 .catalog-card, .set-item { display: flex; align-items: center; gap: .6rem; padding: .7rem .65rem; border-bottom: 1px solid var(--border); }
 .catalog-card:hover, .set-item:hover { background: var(--panel-soft); }
 .catalog-card > div, .item-main { display: grid; min-width: 0; flex: 1; }
@@ -59,7 +59,7 @@
 .issue.error { border-color: var(--ui-color-danger); }
 .magic-workspace { max-width: 1500px; margin: auto; padding: clamp(1rem, 3vw, 3rem); }
 .magic-workspace > header { max-width: 760px; margin-bottom: 1.5rem; }
-.magic-workspace h1 { margin: .25rem 0; font-size: 2rem; font-weight: 900; }
+.magic-workspace h1 { margin: .25rem 0; font-size: 2rem; font-weight: 600; }
 .magic-workspace > header > p:last-child { color: var(--ui-color-medium); }
 .eyebrow { color: var(--ui-color-secondary); font-size: .7rem; letter-spacing: .15em; }
 .magic-grid { display: grid; grid-template-columns: minmax(320px, 40%) 1fr; gap: 1rem; }

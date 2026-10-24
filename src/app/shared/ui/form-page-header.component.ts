@@ -1,5 +1,6 @@
 import { NativeUiModule } from './native-ui';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { GigsawStepsComponent, GigsawStepItem } from './gigsaw/gigsaw-steps.component';
 export interface FormPageHeaderSection {
   id: number;
   label: string;
@@ -9,30 +10,25 @@ export interface FormPageHeaderSection {
 @Component({
   selector: 'app-form-page-header',
   standalone: true,
-  imports: [NativeUiModule],
+  imports: [NativeUiModule, GigsawStepsComponent],
   template: `
     <header class="page-header">
       <div class="navbar gap-3">
         <div class="flex items-center gap-2" slot="start">
-          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" [defaultHref]="backHref" aria-label="Torna indietro"  type="button" appBack>←</app-gigsaw-button>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" [defaultHref]="backHref" aria-label="Torna indietro"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button>
         </div>
         <h1 class="grow text-xl">{{ title }}</h1>
       </div>
 
       @if (sections.length > 1) {
-        <div class="navbar gap-3">
-          <div class="tabs tabs-box"
-
-
-            [attr.aria-label]="ariaLabel"
-            role="tablist">
-            @for (section of sections; track section.id) {
-              <app-gigsaw-button tone="unstyled" buttonClass="tab" [disabled]="section.disabled ?? false" (click)="onSectionChange(section.id)" [class.tab-active]="activeSection === section.id" [attr.aria-selected]="activeSection === section.id" role="tab" type="button">
-                <span class="ui-label">{{ section.label }}</span>
-              </app-gigsaw-button>
-            }
-          </div>
-        </div>
+        <app-gigsaw-steps
+          class="step-navigation"
+          [steps]="sectionSteps()"
+          [selectable]="true"
+          [ariaLabel]="ariaLabel"
+          stepsClass="refined-form-steps"
+          (stepChange)="onSectionChange($event)"
+        />
       }
     </header>
   `,
@@ -50,28 +46,11 @@ export interface FormPageHeaderSection {
       font-size: 1.1rem;
       letter-spacing: -.02em;
     }
-    :host(.refined-form-header) .tabs {
+    :host(.refined-form-header) app-gigsaw-steps {
+      display: block;
       width: calc(100% - 32px);
       max-width: 520px;
       margin: 4px auto 16px;
-      padding: 4px;
-      border-radius: 12px;
-      background: var(--gigsaw-input-background);
-      --background: transparent;
-    }
-    :host(.refined-form-header) .tab {
-      min-height: 36px;
-      min-width: 0;
-      flex: 1;
-      margin: 0;
-      text-transform: none;
-      letter-spacing: 0;
-      font-size: .82rem;
-      --color: var(--gigsaw-muted);
-      --color-checked: var(--gigsaw-text);
-      --indicator-color: #343b46;
-      --indicator-height: 100%;
-      --indicator-box-shadow: 0 1px 4px rgba(0,0,0,.2);
     }
   `,
 })
@@ -84,6 +63,16 @@ export class FormPageHeaderComponent {
   @Input() activeSection = 1;
   @Input() ariaLabel = 'Sezioni del form';
   @Output() readonly sectionChange = new EventEmitter<number>();
+
+  sectionSteps(): GigsawStepItem[] {
+    return this.sections.map((section) => ({
+      label: section.label,
+      value: section.id,
+      active: section.id <= this.activeSection,
+      current: section.id === this.activeSection,
+      disabled: section.disabled,
+    }));
+  }
 
   onSectionChange(value: string | number | undefined | null): void {
     if (value === undefined || value === null) return;

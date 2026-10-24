@@ -1,7 +1,7 @@
 <header class="page-header">
   <div class="navbar gap-3">
     <div class="flex items-center gap-2" slot="start">
-      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">Notifiche email</h1>
   </div>
@@ -19,11 +19,11 @@
     </div>
   } @else {
     <div class="w-full p-5 max-[760px]:p-4">
-      <a class="mb-4 inline-flex text-sm font-semibold no-underline" [routerLink]="settingsUrl">← Tutte le impostazioni</a>
+      <a class="mb-4 inline-flex text-sm font-semibold no-underline" [routerLink]="settingsUrl"><app-symbol name="arrow-back-outline" /> Tutte le impostazioni</a>
 
       <div class="mb-5">
         <span class="text-xs font-semibold uppercase tracking-wider text-[var(--ui-color-medium)]">{{ band.name }}</span>
-        <h1 class="mt-1 text-2xl font-bold">Notifiche email</h1>
+        <h1 class="mt-1 text-2xl">Notifiche email</h1>
         <p class="mt-1 text-sm text-[var(--ui-color-medium)]">Scegli quali cambiamenti importanti comunicare ai membri della band.</p>
       </div>
 

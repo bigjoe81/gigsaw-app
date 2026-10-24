@@ -21,7 +21,7 @@
           <section class="grid gap-5 pb-[30px]">
             <div class="flex items-start gap-3">
               <app-symbol class="shrink-0 rounded-[10px] bg-[rgba(var(--ui-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ui-color-primary)]" [name]="kind === 'venue' ? 'business-outline' : 'musical-notes-outline'"  />
-              <div><h2 class="m-0 text-base font-extrabold">Informazioni principali</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Identifica il luogo nell’anagrafica della band.</p></div>
+              <div><h2 class="m-0 text-base">Informazioni principali</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Identifica il luogo nell’anagrafica della band.</p></div>
             </div>
 
             <label class="grid min-w-0 gap-[7px] text-sm font-bold text-[var(--gigsaw-text)] [&_small]:text-[var(--ui-color-danger)] [&_strong]:text-[var(--ui-color-danger)]">
@@ -46,7 +46,7 @@
           <section class="grid gap-5 border-t border-[var(--gigsaw-border)] py-[30px]">
             <div class="flex items-start gap-3">
               <app-symbol class="shrink-0 rounded-[10px] bg-[rgba(var(--ui-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ui-color-primary)]" name="navigate-outline"  />
-              <div><h2 class="m-0 text-base font-extrabold">Coordinate</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Facoltative, utili per localizzare con precisione il luogo.</p></div>
+              <div><h2 class="m-0 text-base">Coordinate</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Facoltative, utili per localizzare con precisione il luogo.</p></div>
             </div>
             <div class="flex flex-wrap items-center gap-3">
               <app-gigsaw-button tone="outline" [loading]="geocoding" (click)="geocodeAddress()">Ricava dall’indirizzo</app-gigsaw-button>

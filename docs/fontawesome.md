@@ -1,34 +1,16 @@
-# Font Awesome Pro Light
+# Font Awesome Pro Solid
 
-The Angular integration and `@fortawesome/pro-light-svg-icons` are installed.
-The repertoire page uses Classic Light icons. `FaConfig.defaultPrefix` is set to `fal`
-(Classic Light). Existing Ionic icons continue to work.
+The application uses Font Awesome Pro Solid icons. Shared UI symbols should use
+`app-symbol`; its legacy names map to Solid icon definitions in
+`src/app/shared/ui/fontawesome-solid-icon-registry.ts`.
 
-## Enable Pro access
-
-Get your Package Token from https://fontawesome.com/account/tokens.
-Copy `.npmrc.fontawesome.example` to `.npmrc` and set
-`FONTAWESOME_PACKAGE_TOKEN` in your terminal or CI secrets. The example uses an
-environment variable; never replace it with a literal token in tracked files.
-
-Install project dependencies:
-
-```sh
-npm ci
-```
-
-The environment variable must also be available for subsequent npm installs.
-
-## Use an icon
-
-Import only the icons a component needs:
+For component-specific icons, import only the definitions you need:
 
 ```ts
-import { faMusic } from '@fortawesome/pro-light-svg-icons';
+import { faMusic } from '@fortawesome/pro-solid-svg-icons';
 import { GigsawIconComponent } from '../../../shared/ui/gigsaw';
 
 // Add GigsawIconComponent to the component's imports.
-// Expose the definition on the component:
 readonly musicIcon = faMusic;
 ```
 
@@ -37,5 +19,8 @@ readonly musicIcon = faMusic;
 ```
 
 For a meaningful standalone icon, supply `label="Music"`. Icons next to a text
-label should stay decorative. Direct `IconDefinition` imports keep unused icons
-out of the bundle; avoid registering the entire Light collection.
+label should stay decorative. Direct icon imports keep unused icons out of the
+bundle; avoid registering the entire Solid collection.
+
+Install dependencies with `pnpm install --frozen-lockfile`. An authorized
+Font Awesome Pro package token must be configured for the npm registry.

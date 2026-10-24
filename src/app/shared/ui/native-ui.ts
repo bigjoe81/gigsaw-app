@@ -1,26 +1,27 @@
 import { AfterContentInit, AfterViewChecked, AfterViewInit, Component, ComponentRef, ContentChild, Directive, ElementRef, EventEmitter, HostListener, Injectable, Input, NgModule, OnChanges, OnDestroy, Output, TemplateRef, ViewChild, ApplicationRef, EnvironmentInjector, Type, createComponent, inject } from '@angular/core';
 import { NgTemplateOutlet, Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { symbolRegistry } from './symbol-registry';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { IconDefinition, icon } from '@fortawesome/fontawesome-svg-core';
+import { faArrowDown, faArrowUp, faCircleQuestion } from '@fortawesome/pro-solid-svg-icons';
+import { faSolidIconRegistry } from './fontawesome-solid-icon-registry';
 import { GigsawButtonComponent } from './gigsaw/gigsaw-button.component';
 import { GigsawInputComponent } from './gigsaw/gigsaw-input.component';
 
 @Component({
   selector: 'app-symbol',
-  template: `<span [innerHTML]="svg" aria-hidden="true"></span>`,
-  styles: `:host{display:inline-flex;vertical-align:middle;width:1.25em;height:1.25em;flex-shrink:0}:host span{display:contents}:host ::ng-deep svg{width:100%;height:100%;fill:currentColor}:host ::ng-deep .ionicon-fill-none{fill:none}:host ::ng-deep .ionicon-stroke-width{stroke-width:32px}:host ::ng-deep [stroke-linecap]{stroke:currentColor}`,
+  imports: [FaIconComponent],
+  template: `<fa-icon [icon]="definition" aria-hidden="true" />`,
+  styles: `:host{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;width:1.25em;height:1.25em;flex-shrink:0}:host fa-icon{display:inline-flex;width:100%;height:100%}:host ::ng-deep svg{width:100%;height:100%}`,
 })
 export class SymbolComponent implements OnChanges {
   @Input() name = '';
   @Input() icon = '';
-  private readonly sanitizer = inject(DomSanitizer);
-  svg: SafeHtml = '';
+  definition: IconDefinition = faCircleQuestion;
+
   ngOnChanges(): void {
-    const key = this.name.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
-    // Only bundled icon definitions are trusted; never render caller-provided HTML.
-    const source = this.icon && Object.values(symbolRegistry).includes(this.icon) ? this.icon : symbolRegistry[key];
-    this.svg = this.sanitizer.bypassSecurityTrustHtml(source ?? symbolRegistry['helpCircleOutline'] ?? '');
+    const key = (this.icon || this.name).replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    this.definition = faSolidIconRegistry[key] ?? faCircleQuestion;
   }
 }
 
@@ -90,7 +91,7 @@ export class ReorderDirective implements AfterContentInit, OnDestroy {
         button.changeDetectorRef.detectChanges();
         const nativeButton = button.location.nativeElement.querySelector('button');
         if (!nativeButton) throw new Error('GigsawButtonComponent did not render a button');
-        nativeButton.textContent = delta < 0 ? '↑' : '↓';
+        nativeButton.innerHTML = icon(delta < 0 ? faArrowUp : faArrowDown).html.join('');
         actions.append(button.location.nativeElement);
         this.buttons.add(button);
       }
@@ -225,9 +226,10 @@ export class OverlayService {
   private readonly application = inject(ApplicationRef);
   private readonly environment = inject(EnvironmentInjector);
   private readonly stack: Array<(data?: unknown, role?: string) => void> = [];
-  async create<T>(options: { component: Type<T>; componentProps?: Record<string, unknown>; cssClass?: string }) {
+  async create<T>(options: { component: Type<T>; componentProps?: Record<string, unknown>; cssClass?: string; boxCssClass?: string }) {
     const { dialog, box } = dialogShell('Dettagli brano');
     box.className = 'modal-box max-w-3xl p-0';
+    if (options.boxCssClass) box.classList.add(...options.boxCssClass.split(/\s+/).filter(Boolean));
     if (options.cssClass) dialog.classList.add(options.cssClass);
     const host = document.createElement('div'); host.className = 'overlay-page'; box.append(host);
     const component = createComponent(options.component, { hostElement: host, environmentInjector: this.environment });

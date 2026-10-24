@@ -44,7 +44,14 @@ export class GigsawButtonComponent implements AfterViewInit, OnDestroy {
     const excluded = new Set(['slot', 'appback', 'defaulthref', 'tone', 'type', 'disabled', 'loading', 'buttonclass', 'aria-busy']);
     const hostAttributes = new Map(
       Array.from(this.host.attributes)
-        .filter(({ name }) => !excluded.has(name.toLowerCase()) && name !== 'class')
+        .filter(({ name }) => {
+          const normalizedName = name.toLowerCase();
+          return !excluded.has(normalizedName)
+            && name !== 'class'
+            && !normalizedName.startsWith('_ng')
+            && !normalizedName.startsWith('ng-reflect-')
+            && normalizedName !== 'ng-version';
+        })
         .map(({ name, value }) => [name, value]),
     );
 

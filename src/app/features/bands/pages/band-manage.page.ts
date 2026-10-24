@@ -999,12 +999,12 @@ export class BandManagePage implements OnInit, OnDestroy {
 
   stagePlotIcon(value?: string | null): string {
     return {
-      drums: '◉',
-      vocal: 'MIC',
-      bass: 'B',
-      guitar: 'G',
-      keys: 'K',
-      other: 'A',
+      drums: 'drum',
+      vocal: 'mic-outline',
+      bass: 'guitar',
+      guitar: 'guitar',
+      keys: 'keyboard',
+      other: 'musical-notes-outline',
     }[this.stagePlotKind(value)];
   }
 

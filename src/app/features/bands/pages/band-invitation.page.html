@@ -5,7 +5,7 @@
     <section class="w-full max-w-[520px] rounded-3xl border border-[var(--gigsaw-border)] bg-[var(--ui-card-background)] p-[clamp(28px,6vw,48px)] text-center shadow-[0_24px_70px_rgba(0,0,0,.24)]">
       <span class="mx-auto mb-[22px] grid size-[68px] place-items-center rounded-[20px] bg-[color-mix(in_srgb,var(--ui-color-primary)_14%,transparent)] text-[2rem] text-[var(--ui-color-primary)]"><app-symbol name="people-outline" aria-hidden="true"  /></span>
       <p class="m-0 text-xs font-extrabold tracking-[.14em] text-[var(--ui-color-primary)] uppercase">Invito alla band</p>
-      <h1 class="mt-[10px] mb-0 text-[clamp(1.65rem,5vw,2.35rem)] leading-[1.12] font-black tracking-[-.035em] text-[var(--gigsaw-text)]">@if (inviteeName) { Ciao {{ inviteeName }}! } Sei stato invitato in {{ bandName }}</h1>
+      <h1 class="mt-[10px] mb-0 text-[clamp(1.65rem,5vw,2.35rem)] leading-[1.12] tracking-[-.035em] text-[var(--gigsaw-text)]">@if (inviteeName) { Ciao {{ inviteeName }}! } Sei stato invitato in {{ bandName }}</h1>
       <p class="mx-auto mt-[18px] mb-0 leading-[1.6] text-[var(--gigsaw-muted)]">Entra nello spazio condiviso per repertorio, prove, concerti e scalette.</p>
 
       @if (error()) {

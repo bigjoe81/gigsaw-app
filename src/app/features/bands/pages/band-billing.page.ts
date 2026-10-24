@@ -21,9 +21,9 @@ interface Plan { monthly_available: boolean; yearly_available: boolean; id: numb
  standalone: true,
  imports: [NativeUiModule, GigsawFormControlsModule, DatePipe, CurrencyPipe, FormsModule, RouterLink, ],
  template: `
- <header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione">☰</app-gigsaw-button></div><h1 class="grow text-xl">Abbonamento</h1></div></header>
+ <header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button></div><h1 class="grow text-xl">Abbonamento</h1></div></header>
  <section class="app-content p-4">
- <a [routerLink]="settingsUrl">← Impostazioni della band</a>
+ <a [routerLink]="settingsUrl"><app-symbol name="arrow-back-outline" /> Impostazioni della band</a>
  @if (loading()) { <p>Caricamento…</p> }
  @if (error()) { <p><small class="text-sm text-error">{{ error() }}</small></p> }
  @if (returnedFromCheckout) { <p>Il checkout è terminato. La conferma dell’abbonamento può richiedere qualche istante: aggiorna lo stato prima di riprovare.</p> }

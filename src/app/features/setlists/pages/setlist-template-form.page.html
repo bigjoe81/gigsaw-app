@@ -1,6 +1,6 @@
 <header class="page-header">
   <div class="navbar gap-3">
-    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack>←</app-gigsaw-button></div>
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div>
     <h1 class="grow text-xl">{{ editing ? 'Modifica template' : 'Nuovo template' }}</h1>
     <div class="flex items-center gap-2" slot="end">
       <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="save()" [disabled]="saving" type="button">
@@ -15,7 +15,7 @@
     <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Descrizione</span><app-gigsaw-textarea formControlName="description" /></label>
     <div class="grid gap-[18px]">
       <section class="grid gap-2.5 py-0.5">
-        <h3 class="m-0 text-base font-bold">Obiettivi dello show</h3>
+        <h3 class="m-0 text-base">Obiettivi dello show</h3>
         <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ui-color-medium-shade)]">Valori base per il comportamento della generazione automatica.</p>
         <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Numero indicativo di brani</span><app-gigsaw-input type="number" formControlName="targetSongCount" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Numero di brani che vuoi usare come base per una scaletta tipica.</small>
@@ -28,7 +28,7 @@
       </section>
 
       <section class="grid gap-2.5 py-0.5">
-        <h3 class="m-0 text-base font-bold">Struttura dei set</h3>
+        <h3 class="m-0 text-base">Struttura dei set</h3>
         <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ui-color-medium-shade)]">Se prevedi piu blocchi, qui definisci durata e pause.</p>
         <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Numero di set desiderati</span><app-gigsaw-input type="number" formControlName="setCount" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Quanti blocchi vuoi generare quando crei una scaletta da questo template.</small>
@@ -41,7 +41,7 @@
       </section>
 
       <section class="grid gap-2.5 py-0.5">
-        <h3 class="m-0 text-base font-bold">Vincoli musicali</h3>
+        <h3 class="m-0 text-base">Vincoli musicali</h3>
         <p class="m-0 text-[.92rem] leading-[1.4] text-[var(--ui-color-medium-shade)]">Il motore usa questi limiti per scegliere brani piu equilibrati.</p>
         <label class="ui-item flex items-center gap-3 py-3"><span class="ui-label">Novita minima rispetto alla scaletta precedente (0-1)</span><app-gigsaw-input type="number" formControlName="minDifferenceRatio" /></label>
         <small class="text-sm mx-4 mt-[-2px] block text-[.82rem] leading-[1.35] text-[var(--ui-color-medium)]">Più alto = piu cambiamenti rispetto all'ultima scaletta simile.</small>
