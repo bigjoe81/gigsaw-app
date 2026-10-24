@@ -1,67 +1,67 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
-    <ion-title>Scalette</ion-title>
-    <ion-buttons slot="end">
-      <ion-button [routerLink]="['modelli']" aria-label="Template scalette"><ion-icon slot="icon-only" name="library-outline" /></ion-button>
-      <ion-button [routerLink]="['nuova']" aria-label="Nuova scaletta"><ion-icon slot="icon-only" name="add" /></ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button></div>
+    <h1 class="grow text-xl">Scalette</h1>
+    <div class="flex items-center gap-2" slot="end">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modelli']" aria-label="Template scalette" type="button"><app-symbol name="library-outline"  /></app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" aria-label="Nuova scaletta" type="button"><app-symbol name="add"  /></app-gigsaw-button>
+    </div>
+  </div>
+</header>
 
-<ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+<section class="app-content">
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()"><app-symbol name="refresh-outline" /> Aggiorna</app-gigsaw-button>
   <main class="w-full px-6 py-[34px] pb-14 text-[var(--gigsaw-text)] max-[760px]:px-3 max-[760px]:py-5 max-[760px]:pb-9">
     <section class="mb-5 flex items-end justify-between gap-5 max-[760px]:items-start max-[760px]:flex-col">
-      <div><p class="m-0 text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Live workspace</p><h1 class="my-1 text-[clamp(1.6rem,3vw,2.15rem)] font-extrabold">Le scalette della band</h1><p class="m-0 text-[var(--ion-color-medium)]">Prepara i set, controlla tempi e passaggi, porta il PDF sul palco.</p></div>
+      <div><p class="m-0 text-xs font-extrabold uppercase tracking-[.12em] text-[var(--ui-color-primary)]">Live workspace</p><h1 class="my-1 text-[clamp(1.6rem,3vw,2.15rem)]">Le scalette della band</h1><p class="m-0 text-[var(--ui-color-medium)]">Prepara i set, controlla tempi e passaggi, porta il PDF sul palco.</p></div>
       <div class="flex gap-2 max-[760px]:hidden">
-        <ion-button fill="outline" [routerLink]="['modelli']"><ion-icon slot="start" name="library-outline" />Template</ion-button>
-        <ion-button [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Nuova scaletta</ion-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" [routerLink]="['modelli']" type="button"><app-symbol name="library-outline"  />Template</app-gigsaw-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" type="button"><app-symbol name="add"  />Nuova scaletta</app-gigsaw-button>
       </div>
     </section>
 
-  
+
 
     @if (!loading() && !error() && setlists().length) {
       <section class="mb-[18px] flex gap-9 rounded-[14px] border border-[var(--gigsaw-border)] bg-[#101d30] px-[18px] py-4 max-[760px]:justify-between max-[760px]:gap-[18px]" aria-label="Riepilogo scalette">
-        <div class="flex items-baseline gap-2 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-0"><strong class="text-[1.35rem] text-[var(--ion-color-primary)]">{{ setlists().length }}</strong><span class="text-sm text-[var(--ion-color-medium)]">scalette salvate</span></div>
-        <div class="flex items-baseline gap-2 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-0"><strong class="text-[1.35rem] text-[var(--ion-color-primary)]">{{ totalSongs() }}</strong><span class="text-sm text-[var(--ion-color-medium)]">brani complessivi</span></div>
+        <div class="flex items-baseline gap-2 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-0"><strong class="text-[1.35rem] text-[var(--ui-color-primary)]">{{ setlists().length }}</strong><span class="text-sm text-[var(--ui-color-medium)]">scalette salvate</span></div>
+        <div class="flex items-baseline gap-2 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-0"><strong class="text-[1.35rem] text-[var(--ui-color-primary)]">{{ totalSongs() }}</strong><span class="text-sm text-[var(--ui-color-medium)]">brani complessivi</span></div>
       </section>
     }
 
     @if (loading()) {
       <section class="grid grid-cols-2 gap-[14px] max-[760px]:grid-cols-1" aria-label="Caricamento scalette">
         @for (item of [1, 2, 3]; track item) {
-          <article class="flex min-h-[230px] flex-col gap-4 rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5"><ion-skeleton-text [animated]="true" style="width: 28%" /><ion-skeleton-text [animated]="true" style="width: 66%" /><ion-skeleton-text [animated]="true" style="width: 48%" /></article>
+          <article class="flex min-h-[230px] flex-col gap-4 rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5"><span class="skeleton block h-4 my-2" style="width: 28%" ></span><span class="skeleton block h-4 my-2" style="width: 66%" ></span><span class="skeleton block h-4 my-2" style="width: 48%" ></span></article>
         }
       </section>
     } @else if (error()) {
-      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><ion-icon class="text-[50px] text-[var(--ion-color-medium)]" name="alert-circle-outline" /><h2 class="m-0">Caricamento non riuscito</h2><ion-text color="danger">{{ error() }}</ion-text><ion-button fill="outline" (click)="load()">Riprova</ion-button></section>
+      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><app-symbol class="text-[50px] text-[var(--ui-color-medium)]" name="alert-circle-outline"  /><h2 class="m-0">Caricamento non riuscito</h2><span class=" text-error">{{ error() }}</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button></section>
     } @else if (!setlists().length) {
-      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><span class="grid h-[72px] w-[72px] place-items-center rounded-[22px] bg-[rgba(var(--ion-color-primary-rgb),.12)] text-[var(--ion-color-primary)]"><ion-icon class="text-4xl" name="musical-notes-outline" /></span><h2 class="m-0">Il palco è ancora vuoto</h2><p class="m-0 text-[var(--ion-color-medium)]">Crea la prima scaletta partendo dal repertorio della band.</p><ion-button [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Crea scaletta</ion-button></section>
+      <section class="flex min-h-[45vh] flex-col items-center justify-center gap-3 text-center"><span class="grid h-[72px] w-[72px] place-items-center rounded-[22px] bg-[rgba(var(--ui-color-primary-rgb),.12)] text-[var(--ui-color-primary)]"><app-symbol class="text-4xl" name="musical-notes-outline"  /></span><h2 class="m-0">Il palco è ancora vuoto</h2><p class="m-0 text-[var(--ui-color-medium)]">Crea la prima scaletta partendo dal repertorio della band.</p><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" type="button"><app-symbol name="add"  />Crea scaletta</app-gigsaw-button></section>
     } @else {
       <section class="grid grid-cols-2 gap-[14px] max-[760px]:grid-cols-1">
         @for (setlist of setlists(); track setlist.id) {
-          <a class="flex min-h-[230px] flex-col rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5 text-inherit no-underline transition-[border-color,transform,box-shadow] duration-[180ms] hover:-translate-y-0.5 hover:border-[rgba(var(--ion-color-primary-rgb),.55)] hover:shadow-[0_12px_30px_rgba(0,0,0,.16)]" [routerLink]="[setlist.id]">
-            <div class="flex items-center justify-between gap-3 max-[760px]:items-start max-[760px]:flex-col"><span class="inline-flex items-center gap-1.5 rounded-full bg-[rgba(var(--ion-color-primary-rgb),.12)] px-[9px] py-[5px] text-xs font-bold uppercase text-[var(--ion-color-primary)]"><ion-icon name="list-outline" />Scaletta</span><span class="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--ion-color-medium)]"><ion-icon name="calendar-outline" />{{ date(setlist) }}</span></div>
-            <div class="flex-1 py-[18px] pb-[14px]"><h2 class="m-0 text-[1.2rem] font-extrabold">{{ setlist.title }}</h2>@if (setlist.notes) { <p class="mt-[7px] line-clamp-2 overflow-hidden text-[.86rem] leading-[1.45] text-[var(--ion-color-medium)]">{{ setlist.notes }}</p> }</div>
-            <div class="flex gap-[18px] border-t border-[var(--gigsaw-border)] py-3 text-[.82rem] text-[var(--ion-color-medium)]"><span><strong class="text-[var(--gigsaw-text)]">{{ songCount(setlist) }}</strong> brani</span><span><strong class="text-[var(--gigsaw-text)]">{{ setCount(setlist) || '—' }}</strong> set</span></div>
-            <div class="flex gap-2 pt-3 [&_ion-button]:[--background:rgba(var(--ion-color-primary-rgb),.1)] [&_ion-button]:[--color:var(--ion-color-primary)] [&_ion-button]:[--border-radius:9px] [&_ion-button]:text-[.78rem] [&_ion-button]:font-bold [&_ion-button]:hover:[--background:rgba(var(--ion-color-primary-rgb),.18)] [&_ion-button:disabled]:cursor-wait [&_ion-button:disabled]:opacity-55">
-              <ion-button type="button" (click)="requestPdf(setlist, 'download', $event)" [disabled]="pdfAction() !== null">
-                @if (pdfAction() === 'download-' + setlist.id) { <ion-spinner name="crescent" slot="start" aria-label="Preparazione PDF" /> } @else { <ion-icon name="download-outline" /> }
+          <a class="flex min-h-[230px] flex-col rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5 text-inherit no-underline transition-[border-color,transform,box-shadow] duration-[180ms] hover:-translate-y-0.5 hover:border-[rgba(var(--ui-color-primary-rgb),.55)] hover:shadow-[0_12px_30px_rgba(0,0,0,.16)]" [routerLink]="[setlist.id]">
+            <div class="flex items-center justify-between gap-3 max-[760px]:items-start max-[760px]:flex-col"><span class="inline-flex items-center gap-1.5 rounded-full bg-[rgba(var(--ui-color-primary-rgb),.12)] px-[9px] py-[5px] text-xs font-bold uppercase text-[var(--ui-color-primary)]"><app-symbol name="list-outline"  />Scaletta</span><span class="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--ui-color-medium)]"><app-symbol name="calendar-outline"  />{{ date(setlist) }}</span></div>
+            <div class="flex-1 py-[18px] pb-[14px]"><h2 class="m-0 text-[1.2rem]">{{ setlist.title }}</h2>@if (setlist.notes) { <p class="mt-[7px] line-clamp-2 overflow-hidden text-[.86rem] leading-[1.45] text-[var(--ui-color-medium)]">{{ setlist.notes }}</p> }</div>
+            <div class="flex gap-[18px] border-t border-[var(--gigsaw-border)] py-3 text-[.82rem] text-[var(--ui-color-medium)]"><span><strong class="text-[var(--gigsaw-text)]">{{ songCount(setlist) }}</strong> brani</span><span><strong class="text-[var(--gigsaw-text)]">{{ setCount(setlist) || '—' }}</strong> set</span></div>
+            <div class="flex gap-2 pt-3 [&_.btn]:[--background:rgba(var(--ui-color-primary-rgb),.1)] [&_.btn]:[--color:var(--ui-color-primary)] [&_.btn]:[--border-radius:9px] [&_.btn]:text-[.78rem] [&_.btn]:font-bold [&_.btn]:hover:[--background:rgba(var(--ui-color-primary-rgb),.18)] [&_.btn:disabled]:cursor-wait [&_.btn:disabled]:opacity-55">
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" (click)="requestPdf(setlist, 'download', $event)" [disabled]="pdfAction() !== null">
+                @if (pdfAction() === 'download-' + setlist.id) { <span class="loading loading-spinner" slot="start" aria-label="Preparazione PDF"  role="status" aria-label="Caricamento"></span> } @else { <app-symbol name="download-outline"  /> }
                 Scarica PDF
-              </ion-button>
-              <ion-button type="button" (click)="requestPdf(setlist, 'share', $event)" [disabled]="pdfAction() !== null">
-                @if (pdfAction() === 'share-' + setlist.id) { <ion-spinner name="crescent" slot="start" aria-label="Preparazione PDF" /> } @else { <ion-icon name="share-social-outline" /> }
+              </app-gigsaw-button>
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" (click)="requestPdf(setlist, 'share', $event)" [disabled]="pdfAction() !== null">
+                @if (pdfAction() === 'share-' + setlist.id) { <span class="loading loading-spinner" slot="start" aria-label="Preparazione PDF"  role="status" aria-label="Caricamento"></span> } @else { <app-symbol name="share-social-outline"  /> }
                 Condividi
-              </ion-button>
+              </app-gigsaw-button>
             </div>
           </a>
         }
       </section>
     }
   </main>
-</ion-content>
+</section>
 
 <app-setlist-pdf-modal [isOpen]="pdfRequest() !== null" [format]="pdfFormat()" [options]="pdfOptions()"
   [actionLabel]="pdfRequest()?.action === 'share' ? 'Condividi PDF' : 'Scarica PDF'" (formatChange)="pdfFormat.set($event)" (optionsChange)="pdfOptions.set($event)"

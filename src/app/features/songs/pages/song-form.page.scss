@@ -7,7 +7,7 @@
   min-height: 0;
 }
 
-.song-content::part(scroll) {
+.song-content {
   min-height: 100%;
   overflow-y: auto;
   overscroll-behavior-y: contain;
@@ -29,22 +29,16 @@
   gap: 8px;
 }
 
-.field-grid ion-select {
+.field-grid .select {
   width: 100%;
   min-height: 56px;
 }
 
-.field-grid ion-select::part(container) {
+.field-grid .select {
   width: 100%;
 }
 
-.field-grid ion-select::part(icon) {
-  position: absolute;
-  top: 50%;
-  right: 16px;
-  margin: 0;
-  transform: translateY(-50%);
-}
+
 
 .field-grid .wide {
   grid-column: 1 / -1;

@@ -1,16 +1,16 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
-    <ion-title>{{ bandName() }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<header class="page-header ion-no-border">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button></div>
+    <h1 class="grow text-xl">{{ bandName() }}</h1>
+  </div>
+</header>
 
-<ion-content>
+<section class="app-content">
   <main class="mx-auto flex w-full max-w-6xl flex-col gap-8 p-4 text-[var(--gigsaw-text)] sm:p-6 lg:p-10">
     <header class="flex flex-wrap items-end justify-between gap-4">
       <div class="min-w-0">
-        <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ion-color-primary)]">Adesso</p>
-        <h1 class="mb-2 mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Ciao {{ userName }}.</h1>
+        <p class="m-0 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ui-color-primary)]">Adesso</p>
+        <h1 class="mb-2 mt-3 text-3xl tracking-tight sm:text-4xl">Ciao {{ userName }}.</h1>
         <p class="m-0 max-w-2xl text-sm leading-6 text-[var(--gigsaw-muted)]">
           Qui trovi soltanto quello che viene dopo e ciò che serve per arrivarci pronto.
         </p>
@@ -20,54 +20,63 @@
         class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] px-4 py-3 text-sm font-semibold text-[var(--gigsaw-text)] no-underline transition-colors hover:bg-[var(--gigsaw-input-background)]"
         [routerLink]="[bandBaseUrl, 'impegni']"
       >
-        <ion-icon name="calendar-outline" aria-hidden="true" /> Tutti gli impegni
+        <app-symbol name="calendar-outline" aria-hidden="true"  /> Tutti gli impegni
       </a>
     </header>
 
     @if (loading()) {
       <div role="status" class="flex items-center justify-center gap-3 rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] px-6 py-20 text-sm text-[var(--gigsaw-muted)]">
-        <ion-spinner name="crescent" class="size-5 text-[var(--ion-color-primary)]" /> Caricamento…
+        <span class="loading loading-spinner size-5 text-[var(--ui-color-primary)]"  role="status" aria-label="Caricamento"></span> Caricamento…
       </div>
     } @else {
       @if (loadError()) {
-        <p role="alert" class="m-0 rounded-xl border border-solid border-[var(--ion-color-warning)] bg-[color-mix(in_srgb,var(--ion-color-warning)_8%,transparent)] p-4 text-sm text-[var(--ion-color-warning)]">
+        <p role="alert" class="m-0 rounded-xl border border-solid border-[var(--ui-color-warning)] bg-[color-mix(in_srgb,var(--ui-color-warning)_8%,transparent)] p-4 text-sm text-[var(--ui-color-warning)]">
           {{ loadError() }}
         </p>
       }
 
+      <section class="rounded-xl border border-[var(--gigsaw-border)] p-5">
+        @if (flow() === 'building') { <h2 class="font-bold">Partite dai brani</h2><p class="my-2">Aggiungete i pezzi da preparare o importate una lista.</p> }
+        @else if (flow() === 'importing') { <h2 class="font-bold">Organizziamo il vostro repertorio</h2><p class="my-2">Importa la lista dei brani e completa i dati mancanti.</p> }
+        @else { <h2 class="font-bold">La band è in attività</h2><p class="my-2">Concentrati sulle prossime prove, live e scalette.</p> }
+        <div class="mt-3 flex flex-wrap gap-3">
+          <a class="btn btn-primary" [routerLink]="[bandBaseUrl, 'inizia']">Cosa vuoi fare?</a>
+          <a class="btn btn-ghost" routerLink="/inizia" [queryParams]="calibrationQueryParams()">Cambia percorso</a>
+        </div>
+      </section>
       @if (nextEvent(); as next) {
         <section class="overflow-hidden rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] shadow-sm" aria-labelledby="next-event-title">
           <div class="grid gap-0 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,.75fr)]">
             <a [routerLink]="next.link" class="group flex min-w-0 flex-col gap-6 p-6 text-[var(--gigsaw-text)] no-underline sm:p-8 lg:p-10">
               <div class="flex flex-wrap items-center gap-3">
-                <span class="inline-flex size-11 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] text-[var(--ion-color-primary)]">
-                  <ion-icon [name]="next.icon" class="text-xl" aria-hidden="true" />
+                <span class="inline-flex size-11 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--ui-color-primary)_12%,transparent)] text-[var(--ui-color-primary)]">
+                  <app-symbol [name]="next.icon" class="text-xl" aria-hidden="true"  />
                 </span>
                 <div>
-                  <p class="m-0 text-xs font-bold uppercase tracking-[0.16em] text-[var(--ion-color-primary)]">Prossimo · {{ next.eyebrow }}</p>
+                  <p class="m-0 text-xs font-bold uppercase tracking-[0.16em] text-[var(--ui-color-primary)]">Prossimo · {{ next.eyebrow }}</p>
                   <p class="mb-0 mt-1 text-sm font-medium text-[var(--gigsaw-muted)]">{{ next.date }} @if (next.time) { · {{ next.time }} }</p>
                 </div>
               </div>
 
               <div class="min-w-0">
-                <h2 id="next-event-title" class="m-0 text-3xl font-bold tracking-tight [overflow-wrap:anywhere] sm:text-4xl">{{ next.title }}</h2>
+                <h2 id="next-event-title" class="m-0 text-3xl tracking-tight [overflow-wrap:anywhere] sm:text-4xl">{{ next.title }}</h2>
                 @if (next.location) {
                   <p class="mb-0 mt-4 flex items-center gap-2 text-sm text-[var(--gigsaw-muted)]">
-                    <ion-icon name="location-outline" aria-hidden="true" />
+                    <app-symbol name="location-outline" aria-hidden="true"  />
                     <span class="[overflow-wrap:anywhere]">{{ next.location }}</span>
                   </p>
                 }
               </div>
 
-              <span class="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg bg-[var(--ion-color-primary)] px-4 py-3 text-sm font-bold text-[var(--ion-color-primary-contrast)] transition group-hover:brightness-110">
-                Apri {{ next.eyebrow.toLocaleLowerCase() }} <ion-icon name="chevron-forward-outline" aria-hidden="true" />
+              <span class="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg bg-[var(--ui-color-primary)] px-4 py-3 text-sm font-bold text-[var(--ui-color-primary-contrast)] transition group-hover:brightness-110">
+                Apri {{ next.eyebrow.toLocaleLowerCase() }} <app-symbol name="chevron-forward-outline" aria-hidden="true"  />
               </span>
             </a>
 
             <div class="border-0 border-t border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-6 sm:p-8 lg:border-l lg:border-t-0">
               <div class="mb-5 flex items-center gap-3">
-                <span class="flex size-9 items-center justify-center rounded-lg bg-[var(--gigsaw-surface)] text-[var(--ion-color-secondary)]">
-                  <ion-icon name="clipboard-outline" aria-hidden="true" />
+                <span class="flex size-9 items-center justify-center rounded-lg bg-[var(--gigsaw-surface)] text-[var(--ui-color-secondary)]">
+                  <app-symbol name="clipboard-outline" aria-hidden="true"  />
                 </span>
                 <div>
                   <h3 class="m-0 text-base font-semibold">Da preparare</h3>
@@ -79,7 +88,7 @@
                 <div class="flex flex-col gap-3">
                   @for (item of next.preparation; track item) {
                     <div class="flex items-start gap-3 rounded-xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-4">
-                      <span class="mt-1 size-2 shrink-0 rounded-full bg-[var(--ion-color-warning)]"></span>
+                      <span class="mt-1 size-2 shrink-0 rounded-full bg-[var(--ui-color-warning)]"></span>
                       <span class="text-sm font-medium leading-5">{{ item }}</span>
                     </div>
                   }
@@ -95,14 +104,14 @@
         </section>
       } @else {
         <section class="flex flex-col items-center rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] px-6 py-14 text-center">
-          <span class="mb-4 flex size-14 items-center justify-center rounded-full bg-[var(--gigsaw-input-background)] text-[var(--ion-color-primary)]">
-            <ion-icon name="calendar-outline" class="text-2xl" aria-hidden="true" />
+          <span class="mb-4 flex size-14 items-center justify-center rounded-full bg-[var(--gigsaw-input-background)] text-[var(--ui-color-primary)]">
+            <app-symbol name="calendar-outline" class="text-2xl" aria-hidden="true"  />
           </span>
           <h2 class="m-0 text-xl font-semibold">Nessun impegno in programma</h2>
           <p class="mb-5 mt-2 max-w-md text-sm leading-6 text-[var(--gigsaw-muted)]">Quando aggiungi una prova, un concerto o un altro impegno, GigSaw lo porterà qui automaticamente.</p>
           <div class="flex flex-wrap justify-center gap-2">
-            <a [routerLink]="[bandBaseUrl, 'prove', 'nuova']" class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--ion-color-primary)] px-4 py-3 text-sm font-bold text-[var(--ion-color-primary-contrast)] no-underline">
-              <ion-icon name="add-outline" aria-hidden="true" /> Nuova prova
+            <a [routerLink]="[bandBaseUrl, 'prove', 'nuova']" class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--ui-color-primary)] px-4 py-3 text-sm font-bold text-[var(--ui-color-primary-contrast)] no-underline">
+              <app-symbol name="add-outline" aria-hidden="true"  /> Nuova prova
             </a>
             <a [routerLink]="[bandBaseUrl, 'concerti', 'nuovo']" class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-solid border-[var(--gigsaw-border)] px-4 py-3 text-sm font-semibold text-[var(--gigsaw-text)] no-underline">
               Nuovo concerto
@@ -119,7 +128,7 @@
               <p class="mb-0 mt-1 text-sm text-[var(--gigsaw-muted)]">I prossimi appuntamenti, già in ordine.</p>
             </div>
             @if (pendingPreparationCount()) {
-              <span class="rounded-full bg-[color-mix(in_srgb,var(--ion-color-warning)_12%,transparent)] px-3 py-1.5 text-xs font-semibold text-[var(--ion-color-warning)]">
+              <span class="rounded-full bg-[color-mix(in_srgb,var(--ui-color-warning)_12%,transparent)] px-3 py-1.5 text-xs font-semibold text-[var(--ui-color-warning)]">
                 {{ pendingPreparationCount() }} cose da preparare
               </span>
             }
@@ -128,8 +137,8 @@
           <div class="overflow-hidden rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)]">
             @for (event of laterEvents(); track event.id) {
               <a [routerLink]="event.link" class="grid gap-4 border-0 border-t border-solid border-[var(--gigsaw-border)] p-5 text-[var(--gigsaw-text)] no-underline first:border-t-0 hover:bg-[var(--gigsaw-input-background)] sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:px-6">
-                <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[var(--gigsaw-input-background)] text-[var(--ion-color-secondary)]">
-                  <ion-icon [name]="event.icon" aria-hidden="true" />
+                <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[var(--gigsaw-input-background)] text-[var(--ui-color-secondary)]">
+                  <app-symbol [name]="event.icon" aria-hidden="true"  />
                 </span>
 
                 <div class="min-w-0">
@@ -137,17 +146,17 @@
                   <h3 class="mb-0 mt-1 text-base font-semibold [overflow-wrap:anywhere]">{{ event.title }}</h3>
                   <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--gigsaw-muted)]">
                     @if (event.location) {
-                      <span class="flex items-center gap-1"><ion-icon name="location-outline" aria-hidden="true" /> {{ event.location }}</span>
+                      <span class="flex items-center gap-1"><app-symbol name="location-outline" aria-hidden="true"  /> {{ event.location }}</span>
                     }
                     @if (event.preparation.length) {
-                      <span class="font-semibold text-[var(--ion-color-warning)]">{{ event.preparation.length }} da preparare</span>
+                      <span class="font-semibold text-[var(--ui-color-warning)]">{{ event.preparation.length }} da preparare</span>
                     } @else {
-                      <span class="font-semibold text-[var(--ion-color-success)]">Pronto</span>
+                      <span class="font-semibold text-[var(--ui-color-success)]">Pronto</span>
                     }
                   </div>
                 </div>
 
-                <ion-icon name="chevron-forward-outline" class="hidden text-[var(--gigsaw-muted)] sm:block" aria-hidden="true" />
+                <app-symbol name="chevron-forward-outline" class="hidden text-[var(--gigsaw-muted)] sm:block" aria-hidden="true"  />
               </a>
             }
           </div>
@@ -163,7 +172,7 @@
         <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
           @for (action of libraryActions; track action.label) {
             <a [routerLink]="[bandBaseUrl, ...action.route]" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] px-3 py-2 text-sm font-semibold text-[var(--gigsaw-text)] no-underline transition-colors hover:bg-[var(--gigsaw-input-background)]">
-              <ion-icon [name]="action.icon" aria-hidden="true" /> {{ action.label }}
+              <app-symbol [name]="action.icon" aria-hidden="true"  /> {{ action.label }}
             </a>
           }
         </div>
@@ -173,13 +182,13 @@
         <section class="grid gap-3 rounded-2xl border border-dashed border-[var(--gigsaw-border)] p-5 sm:grid-cols-2">
           @if (repertoireTotal() === 0) {
             <a [routerLink]="[bandBaseUrl, 'repertorio']" class="flex items-center gap-4 rounded-xl bg-[var(--gigsaw-surface)] p-4 text-[var(--gigsaw-text)] no-underline">
-              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] text-[var(--ion-color-primary)]"><ion-icon name="musical-notes-outline" /></span>
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--ui-color-primary)_12%,transparent)] text-[var(--ui-color-primary)]"><app-symbol name="musical-notes-outline"  /></span>
               <span class="min-w-0"><strong class="block text-sm">Costruisci il repertorio</strong><span class="mt-1 block text-xs leading-5 text-[var(--gigsaw-muted)]">Importa o aggiungi i brani della band.</span></span>
             </a>
           }
           @if (canInviteToSoloBand()) {
             <a [routerLink]="[bandBaseUrl, 'impostazioni', 'inviti']" class="flex items-center gap-4 rounded-xl bg-[var(--gigsaw-surface)] p-4 text-[var(--gigsaw-text)] no-underline">
-              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--ion-color-primary)_12%,transparent)] text-[var(--ion-color-primary)]"><ion-icon name="people-outline" /></span>
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--ui-color-primary)_12%,transparent)] text-[var(--ui-color-primary)]"><app-symbol name="people-outline"  /></span>
               <span class="min-w-0"><strong class="block text-sm">Invita la band</strong><span class="mt-1 block text-xs leading-5 text-[var(--gigsaw-muted)]">Porta gli altri musicisti nello stesso flusso.</span></span>
             </a>
           }
@@ -187,4 +196,4 @@
       }
     }
   </main>
-</ion-content>
+</section>

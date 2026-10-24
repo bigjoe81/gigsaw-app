@@ -1,0 +1,5 @@
+The application uses Font Awesome Pro Solid icons.
+
+Font Awesome Pro icons are subject to the license terms for the account used to
+access the Pro packages:
+https://fontawesome.com/license

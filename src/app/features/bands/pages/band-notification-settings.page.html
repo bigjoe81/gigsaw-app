@@ -1,108 +1,105 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="band-menu" />
-    </ion-buttons>
-    <ion-title>Notifiche email</ion-title>
-  </ion-toolbar>
-</ion-header>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
+    </div>
+    <h1 class="grow text-xl">Notifiche email</h1>
+  </div>
+</header>
 
-<ion-content>
+<section class="app-content">
   @if (loading()) {
-    <div class="ion-padding">
-      <ion-spinner name="crescent" />
+    <div class="p-4">
+      <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span>
     </div>
   } @else if (!band) {
-    <div class="ion-padding">
-      <ion-note color="danger">{{ error() || 'Band non trovata.' }}</ion-note>
-      <ion-button class="ion-margin-top" expand="block" fill="outline" type="button" (click)="load()">Riprova</ion-button>
+    <div class="p-4">
+      <small class="text-sm text-error">{{ error() || 'Band non trovata.' }}</small>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline mt-4" type="button" (click)="load()">Riprova</app-gigsaw-button>
     </div>
   } @else {
     <div class="w-full p-5 max-[760px]:p-4">
-      <a class="mb-4 inline-flex text-sm font-semibold no-underline" [routerLink]="settingsUrl">← Tutte le impostazioni</a>
+      <a class="mb-4 inline-flex text-sm font-semibold no-underline" [routerLink]="settingsUrl"><app-symbol name="arrow-back-outline" /> Tutte le impostazioni</a>
 
       <div class="mb-5">
-        <span class="text-xs font-semibold uppercase tracking-wider text-[var(--ion-color-medium)]">{{ band.name }}</span>
-        <h1 class="mt-1 text-2xl font-bold">Notifiche email</h1>
-        <p class="mt-1 text-sm text-[var(--ion-color-medium)]">Scegli quali cambiamenti importanti comunicare ai membri della band.</p>
+        <span class="text-xs font-semibold uppercase tracking-wider text-[var(--ui-color-medium)]">{{ band.name }}</span>
+        <h1 class="mt-1 text-2xl">Notifiche email</h1>
+        <p class="mt-1 text-sm text-[var(--ui-color-medium)]">Scegli quali cambiamenti importanti comunicare ai membri della band.</p>
       </div>
 
       <form class="grid gap-6" [formGroup]="form" (ngSubmit)="save()">
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Invio email</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-item lines="none">
-              <ion-toggle formControlName="enabled" justify="space-between">
-                Abilita notifiche email
-              </ion-toggle>
-            </ion-item>
+        <article class="card bg-base-200 border border-base-300 my-4">
+          <header class="px-6 pt-6">
+            <h2 class="card-title">Invio email</h2>
+          </header>
+          <div class="card-body">
+            <div class="ui-item flex items-center gap-3 py-3">
+              <label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="enabled" /><span>Abilita notifiche email</span></label></div>
 
-            <ion-item>
-              <label class="gigsaw-select-field"><span>Destinatari</span><ion-select formControlName="recipients" aria-label="Destinatari">
-                <ion-select-option value="all">Tutti i membri</ion-select-option>
-                <ion-select-option value="admins">Solo admin</ion-select-option>
-                <ion-select-option value="selected">Membri selezionati</ion-select-option>
-              </ion-select></label>
-            </ion-item>
+            <div class="ui-item flex items-center gap-3 py-3">
+              <label class="gigsaw-select-field"><span>Destinatari</span><select class="select w-full" formControlName="recipients" aria-label="Destinatari">
+                <option value="all">Tutti i membri</option>
+                <option value="admins">Solo admin</option>
+                <option value="selected">Membri selezionati</option>
+              </select></label>
+            </div>
 
             @if (showMemberPicker) {
-              <ion-item>
-                <label class="gigsaw-select-field"><span>Membri da notificare</span><ion-select formControlName="userIds" [multiple]="true" aria-label="Membri da notificare">
+              <div class="ui-item flex items-center gap-3 py-3">
+                <label class="gigsaw-select-field"><span>Membri da notificare</span><select class="select w-full" formControlName="userIds" [multiple]="true" aria-label="Membri da notificare">
                   @for (member of band.members ?? []; track member.id) {
-                    <ion-select-option [value]="member.id">{{ member.name }}</ion-select-option>
+                    <option [ngValue]="member.id">{{ member.name }}</option>
                   }
-                </ion-select></label>
-              </ion-item>
+                </select></label>
+              </div>
             }
 
-            <ion-note class="ion-padding-top" color="medium">
+            <small class="text-sm text-base-content/60 pt-4">
               Chi effettua la modifica non riceve la propria notifica.
-            </ion-note>
-          </ion-card-content>
-        </ion-card>
+            </small>
+          </div>
+        </article>
 
-        <ion-card formGroupName="events">
-          <ion-card-header>
-            <ion-card-title>Prove</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-item><ion-toggle formControlName="rehearsalCreated" justify="space-between">Nuova prova</ion-toggle></ion-item>
-            <ion-item><ion-toggle formControlName="rehearsalUpdated" justify="space-between">Prova modificata</ion-toggle></ion-item>
-            <ion-item><ion-toggle formControlName="rehearsalCancelled" justify="space-between">Prova annullata</ion-toggle></ion-item>
-            <ion-item lines="none"><ion-toggle formControlName="rehearsalDeleted" justify="space-between">Prova eliminata</ion-toggle></ion-item>
-          </ion-card-content>
-        </ion-card>
+        <article class="card bg-base-200 border border-base-300 my-4" formGroupName="events">
+          <header class="px-6 pt-6">
+            <h2 class="card-title">Prove</h2>
+          </header>
+          <div class="card-body">
+            <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="rehearsalCreated" /><span>Nuova prova</span></label></div>
+            <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="rehearsalUpdated" /><span>Prova modificata</span></label></div>
+            <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="rehearsalCancelled" /><span>Prova annullata</span></label></div>
+            <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="rehearsalDeleted" /><span>Prova eliminata</span></label></div>
+          </div>
+        </article>
 
-        <ion-card formGroupName="events">
-          <ion-card-header>
-            <ion-card-title>Live</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-item><ion-toggle formControlName="gigCreated" justify="space-between">Nuovo live</ion-toggle></ion-item>
-            <ion-item><ion-toggle formControlName="gigUpdated" justify="space-between">Live modificato</ion-toggle></ion-item>
-            <ion-item lines="none"><ion-toggle formControlName="gigDeleted" justify="space-between">Live eliminato</ion-toggle></ion-item>
-          </ion-card-content>
-        </ion-card>
+        <article class="card bg-base-200 border border-base-300 my-4" formGroupName="events">
+          <header class="px-6 pt-6">
+            <h2 class="card-title">Live</h2>
+          </header>
+          <div class="card-body">
+            <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="gigCreated" /><span>Nuovo live</span></label></div>
+            <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="gigUpdated" /><span>Live modificato</span></label></div>
+            <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="gigDeleted" /><span>Live eliminato</span></label></div>
+          </div>
+        </article>
 
-        <ion-card formGroupName="events">
-          <ion-card-header>
-            <ion-card-title>Band</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-item lines="none"><ion-toggle formControlName="memberInvited" justify="space-between">Nuovo invito membro</ion-toggle></ion-item>
-          </ion-card-content>
-        </ion-card>
+        <article class="card bg-base-200 border border-base-300 my-4" formGroupName="events">
+          <header class="px-6 pt-6">
+            <h2 class="card-title">Band</h2>
+          </header>
+          <div class="card-body">
+            <div class="ui-item flex items-center gap-3 py-3"><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="toggle toggle-primary" formControlName="memberInvited" /><span>Nuovo invito membro</span></label></div>
+          </div>
+        </article>
 
         @if (error()) {
-          <ion-note class="ion-padding" color="danger">{{ error() }}</ion-note>
+          <small class="text-sm text-error p-4">{{ error() }}</small>
         }
 
-        <ion-button class="ion-margin" expand="block" type="submit" [disabled]="saving()">
-          @if (saving()) { <ion-spinner name="crescent" /> } @else { Salva notifiche }
-        </ion-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary ion-margin" type="submit" [disabled]="saving()">
+          @if (saving()) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Salva notifiche }
+        </app-gigsaw-button>
       </form>
     </div>
   }
-</ion-content>
+</section>

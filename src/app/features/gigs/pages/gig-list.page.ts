@@ -1,34 +1,17 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonLabel,
-  IonMenuButton,
-  IonRefresher,
-  IonRefresherContent,
-  IonSegment,
-  IonSegmentButton,
-  IonSkeletonText,
-  IonText,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { add, alertCircleOutline, calendarClearOutline, locationOutline, timeOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
 import { GigService } from '../services/gig.service';
 
 type GigFilter = 'upcoming' | 'past' | 'all';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NgClass, RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonLabel, IonMenuButton, IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonSkeletonText, IonText, IonTitle, IonToolbar],
+  imports: [NativeUiModule, NgClass, RouterLink, ],
   templateUrl: './gig-list.page.html',
   styleUrl: './gig-list.page.scss',
 })
@@ -45,7 +28,7 @@ export class GigListPage implements OnInit {
   readonly upcomingCount = computed(() => this.gigs().filter((gig) => this.isUpcoming(gig)).length);
 
   constructor(private readonly gigsApi: GigService) {
-    addIcons({ add, alertCircleOutline, calendarClearOutline, locationOutline, timeOutline });
+
   }
 
   ngOnInit(): void {

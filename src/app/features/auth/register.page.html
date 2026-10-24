@@ -1,4 +1,4 @@
-<ion-content appAuthKeyboardScroll class="[--padding-start:16px] [--padding-end:16px]" [fullscreen]="true">
+<section appAuthKeyboardScroll class="app-content [--padding-start:16px] [--padding-end:16px]" >
   <div class="mx-auto flex w-full max-w-[340px] min-w-0 flex-col gap-4">
     <div class="grid justify-items-center gap-[14px] py-2 text-center">
       <picture>
@@ -9,35 +9,34 @@
           alt="GigSaw logo"
         />
       </picture>
-      <p class="m-0 max-w-96 text-[0.95rem] text-[var(--ion-color-medium)] [overflow-wrap:anywhere]">
+      <p class="m-0 max-w-96 text-[0.95rem] text-[var(--ui-color-medium)] [overflow-wrap:anywhere]">
         La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong>
       </p>
     </div>
-    <p class="m-0 rounded-lg border border-[var(--ion-color-primary)] bg-[var(--ion-card-background)] px-3 py-2.5 text-left text-sm font-medium text-[var(--gigsaw-text)]">
+    <p class="m-0 rounded-lg border border-[var(--ui-color-primary)] bg-[var(--ui-card-background)] px-3 py-2.5 text-left text-sm font-medium text-[var(--gigsaw-text)]">
       Registrati con il tuo nome e cognome.<br />
       Il nome della band potrai inserirlo successivamente.
     </p>
     <form class="flex w-full flex-col gap-4" (submit)="submit(); $event.preventDefault()">
       <div aria-hidden="true" inert style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;">
         <label for="registration-website">Sito web</label>
-        <input id="registration-website" name="website" type="text" autocomplete="off" tabindex="-1"
-          [value]="website()" (input)="website.set($any($event.target).value)" />
+        <app-gigsaw-input id="registration-website" name="website" type="text" autocomplete="off" tabindex="-1"
+          [value]="website()" (valueChange)="website.set($any($event))" />
       </div>
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Nome e cognome</span>
-        <ion-input class="min-h-12 w-full font-normal"
-          mode="md"
+        <app-gigsaw-input
           aria-label="Nome e cognome"
           autocapitalize="words"
-          [class.ion-touched]="touched()"
+          [controlClass]="'min-h-12 font-normal ' + (touched() ? 'is-touched' : '')"
           [disabled]="loading"
           name="name"
           autocomplete="name"
           placeholder="Nome e cognome"
           [value]="name()"
-          [class.ion-invalid]="touched() && !nameValid()"
-          (ionInput)="updateName($event.detail.value ?? '')"
-      />
+          [invalid]="touched() && !nameValid()"
+          (valueChange)="updateName($event)"
+        />
       </label>
       @if (touched() && !nameValid()) {
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci il nome.</app-gigsaw-message>
@@ -45,29 +44,28 @@
 
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Email</span>
-        <ion-input class="min-h-12 w-full font-normal"
-          mode="md"
+        <app-gigsaw-input
           aria-label="Email"
-          inputmode="email"
+          inputMode="email"
           autocapitalize="off"
           [spellcheck]="false"
-          [class.ion-touched]="touched()"
+          [controlClass]="'min-h-12 font-normal ' + (touched() ? 'is-touched' : '')"
           [disabled]="loading"
           type="email"
           name="email"
           autocomplete="email"
           placeholder="es. mario.rossi@gmail.com"
           [value]="email()"
-          [class.ion-invalid]="touched() && !emailValid()"
-          (ionInput)="updateEmail($event.detail.value ?? '')"
-      />
+          [invalid]="touched() && !emailValid()"
+          (valueChange)="updateEmail($event)"
+        />
       </label>
       @if (touched() && !emailValid()) {
         <app-gigsaw-message tone="error" messageClass="mt-2">Inserisci una email valida.</app-gigsaw-message>
       }
 
       @if (spamPreparing()) {
-        <p class="text-sm text-[var(--ion-color-medium)]" role="status">Verifica in corso…</p>
+        <p class="text-sm text-[var(--ui-color-medium)]" role="status">Verifica in corso…</p>
       }
 
       @if (error) {
@@ -78,4 +76,4 @@
     </form>
     <a class="block w-full rounded-md whitespace-normal text-center" routerLink="/accedi" [queryParams]="{ returnUrl }">Hai già un account? Accedi</a>
   </div>
-</ion-content>
+</section>

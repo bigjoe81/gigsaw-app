@@ -1,6 +1,6 @@
 :host { display: block; width: 100%; max-width: none; }
 
-ion-content {
+.app-content {
   width: 100%;
   max-width: none;
   --padding-start: 24px;
@@ -10,9 +10,15 @@ ion-content {
 }
 
 @media (max-width: 900px) {
-  ion-content {
+  .app-content {
     --padding-start: 16px;
     --padding-end: 16px;
     --padding-top: 16px;
   }
 }
+
+.editor-layout { display: grid; grid-template-columns: minmax(220px,1fr) minmax(0,2fr) minmax(220px,1fr); gap: 24px; padding: 24px; }
+.editor-layout > div { min-width: 0; }
+.editor-layout h2 { margin-block: 16px; font-weight: 700; }
+.editor-layout input, .editor-layout select { margin-block: 8px; }
+@media(max-width:1000px) { .editor-layout { grid-template-columns: 1fr; } }

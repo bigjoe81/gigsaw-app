@@ -5,14 +5,14 @@
   margin: 0;
 }
 
-ion-content {
+.app-content {
   width: 100%;
   max-width: none;
   --padding-start: 0;
   --padding-end: 0;
 }
 
-ion-content::part(scroll) {
+.app-content {
   box-sizing: border-box;
   width: 100%;
   max-width: none;
@@ -20,7 +20,7 @@ ion-content::part(scroll) {
   padding-bottom: 80px;
 }
 
-ion-card {
+.card {
   width: 100%;
   margin: 0;
   border: 0;
@@ -30,17 +30,17 @@ ion-card {
   box-shadow: none;
 }
 
-ion-card::part(native) {
+.card {
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
 
-ion-card ion-card-header {
+.card .px-6 {
   padding: 8px 0 14px;
 }
 
-ion-card ion-card-content {
+.card .card-body {
   padding: 0;
 }

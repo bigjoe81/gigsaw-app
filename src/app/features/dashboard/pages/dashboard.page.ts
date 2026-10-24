@@ -1,30 +1,9 @@
+import { BandFlowService } from '../../../core/services/band-flow.service';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, of, timeout } from 'rxjs';
-import {
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonMenuButton,
-  IonSpinner,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  addOutline,
-  calendarOutline,
-  chevronForwardOutline,
-  clipboardOutline,
-  listOutline,
-  locationOutline,
-  micOutline,
-  musicalNotesOutline,
-  peopleOutline,
-  ticketOutline,
-  timeOutline,
-} from 'ionicons/icons';
 import { AuthService } from '../../../core/auth/auth.service';
 import {
   Commitment,
@@ -58,19 +37,11 @@ interface OperationalEvent {
   ready: boolean;
 }
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     RouterLink,
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonIcon,
-    IonMenuButton,
-    IonSpinner,
-    IonTitle,
-    IonToolbar,
-  ],
+    ],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
 })
@@ -85,6 +56,9 @@ export class DashboardPage {
   private readonly commitments = inject(CommitmentService);
   private readonly setlists = inject(SetlistService);
 
+  private readonly bandFlow = inject(BandFlowService);
+  readonly flow = signal<'building' | 'importing' | 'active'>('active');
+  readonly calibrationQueryParams = computed(() => ({ bandId: this.bandContext.getCurrentBand(), percorso: 1 }));
   readonly loading = signal(true);
   readonly loadError = signal('');
   readonly band = signal<Band | null>(null);
@@ -113,22 +87,10 @@ export class DashboardPage {
   ];
 
   constructor() {
-    addIcons({
-      addOutline,
-      calendarOutline,
-      chevronForwardOutline,
-      clipboardOutline,
-      listOutline,
-      locationOutline,
-      micOutline,
-      musicalNotesOutline,
-      peopleOutline,
-      ticketOutline,
-      timeOutline,
-    });
+
   }
 
-  ionViewWillEnter(): void {
+  ngOnInit(): void {
     this.loadDashboard();
   }
 
@@ -164,6 +126,7 @@ export class DashboardPage {
       finalize(() => this.loading.set(false)),
     ).subscribe(({ band, songs, gigs, rehearsals, commitments, setlists }) => {
       if (!band) this.loadError.set('Alcuni dati della band non sono disponibili.');
+      this.flow.set(this.bandFlow.infer({ songs: songs.length, gigs: gigs.filter(gig => !gig.bandId || gig.bandId === bandId).length, rehearsals: rehearsals.filter(rehearsal => !rehearsal.bandId || rehearsal.bandId === bandId).length }, this.bandFlow.get(bandId)));
       this.populateDashboard(
         band,
         songs,

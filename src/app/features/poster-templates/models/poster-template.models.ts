@@ -10,6 +10,11 @@ export interface PosterFormat {
   height: number;
 }
 
+export interface PosterBackgroundFocus {
+  xRatio: number;
+  yRatio: number;
+}
+
 export interface PosterField {
   id: string;
   key: PosterFieldKey;
@@ -29,6 +34,7 @@ export interface PosterTemplateDocument {
   version: 1;
   format: PosterFormat;
   backgroundDataUrl: string | null;
+  backgroundFocus?: PosterBackgroundFocus;
   fields: PosterField[];
 }
 

@@ -1,89 +1,50 @@
-<ion-split-pane contentId="band-content" when="(min-width: 600px)" [class.menu-collapsed]="menuCollapsed()" (click)="handleLayoutClick($event)">
-  <ion-menu class="[--background:var(--gigsaw-background)] border-r border-[var(--gigsaw-border)]" contentId="band-content" menuId="band-menu">
-    <ion-content>
-      <header
-        class="flex items-center justify-center px-[var(--menu-brand-padding-x)] pt-[var(--menu-brand-padding-top)] pb-[10px]"
-        [style.--menu-brand-padding-x]="menuCollapsed() ? '8px' : '18px'"
-        [style.--menu-brand-padding-top]="menuCollapsed() ? '16px' : '18px'"
-      >
-        <img src="assets/logo-hor.png" alt="GigSaw" class="block h-auto w-[var(--menu-logo-width)] max-w-full" [style.--menu-logo-width]="menuCollapsed() ? '56px' : '168px'" />
-      </header>
+<div class="app-shell" (click)="handleLayoutClick($event)">
+  <header class="flow-header">
+    <a routerLink="/band" class="brand-link" aria-label="GigSaw - cambia band">
+      <img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" />
+    </a>
 
-      @if (currentBand(); as band) {
-        <section
-          class="flex min-w-0 items-center gap-[11px] mx-[var(--current-band-margin)] mt-[6px] mb-[10px] p-[var(--current-band-padding)] border border-[var(--gigsaw-border)] rounded-lg bg-[var(--gigsaw-surface)]"
-          [style.--current-band-margin]="menuCollapsed() ? '8px' : '12px'"
-          [style.--current-band-padding]="menuCollapsed() ? '8px' : '11px'"
-          [class.justify-center]="menuCollapsed()"
-          [attr.title]="band.name"
-          aria-label="Band corrente"
-        >
-          @if (band.logo) {
-            <img class="grid size-10 shrink-0 place-items-center rounded-[7px] object-cover" [src]="band.logo" [alt]="'Logo ' + band.name" />
-          } @else {
-            <span class="grid size-10 shrink-0 place-items-center rounded-[7px] bg-[color-mix(in_srgb,var(--ion-color-primary)_18%,var(--gigsaw-surface))] text-[.78rem] font-black tracking-[.04em] text-white" aria-hidden="true">{{ bandInitials(band.name) }}</span>
-          }
-          <span class="grid min-w-0 gap-px" [class.hidden]="menuCollapsed()">
-            <small class="text-[.62rem] font-extrabold uppercase tracking-[.08em] text-[var(--gigsaw-muted)]">Band corrente</small>
-            <strong class="overflow-hidden text-ellipsis whitespace-nowrap text-[.88rem] text-[var(--gigsaw-text)]">{{ band.name }}</strong>
-            @if (band.city || band.country) {
-              <span class="overflow-hidden text-ellipsis whitespace-nowrap text-[.7rem] text-[var(--gigsaw-muted)]">{{ band.city }}@if (band.city && band.country) { · }{{ band.country }}</span>
-            }
-          </span>
-        </section>
-      } @else if (currentBandLoading()) {
-        <div
-          class="flex min-w-0 items-center gap-[11px] mx-[var(--current-band-margin)] mt-[6px] mb-[10px] p-[var(--current-band-padding)] border border-[var(--gigsaw-border)] rounded-lg bg-[var(--gigsaw-surface)]"
-          [style.--current-band-margin]="menuCollapsed() ? '8px' : '12px'"
-          [style.--current-band-padding]="menuCollapsed() ? '8px' : '11px'"
-          [class.justify-center]="menuCollapsed()"
-          aria-label="Caricamento band corrente"
-        >
-          <span class="size-10 shrink-0 animate-pulse rounded-[7px] bg-[var(--gigsaw-border)]"></span>
-          <span class="grid min-w-0 gap-px" [class.hidden]="menuCollapsed()">
-            <span class="h-3 w-20 animate-pulse rounded bg-[var(--gigsaw-border)]"></span>
-            <span class="h-4 w-28 animate-pulse rounded bg-[var(--gigsaw-border)]"></span>
-          </span>
-        </div>
-      }
-
-      <ion-list class="bg-transparent p-2 pt-1" lines="none">
-        @for (section of sections; track section.key) {
-          <ion-menu-toggle [autoHide]="false">
-            <ion-item
-              [detail]="false"
-              [routerLink]="sectionHref(section.key)"
-              routerLinkActive="is-active"
-              [routerLinkActiveOptions]="{ exact: false }"
-              [title]="section.label"
-              class="my-0.5 mx-0 font-semibold [--min-height:44px] [--padding-start:var(--menu-item-padding-start)] [--inner-padding-end:var(--menu-item-padding-end)] [--background:transparent] [--border-radius:6px] [&.is-active]:relative [&.is-active]:[--background:color-mix(in_srgb,var(--ion-color-primary)_10%,var(--gigsaw-surface))] [&.is-active]:[--border-radius:6px] [&.is-active]:[--color:var(--gigsaw-text)] [&.is-active_ion-icon]:text-[var(--ion-color-primary)]"
-              [style.--menu-item-padding-start]="menuCollapsed() ? '0px' : '20px'"
-              [style.--menu-item-padding-end]="menuCollapsed() ? '0px' : '12px'"
-            >
-              <ion-icon class="text-xl text-[var(--ion-color-medium)]" aria-hidden="true" slot="start" [name]="section.icon" />
-              <ion-label [class.hidden]="menuCollapsed()">{{ section.label }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
+    @if (currentBand(); as band) {
+      <div class="band-chip" [attr.title]="band.name">
+        @if (band.logo) {
+          <img class="band-chip__avatar" [src]="band.logo" [alt]="'Logo ' + band.name" />
+        } @else {
+          <span class="band-chip__avatar band-chip__initials" aria-hidden="true">{{ bandInitials(band.name) }}</span>
         }
-      </ion-list>
+        <div class="band-chip__copy">
+          <strong>{{ band.name }}</strong>
+          <span>La tua band. Organizzata.</span>
+        </div>
+      </div>
+    }
 
-      <ion-list class="absolute inset-x-0 bottom-[10px] bg-transparent p-2" lines="none">
-        <ion-menu-toggle [autoHide]="false">
-          <ion-item
-            class="my-0.5 mx-0 font-semibold [--min-height:44px] [--padding-start:var(--menu-item-padding-start)] [--inner-padding-end:var(--menu-item-padding-end)] [--background:transparent] [--border-radius:6px]"
-            [style.--menu-item-padding-start]="menuCollapsed() ? '0px' : '20px'"
-            [style.--menu-item-padding-end]="menuCollapsed() ? '0px' : '12px'"
-            [detail]="false"
-            routerLink="/band"
-            title="Cambia band"
-          >
-            <ion-icon class="text-xl text-[var(--ion-color-medium)]" aria-hidden="true" slot="start" name="arrow-back-outline" />
-            <ion-label [class.hidden]="menuCollapsed()">Cambia band</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
+    <nav class="flow-nav" aria-label="Navigazione principale">
+      @for (section of sections; track section.key) {
+        <a
+          class="flow-nav__item"
+          [routerLink]="sectionHref(section.key)" queryParamsHandling="preserve"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          <app-symbol [name]="section.icon" aria-hidden="true" />
+          <span>{{ section.label }}</span>
+        </a>
+      }
+    </nav>
+  </header>
 
-  <ion-router-outlet id="band-content" [animated]="pageTransitionsEnabled" />
-</ion-split-pane>
+  @if (menuCollapsed()) {
+    <button class="mobile-backdrop" aria-label="Chiudi menu" (click)="closeMobileMenu()"></button>
+    <aside class="mobile-menu" aria-label="Menu band">
+      <div class="mobile-menu-head"><img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" /><strong>{{ currentBand()?.name }}</strong></div>
+      <nav class="grid gap-2 p-4">
+        @for (section of sections; track section.key) {
+          <a class="btn btn-ghost justify-start" [routerLink]="sectionHref(section.key)" (click)="closeMobileMenu()"><app-symbol [name]="section.icon" />{{ section.label }}</a>
+        }
+        <a class="btn btn-ghost justify-start" [routerLink]="sectionHref('home').replace('/panoramica', '/inizia')" (click)="closeMobileMenu()">Cosa vuoi fare?</a>
+        <a class="btn btn-ghost justify-start" routerLink="/band" (click)="closeMobileMenu()">Cambia band</a>
+      </nav>
+    </aside>
+  }
+  <div class="route-content" (click)="closeMobileMenu()"><router-outlet /></div>
+</div>

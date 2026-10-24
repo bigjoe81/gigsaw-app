@@ -1,6 +1,6 @@
+import { ToastService } from '../ui/native-ui';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ToastController } from '@ionic/angular/standalone';
 import { of } from 'rxjs';
 import { GigFormPage } from '../../features/gigs/pages/gig-form.page';
 import { GigService } from '../../features/gigs/services/gig.service';
@@ -13,7 +13,7 @@ import { MapboxGeocodingService } from '../../features/venues/services/mapbox-ge
 import { eventTitleDate } from './event-title';
 
 const route = (id: string | null = null) => ({ snapshot: { paramMap: { get: (key: string) => key === 'id' ? id : null } } }) as unknown as ActivatedRoute;
-const toast = { create: () => Promise.resolve({ present: () => Promise.resolve() }) } as unknown as ToastController;
+const toast = { create: () => Promise.resolve({ present: () => Promise.resolve() }) } as unknown as ToastService;
 const router = { navigateByUrl: () => Promise.resolve(true) } as unknown as Router;
 
 describe('Event titles', () => {
@@ -78,7 +78,6 @@ describe('Event titles', () => {
     page.ngOnDestroy();
     const editing = makePage('1');
     editing.ngOnInit();
-    editing.ionViewWillEnter();
     editing.form.controls.date.setValue('2026-11-05');
     expect(editing.form.controls.title.value).toBe('Prova generale');
     editing.ngOnDestroy();

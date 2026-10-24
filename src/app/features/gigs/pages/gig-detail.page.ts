@@ -1,29 +1,16 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  AlertController,
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonNote,
-  IonSkeletonText,
-  IonTitle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, locationOutline, pencilOutline, timeOutline, trashOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
 import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
 import { GigService } from '../services/gig.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [GigPostersComponent, RouterLink, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [NativeUiModule, GigPostersComponent, RouterLink, ],
   templateUrl: './gig-detail.page.html',
   styleUrl: './gig-detail.page.scss',
 })
@@ -37,10 +24,10 @@ export class GigDetailPage implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly gigsApi: GigService,
-    private readonly alert: AlertController,
-    private readonly toast: ToastController,
+    private readonly alert: DialogService,
+    private readonly toast: ToastService,
   ) {
-    addIcons({ calendarOutline, locationOutline, pencilOutline, timeOutline, trashOutline });
+
   }
 
   ngOnInit(): void {

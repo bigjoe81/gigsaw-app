@@ -1,14 +1,14 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button [defaultHref]="listUrl" /></ion-buttons>
-    <ion-title>{{ editing() ? 'Modifica impegno' : 'Nuovo impegno' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" [defaultHref]="listUrl"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div>
+    <h1 class="grow text-xl">{{ editing() ? 'Modifica impegno' : 'Nuovo impegno' }}</h1>
+  </div>
+</header>
 
-<ion-content>
+<section class="app-content">
   <main class="w-full px-[clamp(20px,5vw,72px)] pt-[42px] pb-[100px] text-[var(--gigsaw-text)] max-[720px]:px-[18px] max-[720px]:pt-7 max-[720px]:pb-[90px]">
     <header class="mb-[30px]">
-      <span class="text-[var(--ion-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Agenda band</span>
+      <span class="text-[var(--ui-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Agenda band</span>
       <h1 class="my-2 text-[1.8rem]">{{ editing() ? 'Modifica impegno' : 'Aggiungi un impegno' }}</h1>
       <p class="m-0 text-[var(--gigsaw-muted)]">Per appuntamenti diversi da prove e live: studio, shooting, interviste, riunioni e trasferte.</p>
     </header>
@@ -20,55 +20,55 @@
         <div class="grid grid-cols-2 gap-5 max-[720px]:grid-cols-1">
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750] col-span-full">
             <span>Titolo (facoltativo)</span>
-            <ion-input formControlName="title" placeholder="Es. Sessione in studio" />
+            <app-gigsaw-input formControlName="title" placeholder="Es. Sessione in studio" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Tipo *</span>
-            <ion-select formControlName="type" interface="popover">
-              <ion-select-option value="photo_shoot">Shoot fotografico</ion-select-option>
-              <ion-select-option value="recording">Sessione di registrazione</ion-select-option>
-              <ion-select-option value="interview">Intervista</ion-select-option>
-              <ion-select-option value="meeting">Riunione</ion-select-option>
-              <ion-select-option value="travel">Trasferta</ion-select-option>
-              <ion-select-option value="promo">Promo</ion-select-option>
-              <ion-select-option value="other">Altro</ion-select-option>
-            </ion-select>
+            <select class="select w-full" formControlName="type">
+              <option value="photo_shoot">Shoot fotografico</option>
+              <option value="recording">Sessione di registrazione</option>
+              <option value="interview">Intervista</option>
+              <option value="meeting">Riunione</option>
+              <option value="travel">Trasferta</option>
+              <option value="promo">Promo</option>
+              <option value="other">Altro</option>
+            </select>
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Stato *</span>
-            <ion-select formControlName="status" interface="popover">
-              <ion-select-option value="scheduled">Da confermare</ion-select-option>
-              <ion-select-option value="confirmed">Confermato</ion-select-option>
-              <ion-select-option value="completed">Completato</ion-select-option>
-              <ion-select-option value="cancelled">Annullato</ion-select-option>
-            </ion-select>
+            <select class="select w-full" formControlName="status">
+              <option value="scheduled">Da confermare</option>
+              <option value="confirmed">Confermato</option>
+              <option value="completed">Completato</option>
+              <option value="cancelled">Annullato</option>
+            </select>
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Data *</span>
-            <ion-input type="date" formControlName="date" />
+            <app-gigsaw-datepicker formControlName="date" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Luogo</span>
-            <ion-input formControlName="location" placeholder="Es. Studio, locale o indirizzo" />
+            <app-gigsaw-input formControlName="location" placeholder="Es. Studio, o indirizzo" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Ora inizio</span>
-            <ion-input type="time" formControlName="startTime" />
+            <app-gigsaw-time-input formControlName="startTime" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750]">
             <span>Ora fine</span>
-            <ion-input type="time" formControlName="endTime" />
+            <app-gigsaw-time-input formControlName="endTime" />
           </label>
 
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750] col-span-full">
             <span>Note</span>
-            <ion-textarea formControlName="notes" [rows]="5" [autoGrow]="true" placeholder="Dettagli utili per la band" />
+            <app-gigsaw-textarea formControlName="notes" [rows]="5" placeholder="Dettagli utili per la band" />
           </label>
         </div>
 
@@ -76,16 +76,16 @@
           <p class="mt-5 rounded-lg bg-[#351a21] px-[14px] py-3 text-[#ffbbc3]">{{ error() }}</p>
         }
 
-        <footer class="mt-7 grid grid-cols-[auto_1fr_auto] items-center gap-3 max-[720px]:grid-cols-1 max-[720px]:[&>span]:hidden max-[720px]:[&>ion-button]:w-full">
+        <footer class="mt-7 grid grid-cols-[auto_1fr_auto] items-center gap-3 max-[720px]:grid-cols-1 max-[720px]:[&>span]:hidden max-[720px]:[&>.btn]:w-full">
           @if (editing()) {
-            <ion-button type="button" fill="clear" color="danger" (click)="remove()">Elimina</ion-button>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-error" type="button" (click)="remove()">Elimina</app-gigsaw-button>
           }
           <span></span>
-          <ion-button type="submit" [disabled]="saving()">
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="submit" [disabled]="saving()">
             {{ saving() ? 'Salvataggio…' : 'Salva impegno' }}
-          </ion-button>
+          </app-gigsaw-button>
         </footer>
       </form>
     }
   </main>
-</ion-content>
+</section>

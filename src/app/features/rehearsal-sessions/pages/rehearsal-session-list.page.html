@@ -1,61 +1,61 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-menu-button menu="band-menu" /></ion-buttons>
-    <ion-title>Prove</ion-title>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="bg-[var(--gigsaw-background)]">
-  <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button></div>
+    <h1 class="grow text-xl">Prove</h1>
+  </div>
+</header>
+<section class="app-content bg-[var(--gigsaw-background)]">
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()"><app-symbol name="refresh-outline" /> Aggiorna</app-gigsaw-button>
   @if (loading()) {
     <app-gigsaw-list listClass="grid gap-2.5 bg-transparent p-0">
       @for (i of [1, 2, 3]; track i) {
         <app-gigsaw-list-item itemClass="min-h-[88px] rounded-[15px] border border-[var(--gigsaw-border)] [--background:#101d30] [--color:var(--gigsaw-text)] [--padding-start:14px] [--inner-padding-end:16px]">
           <div class="min-w-0 grow">
-            <ion-skeleton-text [animated]="true" style="width:55%" />
-            <ion-skeleton-text [animated]="true" style="width:35%" />
+            <span class="skeleton block h-4 my-2" style="width:55%" ></span>
+            <span class="skeleton block h-4 my-2" style="width:35%" ></span>
           </div>
         </app-gigsaw-list-item>
       }
     </app-gigsaw-list>
   } @else if (error()) {
     <div class="flex min-h-[55%] flex-col items-center justify-center gap-3 p-6 text-center text-[var(--gigsaw-text)]">
-      <ion-icon class="text-[44px] text-[var(--ion-color-brand-blue)]" name="alert-circle" />
-      <ion-text color="danger">{{ error() }}</ion-text>
-      <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+      <app-symbol class="text-[44px] text-[var(--ui-color-brand-blue)]" name="alert-circle"  />
+      <span class=" text-error">{{ error() }}</span>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
     </div>
   } @else if (!sessions().length) {
     <div class="flex min-h-[55%] flex-col items-center justify-center gap-3 p-6 text-center text-[var(--gigsaw-text)]">
-      <ion-icon class="text-[44px] text-[var(--ion-color-brand-blue)]" name="calendar-outline" />
+      <app-symbol class="text-[44px] text-[var(--ui-color-brand-blue)]" name="calendar-outline"  />
       <strong>Nessuna prova programmata</strong>
       <span class="text-[var(--gigsaw-muted)]">Crea la prima prova della band.</span>
-      <ion-button [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Nuova prova</ion-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" queryParamsHandling="preserve" type="button"><app-symbol name="add"  />Nuova prova</app-gigsaw-button>
     </div>
   } @else {
     <main class="w-full px-6 pb-14 pt-[34px] max-[700px]:px-3 max-[700px]:pb-9 max-[700px]:pt-5">
       <header class="mb-[18px] flex items-end justify-between gap-5 max-[700px]:items-start max-[700px]:flex-col">
         <div>
-          <span class="text-[.72rem] font-extrabold tracking-[.12em] text-[var(--ion-color-primary)]">CALENDARIO</span>
+          <span class="text-[.72rem] font-extrabold tracking-[.12em] text-[var(--ui-color-primary)]">CALENDARIO</span>
           <h1 class="mt-[5px] text-[clamp(1.5rem,3vw,2rem)] text-[var(--gigsaw-text)]">Le tue prove</h1>
         </div>
-        <ion-button class="font-extrabold [--background:var(--ion-color-primary)] [--color:var(--ion-color-primary-contrast)] max-[700px]:self-stretch" [routerLink]="['nuova']"><ion-icon slot="start" name="add" />Nuova prova</ion-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary font-extrabold [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)] max-[700px]:self-stretch" [routerLink]="['nuova']" queryParamsHandling="preserve" type="button"><app-symbol name="add"  />Nuova prova</app-gigsaw-button>
       </header>
       <app-gigsaw-list listClass="grid gap-2.5 bg-transparent p-0">
         @for (s of sessions(); track s.id) {
-          <app-gigsaw-list-item itemClass="min-h-[88px] rounded-[15px] border border-[var(--gigsaw-border)] [--background:#101d30] [--color:var(--gigsaw-text)] [--padding-start:14px] [--inner-padding-end:16px] max-[700px]:[--padding-start:10px] max-[700px]:[--inner-padding-end:12px]" [interactive]="true" [routerLink]="[s.id]">
-            <span class="mr-3.5 grid h-14 w-12 shrink-0 place-content-center justify-items-center rounded-xl bg-[rgba(var(--ion-color-primary-rgb),.12)] text-center text-[var(--ion-color-primary)] max-[700px]:mr-2.5" slot="start">
+          <app-gigsaw-list-item itemClass="min-h-[88px] rounded-[15px] border border-[var(--gigsaw-border)] [--background:#101d30] [--color:var(--gigsaw-text)] [--padding-start:14px] [--inner-padding-end:16px] max-[700px]:[--padding-start:10px] max-[700px]:[--inner-padding-end:12px]" [interactive]="true" [routerLink]="[s.id]" queryParamsHandling="preserve">
+            <span class="mr-3.5 grid h-14 w-12 shrink-0 place-content-center justify-items-center rounded-xl bg-[rgba(var(--ui-color-primary-rgb),.12)] text-center text-[var(--ui-color-primary)] max-[700px]:mr-2.5" slot="start">
               <small class="text-[.64rem] uppercase">{{ formatDate(s.date).split(' ')[0] }}</small>
               <strong class="text-xl">{{ formatDate(s.date).split(' ')[1] }}</strong>
             </span>
             <div class="min-w-0 grow">
-              <h2 class="m-0 font-extrabold">{{ s.title || 'Prova' }}</h2>
+              <h2 class="m-0">{{ s.title || 'Prova' }}</h2>
               <p class="mt-[5px] text-[var(--gigsaw-muted)]">{{ formatDate(s.date) }} · {{ time(s) }}</p>
               @if (s.rehearsalRoom) { <small class="mt-[5px] block overflow-hidden text-ellipsis whitespace-nowrap text-[var(--gigsaw-muted)]">{{ s.rehearsalRoom.name }}{{ s.rehearsalRoom.city ? ' · ' + s.rehearsalRoom.city : '' }}</small> }
               @else if (s.notes) { <small class="mt-[5px] block overflow-hidden text-ellipsis whitespace-nowrap text-[var(--gigsaw-muted)]">{{ s.notes }}</small> }
             </div>
-            <ion-icon class="text-[22px] text-[var(--ion-color-brand-blue)]" name="calendar-outline" />
+            <app-symbol class="text-[22px] text-[var(--ui-color-brand-blue)]" name="calendar-outline"  />
           </app-gigsaw-list-item>
         }
       </app-gigsaw-list>
     </main>
   }
-</ion-content>
+</section>

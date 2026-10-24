@@ -1,28 +1,11 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 import { SetlistPdfModalComponent } from '../components/setlist-pdf-modal.component';
 
 import { Component, OnInit, signal } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  AlertController,
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonContent,
-  IonHeader,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonSpinner,
-  IonSkeletonText,
-  IonTitle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { BandMember } from '../../bands/models/band.models';
 import { BandService } from '../../bands/services/band.service';
 import { Setlist, SetlistItem } from '../../../core/models/band-resources.models';
@@ -31,30 +14,14 @@ import { SetlistPdfService, SetlistPdfFormat } from '../services/setlist-pdf.ser
 import { SetlistService } from '../services/setlist.service';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     SetlistPdfModalComponent,
     RouterLink,
     GigsawListComponent,
     GigsawListItemComponent,
-    IonBackButton,
-    IonButton,
-    IonButtons,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonContent,
-    IonHeader,
-    IonItem,
-    IonLabel,
-    IonNote,
-    IonSpinner,
-    IonSkeletonText,
-    IonTitle,
-    IonToolbar
-],
+    ],
   templateUrl: './setlist-detail.page.html',
 })
 export class SetlistDetailPage implements OnInit {
@@ -98,8 +65,8 @@ export class SetlistDetailPage implements OnInit {
     private readonly bandApi: BandService,
     private readonly setlistPdf: SetlistPdfService,
     private readonly setlistsApi: SetlistService,
-    private readonly alert: AlertController,
-    private readonly toast: ToastController,
+    private readonly alert: DialogService,
+    private readonly toast: ToastService,
   ) {}
 
   ngOnInit(): void {

@@ -1,16 +1,18 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../shared/ui/native-ui';
 import { Component, computed, signal, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { switchMap, timer, map } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonContent, IonInput } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth.service';
 import { GigsawButtonComponent, GigsawMessageComponent } from '../../shared/ui/gigsaw';
 
 import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
+import { GigsawFormControlsModule } from '../../shared/ui/gigsaw/gigsaw-form-controls.module';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, IonContent, IonInput],
+  imports: [NativeUiModule, GigsawFormControlsModule, AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, ],
   templateUrl: './register.page.html',
   styleUrls: ['./auth-layout.scss'],
 })
@@ -55,12 +57,12 @@ export class RegisterPage implements OnInit {
     });
   }
 
-  updateName(name: string): void {
-    this.name.set(name);
+  updateName(name: string | number | null): void {
+    this.name.set(String(name ?? ''));
   }
 
-  updateEmail(email: string): void {
-    this.email.set(email);
+  updateEmail(email: string | number | null): void {
+    this.email.set(String(email ?? ''));
   }
 
   requestOtp(): void {

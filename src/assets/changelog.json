@@ -1,0 +1,73 @@
+{
+  "current": "2026-10-08-band-flows",
+  "releases": [
+    {
+      "id": "2026-10-08-band-flows",
+      "date": "2026-10-08",
+      "label": "Beta",
+      "title": "GigSaw segue il flusso reale della band",
+      "summary": "Nuovo onboarding basato sul punto in cui si trova davvero la band.",
+      "highlights": [
+        "Percorsi diversi per band appena nate, repertori esistenti e band già attive",
+        "Primo passo contestuale invece della solita dashboard generica",
+        "Changelog in-app con version history"
+      ]
+    },
+    {
+      "id": "2026-10-07-security",
+      "date": "2026-10-07",
+      "label": "Beta",
+      "title": "Registrazione più protetta",
+      "summary": "Antispam invisibile e miglioramenti al flusso di registrazione.",
+      "highlights": ["Protezione antispam senza CAPTCHA visibile", "Identificazione sessioni Clarity per il debugging"]
+    },
+    {
+      "id": "2026-10-06-billing-support",
+      "date": "2026-10-06",
+      "label": "Beta",
+      "title": "Billing e assistenza migliorati",
+      "summary": "Prime fondamenta SaaS e supporto più pratico.",
+      "highlights": ["Impostazioni abbonamento per band", "Screenshot nei ticket di assistenza", "Correzioni tastiera iOS"]
+    },
+    {
+      "id": "2026-10-03-agenda",
+      "date": "2026-10-03",
+      "label": "Beta",
+      "title": "Arriva l’agenda della band",
+      "summary": "Prove, live e altri impegni finalmente nello stesso calendario.",
+      "highlights": ["Calendario Impegni unificato", "Shoot, registrazioni, interviste, viaggi e promo", "Aggiornamento immediato delle sale prove"]
+    },
+    {
+      "id": "2026-10-02-repertoire-ui",
+      "date": "2026-10-02",
+      "label": "Beta",
+      "title": "Repertorio e scalette più leggibili",
+      "summary": "Più chiarezza nell’editing dei brani e nelle scalette.",
+      "highlights": ["Risultati metadati come card cliccabili", "Medley persistenti e visivamente distinti", "Form Ionic uniformati"]
+    },
+    {
+      "id": "2026-10-02-notifications",
+      "date": "2026-10-02",
+      "label": "Beta",
+      "title": "Notifiche e impostazioni band",
+      "summary": "Più controllo sulle comunicazioni e sull’amministrazione della band.",
+      "highlights": ["Notifiche email configurabili", "Impostazioni full width", "Locandine full width"]
+    },
+    {
+      "id": "2026-10-01-support",
+      "date": "2026-10-01",
+      "label": "Beta",
+      "title": "Assistenza nativa in GigSaw",
+      "summary": "Il supporto entra direttamente nell’app.",
+      "highlights": ["Ticket nativi al posto di Zoho", "Conversazioni e risposte dentro GigSaw"]
+    },
+    {
+      "id": "2026-09-30-auth",
+      "date": "2026-09-30",
+      "label": "Beta",
+      "title": "Accesso più coerente su mobile",
+      "summary": "Login e registrazione passano a controlli Ionic reali.",
+      "highlights": ["Input Ionic in login e registrazione", "Autofill e tastiera mobile migliorati"]
+    }
+  ]
+}

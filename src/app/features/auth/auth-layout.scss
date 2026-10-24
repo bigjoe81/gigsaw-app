@@ -1,15 +1,2 @@
-:host ion-content {
-  --background: var(--gigsaw-background);
-}
-
-:host ion-content::part(scroll) {
-  min-height: 100%;
-  display: grid;
-  align-items: center;
-  padding-top: max(24px, var(--ion-safe-area-top));
-  padding-bottom: calc(max(24px, var(--ion-safe-area-bottom)) + var(--auth-keyboard-inset, 0px));
-}
-
-:host ion-content.auth-keyboard-open::part(scroll) {
-  align-items: start;
-}
+:host .app-content { display: grid; align-items: center; padding-top: max(24px, env(safe-area-inset-top, 0px)); padding-bottom: calc(max(24px, env(safe-area-inset-bottom, 0px)) + var(--auth-keyboard-inset, 0px)); }
+:host .app-content.auth-keyboard-open { align-items: start; }

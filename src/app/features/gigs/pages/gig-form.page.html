@@ -5,27 +5,27 @@
     subtitle="Data, venue e dettagli operativi: tutto ciò che serve alla band per arrivare pronta sul palco."
     backHref="../"
   />
-<ion-content>
+<section class="app-content">
   <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
     <section class="form-container w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
       <form id="gig-form" [formGroup]="form" (ngSubmit)="save()" class="w-full pb-28 text-[var(--gigsaw-text)]">
         @if (loading()) {
-          <div class="flex min-h-[220px] items-center justify-center gap-2.5 text-[var(--ion-color-medium)]"><ion-spinner name="crescent" /><span>Caricamento…</span></div>
+          <div class="flex min-h-[220px] items-center justify-center gap-2.5 text-[var(--ui-color-medium)]"><span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span><span>Caricamento…</span></div>
         } @else {
       <section class="form-group grid gap-5 pb-[30px]">
         <div class="flex items-start gap-3">
-          <ion-icon class="shrink-0 rounded-[10px] bg-[rgba(var(--ion-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ion-color-primary)]" name="calendar-outline" />
-          <div><h2 class="m-0 text-base font-extrabold">Quando si suona</h2><p class="mt-0.5 text-sm text-[var(--ion-color-medium)]">Titolo, data e orario del live.</p></div>
+          <app-symbol class="shrink-0 rounded-[10px] bg-[rgba(var(--ui-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ui-color-primary)]" name="calendar-outline"  />
+          <div><h2 class="m-0 text-base">Quando si suona</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Titolo, data e orario del live.</p></div>
         </div>
 
         <div class="grid grid-cols-2 gap-3.5 max-[680px]:grid-cols-1">
           <label class="grid min-w-0 gap-[7px] text-sm font-bold">
-            <span>Data <strong class="text-[var(--ion-color-danger)]">*</strong></span>
-            <ion-input class="font-normal" type="date" formControlName="date" aria-label="Data" [class.invalid]="form.controls.date.touched && form.controls.date.invalid" />
+            <span>Data <strong class="text-[var(--ui-color-danger)]">*</strong></span>
+            <app-gigsaw-datepicker formControlName="date" aria-label="Data" [invalid]="form.controls.date.touched && form.controls.date.invalid" controlClass="font-normal" />
           </label>
           <label class="grid min-w-0 gap-[7px] text-sm font-bold">
             <span>Ora inizio</span>
-            <ion-input class="font-normal" type="time" formControlName="time" aria-label="Ora inizio" />
+            <app-gigsaw-time-input formControlName="time" aria-label="Ora inizio" controlClass="font-normal" />
           </label>
         </div>
 
@@ -33,8 +33,8 @@
 
       <section class="form-group grid gap-5 border-t border-[var(--gigsaw-border)] py-[30px]">
         <div class="flex items-start gap-3">
-          <ion-icon class="shrink-0 rounded-[10px] bg-[rgba(var(--ion-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ion-color-primary)]" name="location-outline" />
-          <div><h2 class="m-0 text-base font-extrabold">Dove si suona</h2><p class="mt-0.5 text-sm text-[var(--ion-color-medium)]">Cerca nell’anagrafica o seleziona un nuovo indirizzo.</p></div>
+          <app-symbol class="shrink-0 rounded-[10px] bg-[rgba(var(--ui-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ui-color-primary)]" name="location-outline"  />
+          <div><h2 class="m-0 text-base">Dove si suona</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Cerca nell’anagrafica o seleziona un nuovo indirizzo.</p></div>
         </div>
 
         <app-gigsaw-typeahead
@@ -55,32 +55,33 @@
         />
 
         @if (selectedVenue(); as venue) {
-          <div class="flex items-center justify-between gap-3 rounded-xl border border-[rgba(var(--ion-color-success-rgb),.4)] bg-[rgba(var(--ion-color-success-rgb),.08)] py-[13px] pr-[10px] pl-[15px]">
-            <div class="grid gap-1"><strong>{{ venue.name }}</strong><span class="text-[var(--ion-color-medium)] text-[.84rem]">{{ venueMeta(venue) }}</span></div>
-            <ion-button size="small" fill="clear" type="button" (click)="clearVenueSelection()">Cambia</ion-button>
+          <div class="flex items-center justify-between gap-3 rounded-xl border border-[rgba(var(--ui-color-success-rgb),.4)] bg-[rgba(var(--ui-color-success-rgb),.08)] py-[13px] pr-[10px] pl-[15px]">
+            <div class="grid gap-1"><strong>{{ venue.name }}</strong><span class="text-[var(--ui-color-medium)] text-[.84rem]">{{ venueMeta(venue) }}</span></div>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" type="button" (click)="clearVenueSelection()">Cambia</app-gigsaw-button>
           </div>
         } @else if (pendingVenue(); as venue) {
-          <div class="flex items-center justify-between gap-3 rounded-xl border border-[rgba(var(--ion-color-primary-rgb),.4)] bg-[rgba(var(--ion-color-primary-rgb),.08)] py-[13px] pr-[10px] pl-[15px]">
-            <div class="grid gap-1"><strong>Nuova venue</strong><span class="text-[var(--ion-color-medium)] text-[.84rem]">{{ venue.fullAddress }}</span></div>
-            <ion-button size="small" fill="clear" type="button" (click)="clearVenueSelection()">Cambia</ion-button>
+          <div class="flex items-center justify-between gap-3 rounded-xl border border-[rgba(var(--ui-color-primary-rgb),.4)] bg-[rgba(var(--ui-color-primary-rgb),.08)] py-[13px] pr-[10px] pl-[15px]">
+            <div class="grid gap-1"><strong>Nuova venue</strong><span class="text-[var(--ui-color-medium)] text-[.84rem]">{{ venue.fullAddress }}</span></div>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" type="button" (click)="clearVenueSelection()">Cambia</app-gigsaw-button>
           </div>
         } @else if (!mapboxConfigured()) {
-          <ion-note>Ricerca indirizzi esterna non configurata: puoi selezionare una venue esistente.</ion-note>
+          <small class="text-sm">Ricerca indirizzi esterna non configurata: puoi selezionare una venue esistente.</small>
         }
       </section>
 
+      <details class="my-5 rounded-xl border border-[var(--gigsaw-border)] p-5"><summary class="cursor-pointer font-bold">Aggiungi dettagli</summary>
       <section class="form-group grid gap-5 border-t border-[var(--gigsaw-border)] pt-[30px] pb-[30px]">
         <label class="grid min-w-0 gap-[7px] text-sm font-bold">
           <span>Titolo</span>
-          <ion-input class="font-normal" formControlName="title" aria-label="Titolo" placeholder="Automatico da luogo e data" [class.invalid]="form.controls.title.touched && form.controls.title.invalid" />
+          <app-gigsaw-input formControlName="title" aria-label="Titolo" placeholder="Automatico da luogo e data" [invalid]="form.controls.title.touched && form.controls.title.invalid" controlClass="font-normal" />
           <small class="font-normal text-[var(--gigsaw-muted)]">{{ editing() ? 'Puoi personalizzare il titolo del concerto.' : 'Si compila da luogo e data. Puoi personalizzarlo.' }}</small>
-          @if (form.controls.title.touched && form.controls.title.invalid) { <small class="text-[var(--ion-color-danger)]">Inserisci un titolo.</small> }
+          @if (form.controls.title.touched && form.controls.title.invalid) { <small class="text-[var(--ui-color-danger)]">Inserisci un titolo.</small> }
         </label>
 
 
         <label class="grid min-w-0 gap-[7px] text-sm font-bold">
           <span>Note organizzative</span>
-          <ion-textarea class="font-normal" formControlName="notes" aria-label="Note organizzative" placeholder="Orari, contatti, parcheggio, indicazioni per il palco…" [autoGrow]="true" [rows]="4" />
+          <app-gigsaw-textarea formControlName="notes" aria-label="Note organizzative" placeholder="Orari, contatti, parcheggio, indicazioni per il palco…" [rows]="4" controlClass="font-normal" />
         </label>
       </section>
 
@@ -88,12 +89,13 @@
       <div><h2 class="m-0 text-base">Locandina</h2><p class="mt-1 text-sm text-[var(--gigsaw-muted)]">Ingresso e materiale da condividere.</p></div>
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Prezzo o ingresso per la locandina</span>
-        <ion-input class="font-normal" formControlName="admission" aria-label="Prezzo o ingresso per la locandina" placeholder="Es. Ingresso gratuito oppure € 10" />
+        <app-gigsaw-input formControlName="admission" aria-label="Prezzo o ingresso per la locandina" placeholder="Es. Ingresso gratuito oppure € 10" controlClass="font-normal" />
       </label>
       <app-gig-posters [bandId]="bandId ? '' + bandId : ''" [gigId]="id" [values]="posterValues" />
       </section>
 
-      @if (error()) { <ion-note class="block rounded-xl border border-[rgba(var(--ion-color-danger-rgb),.35)] bg-[rgba(var(--ion-color-danger-rgb),.08)] px-[15px] py-[13px]" color="danger" role="alert">{{ error() }}</ion-note> }
+      </details>
+      @if (error()) { <small class="text-sm text-error block rounded-xl border border-[rgba(var(--ui-color-danger-rgb),.35)] bg-[rgba(var(--ui-color-danger-rgb),.08)] px-[15px] py-[13px]" role="alert">{{ error() }}</small> }
 
 
         }
@@ -103,12 +105,12 @@
   @if (!loading()) {
     <div slot="fixed" class="floating-action-toolbar overflow-hidden" role="toolbar" aria-label="Azioni del form">
       <div class="flex items-center justify-between gap-2.5 p-2.5">
-        <ion-button type="button" fill="clear" [routerLink]="['../']" [disabled]="saving()">Annulla</ion-button>
-        <ion-button type="submit" form="gig-form" [disabled]="saving()">
-          @if (saving()) { <ion-spinner slot="start" name="crescent" /> }
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost" type="button" [routerLink]="['../']" [disabled]="saving()">Annulla</app-gigsaw-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="submit" form="gig-form" [disabled]="saving()">
+          @if (saving()) { <span class="loading loading-spinner" slot="start"  role="status" aria-label="Caricamento"></span> }
           {{ editing() ? 'Salva modifiche' : 'Crea concerto' }}
-        </ion-button>
+        </app-gigsaw-button>
       </div>
     </div>
   }
-</ion-content>
+</section>

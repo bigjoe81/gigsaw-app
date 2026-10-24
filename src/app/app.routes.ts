@@ -47,6 +47,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/google-callback.page').then((m) => m.GoogleCallbackPage),
   },
   {
+    path: 'band/:bandId/inizia',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/guide/guide.page').then((m) => m.GuidePage),
+  },
+  {
     path: 'band/:bandId',
     canActivate: [authGuard],
     component: BandLayoutPage,
@@ -122,7 +127,7 @@ export const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'panoramica',
+        redirectTo: 'inizia',
         pathMatch: 'full',
       },
     ],

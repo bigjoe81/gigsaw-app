@@ -1,19 +1,12 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewChild, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonIcon,
-  IonInput,
-  IonNote,
-  IonSpinner,
-  IonTextarea,
-  ToastController,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, locationOutline } from 'ionicons/icons';
 import {
   catchError,
   debounceTime,
@@ -40,20 +33,14 @@ import { VenueService } from '../../venues/services/venue.service';
 import { GigService } from '../services/gig.service';
 import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
+  GigsawFormControlsModule,
     GigPostersComponent,
     ReactiveFormsModule,
     RouterLink,
     FormPageHeaderComponent,
-    IonButton,
-    IonContent,
-    IonIcon,
-    IonInput,
-    IonNote,
-    IonSpinner,
-    IonTextarea,
     GigsawTypeaheadComponent,
   ],
   templateUrl: './gig-form.page.html',
@@ -106,9 +93,9 @@ export class GigFormPage implements OnInit, OnDestroy {
     private readonly mapbox: MapboxGeocodingService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly toast: ToastController,
+    private readonly toast: ToastService,
   ) {
-    addIcons({ calendarOutline, locationOutline });
+
   }
 
   private lastSuggestedTitle = '';
@@ -193,7 +180,7 @@ export class GigFormPage implements OnInit, OnDestroy {
           return;
         }
         (await this.toast.create({ message: 'Concerto salvato.', duration: 1800, color: 'success' })).present();
-        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/concerti` : '/band');
+        void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'concerto') ?? (this.bandId ? `/band/${this.bandId}/concerti` : '/band'));
       },
       error: (error: unknown) => {
         this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));

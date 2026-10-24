@@ -3,4 +3,4 @@
 :host { display: flex; flex-direction: column; height: 100%; min-height: 0; }
 app-form-page-header { flex-shrink: 0; }
 main, main * { box-sizing: border-box; }
-ion-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background); --padding-bottom: var(--ion-safe-area-bottom, 0px); }
+.app-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background); --padding-bottom: var(--ui-safe-area-bottom, 0px); }

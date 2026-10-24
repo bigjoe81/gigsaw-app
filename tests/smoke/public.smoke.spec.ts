@@ -13,7 +13,7 @@ for (const route of publicRoutes) {
     expect(response, `No document response for ${route.path}`).not.toBeNull();
     expect(response!.status(), `${route.path} returned an HTTP error`).toBeLessThan(400);
     await expect(page.locator('body')).toContainText(route.marker);
-    await expect(page.locator('ion-content')).toBeVisible();
+    await expect(page.locator('.app-content')).toBeVisible();
   });
 }
 
@@ -25,6 +25,6 @@ test('legacy login URL redirects to the Italian route', async ({ page }) => {
 
 test('unknown route does not leave a blank application shell', async ({ page }) => {
   await page.goto('/smoke-route-that-does-not-exist', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('ion-app')).toBeVisible();
+  await expect(page.locator('app-root')).toBeVisible();
   await expect(page.locator('body')).not.toBeEmpty();
 });

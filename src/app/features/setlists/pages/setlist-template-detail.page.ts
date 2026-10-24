@@ -1,30 +1,16 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  AlertController,
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonContent,
-  IonHeader,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonSkeletonText,
-  IonTitle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [NativeUiModule, RouterLink, GigsawListComponent, GigsawListItemComponent, ],
   templateUrl: './setlist-template-detail.page.html',
 })
 export class SetlistTemplateDetailPage implements OnInit {
@@ -36,8 +22,8 @@ export class SetlistTemplateDetailPage implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly setlistsApi: SetlistService,
-    private readonly alert: AlertController,
-    private readonly toast: ToastController,
+    private readonly alert: DialogService,
+    private readonly toast: ToastService,
   ) {}
 
   ngOnInit(): void {

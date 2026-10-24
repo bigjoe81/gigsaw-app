@@ -1,9 +1,11 @@
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { PosterField, PosterTemplateDocument } from '../models/poster-template.models';
 
 type Interaction = { id: string; mode: 'move' | 'resize'; startX: number; startY: number; fieldX: number; fieldY: number; fieldWidth: number };
 
 @Component({
+  imports: [NativeUiModule],
   selector: 'app-poster-canvas',
   standalone: true,
   styles: [':host(.poster-thumbnail) canvas { width: auto; height: auto; max-height: 240px; max-width: 100%; margin: auto; border-radius: 4px; }'],
@@ -140,8 +142,13 @@ export class PosterCanvasComponent implements AfterViewInit, OnChanges {
 
   private drawCover(context: CanvasRenderingContext2D, image: HTMLImageElement, width: number, height: number): void {
     const scale = Math.max(width / image.width, height / image.height);
-    const w = image.width * scale, h = image.height * scale;
-    context.drawImage(image, (width - w) / 2, (height - h) / 2, w, h);
+    const sourceWidth = width / scale;
+    const sourceHeight = height / scale;
+    const focusX = this.clamp(this.document.backgroundFocus?.xRatio ?? .5, 0, 1) * image.width;
+    const focusY = this.clamp(this.document.backgroundFocus?.yRatio ?? .5, 0, 1) * image.height;
+    const sourceX = this.clamp(focusX - sourceWidth / 2, 0, Math.max(0, image.width - sourceWidth));
+    const sourceY = this.clamp(focusY - sourceHeight / 2, 0, Math.max(0, image.height - sourceHeight));
+    context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, width, height);
   }
 
   private toDocumentPoint(event: PointerEvent): { x: number; y: number } {

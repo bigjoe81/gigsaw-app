@@ -1,39 +1,18 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { DialogService, OverlayService, ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, Input, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  AlertController,
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonContent,
-  IonFooter,
-  IonHeader,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonSkeletonText,
-  IonTitle,
-  IonToolbar,
-  ModalController,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { finalize, forkJoin, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';
-import { addIcons } from 'ionicons';
-import { close, musicalNotesOutline } from 'ionicons/icons';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  host: { class: 'ion-page' },
-  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  host: { class: 'detail-page' },
+  imports: [NativeUiModule, RouterLink, GigsawListComponent, GigsawListItemComponent, ],
   templateUrl: './song-detail.page.html',
   styleUrls: ['./song-detail.page.scss'],
 })
@@ -50,11 +29,11 @@ export class SongDetailPage implements OnInit {
     readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly songsApi: SongService,
-    private readonly alert: AlertController,
-    private readonly toast: ToastController,
-    private readonly modalController: ModalController,
+    private readonly alert: DialogService,
+    private readonly toast: ToastService,
+    private readonly modalController: OverlayService,
   ) {
-    addIcons({ close, musicalNotesOutline });
+
   }
 
   ngOnInit(): void {

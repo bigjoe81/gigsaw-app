@@ -1,10 +1,13 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../shared/ui/native-ui';
+import { DialogService } from '../../shared/ui/native-ui';
 import {Component, computed, signal} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {AlertController, IonContent, IonInput} from '@ionic/angular/standalone';
 import {AuthService} from '../../core/auth/auth.service';
 import {GigsawButtonComponent, GigsawMessageComponent} from '../../shared/ui/gigsaw';
 
 import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
+import { GigsawFormControlsModule } from '../../shared/ui/gigsaw/gigsaw-form-controls.module';
 
 type LoginError = {
   status?: number;
@@ -14,9 +17,9 @@ type LoginError = {
   };
 };
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, IonContent, IonInput],
+  imports: [NativeUiModule, GigsawFormControlsModule, AuthKeyboardScrollDirective, RouterLink, GigsawButtonComponent, GigsawMessageComponent, ],
   templateUrl: './login.page.html',
   styleUrls: ['./auth-layout.scss'],
 })
@@ -32,12 +35,12 @@ export class LoginPage {
     private readonly auth: AuthService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly alert: AlertController,
+    private readonly alert: DialogService,
   ) {
   }
 
-  updateEmail(email: string): void {
-    this.email.set(email);
+  updateEmail(email: string | number | null): void {
+    this.email.set(String(email ?? ''));
   }
 
   requestOtp(): void {

@@ -26,9 +26,9 @@ export interface SongImportRow {
   confidence?: number;
 }
 
-export interface PdfSongImportReview {
+export interface SongImportReview {
   import_token: string;
-  source: 'pdf_ai';
+  source: string;
   rows: SongImportRow[];
   summary: {
     total_rows: number;
@@ -36,8 +36,10 @@ export interface PdfSongImportReview {
     matched_rows: number;
     duplicate_rows: number;
   };
-  ai_quota: { limit: number; used: number; remaining: number };
+  ai_quota?: { limit: number | null; used: number; remaining: number | null };
 }
+
+export type PdfSongImportReview = SongImportReview;
 
 export interface SongImportConfirmResult {
   created_count: number;
@@ -49,24 +51,28 @@ export class SongService extends BandScopedCrudService<Song> {
   private readonly http = inject(HttpClient);
   protected readonly resource = 'songs';
 
-  reviewPdfImport(file: File, bandId: number): Observable<PdfSongImportReview> {
-    const body = new FormData();
-    body.append('band_id', String(bandId));
-    body.append('file', file, file.name);
-    return this.http.post<ApiEnvelope<PdfSongImportReview>>(`${API_BASE_URL}/songs/imports/pdf/review`, body).pipe(
-      map((response) => this.unwrapMetadata(response)),
-      timeout(120000),
-    );
+  reviewPdfImport(file: File, bandId: number): Observable<SongImportReview> {
+    return this.reviewFile(`${API_BASE_URL}/songs/imports/pdf/review`, file, bandId);
   }
 
-  confirmPdfImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean }>): Observable<SongImportConfirmResult> {
-    return this.http.post<ApiEnvelope<SongImportConfirmResult>>(`${API_BASE_URL}/songs/imports/pdf/confirm`, {
-      import_token: importToken,
-      rows,
-    }).pipe(
-      map((response) => this.unwrapMetadata(response)),
-      timeout(120000),
-    );
+  reviewDocumentImport(file: File, bandId: number): Observable<SongImportReview> {
+    return this.reviewFile(`${API_BASE_URL}/songs/imports/document/review`, file, bandId);
+  }
+
+  reviewSpreadsheetImport(file: File, bandId: number): Observable<SongImportReview> {
+    return this.reviewFile(`${API_BASE_URL}/songs/imports/spreadsheet/review`, file, bandId);
+  }
+
+  confirmPdfImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean; input?: { title: string } }>): Observable<SongImportConfirmResult> {
+    return this.confirmImport(`${API_BASE_URL}/songs/imports/pdf/confirm`, importToken, rows);
+  }
+
+  confirmDocumentImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean; input?: { title: string } }>): Observable<SongImportConfirmResult> {
+    return this.confirmImport(`${API_BASE_URL}/songs/imports/document/confirm`, importToken, rows);
+  }
+
+  confirmSpreadsheetImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean; input?: { title: string } }>): Observable<SongImportConfirmResult> {
+    return this.confirmImport(`${API_BASE_URL}/songs/imports/spreadsheet/confirm`, importToken, rows);
   }
 
   searchMetadata(title: string, artist?: string): Observable<SongMetadataCandidate[]> {
@@ -89,6 +95,26 @@ export class SongService extends BandScopedCrudService<Song> {
     return this.http.get<ApiEnvelope<Record<string, unknown>>>(`${API_BASE_URL}/song-metadata/musicbrainz/${recordingMbid}`).pipe(
       map((response) => this.normalizeMetadata(this.unwrapMetadata(response)) as unknown as SongMetadataDetail),
       timeout(20000),
+    );
+  }
+
+  private reviewFile(endpoint: string, file: File, bandId: number): Observable<SongImportReview> {
+    const body = new FormData();
+    body.append('band_id', String(bandId));
+    body.append('file', file, file.name);
+    return this.http.post<ApiEnvelope<SongImportReview>>(endpoint, body).pipe(
+      map((response) => this.unwrapMetadata(response)),
+      timeout(120000),
+    );
+  }
+
+  private confirmImport(endpoint: string, importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean; input?: { title: string } }>): Observable<SongImportConfirmResult> {
+    return this.http.post<ApiEnvelope<SongImportConfirmResult>>(endpoint, {
+      import_token: importToken,
+      rows,
+    }).pipe(
+      map((response) => this.unwrapMetadata(response)),
+      timeout(120000),
     );
   }
 

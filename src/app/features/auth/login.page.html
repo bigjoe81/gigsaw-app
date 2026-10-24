@@ -1,4 +1,4 @@
-<ion-content appAuthKeyboardScroll class="[--padding-start:16px] [--padding-end:16px]" [fullscreen]="true">
+<section appAuthKeyboardScroll class="app-content [--padding-start:16px] [--padding-end:16px]" >
   <div class="mx-auto flex w-full max-w-[340px] min-w-0 flex-col gap-4">
     <div class="grid justify-items-center gap-[14px] py-2 text-center">
       <picture class="block w-full">
@@ -9,28 +9,27 @@
           alt="GigSaw logo"
         />
       </picture>
-      <p class="m-0 max-w-96 text-[0.95rem] text-[var(--ion-color-medium)] [overflow-wrap:anywhere]">
+      <p class="m-0 max-w-96 text-[0.95rem] text-[var(--ui-color-medium)] [overflow-wrap:anywhere]">
         La tua band, prove, concerti e scalette<br /><strong>in un solo posto.</strong>
       </p>
     </div>
     <form class="flex w-full flex-col gap-4" (submit)="submit(); $event.preventDefault()">
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Email</span>
-      <ion-input class="min-h-12 w-full font-normal"
-          mode="md"
-          aria-label="Email"
-          inputmode="email"
-          autocapitalize="off"
-          [spellcheck]="false"
-          [class.ion-touched]="touched()"
-          [disabled]="loading"
-          type="email"
-          name="email"
-          placeholder="es. mario.rossi@gmail.com"
-          autocomplete="email"
-          [value]="email()"
-          [class.ion-invalid]="touched() && !emailValid()"
-          (ionInput)="updateEmail($event.detail.value ?? '')"
+      <app-gigsaw-input
+        aria-label="Email"
+        inputMode="email"
+        autocapitalize="off"
+        [spellcheck]="false"
+        [controlClass]="'min-h-12 font-normal ' + (touched() ? 'is-touched' : '')"
+        [disabled]="loading"
+        type="email"
+        name="email"
+        placeholder="es. mario.rossi@gmail.com"
+        autocomplete="email"
+        [value]="email()"
+        [invalid]="touched() && !emailValid()"
+        (valueChange)="updateEmail($event)"
       />
       </label>
       @if (touched() && !emailValid()) {
@@ -47,4 +46,4 @@
     </app-gigsaw-button>
     <a class="block w-full rounded-md whitespace-normal text-center" routerLink="/registrati" [queryParams]="{ returnUrl }">Non sei registrato? Crea un account</a>
   </div>
-</ion-content>
+</section>

@@ -1,79 +1,137 @@
 :host {
-  --band-menu-width: 260px;
   display: block;
   width: 100%;
   height: 100%;
 }
 
-ion-split-pane {
+.app-shell {
+  position: relative;
+  display: grid;
   width: 100%;
   height: 100%;
-  --border: 0;
-  --side-width: var(--band-menu-width);
-  --side-max-width: var(--band-menu-width);
-  --side-min-width: var(--band-menu-width);
+  grid-template-rows: auto minmax(0, 1fr);
+  background: var(--gigsaw-background);
 }
 
-ion-router-outlet#band-content {
+.flow-header {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(160px, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  min-height: 72px;
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--gigsaw-border);
+  background: color-mix(in srgb, var(--gigsaw-background) 94%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.brand-logo {
+  display: block;
+  width: 132px;
+  max-width: 100%;
+  height: auto;
+}
+
+.band-chip {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.band-chip__avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.band-chip__initials {
+  color: var(--ui-color-primary-contrast);
+  background: var(--ui-color-primary);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.band-chip__copy {
+  display: grid;
+  min-width: 0;
+}
+
+.band-chip__copy strong,
+.band-chip__copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.band-chip__copy strong {
+  color: var(--gigsaw-text);
+  font-size: .88rem;
+}
+
+.band-chip__copy span {
+  color: var(--gigsaw-muted);
+  font-size: .68rem;
+}
+
+.flow-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: end;
+}
+
+.flow-nav__item {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--gigsaw-muted);
+  font-size: .82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.flow-nav__item ion-icon {
+  font-size: 18px;
+}
+
+.flow-nav__item:hover,
+.flow-nav__item.is-active {
+  color: var(--gigsaw-text);
+  background: var(--gigsaw-surface);
+}
+
+.flow-nav__item.is-active {
+  box-shadow: inset 0 0 0 1px var(--gigsaw-border);
+}
+
+.shell-content {
   min-width: 0;
   min-height: 0;
   height: 100%;
-  overflow: hidden;
 }
 
-ion-menu {
-  --width: var(--band-menu-width);
-}
 
-/* Keep Ionic's nested routed split pane visible after router restoration. */
-ion-split-pane.split-pane-visible > ion-menu {
-  position: relative;
-  display: flex !important;
-  flex: 0 0 var(--band-menu-width);
-  width: var(--band-menu-width);
-  min-width: var(--band-menu-width);
-  max-width: var(--band-menu-width);
-  transform: none !important;
-}
-
-ion-split-pane.split-pane-visible > ion-menu::part(container) {
-  width: var(--band-menu-width);
-  transform: none !important;
-  box-shadow: none;
-}
-
-ion-split-pane.menu-collapsed {
-  --band-menu-width: 76px;
-}
-
-ion-split-pane.menu-collapsed ion-item::part(native) {
-  justify-content: center;
-  padding-inline: 0;
-}
-
-ion-split-pane.menu-collapsed ion-item ion-icon {
-  position: absolute;
-  left: 50%;
-  margin: 0;
-  transform: translateX(-50%);
-}
-
-ion-split-pane:not(.menu-collapsed) ion-item ion-icon[slot='start'] {
-  margin-inline-end: 22px;
-}
-
-ion-split-pane.split-pane-visible > .split-pane-main {
-  margin: 0 !important;
-  transform: none !important;
-}
-
-ion-split-pane.split-pane-visible > .menu-content-open {
-  overflow: hidden !important;
-  cursor: auto !important;
-  touch-action: auto !important;
-  pointer-events: auto !important;
-}
-
-ion-item.is-active::part(native) {
-  border-left: 2px solid var(--ion-color-primary);
-}
+.route-content { min-height: 0; overflow: auto; }
+.mobile-backdrop { position: fixed; inset: 0; z-index: 90; border: 0; background: #0008; }
+.mobile-menu { position: fixed; inset: 0 auto 0 0; width: min(86vw, 340px); z-index: 91; overflow: auto; background: var(--gigsaw-background); }
+.mobile-menu-head { display: grid; gap: 18px; padding: 24px 20px 14px; }
+@media (max-width: 899px) { .flow-header { display: none; } .app-shell { grid-template-rows: minmax(0,1fr); } }
+@media (max-width: 1100px) and (min-width: 900px) { .band-chip { display: none; } .flow-header { grid-template-columns: auto 1fr; } }

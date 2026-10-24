@@ -1,32 +1,32 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>Gruppi linkati</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="apply()" [disabled]="saving || !selectedIds.length">
-        @if (saving) { <ion-spinner name="crescent" /> } @else { Applica }
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="[--background:var(--gigsaw-background)]">
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div>
+    <h1 class="grow text-xl">Gruppi linkati</h1>
+    <div class="flex items-center gap-2" slot="end">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="apply()" [disabled]="saving || !selectedIds.length" type="button">
+        @if (saving) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Applica }
+      </app-gigsaw-button>
+    </div>
+  </div>
+</header>
+<section class="app-content [--background:var(--gigsaw-background)]">
   <main class="mx-auto mb-[60px] mt-[34px] w-[min(980px,calc(100%_-_40px))] max-[600px]:mx-3 max-[600px]:mb-10 max-[600px]:mt-[22px] max-[600px]:w-auto">
-    <header class="mb-6"><span class="text-[.7rem] font-extrabold uppercase tracking-[.12em] text-[var(--ion-color-primary)]">Repertorio</span><h1 class="my-1 text-[clamp(1.6rem,3vw,2.2rem)] text-[var(--gigsaw-text)]">Gruppi di brani (medley)</h1><p class="m-0 text-[var(--gigsaw-muted)]">Organizza i brani collegati e trascinali nell’ordine in cui vuoi eseguirli.</p></header>
+    <header class="mb-6"><span class="text-[.7rem] font-extrabold uppercase tracking-[.12em] text-[var(--ui-color-primary)]">Repertorio</span><h1 class="my-1 text-[clamp(1.6rem,3vw,2.2rem)] text-[var(--gigsaw-text)]">Gruppi di brani (medley)</h1><p class="m-0 text-[var(--gigsaw-muted)]">Organizza i brani collegati e trascinali nell’ordine in cui vuoi eseguirli.</p></header>
 
     @if (groupedSongs().length) {
       <section class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-3">
         @for (group of groupedSongs(); track group.name) {
           <article class="overflow-hidden rounded-2xl border border-[var(--gigsaw-border)] bg-[#101d30]" [class.col-span-full]="expandedGroup === group.name">
-            <ion-button class="flex w-full items-center gap-3 border-0 bg-transparent px-4 pb-2 pt-4 text-left text-[var(--gigsaw-text)]" type="button" (click)="toggleGroup(group.name)">
-              <span class="grid h-[38px] w-[38px] place-items-center rounded-[11px] [background:var(--ion-gradient-brand-reversed)] text-[1.35rem] text-white">♪</span><span class="grid flex-1 gap-[3px]"><strong class="text-base">{{ group.name }}</strong><small class="text-[var(--gigsaw-muted)]">{{ group.songs.length }} {{ group.songs.length === 1 ? 'brano' : 'brani' }}</small></span><span class="text-[1.3rem] text-[var(--ion-color-brand-blue)]">{{ expandedGroup === group.name ? '⌃' : '⌄' }}</span>
-            </ion-button>
-            <div class="flex gap-1.5 px-4 pb-3 pl-[66px] [&_ion-button]:[--padding-start:8px] [&_ion-button]:[--padding-end:8px] [&_ion-button]:[--border-radius:6px] [&_ion-button]:[--color:var(--ion-color-brand-blue)] [&_ion-button]:text-[.72rem] [&_ion-button]:hover:[--background:rgba(var(--ion-color-secondary-rgb),.1)] [&_.danger]:[--color:var(--ion-color-danger)]"><ion-button type="button" (click)="$event.stopPropagation(); editGroupSongs(group.name)">Modifica brani</ion-button><ion-button type="button" (click)="$event.stopPropagation(); renameGroup(group.name)">Rinomina</ion-button><ion-button type="button" class="danger" (click)="$event.stopPropagation(); removeGroup(group.name)">Rimuovi</ion-button></div>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary flex w-full items-center gap-3 border-0 bg-transparent px-4 pb-2 pt-4 text-left text-[var(--gigsaw-text)]" type="button" (click)="toggleGroup(group.name)">
+              <span class="grid h-[38px] w-[38px] place-items-center rounded-[11px] [background:var(--ui-gradient-brand-reversed)] text-[1.35rem] text-white"><app-symbol name="musical-notes-outline" /></span><span class="grid flex-1 gap-[3px]"><strong class="text-base">{{ group.name }}</strong><small class="text-[var(--gigsaw-muted)]">{{ group.songs.length }} {{ group.songs.length === 1 ? 'brano' : 'brani' }}</small></span><span class="text-[1.3rem] text-[var(--ui-color-brand-blue)]"><app-symbol [name]="expandedGroup === group.name ? 'chevron-up-outline' : 'chevron-down-outline'" /></span>
+            </app-gigsaw-button>
+            <div class="flex gap-1.5 px-4 pb-3 pl-[66px] [&_.btn]:[--padding-start:8px] [&_.btn]:[--padding-end:8px] [&_.btn]:[--border-radius:6px] [&_.btn]:[--color:var(--ui-color-brand-blue)] [&_.btn]:text-[.72rem] [&_.btn]:hover:[--background:rgba(var(--ui-color-secondary-rgb),.1)] [&_.danger]:[--color:var(--ui-color-danger)]"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" (click)="$event.stopPropagation(); editGroupSongs(group.name)">Modifica brani</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" (click)="$event.stopPropagation(); renameGroup(group.name)">Rinomina</app-gigsaw-button><app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-primary danger" (click)="$event.stopPropagation(); removeGroup(group.name)">Rimuovi</app-gigsaw-button></div>
             @if (expandedGroup === group.name) {
-              <ion-reorder-group class="grid gap-[7px] px-3.5 pb-3.5" [disabled]="false" (ionItemReorder)="reorder($event, group.name)">
+              <div class="reorder-list grid gap-[7px] px-3.5 pb-3.5" (itemsReordered)="reorder($event, group.name)" appReorder>
                 @for (song of group.songs; track song.id; let index = $index) {
-                  <ion-item class="min-h-12 rounded-[10px] border border-[var(--gigsaw-border)] [--background:#0b1628] [--color:var(--gigsaw-text)] [--padding-start:10px] [--inner-padding-end:8px]" lines="none"><span class="me-2.5 w-[22px] text-center font-extrabold text-[var(--ion-color-primary)]">{{ index + 1 }}</span><span class="grid flex-1 gap-0.5"><strong>{{ song.title }}</strong><small class="text-[.73rem] text-[var(--gigsaw-muted)]">{{ subtitle(song) }}</small></span><ion-button class="m-0 text-[1.3rem] [--padding-start:4px] [--padding-end:4px]" fill="clear" color="danger" slot="end" (click)="removeSongFromGroup(song); $event.stopPropagation()" aria-label="Rimuovi dal medley">×</ion-button><ion-reorder slot="end" /></ion-item>
+                  <div class="ui-item flex items-center gap-3 py-3 min-h-12 rounded-[10px] border border-[var(--gigsaw-border)] [--background:#0b1628] [--color:var(--gigsaw-text)] [--padding-start:10px] [--inner-padding-end:8px]"><span class="me-2.5 w-[22px] text-center font-extrabold text-[var(--ui-color-primary)]">{{ index + 1 }}</span><span class="grid flex-1 gap-0.5"><strong>{{ song.title }}</strong><small class="text-[.73rem] text-[var(--gigsaw-muted)]">{{ subtitle(song) }}</small></span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-error m-0 text-[1.3rem] [--padding-start:4px] [--padding-end:4px]" slot="end" (click)="removeSongFromGroup(song); $event.stopPropagation()" aria-label="Rimuovi dal medley" type="button"><app-symbol name="close" /></app-gigsaw-button><span class="cursor-grab" slot="end"><app-symbol name="grip-vertical" /></span></div>
                 }
-              </ion-reorder-group>
+              </div>
             }
           </article>
         }
@@ -38,14 +38,14 @@
     <section class="mt-[26px] rounded-2xl border border-[var(--gigsaw-border)] bg-[#101d30] p-5">
       <header class="mb-4 flex items-start justify-between gap-4 max-[600px]:flex-col max-[600px]:gap-1.5"><div><h2 class="my-1 text-[1.1rem] text-[var(--gigsaw-text)]">{{ editingGroup() ? 'Modifica il medley' : 'Crea un medley' }}</h2></div><span class="text-[.8rem] text-[var(--gigsaw-muted)]">{{ selectedIds.length }} selezionati</span></header>
       <form [formGroup]="form">
-        <ion-input fill="outline" formControlName="linkGroup" placeholder="Nome del nuovo medley, es. intro-medley" />
-        <div class="mt-2 grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-1 [&_ion-item]:[--background:transparent] [&_ion-item]:[--color:var(--gigsaw-text)] [&_ion-item]:[--padding-start:0] [&_ion-label]:grid [&_ion-label]:gap-0.5 [&_small]:text-[var(--gigsaw-muted)]">@for (song of songs(); track song.id) { <ion-item lines="none"><ion-checkbox slot="start" [checked]="selectedIds.includes(song.id)" (ionChange)="toggleSong(song.id)" /><ion-label><strong>{{ song.title }}</strong><small>{{ song.linkGroup || 'Senza medley' }}</small></ion-label></ion-item> }</div>
-        <div class="flex flex-wrap gap-2 py-2.5"><ion-button (click)="apply()" [disabled]="saving || !selectedIds.length">{{ editingGroup() ? 'Modifica medley' : 'Crea medley' }}</ion-button><ion-button color="warning" fill="outline" (click)="clear()" [disabled]="saving || !selectedIds.length">Rimuovi gruppo</ion-button></div>
+        <app-gigsaw-input formControlName="linkGroup" placeholder="Nome del nuovo medley, es. intro-medley" />
+        <div class="mt-2 grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-1 [&_.ui-item]:[--background:transparent] [&_.ui-item]:[--color:var(--gigsaw-text)] [&_.ui-item]:[--padding-start:0] [&_.ui-label]:grid [&_.ui-label]:gap-0.5 [&_small]:text-[var(--gigsaw-muted)]">@for (song of songs(); track song.id) { <div class="ui-item flex items-center gap-3 py-3"><app-gigsaw-checkbox controlClass="checkbox checkbox-primary" slot="start" [checked]="selectedIds.includes(song.id)" (checkedChange)="toggleSong(song.id)" /><span class="ui-label"><strong>{{ song.title }}</strong><small>{{ song.linkGroup || 'Senza medley' }}</small></span></div> }</div>
+        <div class="flex flex-wrap gap-2 py-2.5"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="apply()" [disabled]="saving || !selectedIds.length" type="button">{{ editingGroup() ? 'Modifica medley' : 'Crea medley' }}</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-warning" (click)="clear()" [disabled]="saving || !selectedIds.length" type="button">Rimuovi gruppo</app-gigsaw-button></div>
       </form>
     </section>
   </main>
 
   @if (error) {
-    <ion-note class="block p-4" color="danger">{{ error }}</ion-note>
+    <small class="text-sm text-error block p-4">{{ error }}</small>
   }
-</ion-content>
+</section>

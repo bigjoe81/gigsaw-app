@@ -1,29 +1,29 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="band-menu" />
-    </ion-buttons>
-    <ion-title>Impegni</ion-title>
-  </ion-toolbar>
-</ion-header>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
+    </div>
+    <h1 class="grow text-xl">Impegni</h1>
+  </div>
+</header>
 
-<ion-content>
+<section class="app-content">
   <main class="w-full px-[clamp(20px,4vw,56px)] pt-9 pb-[90px] text-[var(--gigsaw-text)] max-[720px]:px-[14px] max-[720px]:pt-6">
-    <header class="mb-7 flex items-center justify-between gap-[18px] max-[720px]:items-start max-[720px]:flex-col max-[720px]:[&>ion-button]:w-full">
+    <header class="mb-7 flex items-center justify-between gap-[18px] max-[720px]:items-start max-[720px]:flex-col max-[720px]:[&>.btn]:w-full">
       <div>
-        <span class="text-[var(--ion-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Agenda band</span>
+        <span class="text-[var(--ui-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Agenda band</span>
         <h1 class="mb-0 mt-[5px]">Calendario e impegni</h1>
         <p class="mb-0 mt-[7px] text-[var(--gigsaw-muted)]">Live, prove e tutti gli altri appuntamenti della band in un unico posto.</p>
       </div>
-      <ion-button [routerLink]="['nuovo']">
-        <ion-icon slot="start" name="add" />
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuovo']" queryParamsHandling="preserve" type="button">
+        <app-symbol name="add"  />
         Nuovo impegno
-      </ion-button>
+      </app-gigsaw-button>
     </header>
 
     @if (loading()) {
       <section class="grid min-h-[260px] place-content-center place-items-center gap-2.5 text-center text-[var(--gigsaw-muted)]">
-        <ion-spinner name="crescent" />
+        <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span>
         <span>Caricamento calendario…</span>
       </section>
     } @else {
@@ -32,15 +32,15 @@
       <section class="rounded-[14px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 max-[720px]:p-[14px]">
         <header class="flex items-center justify-between gap-[18px]">
           <div class="flex items-center gap-2">
-            <button type="button" class="grid h-[38px] w-[38px] place-items-center rounded-lg border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="previousMonth()" aria-label="Mese precedente">
-              <ion-icon name="chevron-back-outline" />
-            </button>
+            <app-gigsaw-button tone="unstyled" type="button" buttonClass="grid h-[38px] w-[38px] place-items-center rounded-lg border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="previousMonth()" aria-label="Mese precedente">
+              <app-symbol name="chevron-back-outline"  />
+            </app-gigsaw-button>
             <h2 class="my-[5px] mx-0 text-base max-[720px]:text-base">{{ monthLabel }}</h2>
-            <button type="button" class="grid h-[38px] w-[38px] place-items-center rounded-lg border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="nextMonth()" aria-label="Mese successivo">
-              <ion-icon name="chevron-forward-outline" />
-            </button>
+            <app-gigsaw-button tone="unstyled" type="button" buttonClass="grid h-[38px] w-[38px] place-items-center rounded-lg border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="nextMonth()" aria-label="Mese successivo">
+              <app-symbol name="chevron-forward-outline"  />
+            </app-gigsaw-button>
           </div>
-          <button type="button" class="rounded-lg border border-[var(--gigsaw-border)] bg-transparent px-3 py-2 text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="goToday()">Oggi</button>
+          <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-lg border border-[var(--gigsaw-border)] bg-transparent px-3 py-2 text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="goToday()">Oggi</app-gigsaw-button>
         </header>
 
         <div class="mt-[18px] grid grid-cols-7 border-b border-[var(--gigsaw-border)]" aria-hidden="true">
@@ -51,32 +51,32 @@
 
         <div class="grid grid-cols-7">
           @for (day of calendarDays(); track day.key) {
-            <button
+            <app-gigsaw-button tone="unstyled"
               type="button"
-              class="relative min-h-[82px] border-0 border-r border-b border-solid border-[var(--gigsaw-border)] bg-transparent p-[9px] text-left text-[var(--gigsaw-text)] font-[inherit] cursor-pointer hover:bg-[var(--gigsaw-input-background)] max-[720px]:min-h-[58px] max-[720px]:p-1.5 [:nth-child(7n)]:border-r-0"
-              [ngClass]="{ 'opacity-35': !day.currentMonth, 'outline outline-2 -outline-offset-2 outline-[var(--ion-color-secondary)] bg-[color-mix(in_srgb,var(--ion-color-secondary)_8%,transparent)]': selectedDate() === day.key }"
+              buttonClass="relative min-h-[82px] border-0 border-r border-b border-solid border-[var(--gigsaw-border)] bg-transparent p-[9px] text-left text-[var(--gigsaw-text)] font-[inherit] cursor-pointer hover:bg-[var(--gigsaw-input-background)] max-[720px]:min-h-[58px] max-[720px]:p-1.5 [:nth-child(7n)]:border-r-0"
+              [ngClass]="{ 'opacity-35': !day.currentMonth, 'outline outline-2 -outline-offset-2 outline-[var(--ui-color-secondary)] bg-[color-mix(in_srgb,var(--ui-color-secondary)_8%,transparent)]': selectedDate() === day.key }"
               (click)="selectDay(day)"
             >
-              <span class="font-bold" [ngClass]="day.today ? 'grid h-[26px] w-[26px] place-items-center rounded-full bg-[var(--ion-color-primary)] text-[var(--ion-color-primary-contrast)]' : ''">{{ day.number }}</span>
+              <span class="font-bold" [ngClass]="day.today ? 'grid h-[26px] w-[26px] place-items-center rounded-full bg-[var(--ui-color-primary)] text-[var(--ui-color-primary-contrast)]' : ''">{{ day.number }}</span>
               <span class="absolute right-[9px] bottom-[9px] left-[9px] flex items-center gap-[5px] max-[720px]:right-1.5 max-[720px]:bottom-1.5 max-[720px]:left-1.5">
                 @for (item of visibleDayEvents(day); track item.key) {
                   <span
                     class="inline-block h-2 w-2 rounded-full bg-[var(--gigsaw-muted)]"
-                    [ngClass]="{ 'bg-[var(--ion-color-primary)]': item.source === 'gig', 'bg-[var(--ion-color-secondary)]': item.source === 'rehearsal', 'bg-[var(--ion-color-success)]': item.source === 'commitment' }"
+                    [ngClass]="{ 'bg-[var(--ui-color-primary)]': item.source === 'gig', 'bg-[var(--ui-color-secondary)]': item.source === 'rehearsal', 'bg-[var(--ui-color-success)]': item.source === 'commitment' }"
                   ></span>
                 }
                 @if (day.events.length > 3) {
                   <small class="text-[var(--gigsaw-muted)]">+{{ day.events.length - 3 }}</small>
                 }
               </span>
-            </button>
+            </app-gigsaw-button>
           }
         </div>
 
         <footer class="flex flex-wrap gap-[18px] pt-4 text-[var(--gigsaw-muted)] text-[.78rem] max-[720px]:gap-2.5">
-          <span class="flex items-center gap-[7px]"><i class="inline-block h-2 w-2 rounded-full bg-[var(--ion-color-primary)]"></i>Live</span>
-          <span class="flex items-center gap-[7px]"><i class="inline-block h-2 w-2 rounded-full bg-[var(--ion-color-secondary)]"></i>Prove</span>
-          <span class="flex items-center gap-[7px]"><i class="inline-block h-2 w-2 rounded-full bg-[var(--ion-color-success)]"></i>Altri impegni</span>
+          <span class="flex items-center gap-[7px]"><i class="inline-block h-2 w-2 rounded-full bg-[var(--ui-color-primary)]"></i>Live</span>
+          <span class="flex items-center gap-[7px]"><i class="inline-block h-2 w-2 rounded-full bg-[var(--ui-color-secondary)]"></i>Prove</span>
+          <span class="flex items-center gap-[7px]"><i class="inline-block h-2 w-2 rounded-full bg-[var(--ui-color-success)]"></i>Altri impegni</span>
         </footer>
       </section>
 
@@ -85,36 +85,36 @@
       <section class="rounded-[14px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-5 max-[720px]:p-[14px]">
         <header class="flex items-center justify-between gap-[18px]">
           <div>
-            <span class="text-[var(--ion-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Agenda</span>
+            <span class="text-[var(--ui-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Agenda</span>
             <h2 class="my-[5px] mx-0">{{ agendaTitle }}</h2>
           </div>
           @if (selectedDate()) {
-            <button type="button" class="rounded-lg border border-[var(--gigsaw-border)] bg-transparent px-3 py-2 text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="clearSelectedDate()">Tutto il mese</button>
+            <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-lg border border-[var(--gigsaw-border)] bg-transparent px-3 py-2 text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="clearSelectedDate()">Tutto il mese</app-gigsaw-button>
           }
         </header>
 
         @if (agendaEvents().length) {
           <div class="mt-4 grid gap-2">
             @for (item of agendaEvents(); track item.key) {
-              <a class="grid min-h-[72px] grid-cols-[44px_minmax(0,1fr)_20px] items-center gap-3 rounded-[10px] border border-[var(--gigsaw-border)] p-3 text-[var(--gigsaw-text)] no-underline hover:border-[var(--ion-color-secondary)] hover:bg-[var(--gigsaw-input-background)] max-[720px]:grid-cols-[40px_minmax(0,1fr)_16px] max-[720px]:p-2.5" [ngClass]="{ 'opacity-50': item.cancelled, 'border-[var(--ion-color-secondary)] bg-[var(--gigsaw-input-background)]': selectedEventKey() === item.key }" [attr.href]="item.link" (click)="openEvent($event, item)">
+              <a class="grid min-h-[72px] grid-cols-[44px_minmax(0,1fr)_20px] items-center gap-3 rounded-[10px] border border-[var(--gigsaw-border)] p-3 text-[var(--gigsaw-text)] no-underline hover:border-[var(--ui-color-secondary)] hover:bg-[var(--gigsaw-input-background)] max-[720px]:grid-cols-[40px_minmax(0,1fr)_16px] max-[720px]:p-2.5" [ngClass]="{ 'opacity-50': item.cancelled, 'border-[var(--ui-color-secondary)] bg-[var(--gigsaw-input-background)]': selectedEventKey() === item.key }" [attr.href]="item.link" (click)="openEvent($event, item)">
                 <span
                   class="grid h-[42px] w-[42px] place-items-center rounded-[10px] bg-[var(--gigsaw-input-background)] max-[720px]:h-[38px] max-[720px]:w-[38px]"
-                  [ngClass]="{ 'text-[var(--ion-color-primary)]': item.source === 'gig', 'text-[var(--ion-color-secondary)]': item.source === 'rehearsal', 'text-[var(--ion-color-success)]': item.source === 'commitment' }"
+                  [ngClass]="{ 'text-[var(--ui-color-primary)]': item.source === 'gig', 'text-[var(--ui-color-secondary)]': item.source === 'rehearsal', 'text-[var(--ui-color-success)]': item.source === 'commitment' }"
                 >
-                  <ion-icon [name]="eventIcon(item.source)" />
+                  <app-symbol [name]="eventIcon(item.source)"  />
                 </span>
                 <span class="grid min-w-0 gap-[3px]">
                   <small class="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--gigsaw-muted)] text-[.78rem]">{{ formattedDate(item.date) }} · {{ eventSourceLabel(item.source) }}</small>
                   <strong class="overflow-hidden text-ellipsis whitespace-nowrap">{{ item.title }}</strong>
                   <span class="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--gigsaw-muted)] text-[.78rem]">{{ item.meta }}</span>
                 </span>
-                <ion-icon class="text-[var(--gigsaw-muted)]" name="chevron-forward-outline" />
+                <app-symbol class="text-[var(--gigsaw-muted)]" name="chevron-forward-outline"  />
               </a>
             }
           </div>
         } @else {
           <div class="grid min-h-[170px] place-content-center place-items-center gap-2.5 text-center text-[var(--gigsaw-muted)]">
-            <ion-icon name="calendar-outline" />
+            <app-symbol name="calendar-outline"  />
             <strong class="text-[var(--gigsaw-text)]">Nessun impegno</strong>
             <span>Non ci sono appuntamenti per questo periodo.</span>
           </div>
@@ -123,8 +123,8 @@
       @if (selectedEvent(); as item) {
         <aside class="hidden overflow-y-auto break-words rounded-[14px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-[22px] min-[1024px]:sticky min-[1024px]:top-5 min-[1024px]:block min-[1024px]:max-h-[calc(100vh-110px)]" aria-label="Dettagli dell’impegno">
           <header class="flex items-center justify-between gap-3">
-            <span class="text-[var(--ion-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Dettagli {{ eventSourceLabel(item.source) }}</span>
-            <button type="button" class="grid h-[38px] w-[38px] place-items-center rounded-lg border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="selectedEventKey.set(null)" aria-label="Chiudi dettagli">×</button>
+            <span class="text-[var(--ui-color-primary)] text-[.72rem] font-extrabold tracking-[.1em] uppercase">Dettagli {{ eventSourceLabel(item.source) }}</span>
+            <app-gigsaw-button tone="unstyled" type="button" buttonClass="grid h-[38px] w-[38px] place-items-center rounded-lg border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] text-[var(--gigsaw-text)] font-[inherit] cursor-pointer" (click)="selectedEventKey.set(null)" aria-label="Chiudi dettagli"><app-symbol name="close" /></app-gigsaw-button>
           </header>
           <h2 class="mt-[18px] mb-2">{{ item.title }}</h2>
           <p class="text-[var(--gigsaw-muted)]">{{ item.meta }}</p>
@@ -138,11 +138,11 @@
             <h3 class="text-[.9rem]">Note</h3>
             <p class="whitespace-pre-wrap leading-[1.6]">{{ item.notes }}</p>
           }
-          <ion-button class="mt-6" [routerLink]="item.link" expand="block">{{ item.source === 'commitment' ? 'Modifica impegno' : 'Apri dettagli' }}</ion-button>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary mt-6" [routerLink]="item.link" queryParamsHandling="preserve" type="button">{{ item.source === 'commitment' ? 'Modifica impegno' : 'Apri dettagli' }}</app-gigsaw-button>
         </aside>
       }
       </div>
       </div>
     }
   </main>
-</ion-content>
+</section>

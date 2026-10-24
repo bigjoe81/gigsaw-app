@@ -5,13 +5,13 @@
   height: 100%;
 }
 
-ion-header {
+.page-header {
   flex-shrink: 0;
 }
 
-ion-content {
+.app-content {
   flex: 1 1 0;
   min-height: 0;
   --background: var(--gigsaw-background);
-  --padding-bottom: var(--ion-safe-area-bottom, 0px);
+  --padding-bottom: var(--ui-safe-area-bottom, 0px);
 }
