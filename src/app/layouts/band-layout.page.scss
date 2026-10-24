@@ -58,8 +58,8 @@
 }
 
 .band-chip__initials {
-  color: var(--ion-color-primary-contrast);
-  background: var(--ion-color-primary);
+  color: var(--ui-color-primary-contrast);
+  background: var(--ui-color-primary);
   font-size: .72rem;
   font-weight: 900;
   letter-spacing: .05em;
@@ -128,93 +128,10 @@
   height: 100%;
 }
 
-ion-menu {
-  --width: min(86vw, 340px);
-  --background: var(--gigsaw-background);
-}
 
-ion-menu ion-content {
-  --background: var(--gigsaw-background);
-}
-
-.mobile-menu-head {
-  display: grid;
-  gap: 18px;
-  padding: 24px 20px 14px;
-}
-
-.mobile-menu-head strong {
-  color: var(--gigsaw-text);
-  font-size: 1rem;
-}
-
-ion-list {
-  padding: 8px;
-  background: transparent;
-}
-
-ion-item {
-  --min-height: 58px;
-  --padding-start: 14px;
-  --inner-padding-end: 12px;
-  --background: transparent;
-  --border-radius: 12px;
-  margin: 4px 0;
-  font-weight: 600;
-}
-
-ion-item ion-icon {
-  color: var(--gigsaw-muted);
-  font-size: 20px;
-}
-
-ion-item ion-label p {
-  margin-top: 3px;
-  color: var(--gigsaw-muted);
-  font-size: .72rem;
-}
-
-ion-item.is-active {
-  --background: color-mix(in srgb, var(--ion-color-primary) 10%, var(--gigsaw-surface));
-  --color: var(--gigsaw-text);
-}
-
-ion-item.is-active ion-icon {
-  color: var(--ion-color-primary);
-}
-
-.mobile-menu-footer {
-  margin-top: 18px;
-  border-top: 1px solid var(--gigsaw-border);
-  padding-top: 12px;
-}
-
-@media (max-width: 899px) {
-  .app-shell {
-    grid-template-rows: minmax(0, 1fr);
-  }
-
-  .flow-header {
-    display: none;
-  }
-}
-
-@media (min-width: 900px) {
-  ion-menu {
-    display: none;
-  }
-}
-
-@media (max-width: 1100px) and (min-width: 900px) {
-  .flow-header {
-    grid-template-columns: auto 1fr;
-  }
-
-  .band-chip {
-    display: none;
-  }
-
-  .flow-nav__item {
-    padding-inline: 10px;
-  }
-}
+.route-content { min-height: 0; overflow: auto; }
+.mobile-backdrop { position: fixed; inset: 0; z-index: 90; border: 0; background: #0008; }
+.mobile-menu { position: fixed; inset: 0 auto 0 0; width: min(86vw, 340px); z-index: 91; overflow: auto; background: var(--gigsaw-background); }
+.mobile-menu-head { display: grid; gap: 18px; padding: 24px 20px 14px; }
+@media (max-width: 899px) { .flow-header { display: none; } .app-shell { grid-template-rows: minmax(0,1fr); } }
+@media (max-width: 1100px) and (min-width: 900px) { .band-chip { display: none; } .flow-header { grid-template-columns: auto 1fr; } }

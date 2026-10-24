@@ -1,19 +1,12 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, ViewChild, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonIcon,
-  IonInput,
-  IonNote,
-  IonSpinner,
-  IonTextarea,
-  ToastController,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, locationOutline } from 'ionicons/icons';
 import {
   catchError,
   debounceTime,
@@ -23,6 +16,7 @@ import {
   Observable,
   of,
   Subject,
+  Subscription,
   switchMap,
   throwError,
 } from 'rxjs';
@@ -31,6 +25,7 @@ import {
   GigsawTypeaheadComponent,
   GigsawTypeaheadItem,
 } from '../../../shared/ui/gigsaw';
+import { eventTitleDate, nextEventTitle } from '../../../shared/utils/event-title';
 import { FormPageHeaderComponent } from '../../../shared/ui/form-page-header.component';
 import { Venue } from '../../venues/models/venue.models';
 import { MapboxAddressSuggestion, MapboxGeocodingService } from '../../venues/services/mapbox-geocoding.service';
@@ -38,26 +33,20 @@ import { VenueService } from '../../venues/services/venue.service';
 import { GigService } from '../services/gig.service';
 import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
+  GigsawFormControlsModule,
     GigPostersComponent,
     ReactiveFormsModule,
     RouterLink,
     FormPageHeaderComponent,
-    IonButton,
-    IonContent,
-    IonIcon,
-    IonInput,
-    IonNote,
-    IonSpinner,
-    IonTextarea,
     GigsawTypeaheadComponent,
   ],
   templateUrl: './gig-form.page.html',
   styleUrl: './gig-form.page.scss',
 })
-export class GigFormPage implements OnInit {
+export class GigFormPage implements OnInit, OnDestroy {
   @ViewChild(GigPostersComponent) posterEditor?: GigPostersComponent;
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(255)]],
@@ -104,15 +93,38 @@ export class GigFormPage implements OnInit {
     private readonly mapbox: MapboxGeocodingService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly toast: ToastController,
+    private readonly toast: ToastService,
   ) {
-    addIcons({ calendarOutline, locationOutline });
+
+  }
+
+  private lastSuggestedTitle = '';
+  private readonly titleSubscriptions = new Subscription();
+
+  ngOnDestroy(): void {
+    this.titleSubscriptions.unsubscribe();
+  }
+
+  private updateSuggestedTitle(): void {
+    if (this.editing()) return;
+    const date = eventTitleDate(this.form.controls.date.value);
+    const place = (this.selectedVenue()?.name ?? this.pendingVenue()?.name ?? '').trim();
+    const suggestion = place && date ? `${place} · ${date}`.slice(0, 255) : '';
+    const title = this.form.controls.title;
+    const next = nextEventTitle(title.value, this.lastSuggestedTitle, suggestion);
+    this.lastSuggestedTitle = suggestion;
+    if (next !== title.value) title.setValue(next, { emitEvent: false });
   }
 
   ngOnInit(): void {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.editing.set(!!this.id);
+    this.titleSubscriptions.add(this.form.controls.date.valueChanges.subscribe(() => this.updateSuggestedTitle()));
+    this.titleSubscriptions.add(this.form.controls.title.valueChanges.subscribe((title) => {
+      if (!title.trim()) this.updateSuggestedTitle();
+    }));
+    this.updateSuggestedTitle();
     this.bindVenueSearch();
 
     forkJoin({
@@ -168,7 +180,7 @@ export class GigFormPage implements OnInit {
           return;
         }
         (await this.toast.create({ message: 'Concerto salvato.', duration: 1800, color: 'success' })).present();
-        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/concerti` : '/band');
+        void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'concerto') ?? (this.bandId ? `/band/${this.bandId}/concerti` : '/band'));
       },
       error: (error: unknown) => {
         this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));
@@ -181,6 +193,7 @@ export class GigFormPage implements OnInit {
     this.selectedVenue.set(undefined);
     this.pendingVenue.set(undefined);
     this.form.patchValue({ venueId: '' }, { emitEvent: false });
+    this.updateSuggestedTitle();
     this.venueQueryChanges.next(value);
   }
 
@@ -199,6 +212,7 @@ export class GigFormPage implements OnInit {
     this.filteredVenues.set([]);
     this.mapboxResults.set([]);
     this.form.patchValue({ venueId: String(venue.id) }, { emitEvent: false });
+    this.updateSuggestedTitle();
   }
 
   selectMapboxResult(result: MapboxAddressSuggestion): void {
@@ -213,6 +227,7 @@ export class GigFormPage implements OnInit {
     this.filteredVenues.set([]);
     this.mapboxResults.set([]);
     this.form.patchValue({ venueId: '' }, { emitEvent: false });
+    this.updateSuggestedTitle();
   }
 
   clearVenueSelection(): void {
@@ -222,6 +237,7 @@ export class GigFormPage implements OnInit {
     this.filteredVenues.set(this.venues().slice(0, 8));
     this.mapboxResults.set([]);
     this.form.patchValue({ venueId: '' }, { emitEvent: false });
+    this.updateSuggestedTitle();
   }
 
   venueLabel(venue: Venue): string {

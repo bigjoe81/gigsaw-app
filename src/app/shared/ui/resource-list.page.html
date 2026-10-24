@@ -1,46 +1,46 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="band-menu" />
-    </ion-buttons>
-    <ion-title>{{ config.plural }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button [routerLink]="['nuova']" aria-label="Crea">
-        <ion-icon slot="icon-only" name="add" />
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="load($event)"><ion-refresher-content /></ion-refresher>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
+    </div>
+    <h1 class="grow text-xl">{{ config.plural }}</h1>
+    <div class="flex items-center gap-2" slot="end">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" aria-label="Crea" type="button">
+        <app-symbol name="add"  />
+      </app-gigsaw-button>
+    </div>
+  </div>
+</header>
+<section class="app-content">
+  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()"><app-symbol name="refresh-outline" /> Aggiorna</app-gigsaw-button>
   @if (loading) {
     <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {
         <app-gigsaw-list-item>
-          <div class="list-col-grow">
-            <ion-skeleton-text [animated]="true" style="width: 55%" />
-            <ion-skeleton-text [animated]="true" style="width: 35%" />
+          <div class="min-w-0 flex-1">
+            <span class="skeleton block h-4 my-2" style="width: 55%" ></span>
+            <span class="skeleton block h-4 my-2" style="width: 35%" ></span>
           </div>
         </app-gigsaw-list-item>
       }
     </app-gigsaw-list>
   } @else if (error) {
-    <div class="state">
-      <ion-icon name="alert-circle" />
-      <ion-text color="danger">{{ error }}</ion-text>
-      <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center">
+      <app-symbol class="text-[44px] text-[var(--ui-color-medium)]" name="alert-circle"  />
+      <span class=" text-error">{{ error }}</span>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
     </div>
   } @else if (!items.length) {
-    <div class="state">
-      <ion-icon name="musical-notes" />
-      <ion-text>Nessun{{ config.singular === 'brano' ? ' brano' : 'a ' + config.singular }} presente.</ion-text>
-      <ion-button [routerLink]="['nuova']">Crea {{ config.singular }}</ion-button>
+    <div class="flex min-h-[55%] flex-col items-center justify-center gap-4 p-6 text-center">
+      <app-symbol class="text-[44px] text-[var(--ui-color-medium)]" name="musical-notes"  />
+      <span>Nessun{{ config.singular === 'brano' ? ' brano' : 'a ' + config.singular }} presente.</span>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" type="button">Crea {{ config.singular }}</app-gigsaw-button>
     </div>
   } @else {
     <app-gigsaw-list>
       @for (item of items; track item) {
         <app-gigsaw-list-item [interactive]="true" [routerLink]="[item.id]">
-          <div class="list-col-grow">
+          <div class="min-w-0 flex-1">
             <h2>{{ title(item) }}</h2>
             <p>{{ subtitle(item) }}</p>
           </div>
@@ -48,4 +48,4 @@
       }
     </app-gigsaw-list>
   }
-</ion-content>
+</section>

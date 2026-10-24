@@ -1,55 +1,31 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { NativeUiModule } from '../shared/ui/native-ui';
 import { Component, EnvironmentInjector, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
-import {
-  IonContent,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonMenu,
-  IonMenuToggle,
-  IonRouterOutlet,
-  isPlatform,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  arrowBackOutline,
-  calendarOutline,
-  homeOutline,
-  listOutline,
-  musicalNotesOutline,
-  peopleOutline,
-} from 'ionicons/icons';
 import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
 
 type FlowSection = 'home' | 'musica' | 'agenda' | 'live' | 'band';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-band-layout',
   templateUrl: './band-layout.page.html',
   styleUrls: ['./band-layout.page.scss'],
   standalone: true,
-  imports: [
+  imports: [RouterOutlet, NativeUiModule,
     RouterLink,
     RouterLinkActive,
-    IonContent,
-    IonIcon,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonMenu,
-    IonMenuToggle,
-    IonRouterOutlet,
-  ],
+    ],
 })
 export class BandLayoutPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
   private readonly route = inject(ActivatedRoute);
   private readonly bandContext = inject(BandContextService);
   private readonly bandService = inject(BandService);
-  readonly pageTransitionsEnabled = isPlatform('hybrid') || isPlatform('mobileweb');
+  readonly pageTransitionsEnabled = false;
+  readonly menuCollapsed = signal(false);
   readonly currentBand = signal<Band | null>(null);
   readonly currentBandLoading = signal(true);
 
@@ -61,9 +37,7 @@ export class BandLayoutPage implements OnInit {
     { key: 'band', label: 'Band', icon: 'people-outline', hint: 'Persone e profilo' },
   ];
 
-  constructor() {
-    addIcons({ arrowBackOutline, calendarOutline, homeOutline, listOutline, musicalNotesOutline, peopleOutline });
-  }
+
 
   ngOnInit(): void {
     const bandId = Number(this.route.snapshot.paramMap.get('bandId')) || this.bandContext.getCurrentBand();
@@ -105,5 +79,12 @@ export class BandLayoutPage implements OnInit {
     };
 
     return `/band/${bandId}/${routes[section]}`;
+  }
+  closeMobileMenu(): void { this.menuCollapsed.set(false); }
+  handleLayoutClick(event: MouseEvent): void {
+    if (event.composedPath().some(target => target instanceof HTMLElement && target.hasAttribute('data-menu-toggle'))) {
+      event.preventDefault();
+      this.menuCollapsed.update(value => !value);
+    }
   }
 }

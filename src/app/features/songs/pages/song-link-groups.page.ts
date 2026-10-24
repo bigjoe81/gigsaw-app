@@ -1,33 +1,18 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
+import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  AlertController,
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonCheckbox,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonReorder,
-  IonReorderGroup,
-  IonSpinner,
-  IonTitle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { forkJoin } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, IonBackButton, IonButton, IonButtons, IonCheckbox, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonReorder, IonReorderGroup, IonSpinner, IonTitle, IonToolbar],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, ],
   templateUrl: './song-link-groups.page.html',
   styleUrls: ['./song-link-groups.page.scss'],
 })
@@ -49,8 +34,8 @@ export class SongLinkGroupsPage implements OnInit {
     private readonly songsApi: SongService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly toast: ToastController,
-    private readonly alert: AlertController,
+    private readonly toast: ToastService,
+    private readonly alert: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -169,7 +154,7 @@ export class SongLinkGroupsPage implements OnInit {
     this.songs.set([...this.songs().filter((song) => song.linkGroup !== group), ...items]);
   }
 
-  reorder(event: CustomEvent<{ from: number; to: number; complete: (list?: Song[]) => void }>, group: string): void {
+  reorder(event: { detail: { from: number; to: number; complete: () => void } }, group: string): void {
     const items = this.orderedSongs(group);
     const { from, to } = event.detail;
     if (from !== to) {

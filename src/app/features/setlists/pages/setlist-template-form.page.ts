@@ -1,30 +1,11 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
+import { ToastService } from '../../../shared/ui/native-ui';
 
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonChip,
-  IonCheckbox,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonSpinner,
-  IonTextarea,
-  IonTitle,
-  IonToggle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { forkJoin, of } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../../songs/services/song.service';
@@ -32,11 +13,10 @@ import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonCheckbox, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSpinner, IonTextarea, IonTitle, IonToggle, IonToolbar],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, GigsawListComponent, GigsawListItemComponent, ],
   templateUrl: './setlist-template-form.page.html',
-  styles: ['.generation-sections{display:grid;gap:18px}.gen-section{display:grid;gap:10px;padding:2px 0}.gen-section h3{margin:0;font-size:1rem;font-weight:700}.gen-intro{margin:0;color:var(--ion-color-medium-shade);font-size:.92rem;line-height:1.4}.field-help{display:block;margin:-2px 16px 0;color:var(--ion-color-medium);font-size:.82rem;line-height:1.35}.field-error{display:block;margin:-2px 16px 0;color:var(--ion-color-danger);font-size:.82rem;line-height:1.35}.invalid-field{--highlight-color-focused:var(--ion-color-danger);}.tag-suggestions{display:flex;gap:8px;flex-wrap:wrap;padding:4px 16px 0;}'],
 })
 export class SetlistTemplateFormPage implements OnInit {
   form = this.fb.group({
@@ -79,7 +59,7 @@ export class SetlistTemplateFormPage implements OnInit {
     private readonly songsApi: SongService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly toast: ToastController,
+    private readonly toast: ToastService,
   ) {}
 
   ngOnInit(): void {

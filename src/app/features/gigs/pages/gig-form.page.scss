@@ -1,12 +1,6 @@
+@use "../../../shared/ui/refined-form";
+
 :host { display: flex; flex-direction: column; height: 100%; min-height: 0; }
 app-form-page-header { flex-shrink: 0; }
 main, main * { box-sizing: border-box; }
-ion-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background); --padding-bottom: var(--ion-safe-area-bottom, 0px); }
-.selection-card span { color: var(--ion-color-medium); font-size: .84rem; }
-.selection-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 10px 13px 15px; border: 1px solid rgba(var(--ion-color-success-rgb), .4); border-radius: 12px; background: rgba(var(--ion-color-success-rgb), .08); }
-.selection-card.pending { border-color: rgba(var(--ion-color-primary-rgb), .4); background: rgba(var(--ion-color-primary-rgb), .08); }
-.selection-card div { display: grid; gap: 4px; }
-.error-banner { display: block; padding: 13px 15px; border: 1px solid rgba(var(--ion-color-danger-rgb), .35); border-radius: 12px; background: rgba(var(--ion-color-danger-rgb), .08); }
-.gig-field { font-weight: 400; }
-.floating-action-toolbar { position: absolute; z-index: 100; bottom: max(16px, env(safe-area-inset-bottom)); left: clamp(20px, 5vw, 72px); right: clamp(20px, 5vw, 72px); display: block; width: auto; overflow: hidden; border: 1px solid #243244; border-radius: 16px; background: #333333; box-shadow: 0 14px 38px rgba(0, 0, 0, .34); backdrop-filter: blur(14px); }
-@media (max-width: 800px) { .floating-action-toolbar { left: 20px; right: 20px; width: auto; } }
+.app-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background); --padding-bottom: var(--ui-safe-area-bottom, 0px); }

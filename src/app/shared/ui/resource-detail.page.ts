@@ -1,27 +1,29 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from './native-ui';
+import { DialogService, ToastService } from './native-ui';
 import { Component, Injector, OnInit, signal } from '@angular/core';
 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AlertController, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { finalize, timeout } from 'rxjs';
 import { ResourceConfig } from '../models/resource-form.models';
 import { BandResource } from '../../core/models/band-resources.models';
 import { GigsawListComponent, GigsawListItemComponent } from './gigsaw';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [RouterLink, GigsawListComponent, GigsawListItemComponent, IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSkeletonText, IonTitle, IonToolbar],
+  imports: [NativeUiModule, RouterLink, GigsawListComponent, GigsawListItemComponent, ],
   templateUrl: './resource-detail.page.html',
   styleUrls: ['./resource-detail.page.scss'],
 })
 export class ResourceDetailPage implements OnInit {
   config!: ResourceConfig; readonly item = signal<BandResource | undefined>(undefined); readonly loading = signal(true); readonly error = signal(''); private id!: number; private service: any;
-  constructor(private readonly route: ActivatedRoute, private readonly router: Router, private readonly injector: Injector, private readonly alert: AlertController, private readonly toast: ToastController) {}
+  constructor(private readonly route: ActivatedRoute, private readonly router: Router, private readonly injector: Injector, private readonly alert: DialogService, private readonly toast: ToastService) {}
   ngOnInit(): void {
     this.config = this.route.snapshot.data['resource'];
     this.service = this.injector.get(this.config.service);
     this.id = Number(this.route.snapshot.paramMap.get('id'));
+    this.load();
   }
-  ionViewWillEnter(): void { this.load(); }
   load(): void {
     this.loading.set(true);
     this.error.set('');

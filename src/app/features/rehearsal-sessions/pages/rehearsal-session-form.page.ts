@@ -1,17 +1,13 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize, forkJoin, of, switchMap, throwError } from 'rxjs';
-import {
-  IonContent,
-  IonIcon,
-  IonInput,
-  IonSelect,
-  IonTextarea,
-  IonSelectOption,
-  ToastController,
-} from '@ionic/angular/standalone';
+import { finalize, forkJoin, of, Subscription, switchMap, throwError } from 'rxjs';
 import {
   RehearsalRoom,
   RehearsalSession,
@@ -23,18 +19,19 @@ import {
   GigsawLoadingComponent,
   GigsawMessageComponent,
 } from '../../../shared/ui/gigsaw';
+import { eventTitleDate, nextEventTitle } from '../../../shared/utils/event-title';
 import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../../songs/services/song.service';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, IonContent, IonIcon, IonInput, IonSelect, IonTextarea, IonSelectOption],
+  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, ],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })
-export class RehearsalSessionFormPage implements OnInit {
+export class RehearsalSessionFormPage implements OnInit, OnDestroy {
   readonly rehearsalSections: FormPageHeaderSection[] = [{ id: 1, label: 'Dettagli' }, { id: 2, label: 'Brani da provare' }];
   readonly form = this.fb.nonNullable.group({
     title: ['', Validators.maxLength(255)],
@@ -53,6 +50,14 @@ export class RehearsalSessionFormPage implements OnInit {
   readonly songs = signal<Song[]>([]);
   readonly rehearsalRooms = signal<RehearsalRoom[]>([]);
   readonly selectedSongIds = signal<number[]>([]);
+  readonly roomModalOpen = signal(false);
+  readonly creatingRoom = signal(false);
+  readonly roomModalError = signal('');
+  readonly roomForm = this.fb.nonNullable.group({
+    name: ['', Validators.required],
+    address: '',
+    city: '',
+  });
   private id?: number;
   private bandId?: number;
 
@@ -63,16 +68,39 @@ export class RehearsalSessionFormPage implements OnInit {
     private readonly songService: SongService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly toast: ToastController,
+    private readonly toast: ToastService,
   ) {}
+
+  private lastSuggestedTitle = '';
+  private readonly titleSubscriptions = new Subscription();
+
+  ngOnDestroy(): void {
+    this.titleSubscriptions.unsubscribe();
+  }
+
+  private updateSuggestedTitle(): void {
+    if (this.editing()) return;
+    const date = eventTitleDate(this.form.controls.date.value);
+    const suggestion = date ? `Prove del ${date}` : '';
+    const title = this.form.controls.title;
+    const next = nextEventTitle(title.value, this.lastSuggestedTitle, suggestion);
+    this.lastSuggestedTitle = suggestion;
+    if (next !== title.value) title.setValue(next, { emitEvent: false });
+  }
 
   ngOnInit(): void {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.editing.set(!!this.id);
+    this.titleSubscriptions.add(this.form.controls.date.valueChanges.subscribe(() => this.updateSuggestedTitle()));
+    this.titleSubscriptions.add(this.form.controls.title.valueChanges.subscribe((title) => {
+      if (!title.trim()) this.updateSuggestedTitle();
+    }));
+    this.updateSuggestedTitle();
+    this.load();
   }
 
-  ionViewWillEnter(): void {
+  load(): void {
     this.loading.set(true);
     this.error.set('');
     this.step.set(1);
@@ -139,6 +167,43 @@ export class RehearsalSessionFormPage implements OnInit {
       : selectedIds.map(Number).filter((id) => id !== songId));
   }
 
+  openRoomModal(): void {
+    this.roomForm.reset();
+    this.roomModalError.set('');
+    this.roomModalOpen.set(true);
+  }
+
+  closeRoomModal(): void {
+    if (!this.creatingRoom()) this.roomModalOpen.set(false);
+  }
+
+  createRoom(): void {
+    if (this.creatingRoom()) return;
+    this.roomForm.markAllAsTouched();
+    if (this.roomForm.invalid) return;
+
+    this.creatingRoom.set(true);
+    this.roomModalError.set('');
+    const values = this.roomForm.getRawValue();
+    this.rehearsalRoomsApi.create({
+      name: values.name.trim(),
+      address: values.address.trim() || null,
+      city: values.city.trim() || null,
+    }).pipe(
+      finalize(() => this.creatingRoom.set(false)),
+    ).subscribe({
+      next: (room) => {
+        this.rehearsalRooms.update((rooms) => [...rooms, room]);
+        this.form.controls.rehearsalRoomId.setValue(String(room.id));
+        this.form.controls.rehearsalRoomId.markAsTouched();
+        this.roomModalOpen.set(false);
+      },
+      error: (error: unknown) => {
+        this.roomModalError.set(this.apiErrorMessage(error, 'Impossibile creare la sala prove.'));
+      },
+    });
+  }
+
   save(): void {
     this.error.set('');
     if (!this.roomValid()) return;
@@ -177,7 +242,7 @@ export class RehearsalSessionFormPage implements OnInit {
     ).subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Prova salvata.', duration: 1800, color: 'success' })).present();
-        void this.router.navigateByUrl(this.bandId ? `/band/${this.bandId}/prove` : '/band');
+        void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'prova') ?? (this.bandId ? `/band/${this.bandId}/prove` : '/band'));
       },
       error: (error: unknown) => {
         if (error instanceof HttpErrorResponse && error.status === 422 && error.error?.errors?.rehearsal_room_id) {
@@ -195,6 +260,12 @@ export class RehearsalSessionFormPage implements OnInit {
 
   roomLabel(room: RehearsalRoom): string {
     return [room.name, room.city].filter(Boolean).join(' · ');
+  }
+
+  selectedRoomLabel(): string {
+    const roomId = this.form.controls.rehearsalRoomId.value;
+    const room = this.rehearsalRooms().find((candidate) => candidate.id.toString() === roomId);
+    return room ? this.roomLabel(room) : 'Sala non disponibile';
   }
 
   private roomValid(): boolean {

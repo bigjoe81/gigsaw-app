@@ -1,18 +1,8 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonMenuButton,
-  IonSpinner,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { add, calendarOutline, chevronBackOutline, chevronForwardOutline, micOutline, radioOutline } from 'ionicons/icons';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
 import { Commitment, Gig, RehearsalSession } from '../../../core/models/band-resources.models';
 import { BandContextService } from '../../../core/services/band-context.service';
@@ -44,20 +34,12 @@ interface CalendarDay {
   events: CalendarEvent[];
 }
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
+    NgClass,
     RouterLink,
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonIcon,
-    IonMenuButton,
-    IonSpinner,
-    IonTitle,
-    IonToolbar,
-  ],
+    ],
   templateUrl: './commitment-list.page.html',
   styleUrls: ['./commitment-list.page.scss'],
 })
@@ -175,10 +157,10 @@ export class CommitmentListPage {
   });
 
   constructor() {
-    addIcons({ add, calendarOutline, chevronBackOutline, chevronForwardOutline, micOutline, radioOutline });
+
   }
 
-  ionViewWillEnter(): void {
+  ngOnInit(): void {
     this.selectedEventKey.set(null);
     this.load();
   }
@@ -189,7 +171,7 @@ export class CommitmentListPage {
     if (window.matchMedia('(min-width: 1024px)').matches) {
       this.selectedEventKey.set(item.key);
     } else {
-      void this.router.navigateByUrl(item.link);
+      void this.router.navigate([item.link], { queryParamsHandling: 'preserve' });
     }
   }
 

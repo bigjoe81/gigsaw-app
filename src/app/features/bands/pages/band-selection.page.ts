@@ -1,72 +1,42 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { DialogService } from '../../../shared/ui/native-ui';
 import { Component, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import {
-  AlertController,
-  IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonContent, IonHeader, IonSpinner,
-  IonIcon,
-  IonModal, IonTitle, IonToolbar,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  add,
-  chevronForwardOutline,
-  calendarOutline,
-  helpCircleOutline,
-  logOutOutline,
-  musicalNotes,
-  timeOutline,
-} from 'ionicons/icons';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import {
-  GigsawButtonComponent,
   GigsawMessageComponent,
 } from '../../../shared/ui/gigsaw';
 import { Band } from '../models/band.models';
 import { BandService } from '../services/band.service';
 import { BandCreatePage } from './band-create.page';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonSpinner,
-    BandCreatePage,
-    GigsawButtonComponent,
+  imports: [NativeUiModule, BandCreatePage,
     GigsawMessageComponent,
-    IonContent,
-    IonHeader,
-    IonIcon,
-    IonModal,
-    IonToolbar,
-    IonTitle,
-  ],
+    ],
   templateUrl: './band-selection.page.html',
   styleUrls: ['./band-selection.page.scss'],
 })
 export class BandSelectionPage {
   private readonly bandService = inject(BandService);
   private readonly bandContext = inject(BandContextService);
+  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
-  private readonly alert = inject(AlertController);
+  private readonly alert = inject(DialogService);
   private readonly onboarding = inject(OnboardingService);
 
   readonly bands = signal<Band[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly createModalOpen = signal(false);
-  readonly createBandModal = viewChild<IonModal>('createBandModal');
 
   constructor() {
-    addIcons({
-      add,
-      chevronForwardOutline,
-      calendarOutline,
-      helpCircleOutline,
-      logOutOutline,
-      musicalNotes,
-      timeOutline,
-    });
+
     this.load();
   }
 
@@ -77,8 +47,8 @@ export class BandSelectionPage {
       next: (bands) => {
         this.bands.set(bands);
         this.loading.set(false);
-        if (!bands.length && this.onboarding.shouldShow()) {
-          void this.router.navigateByUrl('/inizia');
+        if (!bands.length && this.route.snapshot.queryParamMap.get('seleziona') !== '1') {
+          void this.router.navigate(['/inizia'], { queryParams: { mode: 'create' } });
         } else if (bands.length && this.onboarding.shouldShow()) {
           this.onboarding.complete();
         }
@@ -92,12 +62,12 @@ export class BandSelectionPage {
 
   selectBand(band: Band): void {
     this.bandContext.setCurrentBand(band.id);
-    void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
+    void this.router.navigateByUrl(`/band/${band.id}/inizia`);
   }
 
   formatGenres(band: Band): string {
     const genres = band.genres?.map((genre) => genre.name).filter(Boolean) ?? [];
-    return genres.length ? genres.join(' · ') : 'Apri workspace';
+    return genres.length ? genres.join(' · ') : 'Scegli cosa fare oggi';
   }
 
   async promptJoinBand(): Promise<void> {
@@ -116,7 +86,7 @@ export class BandSelectionPage {
         {
           text: 'Entra',
           handler: (value) => {
-            const joinCode = String(value?.joinCode ?? '').trim();
+            const joinCode = String(value?.['joinCode'] ?? '').trim();
             if (!joinCode) {
               this.error.set('Inserisci un codice band valido.');
               return false;
@@ -140,7 +110,7 @@ export class BandSelectionPage {
       next: (band) => {
         this.loading.set(false);
         this.bandContext.setCurrentBand(band.id);
-        void this.router.navigateByUrl(`/band/${band.id}/repertorio`);
+        void this.router.navigateByUrl(`/band/${band.id}/inizia`);
       },
       error: (error: { error?: { errors?: Record<string, string[]>; message?: string } }) => {
         this.loading.set(false);
@@ -163,9 +133,8 @@ export class BandSelectionPage {
 
   async onBandCreated(band: Band): Promise<void> {
     this.createModalOpen.set(false);
-    await this.createBandModal()?.dismiss(band, 'created');
     this.bandContext.setCurrentBand(band.id);
-    await this.router.navigateByUrl(`/band/${band.id}/impostazioni`);
+    await this.router.navigateByUrl(`/band/${band.id}/inizia`);
   }
 
   logout(): void {

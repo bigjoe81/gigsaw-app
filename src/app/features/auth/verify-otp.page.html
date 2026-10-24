@@ -1,11 +1,11 @@
-<ion-content appAuthKeyboardScroll class="ion-padding otp-content" [fullscreen]="true">
-  <div class="auth-shell">
-    <div class="auth-brand">
-      <img src="assets/logo-hor.png" alt="GigSaw" />
-      <p class="otp-brand-note">Inserisci il codice inviato a<br /><strong>{{ email || 'la tua email' }}</strong></p>
+<section appAuthKeyboardScroll class="app-content [--padding-start:16px] [--padding-end:16px]" >
+  <div class="mx-auto flex w-full max-w-[340px] min-w-0 flex-col gap-4">
+    <div class="grid justify-items-center gap-[14px] py-2 text-center">
+      <img class="mx-auto block h-auto w-[min(260px,70vw)] max-w-full object-contain drop-shadow-[0_14px_28px_rgba(0,0,0,0.12)] md:w-[300px]" src="assets/logo-hor.png" alt="GigSaw" />
+      <p class="m-0 text-[.95rem] text-[var(--ui-color-medium)] [overflow-wrap:anywhere]">Inserisci il codice inviato a<br /><strong>{{ email || 'la tua email' }}</strong></p>
     </div>
 
-    <form class="auth-form" (submit)="verify(); $event.preventDefault()">
+    <form class="flex w-full flex-col gap-4" (submit)="verify(); $event.preventDefault()">
       <div>
         <app-gigsaw-otp-input
           [value]="code()"
@@ -34,7 +34,7 @@
       <app-gigsaw-button buttonClass="mt-4 w-full" type="submit" tone="primary" [loading]="loading">Verifica e continua</app-gigsaw-button>
     </form>
 
-    <app-gigsaw-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending || !challengeId" [loading]="resending">Invia un nuovo codice</app-gigsaw-button>
-    <a class="btn btn-ghost auth-link" [routerLink]="purpose === 'register' ? '/registrati' : '/accedi'">Torna indietro</a>
+    <app-gigsaw-button buttonClass="mt-2 w-full" tone="ghost" type="button" (click)="resend()" [disabled]="resending() || !challengeId" [loading]="resending()">Invia un nuovo codice</app-gigsaw-button>
+    <a class="block w-full rounded-md whitespace-normal text-center" [routerLink]="purpose === 'register' ? '/registrati' : '/accedi'">Torna indietro</a>
   </div>
-</ion-content>
+</section>

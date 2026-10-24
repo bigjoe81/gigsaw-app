@@ -1,4 +1,4 @@
-<div class="app-shell">
+<div class="app-shell" (click)="handleLayoutClick($event)">
   <header class="flow-header">
     <a routerLink="/band" class="brand-link" aria-label="GigSaw - cambia band">
       <img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" />
@@ -22,55 +22,29 @@
       @for (section of sections; track section.key) {
         <a
           class="flow-nav__item"
-          [routerLink]="sectionHref(section.key)"
+          [routerLink]="sectionHref(section.key)" queryParamsHandling="preserve"
           routerLinkActive="is-active"
           [routerLinkActiveOptions]="{ exact: false }"
         >
-          <ion-icon [name]="section.icon" aria-hidden="true" />
+          <app-symbol [name]="section.icon" aria-hidden="true" />
           <span>{{ section.label }}</span>
         </a>
       }
     </nav>
   </header>
 
-  <ion-menu contentId="band-content" menuId="band-menu" type="overlay">
-    <ion-content>
-      <div class="mobile-menu-head">
-        <img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" />
-        @if (currentBand(); as band) {
-          <strong>{{ band.name }}</strong>
-        }
-      </div>
-
-      <ion-list lines="none">
+  @if (menuCollapsed()) {
+    <button class="mobile-backdrop" aria-label="Chiudi menu" (click)="closeMobileMenu()"></button>
+    <aside class="mobile-menu" aria-label="Menu band">
+      <div class="mobile-menu-head"><img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" /><strong>{{ currentBand()?.name }}</strong></div>
+      <nav class="grid gap-2 p-4">
         @for (section of sections; track section.key) {
-          <ion-menu-toggle [autoHide]="true">
-            <ion-item
-              [detail]="false"
-              [routerLink]="sectionHref(section.key)"
-              routerLinkActive="is-active"
-              [routerLinkActiveOptions]="{ exact: false }"
-            >
-              <ion-icon aria-hidden="true" slot="start" [name]="section.icon" />
-              <ion-label>
-                <strong>{{ section.label }}</strong>
-                <p>{{ section.hint }}</p>
-              </ion-label>
-            </ion-item>
-          </ion-menu-toggle>
+          <a class="btn btn-ghost justify-start" [routerLink]="sectionHref(section.key)" (click)="closeMobileMenu()"><app-symbol [name]="section.icon" />{{ section.label }}</a>
         }
-      </ion-list>
-
-      <ion-list class="mobile-menu-footer" lines="none">
-        <ion-menu-toggle [autoHide]="true">
-          <ion-item [detail]="false" routerLink="/band">
-            <ion-icon aria-hidden="true" slot="start" name="arrow-back-outline" />
-            <ion-label>Cambia band</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
-
-  <ion-router-outlet id="band-content" class="shell-content" [animated]="pageTransitionsEnabled" />
+        <a class="btn btn-ghost justify-start" [routerLink]="sectionHref('home').replace('/panoramica', '/inizia')" (click)="closeMobileMenu()">Cosa vuoi fare?</a>
+        <a class="btn btn-ghost justify-start" routerLink="/band" (click)="closeMobileMenu()">Cambia band</a>
+      </nav>
+    </aside>
+  }
+  <div class="route-content" (click)="closeMobileMenu()"><router-outlet /></div>
 </div>

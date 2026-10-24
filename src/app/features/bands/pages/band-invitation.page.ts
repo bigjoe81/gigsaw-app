@@ -1,8 +1,7 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonContent, IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { peopleOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BandContextService } from '../../../core/services/band-context.service';
@@ -10,9 +9,9 @@ import { OnboardingService } from '../../../core/services/onboarding.service';
 import { GigsawButtonComponent, GigsawMessageComponent } from '../../../shared/ui/gigsaw';
 import { BandService } from '../services/band.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [GigsawButtonComponent, GigsawMessageComponent, IonContent, IonIcon],
+  imports: [NativeUiModule, GigsawButtonComponent, GigsawMessageComponent, ],
   templateUrl: './band-invitation.page.html',
   styleUrls: ['./band-invitation.page.scss'],
 })
@@ -34,7 +33,7 @@ export class BandInvitationPage implements OnInit {
   readonly error = signal('');
 
   constructor() {
-    addIcons({ peopleOutline });
+
   }
 
   ngOnInit(): void {
@@ -59,13 +58,6 @@ export class BandInvitationPage implements OnInit {
     });
   }
 
-  ionViewWillEnter(): void {
-    if (!this.auth.isAuthenticated) return;
-
-    this.authenticated.set(true);
-    this.sessionLoading.set(false);
-    this.completePendingInvitation();
-  }
 
   participate(): void {
     if (this.joining() || !this.joinCode) return;
@@ -98,7 +90,7 @@ export class BandInvitationPage implements OnInit {
         if (this.onboarding.shouldShow()) {
           void this.router.navigate(['/inizia'], { queryParams: { bandId: band.id, percorso: 'invito' } });
         } else {
-          void this.router.navigateByUrl(`/band/${band.id}/panoramica`);
+          void this.router.navigateByUrl(`/band/${band.id}/inizia`);
         }
       },
       error: (error: { status?: number; error?: { errors?: Record<string, string[]>; message?: string } }) => {

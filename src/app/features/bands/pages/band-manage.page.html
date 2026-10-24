@@ -1,99 +1,105 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="band-menu" />
-    </ion-buttons>
-    <ion-title>{{ currentSection?.title || 'Impostazioni' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
+    </div>
+    <h1 class="grow text-xl">{{ currentSection?.title || 'Impostazioni' }}</h1>
+  </div>
+</header>
 
-<ion-content>
+<section class="app-content">
   @if (loading()) {
-    <ion-card>
-      <ion-card-content>
-        <ion-skeleton-text [animated]="true" style="width: 55%" />
-        <ion-skeleton-text [animated]="true" style="width: 90%" />
-      </ion-card-content>
-    </ion-card>
+    <article class="card bg-base-200 border border-base-300 my-4">
+      <div class="card-body">
+        <span class="skeleton block h-4 my-2" style="width: 55%" ></span>
+        <span class="skeleton block h-4 my-2" style="width: 90%" ></span>
+      </div>
+    </article>
   } @else if (!band) {
-    <div class="ion-padding">
-      <ion-note color="danger">{{ loadError() || 'Band non trovata.' }}</ion-note>
-      <ion-button class="ion-margin-top" expand="block" fill="outline" type="button" (click)="load()">Riprova</ion-button>
+    <div class="p-4">
+      <small class="text-sm text-error">{{ loadError() || 'Band non trovata.' }}</small>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline mt-4" type="button" (click)="load()">Riprova</app-gigsaw-button>
     </div>
   } @else {
-    <div class="settings-heading">
+    <div class="mx-5 my-[22px] flex items-center justify-between gap-5 max-[760px]:mx-4 max-[760px]:my-5 max-[760px]:items-start max-[760px]:flex-col">
       <div>
         @if (settingsSection() !== 'overview') {
-          <a class="settings-back" [routerLink]="settingsUrl()">← Tutte le impostazioni</a>
+          <a class="mb-5 inline-block text-[.85rem] text-[var(--ui-color-primary)] no-underline focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" [routerLink]="settingsUrl()"><app-symbol name="arrow-back-outline" /> Tutte le impostazioni</a>
         }
-        <span class="eyebrow">{{ band.name }}</span>
-        <h1>{{ currentSection?.title || 'Impostazioni della band' }}</h1>
-        <p>{{ currentSection?.description || 'Scegli cosa vuoi gestire. Ogni sezione ha il suo spazio.' }}</p>
+        <span class="mb-[5px] block text-[.7rem] font-extrabold tracking-[.16em] text-[var(--ui-color-primary)] uppercase">{{ band.name }}</span>
+        <h1 class="m-0 text-[clamp(1.5rem,3vw,2rem)]">{{ currentSection?.title || 'Impostazioni della band' }}</h1>
+        <p class="mt-2 mb-0 leading-[1.5] text-[var(--gigsaw-muted)]">{{ currentSection?.description || 'Scegli cosa vuoi gestire. Ogni sezione ha il suo spazio.' }}</p>
       </div>
       @if (settingsSection() === 'overview') {
-        <ion-button size="small" fill="clear" (click)="openOnboarding()">Guida introduttiva</ion-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" (click)="openOnboarding()" type="button">Guida introduttiva</app-gigsaw-button>
       }
     </div>
 
-    <nav class="settings-nav" [class.settings-index]="settingsSection() === 'overview'" aria-label="Sezioni impostazioni band">
+    <nav [class]="settingsSection() === 'overview'
+      ? 'mx-5 mb-6 grid grid-cols-2 gap-4 max-[760px]:mx-4 max-[760px]:grid-cols-1 max-[760px]:gap-3'
+      : 'mx-5 mb-6 flex flex-wrap gap-2 border-b border-[var(--gigsaw-border)] pb-[18px] max-[760px]:mx-4 max-[760px]:gap-1'" aria-label="Sezioni impostazioni band">
       @for (section of visibleSections; track section.key) {
-        <a [routerLink]="settingsUrl(section.path)" [class.active]="settingsSection() === section.key" [attr.aria-current]="settingsSection() === section.key ? 'page' : null">
-          <span class="settings-nav-icon"><ion-icon [name]="section.icon" aria-hidden="true" /></span>
-          <span>{{ section.title }}@if (settingsSection() === 'overview') { <small>{{ section.description }}</small> }</span>
-          @if (settingsSection() === 'overview') { <span class="settings-arrow" aria-hidden="true">→</span> }
+        <a [class]="settingsSection() === 'overview'
+          ? 'flex items-center gap-[9px] rounded-[10px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] p-6 text-sm text-[var(--gigsaw-text)] no-underline hover:bg-[var(--gigsaw-input-background)] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px] max-[760px]:px-4 max-[760px]:py-5'
+          : 'flex items-center gap-[9px] rounded-[10px] border border-transparent px-[14px] py-[10px] text-sm text-[var(--gigsaw-muted)] no-underline hover:bg-[var(--gigsaw-input-background)] hover:text-[var(--gigsaw-text)] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px] max-[760px]:p-[10px]'
+            + (settingsSection() === section.key ? ' border-[var(--ui-color-primary)] bg-[color-mix(in_srgb,var(--ui-color-primary)_12%,var(--gigsaw-surface))] text-[var(--ui-color-primary)]' : '')" [routerLink]="settingsUrl(section.path)" [attr.aria-current]="settingsSection() === section.key ? 'page' : null">
+          <span [class]="settingsSection() === 'overview'
+            ? 'grid size-11 shrink-0 place-items-center rounded-xl bg-[color-mix(in_srgb,var(--ui-color-primary)_12%,transparent)] text-xl text-[var(--ui-color-primary)]'
+            : 'grid place-items-center text-xl'"><app-symbol [name]="section.icon" aria-hidden="true"  /></span>
+          <span [class]="settingsSection() === 'overview' ? 'grid gap-[7px] text-base font-semibold' : ''">{{ section.title }}@if (settingsSection() === 'overview') { <small class="text-[.85rem] leading-[1.5] font-normal text-[var(--gigsaw-muted)]">{{ section.description }}</small> }</span>
+          @if (settingsSection() === 'overview') { <span class="ml-auto text-[var(--gigsaw-muted)]" aria-hidden="true"><app-symbol name="arrow-forward-outline" /></span> }
         </a>
       }
     </nav>
 
     @if (isAdmin) {
       @if (settingsSection() === 'invites') {
-      <ion-card >
-        <ion-card-header>
-          <ion-card-title>Invita membri</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-note color="medium">Condividi questo link: chi lo apre trova subito il pulsante “Partecipa”.</ion-note>
-          <label class="grid min-w-0 gap-2 text-sm font-semibold mt-4"><span>Link d’invito</span><ion-input class="min-w-0 w-full font-normal" [value]="bandInviteLink" [readonly]="true"/></label>
-          <div class="action-row">
-            <ion-button type="button" (click)="copyBandInviteLink()" [disabled]="!bandInviteLink">
-              <ion-icon slot="start" name="copy-outline" /> Copia link
-            </ion-button>
+      <article class="card bg-base-200 border border-base-300 my-4" >
+        <header class="px-6 pt-6">
+          <h2 class="card-title">Invita membri</h2>
+        </header>
+        <div class="card-body">
+          <small class="text-sm text-base-content/60">Condividi questo link: chi lo apre trova subito il pulsante “Partecipa”.</small>
+          <label class="grid min-w-0 gap-2 text-sm font-semibold mt-4"><span>Link d’invito</span><app-gigsaw-input controlClass="min-w-0 font-normal" [value]="bandInviteLink" [readonly]="true" /></label>
+          <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" (click)="copyBandInviteLink()" [disabled]="!bandInviteLink">
+              <app-symbol name="copy-outline"  /> Copia link
+            </app-gigsaw-button>
             @if (canShareOnWhatsApp) {
-              <ion-button type="button" color="success" (click)="shareBandInviteOnWhatsApp()" [disabled]="!bandInviteLink">
-                <ion-icon slot="start" name="logo-whatsapp" /> WhatsApp
-              </ion-button>
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-success" type="button" (click)="shareBandInviteOnWhatsApp()" [disabled]="!bandInviteLink">
+                <app-symbol name="logo-whatsapp"  /> WhatsApp
+              </app-gigsaw-button>
             }
-            <ion-button type="button" fill="outline" (click)="scrollToPersonalInvite()">
-              <ion-icon slot="start" name="mail-outline" /> Invito con email e ruolo
-            </ion-button>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" type="button" (click)="scrollToPersonalInvite()">
+              <app-symbol name="mail-outline"  /> Invito con email e ruolo
+            </app-gigsaw-button>
           </div>
-        </ion-card-content>
-      </ion-card>
+        </div>
+      </article>
     }
 
       @if (settingsSection() === 'profile') {
-      <ion-card class="profile-card">
-        <ion-card-header>
-          <ion-card-title>Profilo band</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-            <section class="profile-identity">
-              <div class="profile-logo-panel">
-                @if (logoPreviewUrl() || band.logo) { <img [src]="logoPreviewUrl() || band.logo" alt="Logo band" class="profile-logo" /> }
-                @else { <div class="profile-logo profile-logo-placeholder">{{ band.name.slice(0, 2).toUpperCase() }}</div> }
+      <article class="card bg-base-200 border border-base-300 my-4 [--background:transparent] bg-transparent shadow-none">
+        <header class="px-6 pt-6">
+          <h2 class="card-title">Profilo band</h2>
+        </header>
+        <div class="card-body">
+          <form class="grid gap-[18px]" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+            <section class="grid grid-cols-[minmax(190px,.55fr)_minmax(0,1.8fr)] gap-[22px] rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-5 max-[760px]:grid-cols-1 max-[760px]:p-4">
+              <div class="flex flex-col justify-center border-r border-[var(--gigsaw-border)] p-3 max-[760px]:border-r-0 max-[760px]:border-b max-[760px]:pb-[18px]">
+                @if (logoPreviewUrl() || band.logo) { <img [src]="logoPreviewUrl() || band.logo" alt="Logo band" class="mx-auto mb-[18px] block size-[116px] rounded-[20px] object-cover" /> }
+                @else { <div class="mx-auto mb-[18px] grid size-[116px] place-items-center rounded-[20px] bg-[rgba(var(--ui-color-primary-rgb),.13)] text-[2rem] font-black text-[var(--ui-color-primary)]">{{ band.name.slice(0, 2).toUpperCase() }}</div> }
                 <div class="grid min-w-0 gap-2 text-sm font-semibold">
-                  <label for="band-logo-picker">Cambia logo</label>
-                  <input id="band-logo-picker" class="w-full min-w-0 rounded-lg border border-solid border-[var(--gigsaw-input-border)] bg-[var(--gigsaw-input-background)] p-3 text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-[var(--ion-color-primary)] file:px-3 file:py-2 file:text-[var(--ion-color-primary-contrast)]" type="file" accept="image/jpeg,image/png,image/webp" (change)="onSettingsFilesSelected($event, 'logo')" />
+                  <app-gigsaw-file-input label="Cambia logo" accept="image/jpeg,image/png,image/webp" controlClass="w-full min-w-0 justify-start" (filesChange)="onSettingsFilesSelected($event, 'logo')" />
                 </div>
                 <small>JPG, PNG o WebP · massimo 2 MB</small>
-                @if (logoError()) { <ion-note color="danger" role="alert">{{ logoError() }}</ion-note> }
+                @if (logoError()) { <small class="text-sm text-error" role="alert">{{ logoError() }}</small> }
               </div>
-              <div class="profile-primary-fields">
-                <div class="field full grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-nome-band">Nome band</label><ion-input id="band-field-nome-band" aria-label="Nome band" class="min-w-0 w-full font-normal" formControlName="name" [class.ion-invalid]="profileForm.controls.name.touched && profileForm.controls.name.invalid"    [class.ion-touched]="profileForm.controls.name.touched && profileForm.controls.name.invalid"/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-citt-">Città</label><ion-input id="band-field-citt-" aria-label="Città" class="min-w-0 w-full font-normal" formControlName="city" placeholder="Es. Milano"/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-paese">Paese</label><ion-input id="band-field-paese" aria-label="Paese" class="min-w-0 w-full font-normal" formControlName="country" placeholder="Es. Italia"/></div>
-                <div class="field full grid min-w-0 gap-2 text-sm font-semibold">
+              <div class="grid grid-cols-2 content-center gap-[14px] max-[760px]:grid-cols-1">
+                <div class="col-span-full grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)] max-[760px]:col-span-1"><label for="band-field-nome-band">Nome band</label><app-gigsaw-input id="band-field-nome-band" aria-label="Nome band" controlClass="min-w-0 font-normal" formControlName="name" [invalid]="profileForm.controls.name.touched && profileForm.controls.name.invalid" /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-citt-">Città</label><app-gigsaw-input id="band-field-citt-" aria-label="Città" controlClass="min-w-0 font-normal" formControlName="city" placeholder="Es. Milano" /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-paese">Paese</label><app-gigsaw-input id="band-field-paese" aria-label="Paese" controlClass="min-w-0 font-normal" formControlName="country" placeholder="Es. Italia" /></div>
+                <div class="col-span-full grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)] max-[760px]:col-span-1">
                   <label>Generi</label>
                   <app-gigsaw-typeahead
                     name="genreQuery"
@@ -130,264 +136,261 @@
               </div>
             </section>
 
-            <section class="profile-section">
-              <div class="profile-section-title"><span>01</span><div><h3>Presentazione</h3><p>Il testo che vedranno promoter e venue.</p></div></div>
-              <div class="profile-bio-grid">
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-bio-breve">Bio breve</label><ion-textarea id="band-field-bio-breve" aria-label="Bio breve" class="min-w-0 w-full font-normal" [rows]="4" formControlName="bioShort" placeholder="Descrivi la band in poche righe"   [autoGrow]="true"/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-bio-completa">Bio completa</label><ion-textarea id="band-field-bio-completa" aria-label="Bio completa" class="min-w-0 w-full font-normal" [rows]="7" formControlName="bio" placeholder="Storia, influenze e progetto artistico"   [autoGrow]="true"/></div>
+            <section class="grid grid-cols-[minmax(160px,.5fr)_minmax(0,1.7fr)] gap-6 rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-[22px] max-[760px]:grid-cols-1 max-[760px]:p-4">
+              <div class="flex items-start gap-3"><span class="text-[.7rem] font-black tracking-[.12em] text-[var(--ui-color-primary)]">01</span><div><h3 class="m-0 text-base">Presentazione</h3><p class="mt-[5px] mb-0 text-[.78rem] leading-[1.4] font-normal text-[var(--gigsaw-muted)]">Il testo che vedranno promoter e venue.</p></div></div>
+              <div class="grid grid-cols-2 gap-[14px] max-[760px]:grid-cols-1">
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-bio-breve">Bio breve</label><app-gigsaw-textarea id="band-field-bio-breve" aria-label="Bio breve" controlClass="min-w-0 font-normal" [rows]="4" formControlName="bioShort" placeholder="Descrivi la band in poche righe" /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-bio-completa">Bio completa</label><app-gigsaw-textarea id="band-field-bio-completa" aria-label="Bio completa" controlClass="min-w-0 font-normal" [rows]="7" formControlName="bio" placeholder="Storia, influenze e progetto artistico" /></div>
               </div>
             </section>
 
-            <section class="profile-section">
-              <div class="profile-section-title"><span>02</span><div><h3>Contatti</h3><p>Riferimenti pubblici per richieste e booking.</p></div></div>
-              <div class="profile-fields-grid three">
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-email">Email</label><ion-input id="band-field-email" aria-label="Email" class="min-w-0 w-full font-normal" type="email" formControlName="email" [class.ion-invalid]="profileForm.controls.email.touched && profileForm.controls.email.invalid" placeholder="booking@band.it"    [class.ion-touched]="profileForm.controls.email.touched && profileForm.controls.email.invalid"/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-telefono">Telefono</label><ion-input id="band-field-telefono" aria-label="Telefono" class="min-w-0 w-full font-normal" type="tel" formControlName="phone" placeholder="+39..."/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-sito-web">Sito web</label><ion-input id="band-field-sito-web" aria-label="Sito web" class="min-w-0 w-full font-normal" type="url" formControlName="website" placeholder="https://"/></div>
+            <section class="grid grid-cols-[minmax(160px,.5fr)_minmax(0,1.7fr)] gap-6 rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-[22px] max-[760px]:grid-cols-1 max-[760px]:p-4">
+              <div class="flex items-start gap-3"><span class="text-[.7rem] font-black tracking-[.12em] text-[var(--ui-color-primary)]">02</span><div><h3 class="m-0 text-base">Contatti</h3><p class="mt-[5px] mb-0 text-[.78rem] leading-[1.4] font-normal text-[var(--gigsaw-muted)]">Riferimenti pubblici per richieste e booking.</p></div></div>
+              <div class="grid grid-cols-3 gap-[14px] max-[760px]:grid-cols-1">
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-email">Email</label><app-gigsaw-input id="band-field-email" aria-label="Email" controlClass="min-w-0 font-normal" type="email" formControlName="email" [invalid]="profileForm.controls.email.touched && profileForm.controls.email.invalid" placeholder="booking@band.it" /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-telefono">Telefono</label><app-gigsaw-input id="band-field-telefono" aria-label="Telefono" controlClass="min-w-0 font-normal" type="tel" formControlName="phone" placeholder="+39..." /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-sito-web">Sito web</label><app-gigsaw-input id="band-field-sito-web" aria-label="Sito web" controlClass="min-w-0 font-normal" type="url" formControlName="website" placeholder="https://" /></div>
               </div>
             </section>
 
-            <section class="profile-section">
-              <div class="profile-section-title"><span>03</span><div><h3>Social e streaming</h3><p>Collega i canali ufficiali della band.</p></div></div>
-              <div class="profile-fields-grid">
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-instagram">Instagram</label><ion-input id="band-field-instagram" aria-label="Instagram" class="min-w-0 w-full font-normal" type="url" formControlName="instagramUrl" placeholder="https://instagram.com/..."/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-facebook">Facebook</label><ion-input id="band-field-facebook" aria-label="Facebook" class="min-w-0 w-full font-normal" type="url" formControlName="facebookUrl" placeholder="https://facebook.com/..."/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-youtube">YouTube</label><ion-input id="band-field-youtube" aria-label="YouTube" class="min-w-0 w-full font-normal" type="url" formControlName="youtubeUrl" placeholder="https://youtube.com/..."/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-spotify">Spotify</label><ion-input id="band-field-spotify" aria-label="Spotify" class="min-w-0 w-full font-normal" type="url" formControlName="spotifyUrl" placeholder="https://open.spotify.com/..."/></div>
-                <div class="field grid min-w-0 gap-2 text-sm font-semibold"><label for="band-field-tiktok">TikTok</label><ion-input id="band-field-tiktok" aria-label="TikTok" class="min-w-0 w-full font-normal" type="url" formControlName="tiktokUrl" placeholder="https://tiktok.com/..."/></div>
+            <section class="grid grid-cols-[minmax(160px,.5fr)_minmax(0,1.7fr)] gap-6 rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-[22px] max-[760px]:grid-cols-1 max-[760px]:p-4">
+              <div class="flex items-start gap-3"><span class="text-[.7rem] font-black tracking-[.12em] text-[var(--ui-color-primary)]">03</span><div><h3 class="m-0 text-base">Social e streaming</h3><p class="mt-[5px] mb-0 text-[.78rem] leading-[1.4] font-normal text-[var(--gigsaw-muted)]">Collega i canali ufficiali della band.</p></div></div>
+              <div class="grid grid-cols-2 gap-[14px] max-[760px]:grid-cols-1">
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-instagram">Instagram</label><app-gigsaw-input id="band-field-instagram" aria-label="Instagram" controlClass="min-w-0 font-normal" type="url" formControlName="instagramUrl" placeholder="https://instagram.com/..." /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-facebook">Facebook</label><app-gigsaw-input id="band-field-facebook" aria-label="Facebook" controlClass="min-w-0 font-normal" type="url" formControlName="facebookUrl" placeholder="https://facebook.com/..." /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-youtube">YouTube</label><app-gigsaw-input id="band-field-youtube" aria-label="YouTube" controlClass="min-w-0 font-normal" type="url" formControlName="youtubeUrl" placeholder="https://youtube.com/..." /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-spotify">Spotify</label><app-gigsaw-input id="band-field-spotify" aria-label="Spotify" controlClass="min-w-0 font-normal" type="url" formControlName="spotifyUrl" placeholder="https://open.spotify.com/..." /></div>
+                <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"><label for="band-field-tiktok">TikTok</label><app-gigsaw-input id="band-field-tiktok" aria-label="TikTok" controlClass="min-w-0 font-normal" type="url" formControlName="tiktokUrl" placeholder="https://tiktok.com/..." /></div>
               </div>
             </section>
 
             @if (profileError) {
-              <ion-note class="ion-padding-top" color="danger">{{ profileError }}</ion-note>
+              <small class="text-sm text-error pt-4">{{ profileError }}</small>
             }
 
-            <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="savingProfile">
-              @if (savingProfile) { <ion-spinner name="crescent" /> } @else { Salva profilo band }
-            </ion-button>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary mt-4" type="submit" [disabled]="savingProfile">
+              @if (savingProfile) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Salva profilo band }
+            </app-gigsaw-button>
           </form>
-        </ion-card-content>
-      </ion-card>
+        </div>
+      </article>
     }
 
       @if (settingsSection() === 'media') {
-      <ion-card >
-        <ion-card-header>
-          <ion-card-title>Media</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="action-row">
-            <ion-button size="small" (click)="exportMediaPack()">
-              <ion-icon slot="start" name="download-outline" />
+      <article class="card bg-base-200 border border-base-300 my-4" >
+        <header class="px-6 pt-6">
+          <h2 class="card-title">Media</h2>
+        </header>
+        <div class="card-body">
+          <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-sm" (click)="exportMediaPack()" type="button">
+              <app-symbol name="download-outline"  />
               Esporta ZIP
-            </ion-button>
-            <ion-button size="small" fill="outline" (click)="shareMediaPack()">
-              <ion-icon slot="start" name="share-outline" />
+            </app-gigsaw-button>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm" (click)="shareMediaPack()" type="button">
+              <app-symbol name="share-outline"  />
               Condividi ZIP
-            </ion-button>
+            </app-gigsaw-button>
           </div>
-          <ion-item>
-            <ion-label position="stacked">Foto promo</ion-label>
-            <label class="grid min-w-0 gap-2 text-sm font-semibold"><span>Foto della band</span>
-              <input class="w-full min-w-0 rounded-lg border border-solid border-[var(--gigsaw-input-border)] bg-[var(--gigsaw-input-background)] p-3 text-sm font-normal file:mr-3 file:rounded-md file:border-0 file:bg-[var(--ion-color-primary)] file:px-3 file:py-2 file:text-[var(--ion-color-primary-contrast)]" type="file" accept="image/*" multiple (change)="onSettingsFilesSelected($event, 'photos')" />
-            </label>
-          </ion-item>
+          <div class="ui-item flex items-center gap-3 py-3">
+            <app-gigsaw-file-input label="Foto promo" accept="image/*" [multiple]="true" controlClass="w-full min-w-0 justify-start" (filesChange)="onSettingsFilesSelected($event, 'photos')" />
+          </div>
           @if (selectedPressPhotos.length) {
-            <ion-note class="ion-padding-horizontal ion-padding-top" color="medium">
+            <small class="text-sm text-base-content/60 px-4 pt-4">
               {{ selectedPressPhotos.length }} file selezionati
-            </ion-note>
-            <ion-button class="ion-margin-top" expand="block" fill="outline" (click)="uploadPressPhotos()" [disabled]="uploadingPressPhotos">
+            </small>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline mt-4" (click)="uploadPressPhotos()" [disabled]="uploadingPressPhotos" type="button">
               @if (uploadingPressPhotos) {
-                <ion-spinner name="crescent" />
+                <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span>
               } @else {
-                <ion-icon slot="start" name="cloud-upload" />
+                <app-symbol name="cloud-upload"  />
                 Carica foto promo
               }
-            </ion-button>
+            </app-gigsaw-button>
           }
 
           @if (band.pressPhotos?.length) {
-            <div class="press-photo-grid">
+            <div class="mt-4 grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
               @for (photo of band.pressPhotos; track photo.id) {
-                <div class="press-photo-card">
-                  <img [src]="photo.previewUrl || photo.url" [alt]="photo.fileName || 'Foto promo'" class="press-photo-thumb" />
-                  <ion-button size="small" color="danger" fill="clear" (click)="removePressPhoto(photo)">
-                    <ion-icon slot="start" name="trash-outline" />
+                <div class="grid gap-2">
+                  <img [src]="photo.previewUrl || photo.url" [alt]="photo.fileName || 'Foto promo'" class="aspect-square w-full rounded-2xl bg-[var(--ui-color-light)] object-cover" />
+                  <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-error btn-sm" (click)="removePressPhoto(photo)" type="button">
+                    <app-symbol name="trash-outline"  />
                     Rimuovi
-                  </ion-button>
+                  </app-gigsaw-button>
                 </div>
               }
             </div>
           } @else {
-            <ion-note color="medium">Nessuna foto promo caricata.</ion-note>
+            <small class="text-sm text-base-content/60">Nessuna foto promo caricata.</small>
           }
-        </ion-card-content>
-      </ion-card>
+        </div>
+      </article>
     }
 
       @if (settingsSection() === 'media') {
-      <ion-card >
-        <ion-card-header>
-          <ion-card-title>Press kit</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-note color="medium">
+      <article class="card bg-base-200 border border-base-300 my-4" >
+        <header class="px-6 pt-6">
+          <h2 class="card-title">Press kit</h2>
+        </header>
+        <div class="card-body">
+          <small class="text-sm text-base-content/60">
             Il press kit PDF esporta profilo band, lineup, generi e contatti. Le foto promo restano scaricabili a parte nella sezione Media.
-          </ion-note>
-          <div class="action-row">
-            <ion-button size="small" (click)="exportPressKit()">
-              <ion-icon slot="start" name="download-outline" />
+          </small>
+          <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-sm" (click)="exportPressKit()" type="button">
+              <app-symbol name="download-outline"  />
               Esporta PDF
-            </ion-button>
-            <ion-button size="small" fill="outline" (click)="sharePressKit()">
-              <ion-icon slot="start" name="share-outline" />
+            </app-gigsaw-button>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm" (click)="sharePressKit()" type="button">
+              <app-symbol name="share-outline"  />
               Condividi
-            </ion-button>
+            </app-gigsaw-button>
           </div>
-        </ion-card-content>
-      </ion-card>
+        </div>
+      </article>
     }
 
       @if (settingsSection() === 'tech') {
-      <ion-card class="tech-card" >
-        <ion-card-header>
-          <div class="tech-heading">
+      <article class="card bg-base-200 border border-base-300 my-4 border-0 shadow-none" >
+        <header class="px-6 pt-6 !p-[24px_24px_14px] max-[760px]:!p-[19px_16px_10px]">
+          <div class="flex items-start justify-between gap-5 max-[760px]:grid">
             <div>
-              <span class="eyebrow">Live setup</span>
-              <ion-card-title>Tech kit</ion-card-title>
+              <span class="mb-[5px] block text-[.7rem] font-extrabold tracking-[.16em] text-[var(--ui-color-primary)] uppercase">Live setup</span>
+              <h2 class="card-title">Tech kit</h2>
               <p>Prepara input list e disposizione palco in modo visuale.</p>
             </div>
-            <div class="tech-heading-actions">
-              <ion-button size="small" fill="clear" type="button" (click)="exportTechRider()">
-                <ion-icon slot="start" name="download-outline" /> PDF
-              </ion-button>
-              <ion-button size="small" fill="clear" type="button" (click)="shareTechRider()">
-                <ion-icon slot="start" name="share-outline" /> Condividi
-              </ion-button>
+            <div class="flex flex-wrap justify-end max-[760px]:justify-start">
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" type="button" (click)="exportTechRider()">
+                <app-symbol name="download-outline"  /> PDF
+              </app-gigsaw-button>
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" type="button" (click)="shareTechRider()">
+                <app-symbol name="share-outline"  /> Condividi
+              </app-gigsaw-button>
             </div>
           </div>
-        </ion-card-header>
-        <ion-card-content>
-          <form class="tech-form" [formGroup]="techForm" (ngSubmit)="saveTech()">
-            <details class="preset-strip">
-              <summary>Parti da un setup pronto <small>Canali e palco già configurati</small></summary>
-              <div class="chip-row">
+        </header>
+        <div class="card-body !px-6 !pb-6 max-[760px]:!px-3 max-[760px]:!pb-[18px]">
+          <form [formGroup]="techForm" (ngSubmit)="saveTech()">
+            <details class="my-2 mb-5 rounded-[10px] border border-[var(--gigsaw-border)] px-4 py-[14px] text-[.85rem] text-[var(--gigsaw-text)]">
+              <summary class="cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]">Parti da un setup pronto <small class="ml-3 text-[var(--gigsaw-muted)] font-normal max-[760px]:mt-1.5 max-[760px]:ml-4 max-[760px]:block">Canali e palco già configurati</small></summary>
+              <div class="mt-[14px] flex flex-wrap gap-2">
                 @for (preset of techPresets; track preset.id) {
-                  <button type="button" class="preset-chip" (click)="applyTechPreset(preset.id)">{{ preset.label }}</button>
+                  <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-full border border-[rgba(var(--ui-color-primary-rgb),.35)] bg-[rgba(var(--ui-color-primary-rgb),.08)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" (click)="applyTechPreset(preset.id)">{{ preset.label }}</app-gigsaw-button>
                 }
               </div>
             </details>
 
-            <nav class="tech-tabs" aria-label="Sezioni scheda tecnica">
-              <button type="button" [class.active]="techSection() === 'channels'" [attr.aria-pressed]="techSection() === 'channels'" (click)="techSection.set('channels')">
-                <span>01</span> Canali <b>{{ inputChannels.length }}</b>
-              </button>
-              <button type="button" [class.active]="techSection() === 'stage'" [attr.aria-pressed]="techSection() === 'stage'" (click)="techSection.set('stage')">
-                <span>02</span> Palco <b>{{ stagePlotLayout.length }}</b>
-              </button>
-              <button type="button" [class.active]="techSection() === 'notes'" [attr.aria-pressed]="techSection() === 'notes'" (click)="techSection.set('notes')">
-                <span>03</span> Note
-              </button>
+            <nav class="grid grid-cols-3 rounded-[14px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-[5px]" aria-label="Sezioni scheda tecnica">
+              <app-gigsaw-button tone="unstyled" buttonClass="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 font-bold transition-colors max-[760px]:gap-[5px] max-[760px]:text-[.78rem]" [class]="(techSection() === 'channels' ? 'bg-[var(--gigsaw-surface)] text-[var(--ui-color-primary)] shadow-[0_1px_4px_rgba(0,0,0,.12)]' : 'bg-transparent text-[var(--gigsaw-muted)]')" type="button" [attr.aria-pressed]="techSection() === 'channels'" (click)="techSection.set('channels')">
+                <span [class]="(techSection() === 'channels' ? 'text-[var(--ui-color-primary)]' : 'text-[#66758b]') + ' text-[.7rem] max-[760px]:hidden'">01</span> Canali <b class="grid size-[22px] min-w-[22px] place-items-center rounded-full bg-[var(--gigsaw-input-background)] text-[.7rem]">{{ inputChannels.length }}</b>
+              </app-gigsaw-button>
+              <app-gigsaw-button tone="unstyled" buttonClass="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 font-bold transition-colors max-[760px]:gap-[5px] max-[760px]:text-[.78rem]" [class]="(techSection() === 'stage' ? 'bg-[var(--gigsaw-surface)] text-[var(--ui-color-primary)] shadow-[0_1px_4px_rgba(0,0,0,.12)]' : 'bg-transparent text-[var(--gigsaw-muted)]')" type="button" [attr.aria-pressed]="techSection() === 'stage'" (click)="techSection.set('stage')">
+                <span [class]="(techSection() === 'stage' ? 'text-[var(--ui-color-primary)]' : 'text-[#66758b]') + ' text-[.7rem] max-[760px]:hidden'">02</span> Palco <b class="grid size-[22px] min-w-[22px] place-items-center rounded-full bg-[var(--gigsaw-input-background)] text-[.7rem]">{{ stagePlotLayout.length }}</b>
+              </app-gigsaw-button>
+              <app-gigsaw-button tone="unstyled" buttonClass="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 font-bold transition-colors max-[760px]:gap-[5px] max-[760px]:text-[.78rem]" [class]="(techSection() === 'notes' ? 'bg-[var(--gigsaw-surface)] text-[var(--ui-color-primary)] shadow-[0_1px_4px_rgba(0,0,0,.12)]' : 'bg-transparent text-[var(--gigsaw-muted)]')" type="button" [attr.aria-pressed]="techSection() === 'notes'" (click)="techSection.set('notes')">
+                <span [class]="(techSection() === 'notes' ? 'text-[var(--ui-color-primary)]' : 'text-[#66758b]') + ' text-[.7rem] max-[760px]:hidden'">03</span> Note
+              </app-gigsaw-button>
             </nav>
 
             @if (techSection() === 'channels') {
-              <section class="tech-panel">
-                <div class="section-heading">
-                  <div><h3>Input list</h3><p>Aggiungi i canali più usati con un tap, poi rifinisci i dettagli.</p></div>
-                  <ion-button size="small" fill="outline" type="button" (click)="addInputChannel()"><ion-icon slot="start" name="add-circle-outline" /> Nuovo canale</ion-button>
+              <section class="mt-[18px] rounded-2xl border border-[var(--gigsaw-border)] p-[22px] max-[760px]:p-[15px_11px]">
+                <div class="flex items-start justify-between gap-5 max-[760px]:items-center">
+                  <div><h3 class="m-0 text-[1.15rem]">Input list</h3><p class="mt-1.5 mb-0 leading-[1.45] text-[var(--gigsaw-muted)] max-[760px]:text-[.82rem]">Aggiungi i canali più usati con un tap, poi rifinisci i dettagli.</p></div>
+                  <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm" type="button" (click)="addInputChannel()"><app-symbol name="add-circle-outline"  /> Nuovo canale</app-gigsaw-button>
                 </div>
-                <div class="quick-add" aria-label="Aggiunta rapida canali">
+                <div class="my-[18px] mb-3 flex flex-wrap gap-[9px] pb-1" aria-label="Aggiunta rapida canali">
                   @for (channel of quickChannels; track channel.name) {
-                    <button type="button" (click)="addInputChannel(channel)"><span>+</span><strong>{{ channel.name }}</strong><small>{{ channel.source }}</small></button>
+                    <app-gigsaw-button tone="unstyled" buttonClass="grid shrink-0 grid-cols-[auto_auto] min-h-[46px] gap-x-[7px] rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 text-left text-[.85rem] font-medium text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" type="button" (click)="addInputChannel(channel)"><span class="row-span-2 self-center text-[1.15rem] text-[var(--ui-color-primary)]">+</span><strong class="font-semibold">{{ channel.name }}</strong><small class="col-start-2 mt-0.5 text-[.7rem] text-[var(--gigsaw-muted)]">{{ channel.source }}</small></app-gigsaw-button>
                   }
                 </div>
-                <details class="preset-details">
-                  <summary>Usa un preset canali</summary>
-                  <div class="chip-row">
+                <details class="my-[10px] mb-[18px] text-[.85rem] text-[var(--gigsaw-muted)]">
+                  <summary class="w-fit cursor-pointer py-1.5">Usa un preset canali</summary>
+                  <div class="mt-2 flex flex-wrap gap-2">
                     @for (preset of inputChannelPresets; track preset.id) {
-                      <button type="button" class="preset-chip" (click)="applyInputChannelPreset(preset.id)">{{ preset.label }}</button>
+                      <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-full border border-[rgba(var(--ui-color-primary-rgb),.35)] bg-[rgba(var(--ui-color-primary-rgb),.08)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" (click)="applyInputChannelPreset(preset.id)">{{ preset.label }}</app-gigsaw-button>
                     }
                     @for (preset of drumMergePresets; track preset.id) {
-                      <button type="button" class="preset-chip secondary" (click)="mergeDrumMikingPreset(preset.id)">+ {{ preset.label }}</button>
+                      <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-full border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" (click)="mergeDrumMikingPreset(preset.id)"><app-symbol name="add" /> {{ preset.label }}</app-gigsaw-button>
                     }
                   </div>
                 </details>
-                <div formArrayName="inputChannels" class="channel-list" [class.is-empty]="!inputChannels.length">
-              <ion-reorder-group [disabled]="false" (ionItemReorder)="reorderInputChannels($event)">
+                <div formArrayName="inputChannels" class="overflow-hidden rounded-[13px] border border-[var(--gigsaw-border)] max-[760px]:overflow-x-auto" [class.hidden]="!inputChannels.length">
+              <div class="reorder-list" (itemsReordered)="reorderInputChannels($event)" appReorder>
                 @for (channel of inputChannels.controls; track $index) {
-                  <div class="channel-row" [formGroupName]="$index">
-                    <div class="channel-handle"><ion-reorder></ion-reorder><strong>{{ $index + 1 }}</strong></div>
-                    <ion-input class="min-w-0 w-full font-normal" formControlName="name" placeholder="Nome canale"   aria-label="Nome canale"/>
-                    <ion-input class="min-w-0 w-full font-normal" formControlName="source" placeholder="Mic / DI / Wireless"   aria-label="Microfono o sorgente"/>
-                    <ion-input class="min-w-0 w-full font-normal" formControlName="notes" placeholder="Note opzionali"   aria-label="Note canale"/>
-                    <ion-button aria-label="Rimuovi canale" size="small" color="danger" fill="clear" type="button" (click)="removeInputChannel($index)">
-                      <ion-icon slot="icon-only" name="trash-outline" />
-                    </ion-button>
+                  <div class="grid min-w-[680px] grid-cols-[58px_minmax(150px,1.2fr)_minmax(135px,.8fr)_minmax(160px,1fr)_48px] items-center gap-2 border-b border-[var(--gigsaw-border)] p-2 last:border-0" [formGroupName]="$index">
+                    <div class="flex items-center gap-[7px] text-[var(--gigsaw-muted)]"><span class="cursor-grab"><app-symbol name="grip-vertical" /></span><strong class="text-[var(--gigsaw-text)] tabular-nums">{{ $index + 1 }}</strong></div>
+                    <app-gigsaw-input controlClass="min-h-[46px] min-w-0 font-normal" formControlName="name" placeholder="Nome canale" aria-label="Nome canale" />
+                    <app-gigsaw-input controlClass="min-h-[46px] min-w-0 font-normal" formControlName="source" placeholder="Mic / DI / Wireless" aria-label="Microfono o sorgente" />
+                    <app-gigsaw-input controlClass="min-h-[46px] min-w-0 font-normal" formControlName="notes" placeholder="Note opzionali" aria-label="Note canale" />
+                    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-error btn-sm" aria-label="Rimuovi canale" type="button" (click)="removeInputChannel($index)">
+                      <app-symbol name="trash-outline"  />
+                    </app-gigsaw-button>
                   </div>
                 }
-              </ion-reorder-group>
+              </div>
                 </div>
-                @if (!inputChannels.length) { <div class="empty-state">Nessun canale. Aggiungine uno o scegli un preset.</div> }
+                @if (!inputChannels.length) { <div class="rounded-xl border border-dashed border-[var(--gigsaw-border)] p-[26px] text-center text-[var(--gigsaw-muted)]">Nessun canale. Aggiungine uno o scegli un preset.</div> }
               </section>
             }
 
             @if (techSection() === 'stage') {
-              <section class="tech-panel stage-workspace" formArrayName="stagePlotLayout">
-                <div class="section-heading">
-                  <div><h3>Posizione sul palco</h3><p>Aggiungi un elemento e trascinalo nella posizione corretta.</p></div>
+              <section class="mt-[18px] rounded-2xl border border-[var(--gigsaw-border)] p-[22px] max-[760px]:p-[15px_11px]" formArrayName="stagePlotLayout">
+                <div class="flex items-start justify-between gap-5 max-[760px]:items-center">
+                  <div><h3 class="m-0 text-[1.15rem]">Posizione sul palco</h3><p class="mt-1.5 mb-0 leading-[1.45] text-[var(--gigsaw-muted)] max-[760px]:text-[.82rem]">Aggiungi un elemento e trascinalo nella posizione corretta.</p></div>
                 </div>
-                <div class="stage-palette">
+                <div class="my-[18px] mb-3 flex flex-wrap gap-[9px] pb-1">
                   @for (item of stageItems; track item.label) {
-                    <button type="button" (click)="addStageItem(item.label, item.instrument)"><span>{{ stagePlotIcon(item.instrument) }}</span>{{ item.label }}</button>
+                    <app-gigsaw-button tone="unstyled" buttonClass="grid min-w-[82px] shrink-0 place-items-center gap-1.5 rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 font-bold text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" type="button" (click)="addStageItem(item.label, item.instrument)"><span class="grid size-[30px] place-items-center rounded-[9px] bg-[#26344a] text-[var(--ui-color-primary)]"><app-symbol [name]="stagePlotIcon(item.instrument)" /></span>{{ item.label }}</app-gigsaw-button>
                   }
-                  <button type="button" (click)="addStagePlotItem()"><span>+</span>Altro</button>
+                  <app-gigsaw-button tone="unstyled" buttonClass="grid min-w-[82px] shrink-0 place-items-center gap-1.5 rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 font-bold text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" type="button" (click)="addStagePlotItem()"><span class="grid size-[30px] place-items-center rounded-[9px] bg-[#26344a] text-[var(--ui-color-primary)]">+</span>Altro</app-gigsaw-button>
                 </div>
-                <details class="preset-details">
-                  <summary>Usa un layout pronto</summary>
-                  <div class="chip-row">
+                <details class="my-[10px] mb-[18px] text-[.85rem] text-[var(--gigsaw-muted)]">
+                  <summary class="w-fit cursor-pointer py-1.5">Usa un layout pronto</summary>
+                  <div class="mt-2 flex flex-wrap gap-2">
                     @for (preset of stagePlotPresets; track preset.id) {
-                      <button type="button" class="preset-chip" (click)="applyStagePlotPreset(preset.id)">{{ preset.label }}</button>
+                      <app-gigsaw-button tone="unstyled" type="button" buttonClass="rounded-full border border-[rgba(var(--ui-color-primary-rgb),.35)] bg-[rgba(var(--ui-color-primary-rgb),.08)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]" (click)="applyStagePlotPreset(preset.id)">{{ preset.label }}</app-gigsaw-button>
                     }
                   </div>
                 </details>
-                <div class="stage-layout">
-                  <div class="stage-preview-shell">
-                    <div class="stage-preview-meta"><span>Palco visto dal pubblico</span><span>Trascina per spostare</span></div>
-                  <div class="stage-preview">
-                    <div class="stage-frame-label top">Upstage</div>
+                <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-4">
+                  <div class="grid min-w-0 gap-[9px]">
+                    <div class="flex justify-between text-[.7rem] tracking-[.08em] text-[var(--gigsaw-muted)] uppercase"><span>Palco visto dal pubblico</span><span>Trascina per spostare</span></div>
+                  <div class="stage-preview min-h-[560px] max-[760px]:min-h-[440px]">
+                    <div class="absolute top-[10px] left-1/2 -translate-x-1/2 text-[.68rem] tracking-[.16em] text-[rgba(231,242,251,.55)] uppercase">Upstage</div>
                     @for (item of stagePlotLayout.controls; track $index) {
                       <div
-                        class="stage-plot-item"
+                        class="stage-plot-item absolute grid min-w-[76px] max-w-[105px] -translate-x-1/2 -translate-y-1/2 cursor-grab select-none place-items-center gap-1 rounded-[13px] border border-[rgba(255,255,255,.16)] bg-[rgba(48,61,76,.94)] p-[9px] text-center text-[.72rem] text-white shadow-[0_10px_24px_rgba(0,0,0,.32)] [touch-action:none]"
                         [class.selected]="selectedStageItem() === $index"
                         [attr.data-kind]="stagePlotKind(item.get('instrument')?.value || item.get('label')?.value)"
                         [style.left.%]="item.get('x')?.value"
                         [style.top.%]="item.get('y')?.value"
                         (pointerdown)="selectStageItem($index); startStagePlotDrag($index, $event)"
                       >
-                        <div class="stage-plot-icon">{{ stagePlotIcon(item.get('instrument')?.value || item.get('label')?.value) }}</div>
-                        <div class="stage-plot-name">{{ item.get('label')?.value || 'Posizione' }}</div>
+                        <div class="grid size-[29px] place-items-center rounded-lg bg-[rgba(255,255,255,.1)] font-extrabold"><app-symbol [name]="stagePlotIcon(item.get('instrument')?.value || item.get('label')?.value)" /></div>
+                        <div class="font-bold">{{ item.get('label')?.value || 'Posizione' }}</div>
                       </div>
                     }
                   </div>
-                    <div class="stage-grid-note">Posiziona liberamente gli elementi trascinandoli sul palco.</div>
+                    <div class="text-[.75rem] text-[var(--gigsaw-muted)]">Posiziona liberamente gli elementi trascinandoli sul palco.</div>
                   </div>
-                  <aside class="stage-editor">
+                  <aside class="min-h-0 rounded-[14px] border border-[var(--gigsaw-border)] bg-[#0d1624] p-4">
                     @for (item of stagePlotLayout.controls; track $index) {
                       @if (selectedStageItem() === $index) {
                         <div [formGroupName]="$index">
-                          <span class="eyebrow">Elemento selezionato</span>
-                          <label class="editor-field grid min-w-0 gap-2 text-sm font-semibold">Etichetta<ion-input class="min-w-0 w-full font-normal" formControlName="label"/></label>
-                          <label class="editor-field grid min-w-0 gap-2 text-sm font-semibold">Strumento / ruolo<ion-input class="min-w-0 w-full font-normal" formControlName="instrument"/></label>
-                          <div class="coordinate-row">
-                            <label class="editor-field grid min-w-0 gap-2 text-sm font-semibold">X %<ion-input class="min-w-0 w-full font-normal" type="number" formControlName="x"   min="0" max="100" step="any"/></label>
-                            <label class="editor-field grid min-w-0 gap-2 text-sm font-semibold">Y %<ion-input class="min-w-0 w-full font-normal" type="number" formControlName="y"   min="0" max="100" step="any"/></label>
+                          <span class="mb-[5px] block text-[.7rem] font-extrabold tracking-[.16em] text-[var(--ui-color-primary)] uppercase">Elemento selezionato</span>
+                          <label class="my-[10px] grid gap-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]">Etichetta<app-gigsaw-input controlClass="my-2 min-w-0 font-normal" formControlName="label" /></label>
+                          <label class="my-[10px] grid gap-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]">Strumento / ruolo<app-gigsaw-input controlClass="my-2 min-w-0 font-normal" formControlName="instrument" /></label>
+                          <div class="grid grid-cols-2 gap-[9px]">
+                            <label class="my-[10px] grid gap-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]">X %<app-gigsaw-input controlClass="my-2 min-w-0 font-normal" type="number" formControlName="x" min="0" max="100" step="any" /></label>
+                            <label class="my-[10px] grid gap-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]">Y %<app-gigsaw-input controlClass="my-2 min-w-0 font-normal" type="number" formControlName="y" min="0" max="100" step="any" /></label>
                           </div>
-                          <ion-button expand="block" color="danger" fill="outline" type="button" (click)="removeStagePlotItem($index)"><ion-icon slot="start" name="trash-outline" /> Rimuovi</ion-button>
+                          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-error" type="button" (click)="removeStagePlotItem($index)"><app-symbol name="trash-outline"  /> Rimuovi</app-gigsaw-button>
                         </div>
                       }
                     }
                     @if (selectedStageItem() === null) {
-                      <div class="empty-state">Seleziona un elemento sul palco per modificarlo.</div>
+                      <div class="rounded-xl border border-dashed border-[var(--gigsaw-border)] p-[26px] text-center text-[var(--gigsaw-muted)]">Seleziona un elemento sul palco per modificarlo.</div>
                     }
                   </aside>
                 </div>
@@ -395,123 +398,123 @@
             }
 
             @if (techSection() === 'notes') {
-              <section class="tech-panel notes-grid">
-                <div class="section-heading full"><div><h3>Note di produzione</h3><p>Tutto ciò che serve a fonico, palco e venue.</p></div></div>
-                <label class="field grid min-w-0 gap-2 text-sm font-semibold">Note per il fonico<ion-textarea class="min-w-0 w-full font-normal" formControlName="soundEngineerNotes" placeholder="Indicazioni generali, PA, patch..."   [autoGrow]="true" [rows]="4"/></label>
-                <label class="field grid min-w-0 gap-2 text-sm font-semibold">Monitor mix<ion-textarea class="min-w-0 w-full font-normal" formControlName="monitorMixNotes" placeholder="Mix richiesti e preferenze..."   [autoGrow]="true" [rows]="4"/></label>
-                <label class="field grid min-w-0 gap-2 text-sm font-semibold">Backline<ion-textarea class="min-w-0 w-full font-normal" formControlName="backlineNotes"   [autoGrow]="true" [rows]="4"/></label>
-                <label class="field grid min-w-0 gap-2 text-sm font-semibold">Note stage plot<ion-textarea class="min-w-0 w-full font-normal" formControlName="stagePlotNotes"   [autoGrow]="true" [rows]="4"/></label>
-                <label class="field full grid min-w-0 gap-2 text-sm font-semibold">Hospitality<ion-textarea class="min-w-0 w-full font-normal" formControlName="hospitalityNotes"   [autoGrow]="true" [rows]="4"/></label>
+              <section class="mt-[18px] grid grid-cols-2 gap-x-[14px] gap-y-2 rounded-2xl border border-[var(--gigsaw-border)] p-[22px] max-[760px]:grid-cols-1 max-[760px]:p-[15px_11px]">
+              <div class="col-span-full max-[760px]:col-span-1"><div><h3 class="m-0 text-[1.15rem]">Note di produzione</h3><p class="mt-1.5 mb-0 leading-[1.45] text-[var(--gigsaw-muted)] max-[760px]:text-[.82rem]">Tutto ciò che serve a fonico, palco e venue.</p></div></div>
+              <label class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">Note per il fonico<app-gigsaw-textarea controlClass="my-2 min-w-0 font-normal" formControlName="soundEngineerNotes" placeholder="Indicazioni generali, PA, patch..." [rows]="4" /></label>
+              <label class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">Monitor mix<app-gigsaw-textarea controlClass="my-2 min-w-0 font-normal" formControlName="monitorMixNotes" placeholder="Mix richiesti e preferenze..." [rows]="4" /></label>
+              <label class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">Backline<app-gigsaw-textarea controlClass="my-2 min-w-0 font-normal" formControlName="backlineNotes" [rows]="4" /></label>
+              <label class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">Note stage plot<app-gigsaw-textarea controlClass="my-2 min-w-0 font-normal" formControlName="stagePlotNotes" [rows]="4" /></label>
+              <label class="col-span-full grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)] max-[760px]:col-span-1">Hospitality<app-gigsaw-textarea controlClass="my-2 min-w-0 font-normal" formControlName="hospitalityNotes" [rows]="4" /></label>
               </section>
             }
 
             @if (techError) {
-              <ion-note color="danger">{{ techError }}</ion-note>
+              <small class="text-sm text-error">{{ techError }}</small>
             }
 
-            <div class="tech-footer">
-              <ion-button class="tech-save" type="submit" [disabled]="savingTech">
-                @if (savingTech) { <ion-spinner name="crescent" /> } @else { Salva scheda tecnica }
-              </ion-button>
+            <div class="mt-5 flex justify-end border-t border-[var(--gigsaw-border)] pt-4">
+              <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary m-0 min-w-[220px] max-[760px]:w-full" type="submit" [disabled]="savingTech">
+                @if (savingTech) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Salva scheda tecnica }
+              </app-gigsaw-button>
             </div>
           </form>
-        </ion-card-content>
-      </ion-card>
+        </div>
+      </article>
     }
 
 
 
       @if (settingsSection() === 'invites') {
-      <ion-card id="personal-invite-card" >
-        <ion-card-header>
-          <ion-card-title>Invito personalizzato</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
+      <article class="card bg-base-200 border border-base-300 my-4" id="personal-invite-card" >
+        <header class="px-6 pt-6">
+          <h2 class="card-title">Invito personalizzato</h2>
+        </header>
+        <div class="card-body">
           <form class="grid min-w-0 gap-4" [formGroup]="inviteForm" (ngSubmit)="invite()">
-            <label class="grid min-w-0 gap-2 text-sm font-semibold "><span>Nome</span><ion-input class="min-w-0 w-full font-normal" formControlName="name"/></label>
-            <label class="grid min-w-0 gap-2 text-sm font-semibold "><span>Email</span><ion-input class="min-w-0 w-full font-normal" type="email" formControlName="email" [class.ion-invalid]="inviteForm.controls.email.touched && inviteForm.controls.email.invalid"   [class.ion-touched]="inviteForm.controls.email.touched && inviteForm.controls.email.invalid"/></label>
-            <label class="grid min-w-0 gap-2 text-sm font-semibold "><span>Ruolo</span><ion-select class="min-w-0 w-full font-normal" formControlName="role"  interface="popover">
-                <ion-select-option value="BAND_MEMBER">Membro band</ion-select-option>
-                <ion-select-option value="ADMIN">Admin</ion-select-option>
-              </ion-select></label>
-            <ion-button class="ion-margin-top" expand="block" type="submit" [disabled]="inviting || !band.joinCode">
-              @if (inviting) { <ion-spinner name="crescent" /> } @else { Prepara invito }
-            </ion-button>
+            <label class="grid min-w-0 gap-2 text-sm font-semibold "><span>Nome</span><app-gigsaw-input controlClass="min-w-0 font-normal" formControlName="name" /></label>
+            <label class="grid min-w-0 gap-2 text-sm font-semibold "><span>Email</span><app-gigsaw-input controlClass="min-w-0 font-normal" type="email" formControlName="email" [invalid]="inviteForm.controls.email.touched && inviteForm.controls.email.invalid" /></label>
+            <label class="grid min-w-0 gap-2 text-sm font-semibold "><span>Ruolo</span><select class="select w-full min-w-0 w-full font-normal" formControlName="role" >
+                <option value="BAND_MEMBER">Membro band</option>
+                <option value="ADMIN">Admin</option>
+              </select></label>
+            <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary mt-4" type="submit" [disabled]="inviting || !band.joinCode">
+              @if (inviting) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Prepara invito }
+            </app-gigsaw-button>
           </form>
-          <ion-note class="ion-margin-top" color="medium">Creeremo un link diretto: chi lo apre dovrà premere “Partecipa”.</ion-note>
+          <small class="text-sm text-base-content/60 mt-4">Creeremo un link diretto: chi lo apre dovrà premere “Partecipa”.</small>
           @if (inviteError) {
-            <ion-note class="ion-margin-top" color="danger">{{ inviteError }}</ion-note>
+            <small class="text-sm text-error mt-4">{{ inviteError }}</small>
           }
 
           @if (lastInvitation) {
-            <div class="rounded-2xl border border-[var(--gigsaw-border)] bg-[color-mix(in_srgb,var(--ion-color-primary)_8%,transparent)] p-4 mt-5">
+            <div class="rounded-2xl border border-[var(--gigsaw-border)] bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,transparent)] p-4 mt-5">
               <strong class="block">Invito pronto per {{ lastInvitation.name }}</strong>
               <span class="block mt-1 text-sm text-[var(--gigsaw-muted)]">Scegli come condividerlo.</span>
-              <div class="action-row">
+              <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
                 @if (canShareOnWhatsApp) {
-                  <ion-button type="button" color="success" (click)="shareInvitationOnWhatsApp(lastInvitation)">
-                    <ion-icon slot="start" name="logo-whatsapp" /> WhatsApp
-                  </ion-button>
+                  <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-success" type="button" (click)="shareInvitationOnWhatsApp(lastInvitation)">
+                    <app-symbol name="logo-whatsapp"  /> WhatsApp
+                  </app-gigsaw-button>
                 }
-                <ion-button type="button" (click)="shareInvitationByEmail(lastInvitation)">
-                  <ion-icon slot="start" name="mail-outline" /> Invia email
-                </ion-button>
-                <ion-button type="button" fill="outline" (click)="copyInvitationLink(lastInvitation)">
-                  <ion-icon slot="start" name="copy-outline" /> Copia link
-                </ion-button>
+                <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" (click)="shareInvitationByEmail(lastInvitation)">
+                  <app-symbol name="mail-outline"  /> Invia email
+                </app-gigsaw-button>
+                <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" type="button" (click)="copyInvitationLink(lastInvitation)">
+                  <app-symbol name="copy-outline"  /> Copia link
+                </app-gigsaw-button>
               </div>
             </div>
           }
-        </ion-card-content>
-      </ion-card>
+        </div>
+      </article>
     }
 
       @if (band.invitations?.length) {
         @if (settingsSection() === 'invites') {
-      <ion-card >
-          <ion-card-header>
-            <ion-card-title>Inviti pendenti</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
+      <article class="card bg-base-200 border border-base-300 my-4" >
+          <header class="px-6 pt-6">
+            <h2 class="card-title">Inviti pendenti</h2>
+          </header>
+          <div class="card-body">
             <app-gigsaw-list>
               @for (invitation of band.invitations; track invitation.id) {
                 <app-gigsaw-list-item>
-                  <div class="list-col-grow">
+                  <div class="min-w-0 flex-1">
                     <h2>{{ invitation.name }}</h2>
                     <p>{{ invitation.email }} · {{ roleLabel(invitation.role) }}</p>
                   </div>
-                  <div class="action-row">
+                  <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
                     @if (canShareOnWhatsApp) {
-                      <ion-button type="button" size="small" fill="clear" color="success" aria-label="Condividi su WhatsApp" (click)="shareInvitationOnWhatsApp(invitation)">
-                        <ion-icon slot="icon-only" name="logo-whatsapp" />
-                      </ion-button>
+                      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-success btn-sm" type="button" aria-label="Condividi su WhatsApp" (click)="shareInvitationOnWhatsApp(invitation)">
+                        <app-symbol name="logo-whatsapp"  />
+                      </app-gigsaw-button>
                     }
-                    <ion-button type="button" size="small" fill="clear" aria-label="Invia email" (click)="shareInvitationByEmail(invitation)">
-                      <ion-icon slot="icon-only" name="mail-outline" />
-                    </ion-button>
-                    <ion-button type="button" size="small" fill="clear" aria-label="Copia link" (click)="copyInvitationLink(invitation)">
-                      <ion-icon slot="icon-only" name="copy-outline" />
-                    </ion-button>
+                    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" type="button" aria-label="Invia email" (click)="shareInvitationByEmail(invitation)">
+                      <app-symbol name="mail-outline"  />
+                    </app-gigsaw-button>
+                    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" type="button" aria-label="Copia link" (click)="copyInvitationLink(invitation)">
+                      <app-symbol name="copy-outline"  />
+                    </app-gigsaw-button>
                   </div>
                 </app-gigsaw-list-item>
               }
             </app-gigsaw-list>
-          </ion-card-content>
-        </ion-card>
+          </div>
+        </article>
     }
       }
     }
 
     @if (settingsSection() === 'team') {
-      <ion-card >
-      <ion-card-header>
-        <ion-card-title>Membri</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
+      <article class="card bg-base-200 border border-base-300 my-4" >
+      <header class="px-6 pt-6">
+        <h2 class="card-title">Membri</h2>
+      </header>
+      <div class="card-body">
         <app-gigsaw-list>
           @for (member of band.members ?? []; track member.id) {
             <app-gigsaw-list-item>
-              <div class="list-col-grow">
+              <div class="min-w-0 flex-1">
                 <h2>{{ member.name }}</h2>
                 <p>{{ roleLabel(member.role) }} · {{ member.status || 'ACTIVE' }}</p>
                 @if (!canEditInstruments(member)) {
@@ -519,31 +522,31 @@
                 }
               </div>
               @if (isAdmin && canEditRole(member)) {
-                <ion-select class="min-w-0 w-full font-normal" [value]="member.role || 'BAND_MEMBER'"
-                  (ionChange)="changeRoleValue(member, $event.detail.value)"
-                 interface="popover" [attr.aria-label]="'Ruolo di ' + member.name">
-                  <ion-select-option value="BAND_MEMBER">Membro band</ion-select-option>
-                  <ion-select-option value="ADMIN">Admin</ion-select-option>
-                </ion-select>
+                <select class="select w-full min-w-0 w-full font-normal" [appSelectValue]="member.role || 'BAND_MEMBER'"
+                  (selectionChange)="changeRoleValue(member, $event)"
+                 [attr.aria-label]="'Ruolo di ' + member.name" appSelect>
+                  <option value="BAND_MEMBER">Membro band</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
               }
             </app-gigsaw-list-item>
             @if (canEditInstruments(member)) {
               <app-gigsaw-list-item>
-                <ion-input class="min-w-0 w-full font-normal" placeholder="Es. voce, chitarra, tastiere"
+                <app-gigsaw-input controlClass="min-w-0 font-normal" placeholder="Es. voce, chitarra, tastiere"
                   [value]="memberInstrumentsDraft(member)"
-                  [maxlength]="500"
-                  (ionInput)="updateMemberInstrumentsValue(member, $event.detail.value ?? '')"
-                 [attr.aria-label]="'Strumenti di ' + member.name"/>
-                <ion-button slot="end" type="button" size="small" (click)="saveMemberInstruments(member)" [disabled]="savingMemberInstruments() !== null">
-                  @if (savingMemberInstruments() === member.id) { <ion-spinner name="crescent" /> } @else { Salva }
-                </ion-button>
+                  [maxLength]="500"
+                  (valueChange)="updateMemberInstrumentsValue(member, $any($event))"
+                 [aria-label]="'Strumenti di ' + member.name" />
+                <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-sm" slot="end" type="button" (click)="saveMemberInstruments(member)" [disabled]="savingMemberInstruments() !== null">
+                  @if (savingMemberInstruments() === member.id) { <span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span> } @else { Salva }
+                </app-gigsaw-button>
               </app-gigsaw-list-item>
-              <ion-note class="ion-padding-horizontal" color="medium">Separa più strumenti con una virgola.</ion-note>
+              <small class="text-sm text-base-content/60 px-4">Separa più strumenti con una virgola.</small>
             }
           }
         </app-gigsaw-list>
-      </ion-card-content>
-    </ion-card>
+      </div>
+    </article>
     }
   }
-</ion-content>
+</section>

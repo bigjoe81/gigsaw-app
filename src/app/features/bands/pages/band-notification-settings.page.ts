@@ -1,57 +1,22 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonContent,
-  IonHeader,
-  IonItem,
-  IonLabel,
-  IonMenuButton,
-  IonNote,
-  IonSelect,
-  IonSelectOption,
-  IonSpinner,
-  IonTitle,
-  IonToggle,
-  IonToolbar,
-  ToastController,
-} from '@ionic/angular/standalone';
 import { Band, BandEmailNotificationSettings, BandNotificationAudience } from '../models/band.models';
 import { BandService } from '../services/band.service';
 import { BandContextService } from '../../../core/services/band-context.service';
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule, GigsawFormControlsModule,
     ReactiveFormsModule,
     RouterLink,
-    IonButton,
-    IonButtons,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonContent,
-    IonHeader,
-    IonItem,
-    IonLabel,
-    IonMenuButton,
-    IonNote,
-    IonSelect,
-    IonSelectOption,
-    IonSpinner,
-    IonTitle,
-    IonToggle,
-    IonToolbar,
-  ],
+    ],
   templateUrl: './band-notification-settings.page.html',
   styleUrl: './band-notification-settings.page.scss',
 })
@@ -61,7 +26,7 @@ export class BandNotificationSettingsPage {
   private readonly bandService = inject(BandService);
   private readonly bandContext = inject(BandContextService);
   private readonly fb = inject(FormBuilder);
-  private readonly toast = inject(ToastController);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly loading = signal(true);

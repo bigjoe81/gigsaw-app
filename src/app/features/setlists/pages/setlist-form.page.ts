@@ -1,8 +1,12 @@
+import { guidedCompletionUrl } from '../../guide/guided-navigation';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonFooter, IonSpinner, IonInput, IonCheckbox, IonTextarea, IonSelect, IonSelectOption, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { Subscription, debounceTime, finalize, forkJoin, Subject, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { GigService } from '../../gigs/services/gig.service';
@@ -13,7 +17,7 @@ import { cloneWorkspace, LocalSetlistRepository, moveItemBefore, setDuration, Se
 import { SetlistValidationService } from '../services/setlist-validation.service';
 import { SetlistService } from '../services/setlist.service';
 
-@Component({ standalone: true, imports: [CommonModule, FormsModule, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonFooter, IonSpinner, IonInput, IonCheckbox, IonTextarea, IonSelect, IonSelectOption, IonTitle, IonToolbar], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
+@Component({ changeDetection: ChangeDetectionStrategy.Default, standalone: true, imports: [NativeUiModule, GigsawFormControlsModule, CommonModule, FormsModule, ], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
 export class SetlistFormPage implements OnInit, OnDestroy {
   readonly savingToServer = signal(false);
   readonly savedToServer = signal(false);
@@ -25,7 +29,7 @@ export class SetlistFormPage implements OnInit, OnDestroy {
   set workspace(value: SetlistWorkspace) { this.workspaceState.set(value); }
   constraints: MagicConstraints = { totalSeconds: 5400, setCount: 2, setSeconds: 2700, breakSeconds: 900, requiredSongIds: [], excludedSongIds: [], encoreSongIds: [], weWantMoreSongIds: [], consecutiveGroups: [], separatedPairs: [], mandatoryMedleys: [], balanceSingers: true, energyCurve: 'wave', alternateGenres: true, separateSameKeys: true, maxDraftSongs: 2, preferLiveReady: true };
   private changes = new Subject<void>(); private sub = new Subscription(); private routeId = 'new'; private hasDraft = false; undoStack: SetlistWorkspace[] = []; redoStack: SetlistWorkspace[] = [];
-  private songsApi = inject(SongService); private gigsApi = inject(GigService); private api = inject(SetlistService); private route = inject(ActivatedRoute); private router = inject(Router); private toast = inject(ToastController); private repository = inject(LocalSetlistRepository); private magic = inject(MagicSetService); private history = inject(SetlistHistoryService); validator = inject(SetlistValidationService);
+  private songsApi = inject(SongService); private gigsApi = inject(GigService); private api = inject(SetlistService); private route = inject(ActivatedRoute); private router = inject(Router); private toast = inject(ToastService); private repository = inject(LocalSetlistRepository); private magic = inject(MagicSetService); private history = inject(SetlistHistoryService); validator = inject(SetlistValidationService);
   ngOnInit() {
     this.routeId = this.route.snapshot.paramMap.get('id') ?? 'new';
     this.workspace.id = this.routeId;
@@ -206,7 +210,10 @@ export class SetlistFormPage implements OnInit, OnDestroy {
         this.saveState = 'saved';
         this.savedToServer.set(true);
         await (await this.toast.create({ message: 'Scaletta salvata.', duration: 1800, color: 'success' })).present();
-        if (previousId === 'new') void this.router.navigate(['..', setlist.id], { relativeTo: this.route });
+        const bandId = Number(this.router.url.match(/\/band\/(\d+)/)?.[1]);
+        const destination = guidedCompletionUrl(this.router.url, bandId, 'scaletta');
+        if (destination) void this.router.navigateByUrl(destination);
+        else if (previousId === 'new') void this.router.navigate(['..', setlist.id], { relativeTo: this.route });
       },
       error: async (error: Error) => {
         this.saveState = 'dirty';

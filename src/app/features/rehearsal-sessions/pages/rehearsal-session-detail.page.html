@@ -1,62 +1,62 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start"><ion-back-button defaultHref="../" /></ion-buttons>
-    <ion-title>Riepilogo prova</ion-title>
-    <ion-buttons slot="end"><ion-button [routerLink]="['modifica']">Modifica</ion-button></ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content>
-  <main class="rehearsal-detail">
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div>
+    <h1 class="grow text-xl">Riepilogo prova</h1>
+    <div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" queryParamsHandling="preserve" type="button">Modifica</app-gigsaw-button></div>
+  </div>
+</header>
+<section class="app-content">
+  <main class="mx-auto w-full max-w-[1080px] px-6 pb-14 pt-9 text-[var(--gigsaw-text)] max-[680px]:px-3.5 max-[680px]:pb-9 max-[680px]:pt-5">
     @if (loading()) {
-      <section class="hero skeleton" aria-label="Caricamento prova">
-        <ion-skeleton-text [animated]="true" style="width:35%" />
-        <ion-skeleton-text [animated]="true" style="width:70%;height:36px" />
-        <ion-skeleton-text [animated]="true" style="width:50%" />
+      <section class="min-h-[260px] rounded-[20px] border border-[var(--gigsaw-border)] bg-[linear-gradient(125deg,rgba(var(--ui-color-primary-rgb),.12),var(--gigsaw-surface,#101d30)_65%)] p-7 sm:p-8 max-[680px]:p-5" aria-label="Caricamento prova">
+        <span class="skeleton block h-4 my-2" style="width:35%" ></span>
+        <span class="skeleton block h-4 my-2" style="width:70%;height:36px" ></span>
+        <span class="skeleton block h-4 my-2" style="width:50%" ></span>
       </section>
     } @else if (error() || !session) {
-      <section class="state">
-        <h1>Prova non disponibile</h1>
-        <ion-note color="danger" role="alert">{{ error() || 'La prova non è stata trovata.' }}</ion-note>
-        <ion-button fill="outline" (click)="load()">Riprova</ion-button>
+      <section class="grid justify-items-center gap-[18px] px-5 py-[60px] text-center">
+        <h1 class="m-0 text-[clamp(1.6rem,4vw,2.3rem)] [overflow-wrap:anywhere]">Prova non disponibile</h1>
+        <small class="text-sm text-error" role="alert">{{ error() || 'La prova non è stata trovata.' }}</small>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="load()" type="button">Riprova</app-gigsaw-button>
       </section>
     } @else {
       @let current = session!;
-      <section class="hero">
-        <div class="hero-top"><p class="eyebrow">Il prossimo incontro, tutti i dettagli</p><span class="status" [class.cancelled]="current.status.toLowerCase() === 'cancelled'">{{ status(current.status) }}</span></div>
-        <div class="hero-body">
-          <div class="date-tile" aria-hidden="true"><span>{{ month(current.date) }}</span><strong>{{ day(current.date) }}</strong></div>
-          <div><h1>{{ current.title || 'Prova della band' }}</h1><p class="date">{{ date(current.date) }}</p></div>
+      <section class="rounded-[20px] border border-[var(--gigsaw-border)] bg-[linear-gradient(125deg,rgba(var(--ui-color-primary-rgb),.12),var(--gigsaw-surface,#101d30)_65%)] p-7 text-[var(--gigsaw-text)] sm:p-8 max-[680px]:p-5">
+        <div class="mb-[26px] flex items-center justify-between gap-5 max-[680px]:items-start max-[680px]:gap-3"><p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Il prossimo incontro, tutti i dettagli</p><span [class]="current.status.toLowerCase() === 'cancelled' ? 'rounded-full border border-[rgba(var(--ui-color-danger-rgb),.3)] bg-[rgba(var(--ui-color-danger-rgb),.1)] px-3 py-1.5 text-[.78rem] font-bold text-[var(--ui-color-danger)]' : 'rounded-full border border-[rgba(var(--ui-color-primary-rgb),.3)] bg-[rgba(var(--ui-color-primary-rgb),.1)] px-3 py-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]'">{{ status(current.status) }}</span></div>
+        <div class="flex items-center gap-5 max-[680px]:gap-3.5">
+          <div class="grid h-[88px] basis-[76px] shrink-0 place-content-center justify-items-center rounded-2xl border border-[rgba(var(--ui-color-primary-rgb),.25)] bg-[rgba(var(--ui-color-primary-rgb),.08)] text-[var(--ui-color-primary)] max-[680px]:h-[76px] max-[680px]:basis-[62px]" aria-hidden="true"><span class="text-xs font-extrabold uppercase">{{ month(current.date) }}</span><strong class="text-[2.2rem] leading-[1.2]">{{ day(current.date) }}</strong></div>
+          <div><h1 class="m-0 mb-2 text-[clamp(1.6rem,4vw,2.3rem)] [overflow-wrap:anywhere]">{{ current.title || 'Prova della band' }}</h1><p class="m-0 capitalize text-[var(--gigsaw-muted)]">{{ date(current.date) }}</p></div>
         </div>
-        <div class="schedule">
-          <div><span class="label">Orario</span><strong>{{ time(current) }}</strong></div>
-          @if (duration(current)) { <div><span class="label">Durata</span><strong>{{ duration(current) }}</strong></div> }
+        <div class="mt-[26px] flex flex-wrap gap-10 border-t border-[var(--gigsaw-border)] pt-[22px]">
+          <div class="grid gap-[7px]"><span class="text-[.78rem] text-[var(--gigsaw-muted)]">Orario</span><strong class="text-xl tabular-nums">{{ time(current) }}</strong></div>
+          @if (duration(current)) { <div class="grid gap-[7px]"><span class="text-[.78rem] text-[var(--gigsaw-muted)]">Durata</span><strong class="text-xl tabular-nums">{{ duration(current) }}</strong></div> }
         </div>
       </section>
-      <div class="detail-grid">
-        <section class="detail-card room">
-          <p class="eyebrow">Dove ci troviamo</p>
-          <h2>{{ current.rehearsalRoom?.name || 'Sala prove' }}</h2>
+      <div class="mt-5 grid grid-cols-2 gap-[18px] max-[680px]:grid-cols-1 max-[680px]:gap-3.5">
+        <section class="min-w-0 rounded-[20px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface,#101d30)] p-[26px] max-[680px]:px-5 max-[680px]:py-[22px]">
+          <p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Dove ci troviamo</p>
+          <h2 class="my-2 mb-3 text-[1.18rem] [overflow-wrap:anywhere]">{{ current.rehearsalRoom?.name || 'Sala prove' }}</h2>
           @if (current.rehearsalRoom; as room) {
-            <p class="address">{{ room.address }}@if (room.address && room.city) {<br/>}{{ room.city }}</p>
-            @if (room.phone) { <a class="contact" [href]="'tel:' + room.phone">{{ room.phone }}</a> }
-          } @else { <p class="muted">Dettagli della sala non disponibili.</p> }
+            <p class="m-0 leading-[1.7] text-[var(--gigsaw-muted)]">{{ room.address }}@if (room.address && room.city) {<br/>}{{ room.city }}</p>
+            @if (room.phone) { <a class="mt-4 inline-block text-[var(--ui-color-primary)]" [href]="'tel:' + room.phone">{{ room.phone }}</a> }
+          } @else { <p class="m-0 leading-[1.7] text-[var(--gigsaw-muted)]">Dettagli della sala non disponibili.</p> }
         </section>
-        <section class="detail-card">
-          <p class="eyebrow">Preparazione</p>
-          <h2>Note organizzative</h2>
-          <p class="notes" [class.muted]="!current.notes">{{ current.notes || 'Nessuna nota aggiunta per questa prova.' }}</p>
+        <section class="min-w-0 rounded-[20px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface,#101d30)] p-[26px] max-[680px]:px-5 max-[680px]:py-[22px]">
+          <p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Preparazione</p>
+          <h2 class="my-2 mb-3 text-[1.18rem] [overflow-wrap:anywhere]">Note organizzative</h2>
+          <p [class]="current.notes ? 'm-0 whitespace-pre-wrap leading-[1.7] [overflow-wrap:anywhere]' : 'm-0 leading-[1.7] text-[var(--gigsaw-muted)]'">{{ current.notes || 'Nessuna nota aggiunta per questa prova.' }}</p>
         </section>
       </div>
       @if (current.songIds?.length || current.songs?.length) {
-        <section class="detail-card repertoire">
-          <div><p class="eyebrow">Il repertorio della prova</p><h2>Brani da provare <span class="count">{{ current.songs?.length || current.songIds?.length }}</span></h2></div>
+        <section class="mt-[18px] min-w-0 rounded-[20px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface,#101d30)] p-[26px] max-[680px]:px-5 max-[680px]:py-[22px]">
+          <div><p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Il repertorio della prova</p><h2 class="my-2 mb-3 text-[1.18rem] [overflow-wrap:anywhere]">Brani da provare <span class="ml-1.5 inline-grid min-w-[26px] place-items-center rounded-lg bg-[rgba(var(--ui-color-primary-rgb),.12)] px-[7px] py-[3px] text-[.85rem] text-[var(--ui-color-primary)]">{{ current.songs?.length || current.songIds?.length }}</span></h2></div>
           @if (current.songs?.length) {
-            <ol>@for (song of current.songs; track song.id) { <li>{{ song.title }}</li> }</ol>
-          } @else { <p class="muted">Apri la modifica per consultare i brani selezionati.</p> }
-          <ion-button fill="outline" size="small" [routerLink]="['modifica']">Gestisci brani</ion-button>
+            <ol class="pl-6 leading-[2]">@for (song of current.songs; track song.id) { <li>{{ song.title }}</li> }</ol>
+          } @else { <p class="m-0 leading-[1.7] text-[var(--gigsaw-muted)]">Apri la modifica per consultare i brani selezionati.</p> }
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm mt-4" [routerLink]="['modifica']" queryParamsHandling="preserve" type="button">Gestisci brani</app-gigsaw-button>
         </section>
       }
-      <footer class="detail-footer"><span>Vuoi aggiornare i dettagli della prova?</span><div><ion-button fill="clear" color="danger" (click)="confirmDelete()">Elimina prova</ion-button><ion-button [routerLink]="['modifica']">Modifica prova</ion-button></div></footer>
+      <footer class="mt-[26px] flex items-center justify-between gap-5 border-t border-[var(--gigsaw-border)] pt-[18px] text-[.85rem] text-[var(--gigsaw-muted)] max-[680px]:items-start max-[680px]:flex-col max-[680px]:gap-3"><span>Vuoi aggiornare i dettagli della prova?</span><div class="flex gap-1.5 max-[680px]:w-full max-[680px]:justify-between"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-error" (click)="confirmDelete()" type="button">Elimina prova</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['modifica']" queryParamsHandling="preserve" type="button">Modifica prova</app-gigsaw-button></div></footer>
     }
   </main>
-</ion-content>
+</section>

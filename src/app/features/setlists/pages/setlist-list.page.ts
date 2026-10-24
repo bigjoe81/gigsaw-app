@@ -1,15 +1,9 @@
+import { ChangeDetectionStrategy } from '@angular/core';
+import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { ToastService } from '../../../shared/ui/native-ui';
 import { SetlistPdfModalComponent } from '../components/setlist-pdf-modal.component';
 import { Component, OnDestroy, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton, IonRefresher,
-  IonRefresherContent, IonSpinner, IonSkeletonText, IonText, IonTitle, IonToolbar, ToastController,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  add, alertCircleOutline, calendarOutline, downloadOutline, libraryOutline, listOutline,
-  musicalNotesOutline, shareSocialOutline,
-} from 'ionicons/icons';
 import { finalize, Subscription, timeout } from 'rxjs';
 import { Setlist } from '../../../core/models/band-resources.models';
 import { SetlistPdfOptions } from '../models/setlist.models';
@@ -18,13 +12,11 @@ import { SetlistService } from '../services/setlist.service';
 
 type PdfAction = `download-${number}` | `share-${number}` | null;
 
-@Component({
+@Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [
+  imports: [NativeUiModule,
     SetlistPdfModalComponent,
-    RouterLink, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton,
-    IonRefresher, IonRefresherContent, IonSpinner, IonSkeletonText, IonText, IonTitle, IonToolbar,
-  ],
+    RouterLink, ],
   templateUrl: './setlist-list.page.html',
   styleUrl: './setlist-list.page.scss',
 })
@@ -55,17 +47,14 @@ export class SetlistListPage implements OnDestroy {
   constructor(
     private readonly setlistsApi: SetlistService,
     private readonly setlistPdf: SetlistPdfService,
-    private readonly toast: ToastController,
+    private readonly toast: ToastService,
   ) {
-    addIcons({
-      add, alertCircleOutline, calendarOutline, downloadOutline, libraryOutline, listOutline,
-      musicalNotesOutline, shareSocialOutline,
-    });
+
   }
 
   private listRequest?: Subscription;
 
-  ionViewWillEnter(): void { this.load(); }
+  ngOnInit(): void { this.load(); }
   ngOnDestroy(): void { this.listRequest?.unsubscribe(); }
 
   load(event?: CustomEvent): void {

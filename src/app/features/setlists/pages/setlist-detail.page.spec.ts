@@ -1,7 +1,7 @@
+import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular/standalone';
 import { Subject } from 'rxjs';
 import { Setlist } from '../../../core/models/band-resources.models';
 import { BandService } from '../../bands/services/band.service';
@@ -24,8 +24,8 @@ describe('Setlist detail reactive loading', () => {
         { provide: BandService, useValue: {} },
         { provide: SetlistService, useValue: { get: () => response } },
         { provide: SetlistPdfService, useValue: { open: () => new Promise<void>(resolve => resolvePdf = resolve) } },
-        { provide: AlertController, useValue: {} },
-        { provide: ToastController, useValue: {} },
+        { provide: DialogService, useValue: {} },
+        { provide: ToastService, useValue: {} },
       ],
     }).overrideComponent(SetlistDetailPage, {
       set: { imports: [], template: `@if (loading()) { Caricamento } @else if (loadError()) { Errore } @else { {{ setlist?.title }} } @if (pdfLoading()) { Preparazione PDF }` },

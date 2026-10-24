@@ -1,6 +1,5 @@
+import { NativeUiModule } from '../native-ui';
 import { Component, ElementRef, HostListener, computed, input, output, signal } from '@angular/core';
-import { IonInput, IonItem, IonLabel, IonList, IonSpinner, IonNote } from '@ionic/angular/standalone';
-
 export interface GigsawTypeaheadItem {
   id: string | number;
   label: string;
@@ -11,21 +10,21 @@ export interface GigsawTypeaheadItem {
 @Component({
   selector: 'app-gigsaw-typeahead',
   standalone: true,
-  imports: [IonInput, IonItem, IonLabel, IonList, IonSpinner, IonNote],
+  imports: [NativeUiModule],
   template: `
     <div class="gigsaw-typeahead" [class.dropdown-overlay]="dropdownOverlay()">
-      <ion-input [fill]="fill()" [class]="controlClass()" [attr.aria-label]="ariaLabel() || placeholder()" [name]="name()" [placeholder]="placeholder()" [autocomplete]="autocomplete()" [disabled]="disabled()" [value]="value()" [class.ion-invalid]="invalid()" [class.ion-valid]="valid() && !invalid()" [class.ion-touched]="invalid() || valid()" role="combobox" [attr.aria-expanded]="open()" [attr.aria-controls]="listboxId" (ionInput)="onInput($event.detail.value ?? '')" (ionFocus)="onFocus()" (keydown)="onKeydown($event)" (ionBlur)="blurred.emit()" />
+      <input class="input w-full" [class]="controlClass()" [attr.aria-label]="ariaLabel() || placeholder()" [name]="name()" [placeholder]="placeholder()" [attr.autocomplete]="autocomplete()" [disabled]="disabled()" [value]="value()" [class.is-invalid]="invalid()" [class.is-valid]="valid() && !invalid()" [class.is-touched]="invalid() || valid()" role="combobox" [attr.aria-expanded]="open()" [attr.aria-controls]="listboxId" [attr.aria-activedescendant]="activeDescendant()" (input)="onInput($any($event.target).value ?? '')" (focus)="onFocus()" (keydown)="onKeydown($event)" (blur)="blurred.emit()"  />
       @if (open()) {
-        <ion-list [id]="listboxId" role="listbox">
-          @if (loading()) { <ion-item><ion-spinner slot="start" /><ion-label>{{ loadingText() }}</ion-label></ion-item> }
+        <div class="ui-list grid gap-2" [id]="listboxId" role="listbox">
+          @if (loading()) { <div class="ui-item flex items-center gap-3 py-3"><span class="loading loading-spinner" slot="start"  role="status" aria-label="Caricamento"></span><span class="ui-label">{{ loadingText() }}</span></div> }
           @else if (visibleItems().length) {
             @for (item of visibleItems(); track item.id; let index = $index) {
-              <ion-item button role="option" [attr.aria-selected]="index === activeIndex()" (pointerdown)="select(item, $event)">
-                <ion-label><h2>{{ item.label }}</h2>@if (item.description) { <p>{{ item.description }}</p> }</ion-label>
-              </ion-item>
+              <div class="ui-item flex items-center gap-3 py-3" role="option" [id]="optionId(index)" [attr.aria-selected]="index === activeIndex()" (pointerdown)="select(item, $event)">
+                <span class="ui-label"><h2>{{ item.label }}</h2>@if (item.description) { <p>{{ item.description }}</p> }</span>
+              </div>
             }
-          } @else if (value().trim().length >= minChars()) { <ion-item><ion-note>{{ emptyMessage() }}</ion-note></ion-item> }
-        </ion-list>
+          } @else if (value().trim().length >= minChars()) { <div class="ui-item flex items-center gap-3 py-3"><small class="text-sm">{{ emptyMessage() }}</small></div> }
+        </div>
       }
     </div>
   `,
@@ -34,7 +33,7 @@ export interface GigsawTypeaheadItem {
       position: relative;
     }
 
-    .dropdown-overlay ion-list {
+    .dropdown-overlay .ui-list {
       position: absolute;
       top: 100%;
       inset-inline: 0;
