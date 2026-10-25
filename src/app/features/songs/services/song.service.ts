@@ -128,11 +128,20 @@ export class SongService extends BandScopedCrudService<Song> {
     const body = new FormData();
     body.append('file', file, file.name);
     body.append('kind', 'reference');
-    return this.http.post(`${API_BASE_URL}/songs/${songId}/attachments`, body).pipe(timeout(180000));
+    return this.http.post(`${API_BASE_URL}/songs/${songId}/attachments`, body).pipe(
+      timeout(180000),
+      catchError((error) => throwError(() => new Error(uploadErrorMessage(error)))),
+    );
+  }
+
+  deleteTake(songId: number, takeId: number): Observable<unknown> {
+    return this.http.delete(`${API_BASE_URL}/songs/${songId}/attachments/${takeId}`).pipe(timeout(30000));
   }
 
   takeAudio(downloadUrl: string): Observable<Blob> {
-    return this.http.get(downloadUrl, { responseType: 'blob' }).pipe(timeout(120000));
+    // L'API restituisce URL assoluti sul proprio host: li riallineo all'origine configurata per mantenere l'autenticazione.
+    const path = downloadUrl.replace(/^https?:\/\/[^/]+/, '');
+    return this.http.get(`${environment.apiUrl}${path}`, { responseType: 'blob' }).pipe(timeout(120000));
   }
 
   private reviewFile(endpoint: string, file: File, bandId: number): Observable<SongImportReview> {
@@ -167,4 +176,13 @@ export class SongService extends BandScopedCrudService<Song> {
       return result;
     }, {});
   }
+}
+
+export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
+export function uploadErrorMessage(error: { status?: number; error?: { errors?: { file?: string[] } } }): string {
+  if (error?.status === 413) return 'Il file è troppo grande per il server. Prova con un file più leggero (max 50 MB) o aumenta il limite di upload del server.';
+  if (error?.status === 422) return 'File non valido: carica un file audio (mp3, m4a, wav, ogg) fino a 50 MB.';
+  if (error?.status === 0) return 'Impossibile caricare il file: connessione interrotta o file troppo grande per il server.';
+  return 'Caricamento del file non riuscito. Riprova.';
 }

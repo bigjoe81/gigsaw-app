@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
-import { SymbolComponent } from '../../../shared/ui/native-ui';
-import { SongService, SongTake } from '../services/song.service';
+import { DialogService, SymbolComponent } from '../../../shared/ui/native-ui';
+import { MAX_UPLOAD_BYTES, SongService, SongTake, uploadErrorMessage } from '../services/song.service';
 
 /**
  * Registrazioni di un brano. Con `rehearseId` mostra solo quelle della prova e permette di caricarne;
@@ -38,6 +38,10 @@ import { SongService, SongTake } from '../services/song.service';
               <p class="m-0 truncate text-sm font-semibold">{{ rehearseId ? take.name : heading(take) }}</p>
               <p class="m-0 truncate text-xs text-[var(--gigsaw-muted)]">{{ rehearseId ? sizeLabel(take) : take.name + ' · ' + sizeLabel(take) }}</p>
             </div>
+            <button type="button" class="btn btn-ghost btn-sm btn-square text-error" [disabled]="deletingTake() === take.id" [attr.aria-label]="'Elimina ' + take.name" (click)="confirmDelete(take)">
+              @if (deletingTake() === take.id) { <span class="loading loading-spinner loading-xs"></span> }
+              @else { <app-symbol name="trash-outline" /> }
+            </button>
           </div>
           @if (urls()[take.id]; as url) {
             <audio class="mt-3 w-full" controls autoplay [src]="url"></audio>
@@ -52,6 +56,8 @@ export class SongTakesComponent implements OnInit, OnDestroy {
   @Input() rehearseId?: number;
 
   private readonly songs = inject(SongService);
+  private readonly dialogs = inject(DialogService);
+  readonly deletingTake = signal<number | null>(null);
   readonly takes = signal<SongTake[]>([]);
   readonly loading = signal(true);
   readonly uploading = signal(false);
@@ -91,16 +97,45 @@ export class SongTakesComponent implements OnInit, OnDestroy {
     });
   }
 
+  async confirmDelete(take: SongTake): Promise<void> {
+    const dialog = await this.dialogs.create({
+      header: 'Eliminare la registrazione?',
+      message: `"${take.name}" verrà eliminata dalla storia del brano. L'operazione non può essere annullata.`,
+      buttons: [{ text: 'Annulla', role: 'cancel' }, { text: 'Elimina', role: 'destructive', handler: () => this.delete(take) }],
+    });
+    await dialog.present();
+  }
+
+  private delete(take: SongTake): void {
+    this.error.set('');
+    this.deletingTake.set(take.id);
+    this.songs.deleteTake(this.songId, take.id).pipe(finalize(() => this.deletingTake.set(null))).subscribe({
+      next: () => {
+        const url = this.urls()[take.id];
+        if (url) URL.revokeObjectURL(url);
+        this.urls.update(({ [take.id]: _removed, ...rest }) => rest);
+        this.takes.update((takes) => takes.filter((item) => item.id !== take.id));
+      },
+      error: (error: { status?: number }) => this.error.set(error.status === 403
+        ? 'Puoi eliminare solo le registrazioni caricate da te (o essere admin della band).'
+        : 'Impossibile eliminare la registrazione.'),
+    });
+  }
+
   upload(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     input.value = '';
     if (!file || !this.rehearseId) return;
+    if (file.size > MAX_UPLOAD_BYTES) {
+      this.error.set(`Il file è troppo grande (${(file.size / 1048576).toFixed(1)} MB). Il limite è 50 MB.`);
+      return;
+    }
     this.error.set('');
     this.uploading.set(true);
     this.songs.uploadTake(this.songId, this.rehearseId, file).pipe(finalize(() => this.uploading.set(false))).subscribe({
       next: () => this.load(),
-      error: () => this.error.set('Caricamento non riuscito. Controlla formato e dimensione (max 50 MB).'),
+      error: (error) => this.error.set(uploadErrorMessage(error)),
     });
   }
 

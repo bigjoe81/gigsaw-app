@@ -11,7 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import { Song, SongStatus } from '../../../core/models/band-resources.models';
 import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
-import { SongService } from '../services/song.service';
+import { MAX_UPLOAD_BYTES, SongService } from '../services/song.service';
 import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
@@ -281,7 +281,15 @@ export class SongFormPage implements OnInit, OnDestroy {
 
   pickReference(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.referenceFile.set(input.files?.[0] ?? null);
+    const file = input.files?.[0] ?? null;
+    if (file && file.size > MAX_UPLOAD_BYTES) {
+      input.value = '';
+      this.referenceFile.set(null);
+      this.error.set(`Il file è troppo grande (${(file.size / 1048576).toFixed(1)} MB). Il limite è 50 MB.`);
+      return;
+    }
+    this.error.set('');
+    this.referenceFile.set(file);
   }
 
   private prepareNextSong(): void {
