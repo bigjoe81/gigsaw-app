@@ -4,14 +4,14 @@
     <div class="modal-box max-w-2xl">
       <header class="flex items-center justify-between gap-4"><h2 id="changelog-title" class="text-xl font-bold">Novità in GigSaw</h2><button class="btn btn-ghost" (click)="closeChangelog()">Chiudi</button></header>
       @if (currentRelease(); as release) {
-        <p class="mt-4 text-sm text-primary">{{ release.label }} · {{ release.date }}</p>
+        <p class="mt-4 text-sm text-primary">{{ release.label }} · {{ release.version ? 'v' + release.version + ' · ' : '' }}{{ release.date }}</p>
         <h3 class="mt-2 text-2xl font-bold">{{ release.title }}</h3><p class="my-4">{{ release.summary }}</p>
         @for (highlight of release.highlights; track highlight) { <p class="my-2 rounded-xl bg-base-200 p-4">{{ highlight }}</p> }
       }
       <h3 class="mt-6 font-bold">Versioni precedenti</h3>
-      @for (release of previousReleases(); track release.id) { <details class="my-3"><summary>{{ release.label }} · {{ release.title }}</summary><p class="mt-2">{{ release.summary }}</p>@for (highlight of release.highlights; track highlight) { <p class="mt-2">{{ highlight }}</p> }</details> }
+      @for (release of previousReleases(); track release.id) { <details class="my-3"><summary>{{ release.label }} · {{ release.version ? 'v' + release.version : release.date }} · {{ release.title }}</summary><p class="mt-2">{{ release.summary }}</p>@for (highlight of release.highlights; track highlight) { <p class="mt-2">{{ highlight }}</p> }</details> }
       @if (archivedReleases().length) { <button class="btn btn-ghost" (click)="toggleFullHistory()">{{ fullHistoryOpen() ? 'Nascondi la storia' : 'Mostra tutta la storia' }}</button> }
-      @if (fullHistoryOpen()) { @for (release of archivedReleases(); track release.id) { <details class="my-3"><summary>{{ release.label }} · {{ release.title }}</summary><p>{{ release.summary }}</p>@for (highlight of release.highlights; track highlight) { <p>{{ highlight }}</p> }</details> } }
+      @if (fullHistoryOpen()) { @for (release of archivedReleases(); track release.id) { <details class="my-3"><summary>{{ release.label }} · {{ release.version ? 'v' + release.version : release.date }} · {{ release.title }}</summary><p>{{ release.summary }}</p>@for (highlight of release.highlights; track highlight) { <p>{{ highlight }}</p> }</details> } }
     </div>
     <button class="modal-backdrop" aria-label="Chiudi novità" (click)="closeChangelog()"></button>
   </div>

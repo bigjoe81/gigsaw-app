@@ -28,6 +28,13 @@
           </button>
           <p class="lead">Oppure scegli un altro percorso:</p>
         }
+        @if (nextEvent()) {
+        <div role="tablist" class="tabs tabs-border mt-6">
+          <button type="button" role="tab" class="tab" [class.tab-active]="tab() === 'next'" (click)="tab.set('next')">Da preparare</button>
+          <button type="button" role="tab" class="tab" [class.tab-active]="tab() === 'goals'" (click)="tab.set('goals')">Da dove partire</button>
+        </div>
+        }
+        @if (!nextEvent() || tab() === 'goals') {
         <div class="choices">
           @for (item of goals; track item.key) {
             <button type="button" class="choice" (click)="chooseGoal(item.key)">
@@ -37,7 +44,10 @@
             </button>
           }
         </div>
-        <a class="upcoming-link" [routerLink]="[baseUrl, 'impegni']" [queryParams]="{ guidato: 1 }">Ho già organizzato tutto: vediamo i prossimi impegni <app-symbol name="chevron-forward-outline" aria-hidden="true" /></a>
+          <button class="upcoming-link" type="button" (click)="openUpcomingEvents()">Ho già organizzato tutto: vediamo i prossimi impegni <app-symbol name="chevron-forward-outline" aria-hidden="true" /></button>
+        } @else if (nextEvent(); as event) {
+          <app-upcoming-event-card class="upcoming-card" [event]="event" [bandName]="bandName()" (prepare)="prepareEvent($event)" />
+        }
       }
     </section>
     <footer><a [routerLink]="[baseUrl, 'panoramica']">Consulta il gestionale completo</a></footer>

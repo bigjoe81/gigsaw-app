@@ -45,7 +45,7 @@ describe('UpcomingRehearsalPromptService', () => {
         : [{ id: 12, title: 'Prova acustica', date: rehearsalDate, status: 'confirmed', startTime: '19:30' }]);
     });
 
-    service.checkForUpcomingRehearsals();
+    service.openUpcomingEvents();
     await Promise.resolve();
 
     expect(resources.list).toHaveBeenCalledWith(4, 'rehearsal-sessions');
@@ -67,16 +67,21 @@ describe('UpcomingRehearsalPromptService', () => {
     }));
   });
 
-  it('does not prompt when there are no future rehearsals', () => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    resources.list.and.callFake((_bandId: number, resource: string) => of(resource === 'gigs' ? [] : [
-      { id: 1, title: 'Prova passata', date: yesterday.toISOString().slice(0, 10), status: 'confirmed' },
-      { id: 2, title: 'Prova annullata', date: '2099-10-01', status: 'cancelled' },
-    ]));
+  it('opens the upcoming-events modal for the selected band even if there are no future events', async () => {
+    resources.list.and.returnValue(of([]));
 
-    service.checkForUpcomingRehearsals();
+    service.openUpcomingEvents(4);
+    await Promise.resolve();
 
-    expect(overlays.create).not.toHaveBeenCalled();
+    expect(resources.list).toHaveBeenCalledWith(4, 'rehearsal-sessions');
+    expect(resources.list).toHaveBeenCalledWith(4, 'gigs');
+    expect(resources.list).not.toHaveBeenCalledWith(7, 'rehearsal-sessions');
+    expect(overlays.create).toHaveBeenCalledWith(jasmine.objectContaining({
+      component: UpcomingEventsOnboardingModalComponent,
+      componentProps: jasmine.objectContaining({
+        bands: jasmine.arrayContaining([jasmine.objectContaining({ id: 4, name: 'I Cigni' })]),
+        events: [],
+      }),
+    }));
   });
 });

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../shared/ui/gigsaw/gigsaw-form-controls.module';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, finalize, Observable, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
@@ -11,14 +11,19 @@ import { OnboardingService } from '../../core/services/onboarding.service';
 import { Band, BandGenre } from '../bands/models/band.models';
 import { BandService } from '../bands/services/band.service';
 import { GenreService } from '../bands/services/genre.service';
+import { UpcomingEventCardComponent } from '../auth/upcoming-event-card.component';
+import { UpcomingBandEvent } from '../auth/upcoming-events-onboarding-modal.component';
+import { UpcomingRehearsalPromptService } from '../auth/upcoming-rehearsal-prompt.service';
+import { GuideGoal } from '../guide/guide-goals';
 
 type OnboardingMode = 'create' | 'invite';
 type OnboardingStep = 'welcome' | 'invite' | 'profile' | 'band' | 'flow' | 'source';
+type OnboardingGoal = GuideGoal | 'commitments';
 type BuildingStart = 'manual' | 'import';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, GigsawFormControlsModule],
+  imports: [NativeUiModule, GigsawFormControlsModule, UpcomingEventCardComponent],
   templateUrl: './onboarding.page.html',
   styleUrls: ['./onboarding.page.scss'],
 })
@@ -31,6 +36,7 @@ export class OnboardingPage implements OnInit {
   private readonly bandContext = inject(BandContextService);
   private readonly onboarding = inject(OnboardingService);
   private readonly bandFlow = inject(BandFlowService);
+  private readonly upcomingRehearsals = inject(UpcomingRehearsalPromptService);
 
   readonly step = signal<OnboardingStep>('welcome');
   readonly mode = signal<OnboardingMode | null>(null);
@@ -52,7 +58,19 @@ export class OnboardingPage implements OnInit {
   customInstrument = '';
   currentBand?: Band;
 
+  readonly tab = signal<'goals' | 'next'>('next');
+  readonly nextEvent = signal<UpcomingBandEvent | null>(null);
+
   constructor() {
+    effect(() => {
+      if (this.step() !== 'flow' || !this.currentBand) return;
+      this.upcomingRehearsals.nextEvent(this.currentBand.id).subscribe((event) => this.nextEvent.set(event));
+    });
+  }
+
+  prepareEvent(event: UpcomingBandEvent): void {
+    this.onboarding.complete();
+    this.upcomingRehearsals.prepareEvent(event);
   }
 
   ngOnInit(): void {
@@ -164,23 +182,31 @@ export class OnboardingPage implements OnInit {
     });
   }
 
-  chooseFlow(flow: BandFlow): void {
+  chooseGoal(goal: OnboardingGoal): void {
     if (!this.currentBand) return;
 
-    this.selectedFlow.set(flow);
-    this.bandFlow.set(this.currentBand.id, flow);
-
-    if (flow === 'building') {
+    if (goal === 'repertoire') {
+      this.selectedFlow.set('building');
+      this.bandFlow.set(this.currentBand.id, 'building');
       this.step.set('source');
       return;
     }
 
-    if (flow === 'importing') {
-      this.finish('import');
+    this.selectedFlow.set('active');
+    this.bandFlow.set(this.currentBand.id, 'active');
+    this.onboarding.complete();
+
+    if (goal === 'gig') {
+      void this.router.navigateByUrl(`/band/${this.currentBand.id}/concerti/nuovo?guidato=1&obiettivo=gig`);
       return;
     }
 
-    this.finish();
+    if (goal === 'rehearsal') {
+      void this.router.navigateByUrl(`/band/${this.currentBand.id}/prove/nuova?guidato=1&obiettivo=rehearsal`);
+      return;
+    }
+
+    this.upcomingRehearsals.openUpcomingEvents(this.currentBand.id);
   }
 
   joinBand(): void {
@@ -276,7 +302,7 @@ export class OnboardingPage implements OnInit {
     this.loading.set(true);
     this.error.set('');
     this.saveCurrentMemberInstruments(this.currentBand).pipe(finalize(() => this.loading.set(false))).subscribe({
-      next: () => this.returnToBand(),
+      next: () => this.step.set('flow'),
       error: (error: { error?: { message?: string } }) => {
         this.error.set(error.error?.message || 'Salvataggio degli strumenti non riuscito.');
       },

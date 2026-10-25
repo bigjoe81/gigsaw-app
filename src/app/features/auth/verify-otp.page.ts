@@ -8,7 +8,6 @@ import { OtpPurpose } from '../../core/auth/auth.models';
 import { GigsawAlertComponent, GigsawButtonComponent, GigsawMessageComponent, GigsawOtpInputComponent } from '../../shared/ui/gigsaw';
 
 import { AuthKeyboardScrollDirective } from './auth-keyboard-scroll.directive';
-import { UpcomingRehearsalPromptService } from './upcoming-rehearsal-prompt.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
@@ -40,7 +39,6 @@ export class VerifyOtpPage {
     private readonly auth: AuthService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly upcomingRehearsalPrompt: UpcomingRehearsalPromptService,
   ) {}
 
   updateCode(code: string): void {
@@ -71,9 +69,7 @@ export class VerifyOtpPage {
         const destination = this.purpose === 'register' && this.returnUrl === '/band'
           ? '/inizia'
           : this.returnUrl;
-        void this.router.navigateByUrl(destination).then(() => {
-          if (this.purpose === 'login') this.upcomingRehearsalPrompt.checkForUpcomingRehearsals();
-        });
+        void this.router.navigateByUrl(destination);
       },
       error: (error: { error?: { message?: string } }) => {
         this.error.set(error.error?.message || 'Codice non valido.');

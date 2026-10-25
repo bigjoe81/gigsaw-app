@@ -19,5 +19,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--ui-color-primar
 .back { margin-top: 20px; padding: 0 8px; border: 0; background: transparent; cursor: pointer; }
 footer { margin-top: 20px; text-align: center; }
 
-.upcoming-link { gap: 10px; margin-top: 20px; line-height: 1.5; color: var(--ui-color-primary); }
+.upcoming-link { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; margin-top: 20px; padding: 0; border: 0; background: transparent; color: var(--ui-color-primary); font: inherit; line-height: 1.5; text-align: left; cursor: pointer; }
 .next-step { margin-top: 24px; border-color: var(--ui-color-primary); }
+.upcoming-card { display: block; margin-top: 20px; }
+:host { display: block; height: 100%; overflow-y: auto; }

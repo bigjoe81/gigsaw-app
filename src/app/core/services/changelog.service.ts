@@ -4,6 +4,7 @@ import { map, Observable, shareReplay } from 'rxjs';
 
 export interface ChangelogRelease {
   id: string;
+  version?: string;
   date: string;
   label: string;
   title: string;

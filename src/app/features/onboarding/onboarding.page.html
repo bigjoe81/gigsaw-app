@@ -1,15 +1,17 @@
 <section class="onboarding-content">
-  <main class="onboarding-shell">
-    <header class="onboarding-topbar">
-      <img src="assets/logo-hor.png" alt="GigSaw" />
-      <button class="btn text-button" type="button" (click)="skip()">Salta</button>
-    </header>
+  <main class="onboarding-shell" [class.path-options]="step() === 'flow'">
+    @if (step() !== 'flow') {
+      <header class="onboarding-topbar">
+        <img src="assets/logo-hor.png" alt="GigSaw" />
+        <button class="btn text-button" type="button" (click)="skip()">Salta</button>
+      </header>
 
-    <div class="progress-track" role="progressbar" aria-label="Avanzamento onboarding" [attr.aria-valuenow]="progress" aria-valuemin="1" aria-valuemax="5">
-      @for (position of [1, 2, 3, 4, 5]; track position) { <span [class.active]="position <= progress"></span> }
-    </div>
+      <div class="progress-track" role="progressbar" aria-label="Avanzamento onboarding" [attr.aria-valuenow]="progress" aria-valuemin="1" aria-valuemax="5">
+        @for (position of [1, 2, 3, 4, 5]; track position) { <span [class.active]="position <= progress"></span> }
+      </div>
+    }
 
-    <section class="onboarding-card" aria-live="polite">
+    <section class="onboarding-card" [class.path-options]="step() === 'flow'" aria-live="polite">
       @if (loading() && step() === 'welcome') {
         <div class="loading-state"><span class="loading loading-spinner" role="status" aria-label="Caricamento"></span><p>Prepariamo il tuo spazio…</p></div>
       } @else {
@@ -90,32 +92,43 @@
             <button class="btn secondary-button" type="button" (click)="back()"><app-symbol name="arrow-back-outline" /> Indietro</button>
           </div>
         } @else if (step() === 'flow') {
-          <span class="feature-icon"><app-symbol name="sparkles-outline" /></span>
-          <p class="eyebrow">Il vostro punto di partenza</p>
-          <h1>A che punto siete?</h1>
-          <p class="lead">Scegli la frase che vi descrive meglio. GigSaw penserà al resto.</p>
+          <p class="eyebrow">{{ currentBand?.name }} · Il tuo percorso</p>
+          <h1>Cosa vuoi fare con la tua band?</h1>
+          <p class="lead">Ti accompagniamo un passo alla volta. Da cosa vuoi partire?</p>
 
+          @if (nextEvent()) {
+          <div role="tablist" class="tabs tabs-border mt-6">
+            <button type="button" role="tab" class="tab" [class.tab-active]="tab() === 'next'" (click)="tab.set('next')">Da preparare</button>
+            <button type="button" role="tab" class="tab" [class.tab-active]="tab() === 'goals'" (click)="tab.set('goals')">Da dove partire</button>
+          </div>
+          }
+
+          @if (!nextEvent() || tab() === 'goals') {
           <div class="choice-grid scenario-grid">
-            <button class="btn choice-card scenario-card" type="button" (click)="chooseFlow('building')">
+            <button class="btn choice-card scenario-card" type="button" (click)="chooseGoal('repertoire')">
               <span class="choice-icon"><app-symbol name="musical-notes-outline" /></span>
-              <span><strong>Stiamo iniziando</strong><small>Abbiamo pochi brani o dobbiamo ancora prepararli</small></span>
+              <span><strong>Costruire il repertorio</strong><small>Aggiungiamo i brani che volete suonare.</small></span>
               <app-symbol name="chevron-forward-outline" />
             </button>
-            <button class="btn choice-card scenario-card" type="button" (click)="chooseFlow('importing')">
-              <span class="choice-icon"><app-symbol name="folder-open-outline" /></span>
-              <span><strong>Abbiamo già dei brani</strong><small>La lista esiste già da qualche parte</small></span>
+            <button class="btn choice-card scenario-card" type="button" (click)="chooseGoal('gig')">
+              <span class="choice-icon"><app-symbol name="radio-outline" /></span>
+              <span><strong>Preparare un concerto</strong><small>Partiamo dalla data o dalla scaletta.</small></span>
               <app-symbol name="chevron-forward-outline" />
             </button>
-            <button class="btn choice-card scenario-card" type="button" (click)="chooseFlow('active')">
-              <span class="choice-icon"><app-symbol name="flame-outline" /></span>
-              <span><strong>Suoniamo già regolarmente</strong><small>Abbiamo prove o live da organizzare adesso</small></span>
+            <button class="btn choice-card scenario-card" type="button" (click)="chooseGoal('rehearsal')">
+              <span class="choice-icon"><app-symbol name="mic-outline" /></span>
+              <span><strong>Organizzare una prova</strong><small>Decidiamo quando trovarci o cosa suonare.</small></span>
               <app-symbol name="chevron-forward-outline" />
             </button>
           </div>
 
-          <p class="microcopy">Non è una configurazione definitiva: GigSaw aggiorna il percorso anche in base a quello che fate davvero.</p>
-
-          <div class="form-actions single-secondary"><button class="btn secondary-button" type="button" (click)="back()"><app-symbol name="arrow-back-outline" /> Indietro</button></div>
+            <button class="upcoming-link" type="button" (click)="chooseGoal('commitments')">
+              Ho già organizzato tutto: vediamo i prossimi impegni
+              <app-symbol name="chevron-forward-outline" aria-hidden="true" />
+            </button>
+          } @else if (nextEvent(); as event) {
+            <app-upcoming-event-card class="upcoming-card" [event]="event" [bandName]="currentBand?.name ?? ''" (prepare)="prepareEvent($event)" />
+          }
         } @else if (step() === 'source') {
           <span class="feature-icon"><app-symbol name="musical-notes-outline" /></span>
           <p class="eyebrow">Primo passo</p>

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { Gig, RehearsalSession } from '../../core/models/band-resources.models';
 import { BandContextService } from '../../core/services/band-context.service';
 import { BandResourceApiService } from '../../core/services/band-resource-api.service';
@@ -24,10 +24,13 @@ export class UpcomingRehearsalPromptService {
   private readonly resources = inject(BandResourceApiService);
   private readonly overlays = inject(OverlayService);
   private readonly toast = inject(ToastService);
+  private readonly bandContext = inject(BandContextService);
+  private readonly router = inject(Router);
 
-  checkForUpcomingRehearsals(): void {
+  openUpcomingEvents(targetBandId?: number): void {
     this.bands.listUserBands().pipe(
-      map((bands) => bands.filter((band) => Number.isInteger(band.id) && band.id > 0)),
+      map((bands) => bands.filter((band) => Number.isInteger(band.id) && band.id > 0
+        && (targetBandId === undefined || band.id === targetBandId))),
       switchMap((bands) => bands.length
         ? forkJoin(bands.map((band) => forkJoin({
           band: of(band),
@@ -38,14 +41,30 @@ export class UpcomingRehearsalPromptService {
       catchError((error: unknown) => {
         console.error('Impossibile controllare le prove imminenti.', error);
         void this.showLookupError();
-        return of([]);
+        return of(null);
       }),
     ).subscribe({
       next: (results) => {
+        if (results === null) return;
         const events = this.upcomingEvents(results);
-        if (events.length) void this.prompt(results, events);
+        void this.prompt(results, events);
       },
     });
+  }
+
+  nextEvent(bandId: number): Observable<UpcomingBandEvent | null> {
+    return forkJoin({
+      rehearsals: this.resources.list<RehearsalSession>(bandId, 'rehearsal-sessions'),
+      gigs: this.resources.list<Gig>(bandId, 'gigs'),
+    }).pipe(
+      map(({ rehearsals, gigs }) => this.upcomingEvents([{ band: { id: bandId } as Band, rehearsals, gigs }])[0] ?? null),
+      catchError(() => of(null)),
+    );
+  }
+
+  prepareEvent(event: UpcomingBandEvent): void {
+    this.bandContext.setCurrentBand(event.bandId);
+    void this.router.navigateByUrl(`/band/${event.bandId}/${event.type === 'rehearsal' ? 'prove' : 'concerti'}/${event.eventId}`);
   }
 
   private upcomingEvents(bandEvents: BandEvents[]): UpcomingBandEvent[] {

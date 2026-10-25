@@ -4,15 +4,13 @@
       <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square"  type="button" data-menu-toggle aria-label="Apri navigazione"><app-symbol name="bars" /></app-gigsaw-button>
     </div>
     <h1 class="grow text-xl">{{ config.plural }}</h1>
-    <div class="flex items-center gap-2" slot="end">
-      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" aria-label="Crea" type="button">
-        <app-symbol name="add"  />
-      </app-gigsaw-button>
-    </div>
   </div>
 </header>
 <section class="app-content">
-  <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm m-3" aria-label="Aggiorna elenco" (click)="load()"><app-symbol name="refresh-outline" /> Aggiorna</app-gigsaw-button>
+  <div class="flex items-center justify-between gap-3 p-3">
+    <app-gigsaw-button tone="unstyled" type="button" buttonClass="btn btn-ghost btn-sm" aria-label="Aggiorna elenco" (click)="load()"><app-symbol name="refresh-outline" /> Aggiorna</app-gigsaw-button>
+    <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" [routerLink]="['nuova']" type="button"><app-symbol name="add"  />Crea {{ config.singular }}</app-gigsaw-button>
+  </div>
   @if (loading) {
     <app-gigsaw-list>
       @for (item of [1,2,3]; track item) {

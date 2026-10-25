@@ -11,35 +11,37 @@ import { UpcomingRehearsalPromptService } from './features/auth/upcoming-rehears
 class StartupRouteComponent {}
 
 describe('AppComponent', () => {
-  it('checks for upcoming rehearsals as soon as an authenticated session is restored', async () => {
-    const checkForUpcomingRehearsals = jasmine.createSpy();
+  it('does not automatically open upcoming events on startup', async () => {
+    const openUpcomingEvents = jasmine.createSpy();
+    const restoreSession = jasmine.createSpy().and.returnValue(of({ id: 1, name: 'Test', email: 'test@example.com' }));
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [{ provide: ChangelogService, useValue: { changelog$: of({ current: "", releases: [] }) } }, provideRouter([{ path: '', component: StartupRouteComponent }]),
-        { provide: AuthService, useValue: { restoreSession: () => of({ id: 1, name: 'Test', email: 'test@example.com' }) } },
-        { provide: UpcomingRehearsalPromptService, useValue: { checkForUpcomingRehearsals } },
+        { provide: AuthService, useValue: { restoreSession } },
+        { provide: UpcomingRehearsalPromptService, useValue: { openUpcomingEvents } },
       ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
-    expect(checkForUpcomingRehearsals).toHaveBeenCalledTimes(1);
+    expect(restoreSession).toHaveBeenCalledTimes(1);
+    expect(openUpcomingEvents).not.toHaveBeenCalled();
   });
 
-  it('does not check rehearsals when no authenticated session is restored', async () => {
-    const checkForUpcomingRehearsals = jasmine.createSpy();
+  it('does not open upcoming events when no authenticated session is restored', async () => {
+    const openUpcomingEvents = jasmine.createSpy();
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [{ provide: ChangelogService, useValue: { changelog$: of({ current: "", releases: [] }) } }, provideRouter([{ path: '', component: StartupRouteComponent }]),
         { provide: AuthService, useValue: { restoreSession: () => of(null) } },
-        { provide: UpcomingRehearsalPromptService, useValue: { checkForUpcomingRehearsals } },
+        { provide: UpcomingRehearsalPromptService, useValue: { openUpcomingEvents } },
       ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
-    expect(checkForUpcomingRehearsals).not.toHaveBeenCalled();
+    expect(openUpcomingEvents).not.toHaveBeenCalled();
   });
 });

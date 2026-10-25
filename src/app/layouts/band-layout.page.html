@@ -1,50 +1,49 @@
-<div class="app-shell" (click)="handleLayoutClick($event)">
-  <header class="flow-header">
-    <a routerLink="/band" class="brand-link" aria-label="GigSaw - cambia band">
-      <img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" />
-    </a>
+<div class="drawer lg:drawer-open app-shell" (click)="handleLayoutClick($event)">
+  <input id="band-drawer" type="checkbox" class="drawer-toggle" [checked]="menuCollapsed()" (change)="menuCollapsed.set($any($event.target).checked)" />
 
-    @if (currentBand(); as band) {
-      <div class="band-chip" [attr.title]="band.name">
-        @if (band.logo) {
-          <img class="band-chip__avatar" [src]="band.logo" [alt]="'Logo ' + band.name" />
-        } @else {
-          <span class="band-chip__avatar band-chip__initials" aria-hidden="true">{{ bandInitials(band.name) }}</span>
-        }
-        <div class="band-chip__copy">
-          <strong>{{ band.name }}</strong>
-          <span>La tua band. Organizzata.</span>
+  <div class="drawer-content route-content">
+    <router-outlet />
+  </div>
+
+  <div class="drawer-side z-40">
+    <label for="band-drawer" aria-label="Chiudi menu" class="drawer-overlay"></label>
+    <aside class="menu bg-base-200 min-h-full w-80 p-4 flex-nowrap" aria-label="Menu band">
+      <a routerLink="/band" class="brand-link mb-4 px-2" aria-label="GigSaw - cambia band" (click)="closeMobileMenu()">
+        <img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" />
+      </a>
+
+      @if (currentBand(); as band) {
+        <div class="band-chip mb-4 px-2" [attr.title]="band.name">
+          @if (band.logo) {
+            <img class="band-chip__avatar" [src]="band.logo" [alt]="'Logo ' + band.name" />
+          } @else {
+            <span class="band-chip__avatar band-chip__initials" aria-hidden="true">{{ bandInitials(band.name) }}</span>
+          }
+          <div class="band-chip__copy">
+            <strong>{{ band.name }}</strong>
+            <span>La tua band. Organizzata.</span>
+          </div>
         </div>
-      </div>
-    }
-
-    <nav class="flow-nav" aria-label="Navigazione principale">
-      @for (section of sections; track section.key) {
-        <a
-          class="flow-nav__item"
-          [routerLink]="sectionHref(section.key)" queryParamsHandling="preserve"
-          routerLinkActive="is-active"
-          [routerLinkActiveOptions]="{ exact: false }"
-        >
-          <app-symbol [name]="section.icon" aria-hidden="true" />
-          <span>{{ section.label }}</span>
-        </a>
       }
-    </nav>
-  </header>
 
-  @if (menuCollapsed()) {
-    <button class="mobile-backdrop" aria-label="Chiudi menu" (click)="closeMobileMenu()"></button>
-    <aside class="mobile-menu" aria-label="Menu band">
-      <div class="mobile-menu-head"><img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" /><strong>{{ currentBand()?.name }}</strong></div>
-      <nav class="grid gap-2 p-4">
+      <ul class="menu menu-lg w-full gap-1 p-0" aria-label="Navigazione principale">
         @for (section of sections; track section.key) {
-          <a class="btn btn-ghost justify-start" [routerLink]="sectionHref(section.key)" (click)="closeMobileMenu()"><app-symbol [name]="section.icon" />{{ section.label }}</a>
+          <li>
+            <a
+              [routerLink]="sectionHref(section.key)"
+              queryParamsHandling="preserve"
+              routerLinkActive="menu-active"
+              [routerLinkActiveOptions]="{ exact: false }"
+              (click)="closeMobileMenu()"
+            >
+              <app-symbol [name]="section.icon" aria-hidden="true" />
+              {{ section.label }}
+            </a>
+          </li>
         }
-        <a class="btn btn-ghost justify-start" [routerLink]="sectionHref('home').replace('/panoramica', '/inizia')" (click)="closeMobileMenu()">Cosa vuoi fare?</a>
-        <a class="btn btn-ghost justify-start" routerLink="/band" (click)="closeMobileMenu()">Cambia band</a>
-      </nav>
+        <li class="mt-4"><a [routerLink]="sectionHref('home').replace('/panoramica', '/inizia')" (click)="closeMobileMenu()">Cosa vuoi fare?</a></li>
+        <li><a routerLink="/band" (click)="closeMobileMenu()">Cambia band</a></li>
+      </ul>
     </aside>
-  }
-  <div class="route-content" (click)="closeMobileMenu()"><router-outlet /></div>
+  </div>
 </div>

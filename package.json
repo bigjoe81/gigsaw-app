@@ -8,7 +8,13 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "version:check": "node scripts/version.mjs check",
+    "version:patch": "node scripts/version.mjs up patch",
+    "version:minor": "node scripts/version.mjs up minor",
+    "version:major": "node scripts/version.mjs up major",
+    "version:down": "node scripts/version.mjs down",
+    "prebuild": "npm run version:check"
   },
   "private": true,
   "dependencies": {

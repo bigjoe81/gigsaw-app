@@ -2,7 +2,9 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NativeUiModule } from '../../shared/ui/native-ui';
 
-
+import { UpcomingEventCardComponent } from '../auth/upcoming-event-card.component';
+import { UpcomingBandEvent } from '../auth/upcoming-events-onboarding-modal.component';
+import { UpcomingRehearsalPromptService } from '../auth/upcoming-rehearsal-prompt.service';
 
 import { BandService } from '../bands/services/band.service';
 import { GUIDE_GOALS, GuideGoal, parseGuideGoal } from './guide-goals';
@@ -12,7 +14,7 @@ interface Choice { title: string; text: string; route: string; }
 
 @Component({
   standalone: true,
-  imports: [NativeUiModule, RouterLink],
+  imports: [NativeUiModule, RouterLink, UpcomingEventCardComponent],
   templateUrl: './guide.page.html',
   styleUrls: ['./guide.page.scss'],
 })
@@ -20,11 +22,14 @@ export class GuidePage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly bands = inject(BandService);
+  private readonly upcomingRehearsals = inject(UpcomingRehearsalPromptService);
   readonly bandId = Number(this.route.snapshot.paramMap.get('bandId'));
   readonly baseUrl = `/band/${this.bandId}`;
   readonly bandName = signal('La tua band');
   readonly goal = signal<GuideGoal | null>(null);
   readonly goals = GUIDE_GOALS;
+  readonly tab = signal<'goals' | 'next'>('next');
+  readonly nextEvent = signal<UpcomingBandEvent | null>(null);
   readonly completed = signal<GuidedCompletion | null>(null);
   readonly completionTitles = GUIDED_COMPLETIONS;
   readonly nextStep = computed<Choice | null>(() => {
@@ -65,6 +70,7 @@ export class GuidePage {
       next: (band) => this.bandName.set(band.name),
       error: () => {},
     });
+    this.upcomingRehearsals.nextEvent(this.bandId).subscribe((event) => this.nextEvent.set(event));
   }
 
   ngOnInit(): void {
@@ -81,5 +87,13 @@ export class GuidePage {
     void this.router.navigate([this.baseUrl, ...choice.route.split('/')], {
       queryParams: { guidato: 1, obiettivo: this.goal() },
     });
+  }
+
+  prepareEvent(event: UpcomingBandEvent): void {
+    this.upcomingRehearsals.prepareEvent(event);
+  }
+
+  openUpcomingEvents(): void {
+    this.upcomingRehearsals.openUpcomingEvents(this.bandId);
   }
 }

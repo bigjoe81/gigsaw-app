@@ -3,7 +3,6 @@ import { NativeUiModule } from '../../shared/ui/native-ui';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
-import { UpcomingRehearsalPromptService } from './upcoming-rehearsal-prompt.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
@@ -16,7 +15,6 @@ export class GoogleCallbackPage implements OnInit {
     private readonly auth: AuthService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly upcomingRehearsalPrompt: UpcomingRehearsalPromptService,
   ) {}
   ngOnInit(): void {
     const providerError = this.route.snapshot.queryParamMap.get('error');
@@ -29,9 +27,7 @@ export class GoogleCallbackPage implements OnInit {
 
     this.auth.completeGoogleLogin(code).subscribe({
       next: () => {
-        void this.router.navigateByUrl(this.auth.consumeGoogleReturnUrl()).then(() => {
-          this.upcomingRehearsalPrompt.checkForUpcomingRehearsals();
-        });
+        void this.router.navigateByUrl(this.auth.consumeGoogleReturnUrl());
       },
       error: () => this.error = 'Impossibile completare l’accesso con Google.',
     });

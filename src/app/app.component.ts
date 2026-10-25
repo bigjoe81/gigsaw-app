@@ -4,7 +4,6 @@ import { RouterOutlet } from '@angular/router';
 import { NativeUiModule } from './shared/ui/native-ui';
 import { FaConfig } from '@fortawesome/angular-fontawesome';
 import { AuthService } from './core/auth/auth.service';
-import { UpcomingRehearsalPromptService } from './features/auth/upcoming-rehearsal-prompt.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +25,6 @@ export class AppComponent implements OnInit {
   constructor(
     iconConfig: FaConfig,
     private readonly auth: AuthService,
-    private readonly upcomingRehearsals: UpcomingRehearsalPromptService,
   ) {
     iconConfig.defaultPrefix = 'fas';
     this.changelog.changelog$.subscribe({
@@ -47,12 +45,10 @@ export class AppComponent implements OnInit {
     });
   }
 
-
   ngOnInit(): void {
-    this.auth.restoreSession().subscribe((user) => {
-      if (user) this.upcomingRehearsals.checkForUpcomingRehearsals();
-    });
+    this.auth.restoreSession().subscribe();
   }
+
   toggleFullHistory(): void {
     this.fullHistoryOpen.update((open) => !open);
   }

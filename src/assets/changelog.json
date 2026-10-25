@@ -1,6 +1,18 @@
 {
-  "current": "2026-10-08-band-flows",
+  "current": "v1.0.0",
   "releases": [
+    {
+      "id": "v1.0.0",
+      "version": "1.0.0",
+      "date": "2026-10-25",
+      "label": "Beta",
+      "title": "Versioni e cronologia degli aggiornamenti",
+      "summary": "La cronologia mostra ora il numero di versione delle nuove release.",
+      "highlights": [
+        "Numero di versione visibile nelle novità e nella cronologia",
+        "Versione della webapp allineata ai metadati del progetto"
+      ]
+    },
     {
       "id": "2026-10-08-band-flows",
       "date": "2026-10-08",
@@ -19,7 +31,10 @@
       "label": "Beta",
       "title": "Registrazione più protetta",
       "summary": "Antispam invisibile e miglioramenti al flusso di registrazione.",
-      "highlights": ["Protezione antispam senza CAPTCHA visibile", "Identificazione sessioni Clarity per il debugging"]
+      "highlights": [
+        "Protezione antispam senza CAPTCHA visibile",
+        "Identificazione sessioni Clarity per il debugging"
+      ]
     },
     {
       "id": "2026-10-06-billing-support",
@@ -27,7 +42,11 @@
       "label": "Beta",
       "title": "Billing e assistenza migliorati",
       "summary": "Prime fondamenta SaaS e supporto più pratico.",
-      "highlights": ["Impostazioni abbonamento per band", "Screenshot nei ticket di assistenza", "Correzioni tastiera iOS"]
+      "highlights": [
+        "Impostazioni abbonamento per band",
+        "Screenshot nei ticket di assistenza",
+        "Correzioni tastiera iOS"
+      ]
     },
     {
       "id": "2026-10-03-agenda",
@@ -35,7 +54,11 @@
       "label": "Beta",
       "title": "Arriva l’agenda della band",
       "summary": "Prove, live e altri impegni finalmente nello stesso calendario.",
-      "highlights": ["Calendario Impegni unificato", "Shoot, registrazioni, interviste, viaggi e promo", "Aggiornamento immediato delle sale prove"]
+      "highlights": [
+        "Calendario Impegni unificato",
+        "Shoot, registrazioni, interviste, viaggi e promo",
+        "Aggiornamento immediato delle sale prove"
+      ]
     },
     {
       "id": "2026-10-02-repertoire-ui",
@@ -43,7 +66,11 @@
       "label": "Beta",
       "title": "Repertorio e scalette più leggibili",
       "summary": "Più chiarezza nell’editing dei brani e nelle scalette.",
-      "highlights": ["Risultati metadati come card cliccabili", "Medley persistenti e visivamente distinti", "Form Ionic uniformati"]
+      "highlights": [
+        "Risultati metadati come card cliccabili",
+        "Medley persistenti e visivamente distinti",
+        "Form Ionic uniformati"
+      ]
     },
     {
       "id": "2026-10-02-notifications",
@@ -51,7 +78,11 @@
       "label": "Beta",
       "title": "Notifiche e impostazioni band",
       "summary": "Più controllo sulle comunicazioni e sull’amministrazione della band.",
-      "highlights": ["Notifiche email configurabili", "Impostazioni full width", "Locandine full width"]
+      "highlights": [
+        "Notifiche email configurabili",
+        "Impostazioni full width",
+        "Locandine full width"
+      ]
     },
     {
       "id": "2026-10-01-support",
@@ -59,7 +90,10 @@
       "label": "Beta",
       "title": "Assistenza nativa in GigSaw",
       "summary": "Il supporto entra direttamente nell’app.",
-      "highlights": ["Ticket nativi al posto di Zoho", "Conversazioni e risposte dentro GigSaw"]
+      "highlights": [
+        "Ticket nativi al posto di Zoho",
+        "Conversazioni e risposte dentro GigSaw"
+      ]
     },
     {
       "id": "2026-09-30-auth",
@@ -67,7 +101,10 @@
       "label": "Beta",
       "title": "Accesso più coerente su mobile",
       "summary": "Login e registrazione passano a controlli Ionic reali.",
-      "highlights": ["Input Ionic in login e registrazione", "Autofill e tastiera mobile migliorati"]
+      "highlights": [
+        "Input Ionic in login e registrazione",
+        "Autofill e tastiera mobile migliorati"
+      ]
     }
   ]
 }
