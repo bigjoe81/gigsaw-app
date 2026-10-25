@@ -49,6 +49,27 @@
         </div></section>
       }
 
+      <section class="mt-7 border-t border-[var(--gigsaw-border)] pt-[22px]">
+        <h2 class="mb-[14px] mt-0 text-[.95rem] text-[var(--gigsaw-text)]">Brano di riferimento</h2>
+        <div class="flex flex-col items-start gap-3">
+          @if (song()!.referenceUrl) {
+            <a class="btn btn-outline btn-sm" [href]="song()!.referenceUrl" target="_blank" rel="noopener noreferrer"><app-symbol name="play" /> Ascolta la versione da studiare</a>
+          }
+          @if (referenceAudio(); as audio) {
+            <app-song-reference-audio class="w-full" [downloadUrl]="audio.downloadUrl" />
+          }
+          @if (!song()!.referenceUrl && !referenceAudio()) {
+            <p class="m-0 text-sm text-[var(--gigsaw-muted)]">Nessun riferimento. Aggiungi un link o un mp3 dalla modifica del brano.</p>
+          }
+        </div>
+      </section>
+
+      <section class="mt-7 border-t border-[var(--gigsaw-border)] pt-[22px]">
+        <h2 class="mb-1 mt-0 text-[.95rem] text-[var(--gigsaw-text)]">Storia del brano</h2>
+        <p class="mb-3 mt-0 text-xs text-[var(--gigsaw-muted)]">Le registrazioni caricate prova dopo prova, dalla più recente.</p>
+        <app-song-takes [songId]="song()!.id" />
+      </section>
+
       @if (song()!.notes) {
         <section class="mt-7 border-t border-[var(--gigsaw-border)] pt-[22px]"><h2 class="mb-[14px] mt-0 text-[.95rem] text-[var(--gigsaw-text)]">Note</h2><p class="m-0 whitespace-pre-wrap leading-[1.65] text-[var(--gigsaw-muted)]">{{ song()!.notes }}</p></section>
       }

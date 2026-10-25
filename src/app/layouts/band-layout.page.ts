@@ -7,7 +7,7 @@ import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
 
-type FlowSection = 'home' | 'musica' | 'agenda' | 'live' | 'band';
+type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda' | 'live' | 'band';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-band-layout',
@@ -32,6 +32,9 @@ export class BandLayoutPage implements OnInit {
   readonly sections: Array<{ key: FlowSection; label: string; icon: string; hint: string }> = [
     { key: 'home', label: 'Home', icon: 'home-outline', hint: 'Cosa viene dopo' },
     { key: 'musica', label: 'Musica', icon: 'musical-notes-outline', hint: 'Brani e repertorio' },
+    { key: 'prove', label: 'Prove', icon: 'mic-outline', hint: 'Sessioni e registrazioni' },
+    { key: 'concerti', label: 'Concerti', icon: 'radio-outline', hint: 'Date e palco' },
+    { key: 'locali', label: 'Locali', icon: 'location-outline', hint: 'Dove suoniamo' },
     { key: 'agenda', label: 'Agenda', icon: 'calendar-outline', hint: 'Prove, live e impegni' },
     { key: 'live', label: 'Live', icon: 'list-outline', hint: 'Scalette e palco' },
     { key: 'band', label: 'Band', icon: 'people-outline', hint: 'Persone e profilo' },
@@ -73,6 +76,9 @@ export class BandLayoutPage implements OnInit {
     const routes: Record<FlowSection, string> = {
       home: 'panoramica',
       musica: 'repertorio',
+      prove: 'prove',
+      concerti: 'concerti',
+      locali: 'luoghi',
       agenda: 'impegni',
       live: 'scalette',
       band: 'impostazioni',

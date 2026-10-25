@@ -7,12 +7,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, forkJoin, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
 import { SongService } from '../services/song.service';
+import { SongTakesComponent } from '../components/song-takes.component';
+import { SongReferenceAudioComponent } from '../components/song-reference-audio.component';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
   host: { class: 'detail-page' },
-  imports: [NativeUiModule, RouterLink, GigsawListComponent, GigsawListItemComponent, ],
+  imports: [NativeUiModule, RouterLink, GigsawListComponent, GigsawListItemComponent, SongTakesComponent, SongReferenceAudioComponent],
   templateUrl: './song-detail.page.html',
   styleUrls: ['./song-detail.page.scss'],
 })
@@ -22,6 +24,7 @@ export class SongDetailPage implements OnInit {
   readonly song = signal<Song | null>(null);
   readonly linkedSongs = signal<Song[]>([]);
   readonly loading = signal(true);
+  referenceAudio() { return this.song()?.attachments?.find((item) => item.kind === 'reference'); }
   readonly loadError = signal('');
   private id!: number;
 

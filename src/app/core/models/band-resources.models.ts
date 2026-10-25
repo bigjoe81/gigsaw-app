@@ -18,8 +18,10 @@ export interface Song extends BandScopedEntity {
   duration?: number | null;
   status?: SongStatus | null;
   notes?: string | null;
+  referenceUrl?: string | null;
   linkGroup?: string | null;
   tags?: string[] | null;
+  attachments?: { id: number; name: string; kind?: string | null; mimeType: string; downloadUrl: string }[];
 }
 
 export interface SetlistMemberNote {

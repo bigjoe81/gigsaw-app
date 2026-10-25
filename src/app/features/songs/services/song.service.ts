@@ -41,6 +41,18 @@ export interface SongImportReview {
 
 export type PdfSongImportReview = SongImportReview;
 
+export interface SongTake {
+  id: number;
+  name: string;
+  mimeType: string;
+  size: number;
+  rehearseId: number | null;
+  rehearseDate: string | null;
+  rehearseTitle: string | null;
+  downloadUrl: string;
+  createdAt: string;
+}
+
 export interface SongImportConfirmResult {
   created_count: number;
   skipped_count: number;
@@ -96,6 +108,31 @@ export class SongService extends BandScopedCrudService<Song> {
       map((response) => this.normalizeMetadata(this.unwrapMetadata(response)) as unknown as SongMetadataDetail),
       timeout(20000),
     );
+  }
+
+  history(songId: number): Observable<SongTake[]> {
+    return this.http.get<ApiEnvelope<unknown[]>>(`${API_BASE_URL}/songs/${songId}/history`).pipe(
+      map((response) => this.normalizeMetadata(this.unwrapMetadata(response)) as SongTake[]),
+      timeout(20000),
+    );
+  }
+
+  uploadTake(songId: number, rehearseId: number, file: File): Observable<unknown> {
+    const body = new FormData();
+    body.append('file', file, file.name);
+    body.append('rehearse_id', String(rehearseId));
+    return this.http.post(`${API_BASE_URL}/songs/${songId}/attachments`, body).pipe(timeout(180000));
+  }
+
+  uploadReference(songId: number, file: File): Observable<unknown> {
+    const body = new FormData();
+    body.append('file', file, file.name);
+    body.append('kind', 'reference');
+    return this.http.post(`${API_BASE_URL}/songs/${songId}/attachments`, body).pipe(timeout(180000));
+  }
+
+  takeAudio(downloadUrl: string): Observable<Blob> {
+    return this.http.get(downloadUrl, { responseType: 'blob' }).pipe(timeout(120000));
   }
 
   private reviewFile(endpoint: string, file: File, bandId: number): Observable<SongImportReview> {

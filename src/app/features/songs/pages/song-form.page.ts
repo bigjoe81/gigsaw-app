@@ -8,7 +8,7 @@ import { Component, computed, HostListener, OnDestroy, OnInit, signal } from '@a
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, forkJoin, of } from 'rxjs';
+import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import { Song, SongStatus } from '../../../core/models/band-resources.models';
 import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../services/song.service';
@@ -21,8 +21,10 @@ import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models
   styleUrls: ['./song-form.page.scss'],
 })
 export class SongFormPage implements OnInit, OnDestroy {
+  readonly referenceFile = signal<File | null>(null);
+  readonly existingReference = signal('');
   readonly songSections: FormPageHeaderSection[] = [{ id: 1, label: 'Cerca' }, { id: 2, label: 'Dettagli' }, { id: 3, label: 'Organizza' }];
-  form = this.fb.nonNullable.group({ title: ['', Validators.required], album: '', performedBy: '', musicBy: '', lyricsBy: '', key: ['', Validators.required], bpm: '', duration: ['', Validators.required], linkGroup: '', tagsText: '', status: 'draft' as SongStatus, notes: '' });
+  form = this.fb.nonNullable.group({ title: ['', Validators.required], album: '', performedBy: '', musicBy: '', lyricsBy: '', key: ['', Validators.required], bpm: '', duration: ['', Validators.required], linkGroup: '', tagsText: '', status: 'draft' as SongStatus, notes: '', referenceUrl: '' });
   magicForm = this.fb.nonNullable.group({ title: ['', [Validators.required, Validators.minLength(2)]], artist: '' });
   existingLinkGroups: string[] = [];
   existingTags: string[] = [];
@@ -74,7 +76,8 @@ export class SongFormPage implements OnInit, OnDestroy {
             .filter((tag) => !!tag),
         )).sort();
         if (song) {
-          this.form.patchValue({ title: song.title, album: song.album ?? '', performedBy: song.performedBy ?? '', musicBy: song.musicBy ?? '', lyricsBy: song.lyricsBy ?? '', key: song.key ?? '', bpm: song.bpm != null ? String(song.bpm) : '', duration: this.formatDuration(song.duration), linkGroup: song.linkGroup ?? '', tagsText: (song.tags ?? []).join(', '), status: song.status ?? 'draft', notes: song.notes ?? '' });
+          this.existingReference.set(song.attachments?.find((item) => item.kind === 'reference')?.name ?? '');
+          this.form.patchValue({ title: song.title, album: song.album ?? '', performedBy: song.performedBy ?? '', musicBy: song.musicBy ?? '', lyricsBy: song.lyricsBy ?? '', key: song.key ?? '', bpm: song.bpm != null ? String(song.bpm) : '', duration: this.formatDuration(song.duration), linkGroup: song.linkGroup ?? '', tagsText: (song.tags ?? []).join(', '), status: song.status ?? 'draft', notes: song.notes ?? '', referenceUrl: song.referenceUrl ?? '' });
         }
         this.loading.set(false);
       },
@@ -246,12 +249,20 @@ export class SongFormPage implements OnInit, OnDestroy {
       key: values.key,
       status: values.status,
       notes: values.notes,
+      referenceUrl: values.referenceUrl.trim() || null,
       bpm: this.toNumber(values.bpm),
       duration: durationSeconds,
       linkGroup: values.linkGroup.trim() || null,
       tags: this.parseTags(values.tagsText),
     };
-    const request = this.editing ? this.songs.update(this.id!, payload) : this.songs.create(payload);
+    const file = this.referenceFile();
+    const saved$ = this.editing ? this.songs.update(this.id!, payload) : this.songs.create(payload);
+    const request = saved$.pipe(
+      switchMap((saved) => {
+        const songId = this.id ?? (saved as Song | undefined)?.id;
+        return file && songId ? this.songs.uploadReference(songId, file).pipe(map(() => saved)) : of(saved);
+      }),
+    );
     request.subscribe({
       next: async () => {
         (await this.toast.create({ message: 'Brano salvato.', duration: 1800, color: 'success' })).present();
@@ -268,10 +279,17 @@ export class SongFormPage implements OnInit, OnDestroy {
     });
   }
 
+  pickReference(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.referenceFile.set(input.files?.[0] ?? null);
+  }
+
   private prepareNextSong(): void {
+    this.referenceFile.set(null);
+    this.existingReference.set('');
     this.form.reset({
       title: '', album: '', performedBy: '', musicBy: '', lyricsBy: '', key: '', bpm: '', duration: '',
-      linkGroup: '', tagsText: '', status: 'draft', notes: '',
+      linkGroup: '', tagsText: '', status: 'draft', notes: '', referenceUrl: '',
     });
     this.magicForm.reset({ title: '', artist: '' });
     this.metadataResults.set([]);

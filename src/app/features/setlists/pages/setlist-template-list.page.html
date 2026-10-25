@@ -22,10 +22,10 @@
   } @else {
     <app-gigsaw-list>
       @for (template of templates; track template.id) {
-        <app-gigsaw-list-item [interactive]="true" [routerLink]="[template.id]" queryParamsHandling="preserve">
-          <div class="list-col-grow">
-            <h2>{{ template.name }}</h2>
-            <p>{{ subtitle(template) }}</p>
+        <app-gigsaw-list-item itemClass="cursor-pointer overflow-hidden rounded-[15px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)] px-4 text-[var(--gigsaw-text)]" [interactive]="true" [routerLink]="[template.id]" queryParamsHandling="preserve">
+          <div class="min-w-0 grow">
+            <h2 class="m-0 text-base font-bold text-[var(--gigsaw-text)]">{{ template.name }}</h2>
+            <p class="m-0 mt-1 text-sm text-[var(--gigsaw-muted)]">{{ subtitle(template) }}</p>
           </div>
         </app-gigsaw-list-item>
       }

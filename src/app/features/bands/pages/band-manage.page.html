@@ -79,11 +79,11 @@
     }
 
       @if (settingsSection() === 'profile') {
-      <article class="card bg-base-200 border border-base-300 my-4 [--background:transparent] bg-transparent shadow-none">
-        <header class="px-6 pt-6">
+      <article class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-8 max-[800px]:px-5">
+        <header class="pb-4">
           <h2 class="card-title">Profilo band</h2>
         </header>
-        <div class="card-body">
+        <div>
           <form class="grid gap-[18px]" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
             <section class="grid grid-cols-[minmax(190px,.55fr)_minmax(0,1.8fr)] gap-[22px] rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-5 max-[760px]:grid-cols-1 max-[760px]:p-4">
               <div class="flex flex-col justify-center border-r border-[var(--gigsaw-border)] p-3 max-[760px]:border-r-0 max-[760px]:border-b max-[760px]:pb-[18px]">
@@ -252,8 +252,8 @@
     }
 
       @if (settingsSection() === 'tech') {
-      <article class="card bg-base-200 border border-base-300 my-4 border-0 shadow-none" >
-        <header class="px-6 pt-6 !p-[24px_24px_14px] max-[760px]:!p-[19px_16px_10px]">
+      <article class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-8 max-[800px]:px-5" >
+        <header class="pb-4">
           <div class="flex items-start justify-between gap-5 max-[760px]:grid">
             <div>
               <span class="mb-[5px] block text-[.7rem] font-extrabold tracking-[.16em] text-[var(--ui-color-primary)] uppercase">Live setup</span>
@@ -270,7 +270,7 @@
             </div>
           </div>
         </header>
-        <div class="card-body !px-6 !pb-6 max-[760px]:!px-3 max-[760px]:!pb-[18px]">
+        <div>
           <form [formGroup]="techForm" (ngSubmit)="saveTech()">
             <details class="my-2 mb-5 rounded-[10px] border border-[var(--gigsaw-border)] px-4 py-[14px] text-[.85rem] text-[var(--gigsaw-text)]">
               <summary class="cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]">Parti da un setup pronto <small class="ml-3 text-[var(--gigsaw-muted)] font-normal max-[760px]:mt-1.5 max-[760px]:ml-4 max-[760px]:block">Canali e palco già configurati</small></summary>
@@ -425,11 +425,11 @@
 
 
       @if (settingsSection() === 'invites') {
-      <article class="card bg-base-200 border border-base-300 my-4" id="personal-invite-card" >
-        <header class="px-6 pt-6">
+      <article class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-8 max-[800px]:px-5" id="personal-invite-card" >
+        <header class="pb-4">
           <h2 class="card-title">Invito personalizzato</h2>
         </header>
-        <div class="card-body">
+        <div>
           <form class="grid min-w-0 gap-4" [formGroup]="inviteForm" (ngSubmit)="invite()">
             <label class="grid min-w-0 gap-2 text-sm font-semibold "><span>Nome</span><app-gigsaw-input controlClass="min-w-0 font-normal" formControlName="name" /></label>
             <label class="grid min-w-0 gap-2 text-sm font-semibold "><span>Email</span><app-gigsaw-input controlClass="min-w-0 font-normal" type="email" formControlName="email" [invalid]="inviteForm.controls.email.touched && inviteForm.controls.email.invalid" /></label>

@@ -1,44 +1,72 @@
-<header><div><div><button class="btn btn-ghost" appBack  defaultHref="../"  aria-label="Indietro">←</button></div><h1>Importa brani</h1></div></header>
-<section class="p-4">
-  <section>
-    <header><h2>Importa una lista di brani</h2></header>
-    <div>
-      <p>Carica un PDF, un documento Word, un foglio Excel, un CSV o un file di testo. GigSaw ti mostra sempre un’anteprima prima di salvare.</p>
-      <input #fileInput hidden type="file" accept="application/pdf,.pdf,.docx,.csv,.txt,.xls,.xlsx" (change)="onFileSelected($event)" />
-      <button class="btn" [disabled]="analyzing() || importing()" (click)="chooseFile(fileInput)">
-        @if (analyzing()) { <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span> Analisi in corso… }
-        @else { <app-symbol name="cloud-upload-outline" /> Scegli file }
-      </button>
-      <p>PDF anche scansiti · Word DOCX · Excel XLS/XLSX · CSV · TXT</p>
-    </div>
-  </section>
-  @if (error()) { <p class="my-3 block">{{ error() }}</p> }
-  @if (result()) { <p class="my-3 block">{{ result() }}</p> }
-  @if (review(); as data) {
-    <div>
-      <label class="flex items-center gap-3"><input type="checkbox" class="checkbox" [checked]="normalizeTitles()" [disabled]="importing()" (change)="normalizeTitles.set($any($event.target).checked)" />
-        Normalizza i titoli tutti maiuscoli
-      </label>
-    </div>
-    <p>ALBACHIARA → Albachiara. I titoli già scritti con maiuscole e minuscole restano come sono. L’anteprima mostra ciò che verrà salvato.</p>
-    <div>
-      <h2><span>Anteprima · {{ data.summary.total_rows }} righe, {{ data.summary.ready_rows }} pronte</span></h2>
-      @if (data.ai_quota) { <div><span>@if (data.ai_quota.limit === null) { Sviluppo locale: importazioni AI senza limite } @else { AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti }</span></div> }
-      @for (row of data.rows; track row.row_number) {
-        <div>
-          <label class="flex items-center gap-3"><input type="checkbox" class="checkbox" [checked]="isSelected(row)" [disabled]="importing() || row.duplicate_existing || !row.ready" (change)="toggle(row)"  /></label>
-          <span>
-            <h2>{{ displayTitle(row) || 'Titolo mancante' }}</h2>
-            <p>{{ row.input.performed_by || 'Artista non indicato' }} · {{ row.input.key || '—' }} · {{ row.input.bpm || '—' }} BPM</p>
-            @if (row.duplicate_existing) { <p>Già presente</p> }
-            @if (!row.ready && !row.duplicate_existing) { <p>Da verificare</p> }
-            @if (row.errors.length) { <p>{{ row.errors.join(' · ') }}</p> }
-          </span>
+<header class="page-header">
+  <div class="navbar gap-3">
+    <div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../" type="button" appBack aria-label="Indietro"><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div>
+    <h1 class="grow text-xl">Importa brani</h1>
+  </div>
+</header>
+<section class="app-content">
+  <div class="mx-auto flex w-full max-w-3xl flex-col gap-5 p-4 sm:p-6">
+    <section class="card border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)]">
+      <div class="card-body items-center gap-4 text-center">
+        <span class="grid size-16 place-items-center rounded-2xl bg-[rgba(var(--ui-color-primary-rgb),.12)] text-3xl text-[var(--ui-color-primary)]"><app-symbol name="cloud-upload-outline" /></span>
+        <h2 class="card-title text-2xl">Importa una lista di brani</h2>
+        <p class="m-0 max-w-xl text-[var(--gigsaw-muted)]">Carica un PDF, un documento Word, un foglio Excel, un CSV o un file di testo. GigSaw ti mostra sempre un’anteprima prima di salvare.</p>
+        <input #fileInput hidden type="file" accept="application/pdf,.pdf,.docx,.csv,.txt,.xls,.xlsx" (change)="onFileSelected($event)" />
+        <button class="btn btn-primary btn-lg" [disabled]="analyzing() || importing()" (click)="chooseFile(fileInput)">
+          @if (analyzing()) { <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span> Analisi in corso… }
+          @else { <app-symbol name="cloud-upload-outline" /> Scegli file }
+        </button>
+        <div class="flex flex-wrap justify-center gap-2 text-xs text-[var(--gigsaw-muted)]">
+          <span class="badge badge-outline">PDF anche scansiti</span>
+          <span class="badge badge-outline">Word DOCX</span>
+          <span class="badge badge-outline">Excel XLS/XLSX</span>
+          <span class="badge badge-outline">CSV</span>
+          <span class="badge badge-outline">TXT</span>
         </div>
-      }
-    </div>
-    <button class="btn" [disabled]="!selectedRows().size || importing()" (click)="confirm()">
-      @if (importing()) { <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span> Importazione… } @else { Importa {{ selectedRows().size }} brani }
-    </button>
-  }
+      </div>
+    </section>
+
+    @if (error()) { <div role="alert" class="alert alert-error alert-soft">{{ error() }}</div> }
+    @if (result()) { <div role="alert" class="alert alert-success alert-soft">{{ result() }}</div> }
+
+    @if (review(); as data) {
+      <section class="card border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface)]">
+        <div class="card-body gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="card-title text-lg">Anteprima</h2>
+            <span class="badge badge-primary badge-soft">{{ data.summary.total_rows }} righe · {{ data.summary.ready_rows }} pronte</span>
+          </div>
+          @if (data.ai_quota) {
+            <p class="m-0 text-xs text-[var(--gigsaw-muted)]">@if (data.ai_quota.limit === null) { Sviluppo locale: importazioni AI senza limite } @else { AI beta: {{ data.ai_quota.remaining }} di {{ data.ai_quota.limit }} import rimasti }</p>
+          }
+          <label class="flex cursor-pointer items-start gap-3">
+            <input type="checkbox" class="checkbox checkbox-primary checkbox-sm mt-0.5" [checked]="normalizeTitles()" [disabled]="importing()" (change)="normalizeTitles.set($any($event.target).checked)" />
+            <span>
+              <span class="block font-medium">Normalizza i titoli tutti maiuscoli</span>
+              <span class="block text-xs text-[var(--gigsaw-muted)]">ALBACHIARA → Albachiara. I titoli già scritti con maiuscole e minuscole restano come sono. L’anteprima mostra ciò che verrà salvato.</span>
+            </span>
+          </label>
+
+          <ul class="m-0 flex list-none flex-col gap-2 p-0">
+            @for (row of data.rows; track row.row_number) {
+              <li class="flex items-center gap-3 rounded-xl border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-3" [class.opacity-60]="row.duplicate_existing">
+                <input type="checkbox" class="checkbox checkbox-primary" [checked]="isSelected(row)" [disabled]="importing() || row.duplicate_existing || !row.ready" (change)="toggle(row)" aria-label="Seleziona brano" />
+                <div class="min-w-0 flex-1">
+                  <p class="m-0 truncate font-semibold">{{ displayTitle(row) || 'Titolo mancante' }}</p>
+                  <p class="m-0 text-xs text-[var(--gigsaw-muted)]">{{ row.input.performed_by || 'Artista non indicato' }} · {{ row.input.key || '—' }} · {{ row.input.bpm || '—' }} BPM</p>
+                  @if (row.errors.length) { <p class="m-0 mt-1 text-xs text-error">{{ row.errors.join(' · ') }}</p> }
+                </div>
+                @if (row.duplicate_existing) { <span class="badge badge-ghost">Già presente</span> }
+                @else if (!row.ready) { <span class="badge badge-warning badge-soft">Da verificare</span> }
+              </li>
+            }
+          </ul>
+
+          <button class="btn btn-primary w-full sm:w-auto sm:self-end" [disabled]="!selectedRows().size || importing()" (click)="confirm()">
+            @if (importing()) { <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span> Importazione… } @else { Importa {{ selectedRows().size }} brani }
+          </button>
+        </div>
+      </section>
+    }
+  </div>
 </section>

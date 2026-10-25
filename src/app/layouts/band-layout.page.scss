@@ -79,3 +79,13 @@
 @media (min-width: 1024px) {
   :host ::ng-deep [data-menu-toggle] { display: none; }
 }
+
+/* La barra azioni dei form resta nell'area contenuto, senza coprire la sidebar */
+@media (min-width: 1024px) {
+  :host ::ng-deep .floating-action-toolbar,
+  :host ::ng-deep .form-action-bar,
+  :host ::ng-deep form > footer {
+    left: calc(20rem + clamp(20px, 5vw, 72px)) !important;
+    max-width: none !important;
+  }
+}

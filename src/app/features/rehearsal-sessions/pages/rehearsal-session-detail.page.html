@@ -50,8 +50,8 @@
       @if (current.songIds?.length || current.songs?.length) {
         <section class="mt-[18px] min-w-0 rounded-[20px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-surface,#101d30)] p-[26px] max-[680px]:px-5 max-[680px]:py-[22px]">
           <div><p class="m-0 text-[.72rem] font-extrabold uppercase leading-[1.6] tracking-[.1em] text-[var(--ui-color-primary)]">Il repertorio della prova</p><h2 class="my-2 mb-3 text-[1.18rem] [overflow-wrap:anywhere]">Brani da provare <span class="ml-1.5 inline-grid min-w-[26px] place-items-center rounded-lg bg-[rgba(var(--ui-color-primary-rgb),.12)] px-[7px] py-[3px] text-[.85rem] text-[var(--ui-color-primary)]">{{ current.songs?.length || current.songIds?.length }}</span></h2></div>
-          @if (current.songs?.length) {
-            <ol class="pl-6 leading-[2]">@for (song of current.songs; track song.id) { <li>{{ song.title }}</li> }</ol>
+          @if (sessionSongs(current).length) {
+            <ul class="m-0 flex list-none flex-col gap-4 p-0">@for (song of sessionSongs(current); track song.id) { <li><p class="m-0 font-semibold">{{ song.title }}</p><app-song-takes [songId]="song.id" [rehearseId]="current.id" /></li> }</ul>
           } @else { <p class="m-0 leading-[1.7] text-[var(--gigsaw-muted)]">Apri la modifica per consultare i brani selezionati.</p> }
           <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm mt-4" [routerLink]="['modifica']" queryParamsHandling="preserve" type="button">Gestisci brani</app-gigsaw-button>
         </section>

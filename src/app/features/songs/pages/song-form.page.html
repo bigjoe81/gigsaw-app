@@ -135,7 +135,7 @@
               </div></div>@if (error()) {
               <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ error() }}</p>
             }
-              <footer class="step-actions mt-7 flex items-center justify-between gap-3.5">
+              <footer class="floating-action-toolbar flex items-center justify-between gap-3.5" role="toolbar" aria-label="Azioni del form">
                 <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost" type="button" (click)="goToStep(1)" [disabled]="editing">Indietro</app-gigsaw-button>
                 <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="button" (click)="goToStep(3)">Continua</app-gigsaw-button>
               </footer>
@@ -171,12 +171,19 @@
                 <div class="flex flex-wrap items-center gap-2"><small class="w-full text-[var(--muted)]">Tag usati</small>@for (tag of existingTags; track tag) {
                   <span class="badge badge-outline" (click)="applyTag(tag)" [class.badge-outline]="!hasTag(tag)">{{ tag }}</span>
                 }</div>
-              }<label><span>Note</span>
+              }<label><span>Brano di riferimento</span>
+                <app-gigsaw-input aria-label="Brano di riferimento" type="url" formControlName="referenceUrl" placeholder="Link YouTube, Spotify… della versione da studiare" />
+              </label><label><span>MP3 di riferimento <small class="text-[var(--gigsaw-muted)]">(opzionale)</small></span>
+                <input class="file-input w-full" type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg" aria-label="MP3 di riferimento" (change)="pickReference($event)" />
+                @if (existingReference() && !referenceFile()) {
+                  <small class="text-[var(--gigsaw-muted)]">Attuale: {{ existingReference() }}. Scegli un file per sostituirlo.</small>
+                }
+              </label><label><span>Note</span>
                 <app-gigsaw-textarea aria-label="Note" formControlName="notes" [rows]="4" />
               </label></div>@if (error()) {
               <p class="rounded-[10px] bg-[#351a21] px-3.5 py-3 text-[#ffbbc3]">{{ error() }}</p>
             }
-              <footer class="step-actions mt-7 flex items-center justify-between gap-3.5">
+              <footer class="floating-action-toolbar flex items-center justify-between gap-3.5" role="toolbar" aria-label="Azioni del form">
                 <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost" type="button" (click)="goToStep(2)">Indietro</app-gigsaw-button>
                 @if (!editing) {
                   <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" type="button" [disabled]="saving()" (click)="save(true)">Salva e aggiungi un altro brano</app-gigsaw-button>

@@ -16,7 +16,7 @@
     @if (loading()) {
       <div class="grid min-h-[240px] place-items-center text-[var(--gigsaw-muted)]">Caricamento…</div>
     } @else {
-      <form class="max-w-[980px]" [formGroup]="form" (ngSubmit)="save()">
+      <form class="w-full" [formGroup]="form" (ngSubmit)="save()">
         <div class="grid grid-cols-2 gap-5 max-[720px]:grid-cols-1">
           <label class="grid min-w-0 gap-2 text-[var(--gigsaw-text)] text-[.82rem] font-[750] col-span-full">
             <span>Titolo (facoltativo)</span>

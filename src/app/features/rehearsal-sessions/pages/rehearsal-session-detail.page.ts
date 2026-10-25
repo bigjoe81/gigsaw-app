@@ -1,17 +1,33 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RehearsalSession } from '../../../core/models/band-resources.models';
+import { RehearsalSession, Song } from '../../../core/models/band-resources.models';
+import { SongService } from '../../songs/services/song.service';
+import { SongTakesComponent } from '../../songs/components/song-takes.component';
 import { ResourceDetailPage } from '../../../shared/ui/resource-detail.page';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, RouterLink, ],
+  imports: [NativeUiModule, RouterLink, SongTakesComponent],
   templateUrl: './rehearsal-session-detail.page.html',
   styleUrl: './rehearsal-session-detail.page.scss',
 })
-export class RehearsalSessionDetailPage extends ResourceDetailPage {
+export class RehearsalSessionDetailPage extends ResourceDetailPage implements OnInit {
+  private readonly songsApi = inject(SongService);
+  private readonly bandSongs = signal<Song[]>([]);
+
+  override ngOnInit(): void {
+    super.ngOnInit();
+    this.songsApi.list().subscribe({ next: (songs) => this.bandSongs.set(songs), error: () => {} });
+  }
+
+  sessionSongs(session: RehearsalSession): Song[] {
+    if (session.songs?.length) return session.songs;
+    const ids = session.songIds ?? [];
+    return ids.map((id) => this.bandSongs().find((song) => song.id === id)).filter((song): song is Song => !!song);
+  }
+
   get session(): RehearsalSession | undefined { return this.item() as RehearsalSession | undefined; }
   date(value: string): string {
     const date = new Date(`${value.slice(0, 10)}T12:00:00`);

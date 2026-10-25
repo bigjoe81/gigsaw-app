@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
 
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
@@ -21,9 +21,7 @@ export class SetlistTemplateListPage implements OnInit {
   loading = true;
   error = '';
 
-  constructor(private readonly setlistsApi: SetlistService) {
-
-  }
+  constructor(private readonly setlistsApi: SetlistService, private readonly cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.load();
@@ -37,11 +35,13 @@ export class SetlistTemplateListPage implements OnInit {
         this.templates = templates;
         this.loading = false;
         event?.detail.complete();
+        this.cdr.markForCheck();
       },
       error: (error: Error) => {
         this.error = error.message || 'Impossibile caricare i template.';
         this.loading = false;
         event?.detail.complete();
+        this.cdr.markForCheck();
       },
     });
   }
