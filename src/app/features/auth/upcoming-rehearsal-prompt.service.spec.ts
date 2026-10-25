@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { provideRouter } from '@angular/router';
 import { BandResourceApiService } from '../../core/services/band-resource-api.service';
 import { OverlayService, ToastService } from '../../shared/ui/native-ui';
 import { BandService } from '../bands/services/band.service';
@@ -22,6 +23,7 @@ describe('UpcomingRehearsalPromptService', () => {
 
     TestBed.configureTestingModule({ providers: [
       UpcomingRehearsalPromptService,
+      provideRouter([]),
       { provide: BandService, useValue: bands },
       { provide: BandResourceApiService, useValue: resources },
       { provide: OverlayService, useValue: overlays },
@@ -84,4 +86,25 @@ describe('UpcomingRehearsalPromptService', () => {
       }),
     }));
   });
+  it('keeps today events without a time, but excludes past days and elapsed timed events', () => {
+    jasmine.clock().install();
+    try {
+      jasmine.clock().mockDate(new Date(2026, 9, 25, 16, 0));
+      resources.list.and.callFake((_bandId: number, resource: string) => of(resource === 'gigs' ? [] : [
+        { id: 1, date: '2026-10-24' },
+        { id: 2, date: '2026-10-25', startTime: '15:00' },
+        { id: 3, date: '2026-10-25' },
+        { id: 4, date: '2026-10-25', startTime: '18:00' },
+      ]));
+      service.nextEvent(4).subscribe((event) => expect(event?.eventId).toBe(3));
+
+      resources.list.and.callFake((_bandId: number, resource: string) => of(resource === 'gigs' ? [
+        { id: 5, date: '2026-10-25' },
+      ] : []));
+      service.nextEvent(4).subscribe((event) => expect(event?.eventId).toBe(5));
+    } finally {
+      jasmine.clock().uninstall();
+    }
+  });
+
 });

@@ -28,28 +28,35 @@
           </button>
           <p class="lead">Oppure scegli un altro percorso:</p>
         }
-        @if (nextEvent()) {
-        <div role="tablist" class="tabs tabs-border mt-6">
-          <button type="button" role="tab" class="tab" [class.tab-active]="tab() === 'next'" (click)="tab.set('next')">Da preparare</button>
-          <button type="button" role="tab" class="tab" [class.tab-active]="tab() === 'goals'" (click)="tab.set('goals')">Da dove partire</button>
-        </div>
-        }
-        @if (!nextEvent() || tab() === 'goals') {
-        <div class="choices">
-          @for (item of goals; track item.key) {
-            <button type="button" class="choice" (click)="chooseGoal(item.key)">
-              <app-symbol class="choice-icon" [name]="item.icon" aria-hidden="true" />
-              <span><strong>{{ item.title }}</strong><small>{{ item.text }}</small></span>
-              <app-symbol name="chevron-forward-outline" aria-hidden="true" />
-            </button>
+        @if (loadingEvent()) {
+          <div class="event-loading" role="status" aria-live="polite">
+            <span class="loading loading-spinner loading-sm" aria-hidden="true"></span>
+            Carichiamo i prossimi impegni…
+          </div>
+        } @else {
+          @if (nextEvent()) {
+          <div role="tablist" class="tabs tabs-border mt-6">
+            <button type="button" role="tab" class="tab" [attr.aria-selected]="tab() === 'next'" [class.tab-active]="tab() === 'next'" (click)="tab.set('next')">Da preparare</button>
+            <button type="button" role="tab" class="tab" [attr.aria-selected]="tab() === 'goals'" [class.tab-active]="tab() === 'goals'" (click)="tab.set('goals')">Flussi rapidi</button>
+          </div>
           }
-        </div>
-          <button class="upcoming-link" type="button" (click)="openUpcomingEvents()">Ho già organizzato tutto: vediamo i prossimi impegni <app-symbol name="chevron-forward-outline" aria-hidden="true" /></button>
-        } @else if (nextEvent(); as event) {
-          <app-upcoming-event-card class="upcoming-card" [event]="event" [bandName]="bandName()" (prepare)="prepareEvent($event)" />
+          @if (!nextEvent() || tab() === 'goals') {
+          <div class="choices">
+            @for (item of goals; track item.key) {
+              <button type="button" class="choice" (click)="chooseGoal(item.key)">
+                <app-symbol class="choice-icon" [name]="item.icon" aria-hidden="true" />
+                <span><strong>{{ item.title }}</strong><small>{{ item.text }}</small></span>
+                <app-symbol name="chevron-forward-outline" aria-hidden="true" />
+              </button>
+            }
+          </div>
+            <button class="upcoming-link" type="button" (click)="openUpcomingEvents()">Vedi tutti gli impegni <app-symbol name="chevron-forward-outline" aria-hidden="true" /></button>
+          } @else if (nextEvent(); as event) {
+            <app-upcoming-event-card class="upcoming-card" [event]="event" (prepare)="prepareEvent($event)" />
+          }
         }
       }
     </section>
-    <footer><a [routerLink]="[baseUrl, 'panoramica']">Consulta il gestionale completo</a></footer>
+    <footer><a [routerLink]="[baseUrl, 'panoramica']">Tutte le sezioni</a></footer>
   </main>
 </section>

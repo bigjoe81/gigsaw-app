@@ -29,6 +29,7 @@ export class GuidePage {
   readonly goal = signal<GuideGoal | null>(null);
   readonly goals = GUIDE_GOALS;
   readonly tab = signal<'goals' | 'next'>('next');
+  readonly loadingEvent = signal(true);
   readonly nextEvent = signal<UpcomingBandEvent | null>(null);
   readonly completed = signal<GuidedCompletion | null>(null);
   readonly completionTitles = GUIDED_COMPLETIONS;
@@ -70,7 +71,10 @@ export class GuidePage {
       next: (band) => this.bandName.set(band.name),
       error: () => {},
     });
-    this.upcomingRehearsals.nextEvent(this.bandId).subscribe((event) => this.nextEvent.set(event));
+    this.upcomingRehearsals.nextEvent(this.bandId).subscribe((event) => {
+      this.nextEvent.set(event);
+      this.loadingEvent.set(false);
+    });
   }
 
   ngOnInit(): void {

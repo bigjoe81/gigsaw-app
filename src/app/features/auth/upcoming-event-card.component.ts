@@ -24,9 +24,9 @@ import type { UpcomingBandEvent } from './upcoming-events-onboarding-modal.compo
             con i <strong class="text-[var(--gigsaw-text)]">{{ bandName }}</strong>
           </p>
         }
-        @if (event.title || event.location || event.time) {
+        @if (showTitle() || event.location || event.time) {
           <div class="mt-5 grid gap-2 text-sm text-[var(--gigsaw-muted)]">
-            @if (event.title) {
+            @if (showTitle()) {
               <p class="m-0 flex items-center gap-2"><app-symbol name="musical-notes-outline" />{{ event.title }}</p>
             }
             @if (event.time) {
@@ -50,6 +50,14 @@ export class UpcomingEventCardComponent {
   @Input({ required: true }) event!: UpcomingBandEvent;
   @Input() bandName = '';
   @Output() readonly prepare = new EventEmitter<UpcomingBandEvent>();
+
+  showTitle(): boolean {
+    const title = this.event.title.trim().toLocaleLowerCase('it-IT');
+    const date = new Date(this.event.timestamp).toLocaleDateString('it-IT', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    });
+    return !!title && !['prova', 'concerto', `prove del ${date}`, `prova del ${date}`].includes(title);
+  }
 
   dateLabel(): string {
     return new Date(this.event.timestamp).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });

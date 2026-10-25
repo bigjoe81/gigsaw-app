@@ -105,7 +105,7 @@ export class UpcomingRehearsalPromptService {
     if (!event.timestamp) return false;
     const eventDay = new Date(event.timestamp);
     eventDay.setHours(0, 0, 0, 0);
-    return eventDay >= today && event.timestamp >= now;
+    return eventDay >= today && (!event.time || event.timestamp >= now);
   }
 
   private timestamp(dateValue: string, timeValue?: string | null): number {
