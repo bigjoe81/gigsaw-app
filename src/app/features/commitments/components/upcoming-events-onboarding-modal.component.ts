@@ -1,23 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { BandContextService } from '../../core/services/band-context.service';
-import { OverlayService, SymbolComponent } from '../../shared/ui/native-ui';
-import { GigsawButtonComponent } from '../../shared/ui/gigsaw';
-import { Band } from '../bands/models/band.models';
+import { BandContextService } from '../../../core/services/band-context.service';
+import { OverlayService, SymbolComponent } from '../../../shared/ui/native-ui';
+import { GigsawButtonComponent } from '../../../shared/ui/gigsaw';
+import { Band } from '../../bands/api';
 
-export type UpcomingEventType = 'rehearsal' | 'gig';
-
-export interface UpcomingBandEvent {
-  id: string;
-  bandId: number;
-  type: UpcomingEventType;
-  eventId: number;
-  title: string;
-  date: string;
-  timestamp: number;
-  time?: string | null;
-  location?: string | null;
-}
+import { UpcomingBandEvent } from '../models/upcoming-band-event.models';
 
 @Component({
   selector: 'app-upcoming-events-onboarding-modal',
@@ -26,7 +14,9 @@ export interface UpcomingBandEvent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="overflow-hidden rounded-2xl bg-[var(--gigsaw-surface)] text-[var(--gigsaw-text)]">
-      <header class="relative overflow-hidden bg-[linear-gradient(135deg,var(--ui-color-primary),var(--ui-color-secondary))] px-6 py-8 text-white sm:px-10 sm:py-10">
+      <header
+        class="relative overflow-hidden bg-[linear-gradient(135deg,var(--ui-color-primary),var(--ui-color-secondary))] px-6 py-8 text-white sm:px-10 sm:py-10"
+      >
         <app-gigsaw-button
           tone="ghost"
           buttonClass="btn btn-circle btn-sm absolute right-4 top-4 text-white"
@@ -58,7 +48,9 @@ export interface UpcomingBandEvent {
                   [attr.aria-pressed]="selectedBandId() === band.id"
                   (click)="selectBand(band.id)"
                 >
-                  <span class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[var(--gigsaw-surface)] text-lg font-bold text-[var(--ui-color-primary)]">
+                  <span
+                    class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[var(--gigsaw-surface)] text-lg font-bold text-[var(--ui-color-primary)]"
+                  >
                     {{ band.name.slice(0, 1).toLocaleUpperCase() }}
                   </span>
                   <span class="min-w-0 flex-1">
@@ -87,12 +79,17 @@ export interface UpcomingBandEvent {
                   type="button"
                   class="flex w-full items-start gap-3 rounded-xl border border-solid p-4 text-left transition-colors"
                   [class.border-[var(--ui-color-primary)]]="selectedEventId() === event.id"
-                  [class.bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,transparent)]]="selectedEventId() === event.id"
+                  [class.bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,transparent)]]="
+                    selectedEventId() === event.id
+                  "
                   [class.border-[var(--gigsaw-border)]]="selectedEventId() !== event.id"
                   [attr.aria-pressed]="selectedEventId() === event.id"
                   (click)="selectEvent(event)"
                 >
-                  <app-symbol [name]="event.type === 'rehearsal' ? 'mic-outline' : 'ticket-outline'" class="mt-0.5 text-[var(--ui-color-primary)]" />
+                  <app-symbol
+                    [name]="event.type === 'rehearsal' ? 'mic-outline' : 'ticket-outline'"
+                    class="mt-0.5 text-[var(--ui-color-primary)]"
+                  />
                   <span class="min-w-0">
                     <span class="block font-semibold">{{ eventHeading(event) }}</span>
                     <span class="mt-1 block text-xs text-[var(--gigsaw-muted)]">{{ event.title }}</span>
@@ -104,9 +101,13 @@ export interface UpcomingBandEvent {
         </div>
 
         @if (selectedEvent(); as event) {
-          <article class="flex min-w-0 flex-col justify-between gap-6 rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-5 sm:p-6">
+          <article
+            class="flex min-w-0 flex-col justify-between gap-6 rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-5 sm:p-6"
+          >
             <div>
-              <span class="inline-flex items-center gap-2 rounded-full bg-[var(--gigsaw-surface)] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[var(--ui-color-primary)]">
+              <span
+                class="inline-flex items-center gap-2 rounded-full bg-[var(--gigsaw-surface)] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[var(--ui-color-primary)]"
+              >
                 <app-symbol [name]="event.type === 'rehearsal' ? 'mic-outline' : 'ticket-outline'" />
                 {{ event.type === 'rehearsal' ? 'Prova' : 'Concerto' }}
               </span>
@@ -120,35 +121,41 @@ export interface UpcomingBandEvent {
               @if (event.title || event.location || event.time) {
                 <div class="mt-5 grid gap-2 text-sm text-[var(--gigsaw-muted)]">
                   @if (event.title) {
-                    <p class="m-0 flex items-center gap-2"><app-symbol name="musical-notes-outline" />{{ event.title }}</p>
+                    <p class="m-0 flex items-center gap-2">
+                      <app-symbol name="musical-notes-outline" />{{ event.title }}
+                    </p>
                   }
                   @if (event.time) {
-                    <p class="m-0 flex items-center gap-2"><app-symbol name="time-outline" />{{ event.time.slice(0, 5) }}</p>
+                    <p class="m-0 flex items-center gap-2">
+                      <app-symbol name="time-outline" />{{ event.time.slice(0, 5) }}
+                    </p>
                   }
                   @if (event.location) {
-                    <p class="m-0 flex items-center gap-2"><app-symbol name="location-outline" />{{ event.location }}</p>
+                    <p class="m-0 flex items-center gap-2">
+                      <app-symbol name="location-outline" />{{ event.location }}
+                    </p>
                   }
                 </div>
               }
             </div>
 
-            <app-gigsaw-button
-              tone="primary"
-              buttonClass="w-full"
-              (click)="prepare(event)"
-            >
+            <app-gigsaw-button tone="primary" buttonClass="w-full" (click)="prepare(event)">
               {{ event.type === 'rehearsal' ? 'Prepariamo la prova' : 'Prepariamo il concerto' }}
               <app-symbol name="arrow-forward-outline" class="ml-2" />
             </app-gigsaw-button>
           </article>
         } @else {
-          <div class="flex items-center rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-6 text-sm text-[var(--gigsaw-muted)]">
+          <div
+            class="flex items-center rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-6 text-sm text-[var(--gigsaw-muted)]"
+          >
             Nessun appuntamento futuro per questa band. Puoi comunque aprire la sua bacheca.
           </div>
         }
       </div>
 
-      <footer class="flex flex-wrap justify-end gap-3 border-0 border-t border-solid border-[var(--gigsaw-border)] px-5 py-4 sm:px-8">
+      <footer
+        class="flex flex-wrap justify-end gap-3 border-0 border-t border-solid border-[var(--gigsaw-border)] px-5 py-4 sm:px-8"
+      >
         <app-gigsaw-button tone="ghost" buttonClass="w-full sm:w-auto" (click)="openBandBoard()">
           Apri bacheca band
         </app-gigsaw-button>
@@ -166,7 +173,9 @@ export class UpcomingEventsOnboardingModalComponent {
   readonly selectedBandId = signal(0);
   readonly selectedEventId = signal('');
   readonly bandEvents = computed(() => this.events.filter((event) => event.bandId === this.selectedBandId()));
-  readonly selectedEvent = computed(() => this.bandEvents().find((event) => event.id === this.selectedEventId()) ?? this.bandEvents()[0] ?? null);
+  readonly selectedEvent = computed(
+    () => this.bandEvents().find((event) => event.id === this.selectedEventId()) ?? this.bandEvents()[0] ?? null,
+  );
   readonly selectedBand = computed(() => this.bands.find((band) => band.id === this.selectedBandId()) ?? null);
 
   ngOnInit(): void {

@@ -4,8 +4,7 @@ import { NativeUiModule } from '../shared/ui/native-ui';
 import { Component, EnvironmentInjector, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { BandContextService } from '../core/services/band-context.service';
-import { Band } from '../features/bands/models/band.models';
-import { BandService } from '../features/bands/services/band.service';
+import { Band, BandService } from '../features/bands/api';
 
 type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda' | 'live' | 'band';
 

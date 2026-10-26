@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { RehearsalSession } from '../../../core/models/band-resources.models';
 import { BandScopedCrudService } from '../../../core/services/band-scoped-crud.service';
-import { SongService } from '../../songs/services/song.service';
+import { SongService } from '../../songs/api';
 
 @Injectable({ providedIn: 'root' })
 export class RehearsalSessionService extends BandScopedCrudService<RehearsalSession> {

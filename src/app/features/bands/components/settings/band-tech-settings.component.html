@@ -1,0 +1,447 @@
+<article class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-8 max-[800px]:px-5">
+  <header class="pb-4">
+    <div class="flex items-start justify-between gap-5 max-[760px]:grid">
+      <div>
+        <span
+          class="mb-[5px] block text-[.7rem] font-extrabold tracking-[.16em] text-[var(--ui-color-primary)] uppercase"
+          >Live setup</span
+        >
+        <h2 class="card-title">Tech kit</h2>
+        <p>Prepara input list e disposizione palco in modo visuale.</p>
+      </div>
+      <div class="flex flex-wrap justify-end max-[760px]:justify-start">
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" type="button" (click)="exportTechRider()">
+          <app-symbol name="download-outline" /> PDF
+        </app-gigsaw-button>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-sm" type="button" (click)="shareTechRider()">
+          <app-symbol name="share-outline" /> Condividi
+        </app-gigsaw-button>
+      </div>
+    </div>
+  </header>
+  <div>
+    <form [formGroup]="techForm" (ngSubmit)="saveTech()">
+      <details
+        class="my-2 mb-5 rounded-[10px] border border-[var(--gigsaw-border)] px-4 py-[14px] text-[.85rem] text-[var(--gigsaw-text)]"
+      >
+        <summary
+          class="cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]"
+        >
+          Parti da un setup pronto
+          <small
+            class="ml-3 text-[var(--gigsaw-muted)] font-normal max-[760px]:mt-1.5 max-[760px]:ml-4 max-[760px]:block"
+            >Canali e palco già configurati</small
+          >
+        </summary>
+        <div class="mt-[14px] flex flex-wrap gap-2">
+          @for (preset of techPresets; track preset.id) {
+            <app-gigsaw-button
+              tone="unstyled"
+              type="button"
+              buttonClass="rounded-full border border-[rgba(var(--ui-color-primary-rgb),.35)] bg-[rgba(var(--ui-color-primary-rgb),.08)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]"
+              (click)="applyTechPreset(preset.id)"
+              >{{ preset.label }}</app-gigsaw-button
+            >
+          }
+        </div>
+      </details>
+
+      <nav
+        class="grid grid-cols-3 rounded-[14px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-[5px]"
+        aria-label="Sezioni scheda tecnica"
+      >
+        <app-gigsaw-button
+          tone="unstyled"
+          buttonClass="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 font-bold transition-colors max-[760px]:gap-[5px] max-[760px]:text-[.78rem]"
+          [class]="
+            techSection() === 'channels'
+              ? 'bg-[var(--gigsaw-surface)] text-[var(--ui-color-primary)] shadow-[0_1px_4px_rgba(0,0,0,.12)]'
+              : 'bg-transparent text-[var(--gigsaw-muted)]'
+          "
+          type="button"
+          [attr.aria-pressed]="techSection() === 'channels'"
+          (click)="techSection.set('channels')"
+        >
+          <span
+            [class]="
+              (techSection() === 'channels' ? 'text-[var(--ui-color-primary)]' : 'text-[#66758b]') +
+              ' text-[.7rem] max-[760px]:hidden'
+            "
+            >01</span
+          >
+          Canali
+          <b
+            class="grid size-[22px] min-w-[22px] place-items-center rounded-full bg-[var(--gigsaw-input-background)] text-[.7rem]"
+            >{{ inputChannels.length }}</b
+          >
+        </app-gigsaw-button>
+        <app-gigsaw-button
+          tone="unstyled"
+          buttonClass="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 font-bold transition-colors max-[760px]:gap-[5px] max-[760px]:text-[.78rem]"
+          [class]="
+            techSection() === 'stage'
+              ? 'bg-[var(--gigsaw-surface)] text-[var(--ui-color-primary)] shadow-[0_1px_4px_rgba(0,0,0,.12)]'
+              : 'bg-transparent text-[var(--gigsaw-muted)]'
+          "
+          type="button"
+          [attr.aria-pressed]="techSection() === 'stage'"
+          (click)="techSection.set('stage')"
+        >
+          <span
+            [class]="
+              (techSection() === 'stage' ? 'text-[var(--ui-color-primary)]' : 'text-[#66758b]') +
+              ' text-[.7rem] max-[760px]:hidden'
+            "
+            >02</span
+          >
+          Palco
+          <b
+            class="grid size-[22px] min-w-[22px] place-items-center rounded-full bg-[var(--gigsaw-input-background)] text-[.7rem]"
+            >{{ stagePlotLayout.length }}</b
+          >
+        </app-gigsaw-button>
+        <app-gigsaw-button
+          tone="unstyled"
+          buttonClass="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border-0 font-bold transition-colors max-[760px]:gap-[5px] max-[760px]:text-[.78rem]"
+          [class]="
+            techSection() === 'notes'
+              ? 'bg-[var(--gigsaw-surface)] text-[var(--ui-color-primary)] shadow-[0_1px_4px_rgba(0,0,0,.12)]'
+              : 'bg-transparent text-[var(--gigsaw-muted)]'
+          "
+          type="button"
+          [attr.aria-pressed]="techSection() === 'notes'"
+          (click)="techSection.set('notes')"
+        >
+          <span
+            [class]="
+              (techSection() === 'notes' ? 'text-[var(--ui-color-primary)]' : 'text-[#66758b]') +
+              ' text-[.7rem] max-[760px]:hidden'
+            "
+            >03</span
+          >
+          Note
+        </app-gigsaw-button>
+      </nav>
+
+      @if (techSection() === 'channels') {
+        <section class="mt-[18px] rounded-2xl border border-[var(--gigsaw-border)] p-[22px] max-[760px]:p-[15px_11px]">
+          <div class="flex items-start justify-between gap-5 max-[760px]:items-center">
+            <div>
+              <h3 class="m-0 text-[1.15rem]">Input list</h3>
+              <p class="mt-1.5 mb-0 leading-[1.45] text-[var(--gigsaw-muted)] max-[760px]:text-[.82rem]">
+                Aggiungi i canali più usati con un tap, poi rifinisci i dettagli.
+              </p>
+            </div>
+            <app-gigsaw-button
+              tone="unstyled"
+              buttonClass="btn btn-outline btn-sm"
+              type="button"
+              (click)="addInputChannel()"
+              ><app-symbol name="add-circle-outline" /> Nuovo canale</app-gigsaw-button
+            >
+          </div>
+          <div class="my-[18px] mb-3 flex flex-wrap gap-[9px] pb-1" aria-label="Aggiunta rapida canali">
+            @for (channel of quickChannels; track channel.name) {
+              <app-gigsaw-button
+                tone="unstyled"
+                buttonClass="grid shrink-0 grid-cols-[auto_auto] min-h-[46px] gap-x-[7px] rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 text-left text-[.85rem] font-medium text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]"
+                type="button"
+                (click)="addInputChannel(channel)"
+                ><span class="row-span-2 self-center text-[1.15rem] text-[var(--ui-color-primary)]">+</span
+                ><strong class="font-semibold">{{ channel.name }}</strong
+                ><small class="col-start-2 mt-0.5 text-[.7rem] text-[var(--gigsaw-muted)]">{{
+                  channel.source
+                }}</small></app-gigsaw-button
+              >
+            }
+          </div>
+          <details class="my-[10px] mb-[18px] text-[.85rem] text-[var(--gigsaw-muted)]">
+            <summary class="w-fit cursor-pointer py-1.5">Usa un preset canali</summary>
+            <div class="mt-2 flex flex-wrap gap-2">
+              @for (preset of inputChannelPresets; track preset.id) {
+                <app-gigsaw-button
+                  tone="unstyled"
+                  type="button"
+                  buttonClass="rounded-full border border-[rgba(var(--ui-color-primary-rgb),.35)] bg-[rgba(var(--ui-color-primary-rgb),.08)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]"
+                  (click)="applyInputChannelPreset(preset.id)"
+                  >{{ preset.label }}</app-gigsaw-button
+                >
+              }
+              @for (preset of drumMergePresets; track preset.id) {
+                <app-gigsaw-button
+                  tone="unstyled"
+                  type="button"
+                  buttonClass="rounded-full border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]"
+                  (click)="mergeDrumMikingPreset(preset.id)"
+                  ><app-symbol name="add" /> {{ preset.label }}</app-gigsaw-button
+                >
+              }
+            </div>
+          </details>
+          <div
+            formArrayName="inputChannels"
+            class="overflow-hidden rounded-[13px] border border-[var(--gigsaw-border)] max-[760px]:overflow-x-auto"
+            [class.hidden]="!inputChannels.length"
+          >
+            <div class="reorder-list" (itemsReordered)="reorderInputChannels($event)" appReorder>
+              @for (channel of inputChannels.controls; track $index) {
+                <div
+                  class="grid min-w-[680px] grid-cols-[58px_minmax(150px,1.2fr)_minmax(135px,.8fr)_minmax(160px,1fr)_48px] items-center gap-2 border-b border-[var(--gigsaw-border)] p-2 last:border-0"
+                  [formGroupName]="$index"
+                >
+                  <div class="flex items-center gap-[7px] text-[var(--gigsaw-muted)]">
+                    <span class="cursor-grab"><app-symbol name="grip-vertical" /></span
+                    ><strong class="text-[var(--gigsaw-text)] tabular-nums">{{ $index + 1 }}</strong>
+                  </div>
+                  <app-gigsaw-input
+                    controlClass="min-h-[46px] min-w-0 font-normal"
+                    formControlName="name"
+                    placeholder="Nome canale"
+                    aria-label="Nome canale"
+                  />
+                  <app-gigsaw-input
+                    controlClass="min-h-[46px] min-w-0 font-normal"
+                    formControlName="source"
+                    placeholder="Mic / DI / Wireless"
+                    aria-label="Microfono o sorgente"
+                  />
+                  <app-gigsaw-input
+                    controlClass="min-h-[46px] min-w-0 font-normal"
+                    formControlName="notes"
+                    placeholder="Note opzionali"
+                    aria-label="Note canale"
+                  />
+                  <app-gigsaw-button
+                    tone="unstyled"
+                    buttonClass="btn btn-ghost btn-error btn-sm"
+                    aria-label="Rimuovi canale"
+                    type="button"
+                    (click)="removeInputChannel($index)"
+                  >
+                    <app-symbol name="trash-outline" />
+                  </app-gigsaw-button>
+                </div>
+              }
+            </div>
+          </div>
+          @if (!inputChannels.length) {
+            <div
+              class="rounded-xl border border-dashed border-[var(--gigsaw-border)] p-[26px] text-center text-[var(--gigsaw-muted)]"
+            >
+              Nessun canale. Aggiungine uno o scegli un preset.
+            </div>
+          }
+        </section>
+      }
+
+      @if (techSection() === 'stage') {
+        <section
+          class="mt-[18px] rounded-2xl border border-[var(--gigsaw-border)] p-[22px] max-[760px]:p-[15px_11px]"
+          formArrayName="stagePlotLayout"
+        >
+          <div class="flex items-start justify-between gap-5 max-[760px]:items-center">
+            <div>
+              <h3 class="m-0 text-[1.15rem]">Posizione sul palco</h3>
+              <p class="mt-1.5 mb-0 leading-[1.45] text-[var(--gigsaw-muted)] max-[760px]:text-[.82rem]">
+                Aggiungi un elemento e trascinalo nella posizione corretta.
+              </p>
+            </div>
+          </div>
+          <div class="my-[18px] mb-3 flex flex-wrap gap-[9px] pb-1">
+            @for (item of stageItems; track item.label) {
+              <app-gigsaw-button
+                tone="unstyled"
+                buttonClass="grid min-w-[82px] shrink-0 place-items-center gap-1.5 rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 font-bold text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]"
+                type="button"
+                (click)="addStageItem(item.label, item.instrument)"
+                ><span
+                  class="grid size-[30px] place-items-center rounded-[9px] bg-[#26344a] text-[var(--ui-color-primary)]"
+                  ><app-symbol [name]="stagePlotIcon(item.instrument)" /></span
+                >{{ item.label }}</app-gigsaw-button
+              >
+            }
+            <app-gigsaw-button
+              tone="unstyled"
+              buttonClass="grid min-w-[82px] shrink-0 place-items-center gap-1.5 rounded-[11px] border border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] px-[13px] py-2 font-bold text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]"
+              type="button"
+              (click)="addStagePlotItem()"
+              ><span
+                class="grid size-[30px] place-items-center rounded-[9px] bg-[#26344a] text-[var(--ui-color-primary)]"
+                >+</span
+              >Altro</app-gigsaw-button
+            >
+          </div>
+          <details class="my-[10px] mb-[18px] text-[.85rem] text-[var(--gigsaw-muted)]">
+            <summary class="w-fit cursor-pointer py-1.5">Usa un layout pronto</summary>
+            <div class="mt-2 flex flex-wrap gap-2">
+              @for (preset of stagePlotPresets; track preset.id) {
+                <app-gigsaw-button
+                  tone="unstyled"
+                  type="button"
+                  buttonClass="rounded-full border border-[rgba(var(--ui-color-primary-rgb),.35)] bg-[rgba(var(--ui-color-primary-rgb),.08)] px-3 py-2 text-[.85rem] text-[var(--gigsaw-text)] transition-[background,border-color] hover:border-[var(--ui-color-primary)] hover:bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,var(--gigsaw-input-background))] focus-visible:outline-2 focus-visible:outline-[var(--ui-color-primary)] focus-visible:outline-offset-[3px]"
+                  (click)="applyStagePlotPreset(preset.id)"
+                  >{{ preset.label }}</app-gigsaw-button
+                >
+              }
+            </div>
+          </details>
+          <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-4">
+            <div class="grid min-w-0 gap-[9px]">
+              <div class="flex justify-between text-[.7rem] tracking-[.08em] text-[var(--gigsaw-muted)] uppercase">
+                <span>Palco visto dal pubblico</span><span>Trascina per spostare</span>
+              </div>
+              <div class="stage-preview min-h-[560px] max-[760px]:min-h-[440px]">
+                <div
+                  class="absolute top-[10px] left-1/2 -translate-x-1/2 text-[.68rem] tracking-[.16em] text-[rgba(231,242,251,.55)] uppercase"
+                >
+                  Upstage
+                </div>
+                @for (item of stagePlotLayout.controls; track $index) {
+                  <div
+                    class="stage-plot-item absolute grid min-w-[76px] max-w-[105px] -translate-x-1/2 -translate-y-1/2 cursor-grab select-none place-items-center gap-1 rounded-[13px] border border-[rgba(255,255,255,.16)] bg-[rgba(48,61,76,.94)] p-[9px] text-center text-[.72rem] text-white shadow-[0_10px_24px_rgba(0,0,0,.32)] [touch-action:none]"
+                    [class.selected]="selectedStageItem() === $index"
+                    [attr.data-kind]="stagePlotKind(item.get('instrument')?.value || item.get('label')?.value)"
+                    [style.left.%]="item.get('x')?.value"
+                    [style.top.%]="item.get('y')?.value"
+                    (pointerdown)="selectStageItem($index); startStagePlotDrag($index, $event)"
+                  >
+                    <div
+                      class="grid size-[29px] place-items-center rounded-lg bg-[rgba(255,255,255,.1)] font-extrabold"
+                    >
+                      <app-symbol [name]="stagePlotIcon(item.get('instrument')?.value || item.get('label')?.value)" />
+                    </div>
+                    <div class="font-bold">{{ item.get('label')?.value || 'Posizione' }}</div>
+                  </div>
+                }
+              </div>
+              <div class="text-[.75rem] text-[var(--gigsaw-muted)]">
+                Posiziona liberamente gli elementi trascinandoli sul palco.
+              </div>
+            </div>
+            <aside class="min-h-0 rounded-[14px] border border-[var(--gigsaw-border)] bg-[#0d1624] p-4">
+              @for (item of stagePlotLayout.controls; track $index) {
+                @if (selectedStageItem() === $index) {
+                  <div [formGroupName]="$index">
+                    <span
+                      class="mb-[5px] block text-[.7rem] font-extrabold tracking-[.16em] text-[var(--ui-color-primary)] uppercase"
+                      >Elemento selezionato</span
+                    >
+                    <label class="my-[10px] grid gap-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]"
+                      >Etichetta<app-gigsaw-input controlClass="my-2 min-w-0 font-normal" formControlName="label"
+                    /></label>
+                    <label class="my-[10px] grid gap-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]"
+                      >Strumento / ruolo<app-gigsaw-input
+                        controlClass="my-2 min-w-0 font-normal"
+                        formControlName="instrument"
+                    /></label>
+                    <div class="grid grid-cols-2 gap-[9px]">
+                      <label class="my-[10px] grid gap-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]"
+                        >X %<app-gigsaw-input
+                          controlClass="my-2 min-w-0 font-normal"
+                          type="number"
+                          formControlName="x"
+                          min="0"
+                          max="100"
+                          step="any"
+                      /></label>
+                      <label class="my-[10px] grid gap-1.5 text-[.78rem] font-bold text-[var(--gigsaw-text)]"
+                        >Y %<app-gigsaw-input
+                          controlClass="my-2 min-w-0 font-normal"
+                          type="number"
+                          formControlName="y"
+                          min="0"
+                          max="100"
+                          step="any"
+                      /></label>
+                    </div>
+                    <app-gigsaw-button
+                      tone="unstyled"
+                      buttonClass="btn btn-outline btn-error"
+                      type="button"
+                      (click)="removeStagePlotItem($index)"
+                      ><app-symbol name="trash-outline" /> Rimuovi</app-gigsaw-button
+                    >
+                  </div>
+                }
+              }
+              @if (selectedStageItem() === null) {
+                <div
+                  class="rounded-xl border border-dashed border-[var(--gigsaw-border)] p-[26px] text-center text-[var(--gigsaw-muted)]"
+                >
+                  Seleziona un elemento sul palco per modificarlo.
+                </div>
+              }
+            </aside>
+          </div>
+        </section>
+      }
+
+      @if (techSection() === 'notes') {
+        <section
+          class="mt-[18px] grid grid-cols-2 gap-x-[14px] gap-y-2 rounded-2xl border border-[var(--gigsaw-border)] p-[22px] max-[760px]:grid-cols-1 max-[760px]:p-[15px_11px]"
+        >
+          <div class="col-span-full max-[760px]:col-span-1">
+            <div>
+              <h3 class="m-0 text-[1.15rem]">Note di produzione</h3>
+              <p class="mt-1.5 mb-0 leading-[1.45] text-[var(--gigsaw-muted)] max-[760px]:text-[.82rem]">
+                Tutto ciò che serve a fonico, palco e venue.
+              </p>
+            </div>
+          </div>
+          <label class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"
+            >Note per il fonico<app-gigsaw-textarea
+              controlClass="my-2 min-w-0 font-normal"
+              formControlName="soundEngineerNotes"
+              placeholder="Indicazioni generali, PA, patch..."
+              [rows]="4"
+          /></label>
+          <label class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"
+            >Monitor mix<app-gigsaw-textarea
+              controlClass="my-2 min-w-0 font-normal"
+              formControlName="monitorMixNotes"
+              placeholder="Mix richiesti e preferenze..."
+              [rows]="4"
+          /></label>
+          <label class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"
+            >Backline<app-gigsaw-textarea
+              controlClass="my-2 min-w-0 font-normal"
+              formControlName="backlineNotes"
+              [rows]="4"
+          /></label>
+          <label class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]"
+            >Note stage plot<app-gigsaw-textarea
+              controlClass="my-2 min-w-0 font-normal"
+              formControlName="stagePlotNotes"
+              [rows]="4"
+          /></label>
+          <label
+            class="col-span-full grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)] max-[760px]:col-span-1"
+            >Hospitality<app-gigsaw-textarea
+              controlClass="my-2 min-w-0 font-normal"
+              formControlName="hospitalityNotes"
+              [rows]="4"
+          /></label>
+        </section>
+      }
+
+      @if (techError) {
+        <small class="text-sm text-error">{{ techError }}</small>
+      }
+
+      <div class="mt-5 flex justify-end border-t border-[var(--gigsaw-border)] pt-4">
+        <app-gigsaw-button
+          tone="unstyled"
+          buttonClass="btn btn-primary m-0 min-w-[220px] max-[760px]:w-full"
+          type="submit"
+          [disabled]="savingTech"
+        >
+          @if (savingTech) {
+            <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
+          } @else {
+            Salva scheda tecnica
+          }
+        </app-gigsaw-button>
+      </div>
+    </form>
+  </div>
+</article>

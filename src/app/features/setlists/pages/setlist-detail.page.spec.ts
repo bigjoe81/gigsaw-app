@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { Subject } from 'rxjs';
 import { Setlist } from '../../../core/models/band-resources.models';
-import { BandService } from '../../bands/services/band.service';
+import { BandService } from '../../bands/api';
 import { SetlistPdfService } from '../services/setlist-pdf.service';
 import { SetlistService } from '../services/setlist.service';
 import { SetlistDetailPage } from './setlist-detail.page';

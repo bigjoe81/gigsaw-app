@@ -5,7 +5,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
-import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
+import { GigPostersComponent, GigPosterValues } from '../../poster-templates/ui';
 import { GigService } from '../services/gig.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,

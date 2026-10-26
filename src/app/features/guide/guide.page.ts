@@ -2,13 +2,13 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NativeUiModule } from '../../shared/ui/native-ui';
 
-import { UpcomingEventCardComponent } from '../auth/upcoming-event-card.component';
-import { UpcomingBandEvent } from '../auth/upcoming-events-onboarding-modal.component';
-import { UpcomingRehearsalPromptService } from '../auth/upcoming-rehearsal-prompt.service';
+import { UpcomingEventCardComponent } from '../commitments/ui';
+import type { UpcomingBandEvent } from '../commitments/api';
+import { UpcomingRehearsalPromptService } from '../commitments/api';
 
-import { BandService } from '../bands/services/band.service';
-import { GUIDE_GOALS, GuideGoal, parseGuideGoal } from './guide-goals';
-import { GUIDED_COMPLETIONS, GuidedCompletion, parseGuidedCompletion } from './guided-navigation';
+import { BandService } from '../bands/api';
+import { GUIDE_GOALS, GuideGoal, parseGuideGoal } from '../../core/navigation/guide-goals';
+import { GUIDED_COMPLETIONS, GuidedCompletion, parseGuidedCompletion } from '../../core/navigation/guided-navigation';
 
 interface Choice { title: string; text: string; route: string; }
 

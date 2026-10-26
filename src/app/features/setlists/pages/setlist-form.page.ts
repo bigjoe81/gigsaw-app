@@ -1,4 +1,4 @@
-import { guidedCompletionUrl } from '../../guide/guided-navigation';
+import { guidedCompletionUrl } from '../../../core/navigation/guided-navigation';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
@@ -9,8 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, debounceTime, finalize, forkJoin, Subject, timeout } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
-import { GigService } from '../../gigs/services/gig.service';
-import { SongService } from '../../songs/services/song.service';
+import { GigService } from '../../gigs/api';
+import { SongService } from '../../songs/api';
 import { MagicConstraints, MagicProposal, SetlistItem, SetlistSnapshot, SetlistWorkspace, WorkspaceSet } from '../models/setlist-workspace.models';
 import { MagicSetService } from '../services/magic-set.service';
 import { cloneWorkspace, LocalSetlistRepository, moveItemBefore, setDuration, SetlistHistoryService, splitMedley, uid } from '../services/setlist-workspace.service';

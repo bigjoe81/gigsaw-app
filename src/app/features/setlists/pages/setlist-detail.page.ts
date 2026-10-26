@@ -6,8 +6,7 @@ import { SetlistPdfModalComponent } from '../components/setlist-pdf-modal.compon
 import { Component, OnInit, signal } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BandMember } from '../../bands/models/band.models';
-import { BandService } from '../../bands/services/band.service';
+import { BandMember, BandService } from '../../bands/api';
 import { Setlist, SetlistItem } from '../../../core/models/band-resources.models';
 import { SetlistPdfOptions } from '../models/setlist.models';
 import { SetlistPdfService, SetlistPdfFormat } from '../services/setlist-pdf.service';

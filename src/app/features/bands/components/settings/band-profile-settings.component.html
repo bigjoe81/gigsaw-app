@@ -1,0 +1,283 @@
+<article class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-8 max-[800px]:px-5">
+  <header class="pb-4">
+    <h2 class="card-title">Profilo band</h2>
+  </header>
+  <div>
+    <form class="grid gap-[18px]" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <section
+        class="grid grid-cols-[minmax(190px,.55fr)_minmax(0,1.8fr)] gap-[22px] rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-5 max-[760px]:grid-cols-1 max-[760px]:p-4"
+      >
+        <div
+          class="flex flex-col justify-center border-r border-[var(--gigsaw-border)] p-3 max-[760px]:border-r-0 max-[760px]:border-b max-[760px]:pb-[18px]"
+        >
+          @if (logoPreviewUrl() || band.logo) {
+            <img
+              [src]="logoPreviewUrl() || band.logo"
+              alt="Logo band"
+              class="mx-auto mb-[18px] block size-[116px] rounded-[20px] object-cover"
+            />
+          } @else {
+            <div
+              class="mx-auto mb-[18px] grid size-[116px] place-items-center rounded-[20px] bg-[rgba(var(--ui-color-primary-rgb),.13)] text-[2rem] font-black text-[var(--ui-color-primary)]"
+            >
+              {{ band.name.slice(0, 2).toUpperCase() }}
+            </div>
+          }
+          <div class="grid min-w-0 gap-2 text-sm font-semibold">
+            <app-gigsaw-file-input
+              label="Cambia logo"
+              accept="image/jpeg,image/png,image/webp"
+              controlClass="w-full min-w-0 justify-start"
+              (filesChange)="onLogoFilesSelected($event)"
+            />
+          </div>
+          <small>JPG, PNG o WebP · massimo 2 MB</small>
+          @if (logoError()) {
+            <small class="text-sm text-error" role="alert">{{ logoError() }}</small>
+          }
+        </div>
+        <div class="grid grid-cols-2 content-center gap-[14px] max-[760px]:grid-cols-1">
+          <div
+            class="col-span-full grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)] max-[760px]:col-span-1"
+          >
+            <label for="band-field-nome-band">Nome band</label
+            ><app-gigsaw-input
+              id="band-field-nome-band"
+              aria-label="Nome band"
+              controlClass="min-w-0 font-normal"
+              formControlName="name"
+              [invalid]="profileForm.controls.name.touched && profileForm.controls.name.invalid"
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-citt-">Città</label
+            ><app-gigsaw-input
+              id="band-field-citt-"
+              aria-label="Città"
+              controlClass="min-w-0 font-normal"
+              formControlName="city"
+              placeholder="Es. Milano"
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-paese">Paese</label
+            ><app-gigsaw-input
+              id="band-field-paese"
+              aria-label="Paese"
+              controlClass="min-w-0 font-normal"
+              formControlName="country"
+              placeholder="Es. Italia"
+            />
+          </div>
+          <div
+            class="col-span-full grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)] max-[760px]:col-span-1"
+          >
+            <label>Generi</label>
+            <app-gigsaw-typeahead
+              name="genreQuery"
+              ariaLabel="Generi musicali"
+              [fill]="undefined"
+              controlClass="min-w-0 w-full font-normal"
+              [value]="genreQuery()"
+              [items]="genreTypeaheadItems"
+              [minChars]="0"
+              [maxResults]="5"
+              [dropdownOverlay]="true"
+              placeholder="Cerca un genere musicale…"
+              emptyMessage="Nessun genere trovato."
+              (valueChange)="genreQuery.set($event)"
+              (selected)="selectGenre($event)"
+            />
+            @if (selectedGenres.length) {
+              <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Generi selezionati">
+                @for (genre of selectedGenres; track genre.id) {
+                  <app-gigsaw-badge
+                    tone="primary"
+                    appearance="outline"
+                    size="lg"
+                    [dismissible]="true"
+                    [dismissLabel]="'Rimuovi ' + genre.name"
+                    (dismissed)="removeGenre(genre.id)"
+                  >
+                    {{ genre.name }}
+                  </app-gigsaw-badge>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="grid grid-cols-[minmax(160px,.5fr)_minmax(0,1.7fr)] gap-6 rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-[22px] max-[760px]:grid-cols-1 max-[760px]:p-4"
+      >
+        <div class="flex items-start gap-3">
+          <span class="text-[.7rem] font-black tracking-[.12em] text-[var(--ui-color-primary)]">01</span>
+          <div>
+            <h3 class="m-0 text-base">Presentazione</h3>
+            <p class="mt-[5px] mb-0 text-[.78rem] leading-[1.4] font-normal text-[var(--gigsaw-muted)]">
+              Il testo che vedranno promoter e venue.
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-[14px] max-[760px]:grid-cols-1">
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-bio-breve">Bio breve</label
+            ><app-gigsaw-textarea
+              id="band-field-bio-breve"
+              aria-label="Bio breve"
+              controlClass="min-w-0 font-normal"
+              [rows]="4"
+              formControlName="bioShort"
+              placeholder="Descrivi la band in poche righe"
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-bio-completa">Bio completa</label
+            ><app-gigsaw-textarea
+              id="band-field-bio-completa"
+              aria-label="Bio completa"
+              controlClass="min-w-0 font-normal"
+              [rows]="7"
+              formControlName="bio"
+              placeholder="Storia, influenze e progetto artistico"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="grid grid-cols-[minmax(160px,.5fr)_minmax(0,1.7fr)] gap-6 rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-[22px] max-[760px]:grid-cols-1 max-[760px]:p-4"
+      >
+        <div class="flex items-start gap-3">
+          <span class="text-[.7rem] font-black tracking-[.12em] text-[var(--ui-color-primary)]">02</span>
+          <div>
+            <h3 class="m-0 text-base">Contatti</h3>
+            <p class="mt-[5px] mb-0 text-[.78rem] leading-[1.4] font-normal text-[var(--gigsaw-muted)]">
+              Riferimenti pubblici per richieste e booking.
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-[14px] max-[760px]:grid-cols-1">
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-email">Email</label
+            ><app-gigsaw-input
+              id="band-field-email"
+              aria-label="Email"
+              controlClass="min-w-0 font-normal"
+              type="email"
+              formControlName="email"
+              [invalid]="profileForm.controls.email.touched && profileForm.controls.email.invalid"
+              placeholder="booking@band.it"
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-telefono">Telefono</label
+            ><app-gigsaw-input
+              id="band-field-telefono"
+              aria-label="Telefono"
+              controlClass="min-w-0 font-normal"
+              type="tel"
+              formControlName="phone"
+              placeholder="+39..."
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-sito-web">Sito web</label
+            ><app-gigsaw-input
+              id="band-field-sito-web"
+              aria-label="Sito web"
+              controlClass="min-w-0 font-normal"
+              type="url"
+              formControlName="website"
+              placeholder="https://"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="grid grid-cols-[minmax(160px,.5fr)_minmax(0,1.7fr)] gap-6 rounded-2xl border border-[var(--gigsaw-border)] bg-transparent p-[22px] max-[760px]:grid-cols-1 max-[760px]:p-4"
+      >
+        <div class="flex items-start gap-3">
+          <span class="text-[.7rem] font-black tracking-[.12em] text-[var(--ui-color-primary)]">03</span>
+          <div>
+            <h3 class="m-0 text-base">Social e streaming</h3>
+            <p class="mt-[5px] mb-0 text-[.78rem] leading-[1.4] font-normal text-[var(--gigsaw-muted)]">
+              Collega i canali ufficiali della band.
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-[14px] max-[760px]:grid-cols-1">
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-instagram">Instagram</label
+            ><app-gigsaw-input
+              id="band-field-instagram"
+              aria-label="Instagram"
+              controlClass="min-w-0 font-normal"
+              type="url"
+              formControlName="instagramUrl"
+              placeholder="https://instagram.com/..."
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-facebook">Facebook</label
+            ><app-gigsaw-input
+              id="band-field-facebook"
+              aria-label="Facebook"
+              controlClass="min-w-0 font-normal"
+              type="url"
+              formControlName="facebookUrl"
+              placeholder="https://facebook.com/..."
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-youtube">YouTube</label
+            ><app-gigsaw-input
+              id="band-field-youtube"
+              aria-label="YouTube"
+              controlClass="min-w-0 font-normal"
+              type="url"
+              formControlName="youtubeUrl"
+              placeholder="https://youtube.com/..."
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-spotify">Spotify</label
+            ><app-gigsaw-input
+              id="band-field-spotify"
+              aria-label="Spotify"
+              controlClass="min-w-0 font-normal"
+              type="url"
+              formControlName="spotifyUrl"
+              placeholder="https://open.spotify.com/..."
+            />
+          </div>
+          <div class="grid min-w-0 gap-2 text-[.82rem] font-bold text-[var(--gigsaw-text)]">
+            <label for="band-field-tiktok">TikTok</label
+            ><app-gigsaw-input
+              id="band-field-tiktok"
+              aria-label="TikTok"
+              controlClass="min-w-0 font-normal"
+              type="url"
+              formControlName="tiktokUrl"
+              placeholder="https://tiktok.com/..."
+            />
+          </div>
+        </div>
+      </section>
+
+      @if (profileError) {
+        <small class="text-sm text-error pt-4">{{ profileError }}</small>
+      }
+
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary mt-4" type="submit" [disabled]="savingProfile">
+        @if (savingProfile) {
+          <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
+        } @else {
+          Salva profilo band
+        }
+      </app-gigsaw-button>
+    </form>
+  </div>
+</article>

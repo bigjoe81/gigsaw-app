@@ -8,13 +8,11 @@ import { AuthService } from '../../core/auth/auth.service';
 import { BandContextService } from '../../core/services/band-context.service';
 import { BandFlow, BandFlowService } from '../../core/services/band-flow.service';
 import { OnboardingService } from '../../core/services/onboarding.service';
-import { Band, BandGenre } from '../bands/models/band.models';
-import { BandService } from '../bands/services/band.service';
-import { GenreService } from '../bands/services/genre.service';
-import { UpcomingEventCardComponent } from '../auth/upcoming-event-card.component';
-import { UpcomingBandEvent } from '../auth/upcoming-events-onboarding-modal.component';
-import { UpcomingRehearsalPromptService } from '../auth/upcoming-rehearsal-prompt.service';
-import { GuideGoal } from '../guide/guide-goals';
+import { Band, BandGenre, BandService, GenreService } from '../bands/api';
+import { UpcomingEventCardComponent } from '../commitments/ui';
+import type { UpcomingBandEvent } from '../commitments/api';
+import { UpcomingRehearsalPromptService } from '../commitments/api';
+import { GuideGoal } from '../../core/navigation/guide-goals';
 
 type OnboardingMode = 'create' | 'invite';
 type OnboardingStep = 'welcome' | 'invite' | 'profile' | 'band' | 'flow' | 'source';

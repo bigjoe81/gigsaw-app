@@ -3,7 +3,7 @@ import { Injector } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NEVER, of } from 'rxjs';
-import { RehearsalSessionService } from '../../features/rehearsal-sessions/services/rehearsal-session.service';
+import { RehearsalSessionService } from '../../features/rehearsal-sessions/api';
 import { ResourceDetailPage } from './resource-detail.page';
 
 describe('ResourceDetailPage', () => {
