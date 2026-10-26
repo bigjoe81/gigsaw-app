@@ -1,0 +1,89 @@
+<article class="card bg-base-200 border border-base-300 my-4">
+  <header class="px-6 pt-6">
+    <h2 class="card-title">Media</h2>
+  </header>
+  <div class="card-body">
+    <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-sm" (click)="exportMediaPack()" type="button">
+        <app-symbol name="download-outline" />
+        Esporta ZIP
+      </app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm" (click)="shareMediaPack()" type="button">
+        <app-symbol name="share-outline" />
+        Condividi ZIP
+      </app-gigsaw-button>
+    </div>
+    <div class="ui-item flex items-center gap-3 py-3">
+      <app-gigsaw-file-input
+        label="Foto promo"
+        accept="image/*"
+        [multiple]="true"
+        controlClass="w-full min-w-0 justify-start"
+        (filesChange)="onPressPhotoFilesSelected($event)"
+      />
+    </div>
+    @if (selectedPressPhotos.length) {
+      <small class="text-sm text-base-content/60 px-4 pt-4"> {{ selectedPressPhotos.length }} file selezionati </small>
+      <app-gigsaw-button
+        tone="unstyled"
+        buttonClass="btn btn-outline mt-4"
+        (click)="uploadPressPhotos()"
+        [disabled]="uploadingPressPhotos"
+        type="button"
+      >
+        @if (uploadingPressPhotos) {
+          <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
+        } @else {
+          <app-symbol name="cloud-upload" />
+          Carica foto promo
+        }
+      </app-gigsaw-button>
+    }
+
+    @if (band.pressPhotos?.length) {
+      <div class="mt-4 grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
+        @for (photo of band.pressPhotos; track photo.id) {
+          <div class="grid gap-2">
+            <img
+              [src]="photo.previewUrl || photo.url"
+              [alt]="photo.fileName || 'Foto promo'"
+              class="aspect-square w-full rounded-2xl bg-[var(--ui-color-light)] object-cover"
+            />
+            <app-gigsaw-button
+              tone="unstyled"
+              buttonClass="btn btn-ghost btn-error btn-sm"
+              (click)="removePressPhoto(photo)"
+              type="button"
+            >
+              <app-symbol name="trash-outline" />
+              Rimuovi
+            </app-gigsaw-button>
+          </div>
+        }
+      </div>
+    } @else {
+      <small class="text-sm text-base-content/60">Nessuna foto promo caricata.</small>
+    }
+  </div>
+</article>
+<article class="card bg-base-200 border border-base-300 my-4">
+  <header class="px-6 pt-6">
+    <h2 class="card-title">Press kit</h2>
+  </header>
+  <div class="card-body">
+    <small class="text-sm text-base-content/60">
+      Il press kit PDF esporta profilo band, lineup, generi e contatti. Le foto promo restano scaricabili a parte nella
+      sezione Media.
+    </small>
+    <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-sm" (click)="exportPressKit()" type="button">
+        <app-symbol name="download-outline" />
+        Esporta PDF
+      </app-gigsaw-button>
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline btn-sm" (click)="sharePressKit()" type="button">
+        <app-symbol name="share-outline" />
+        Condividi
+      </app-gigsaw-button>
+    </div>
+  </div>
+</article>

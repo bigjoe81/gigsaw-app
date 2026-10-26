@@ -13,13 +13,12 @@ import {
   Song,
 } from '../../../core/models/band-resources.models';
 import { BandContextService } from '../../../core/services/band-context.service';
-import { Band } from '../../bands/models/band.models';
-import { BandService } from '../../bands/services/band.service';
-import { CommitmentService } from '../../commitments/services/commitment.service';
-import { GigService } from '../../gigs/services/gig.service';
-import { RehearsalSessionService } from '../../rehearsal-sessions/services/rehearsal-session.service';
-import { SetlistService } from '../../setlists/services/setlist.service';
-import { SongService } from '../../songs/services/song.service';
+import { Band, BandService } from '../../bands/api';
+import { CommitmentService } from '../../commitments/api';
+import { GigService } from '../../gigs/api';
+import { RehearsalSessionService } from '../../rehearsal-sessions/api';
+import { SetlistService } from '../../setlists/api';
+import { SongService } from '../../songs/api';
 
 type OperationalEventType = 'gig' | 'rehearsal' | 'commitment';
 

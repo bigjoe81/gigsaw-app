@@ -14,7 +14,8 @@
     "version:minor": "node scripts/version.mjs up minor",
     "version:major": "node scripts/version.mjs up major",
     "version:down": "node scripts/version.mjs down",
-    "prebuild": "npm run version:check"
+    "prebuild": "npm run architecture:check && npm run version:check",
+    "architecture:check": "node scripts/check-architecture.mjs"
   },
   "private": true,
   "dependencies": {

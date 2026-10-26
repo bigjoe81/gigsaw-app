@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { BandResourceApiService } from '../../../core/services/band-resource-api.service';
-import { SongService } from '../../songs/services/song.service';
+import { SongService } from '../../songs/api';
 import { RehearsalSessionService } from './rehearsal-session.service';
 
 describe('RehearsalSessionService', () => {
