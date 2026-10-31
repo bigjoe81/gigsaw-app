@@ -7,6 +7,7 @@ import { faArrowDown, faArrowUp, faCircleQuestion } from '@fortawesome/pro-solid
 import { faSolidIconRegistry } from './fontawesome-solid-icon-registry';
 import { GigsawButtonComponent } from './gigsaw/gigsaw-button.component';
 import { GigsawInputComponent } from './gigsaw/gigsaw-input.component';
+export { ToastService } from './gigsaw/gigsaw-toast.service';
 
 @Component({
   selector: 'app-symbol',
@@ -208,16 +209,6 @@ export class DialogService {
       dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
       dialog.addEventListener('click', event => { if (event.target === dialog) close(); });
       document.body.append(dialog); dialog.showModal();
-    } };
-  }
-}
-@Injectable({ providedIn: 'root' })
-export class ToastService {
-  async create(options: { message: string; duration?: number; color?: string; position?: string }): Promise<{ present: () => Promise<void> }> {
-    return { present: async () => {
-      const toast = document.createElement('div'); toast.className = 'toast toast-bottom toast-end z-[1000]'; toast.setAttribute('role', 'status');
-      const alert = document.createElement('div'); alert.className = `alert alert-${options.color === 'danger' ? 'error' : options.color === 'success' ? 'success' : 'info'}`; alert.textContent = options.message;
-      toast.append(alert); document.body.append(toast); setTimeout(() => toast.remove(), options.duration ?? 3500);
     } };
   }
 }

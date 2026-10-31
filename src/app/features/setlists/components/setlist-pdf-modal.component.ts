@@ -8,7 +8,7 @@ import { SetlistPdfFormat } from '../services/setlist-pdf.service';
   selector: 'app-setlist-pdf-modal',
   standalone: true,
   imports: [NativeUiModule, GigsawFormControlsModule],
-  styles: [`app-dialog { --width: min(520px, calc(100vw - 32px)); --height: 420px; --border-radius: 16px; } .options { display: grid; gap: 24px; padding: 24px; } .actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }`],
+  styles: [`.app-content { flex: 0 0 auto; } app-dialog { --width: min(520px, calc(100vw - 32px)); --height: 420px; --border-radius: 16px; } .options { display: grid; gap: 24px; padding: 24px; } .actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }`],
   template: `
     <app-dialog [isOpen]="isOpen()" (closed)="closed.emit()">
       <ng-template>
@@ -26,6 +26,7 @@ import { SetlistPdfFormat } from '../services/setlist-pdf.service';
             <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="options().includePerformedBy" (checkedChange)="changeOption('includePerformedBy', $event)" /><span>Autore</span></label>
             <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="options().includeKey" (checkedChange)="changeOption('includeKey', $event)" /><span>Tonalità</span></label>
             <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="options().includeBpm" (checkedChange)="changeOption('includeBpm', $event)" /><span>BPM</span></label>
+            <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="!!options().singlePage" (checkedChange)="changeOption('singlePage', $event)" /><span>Tutto in un foglio solo</span></label>
             <div class="actions"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="closed.emit()" type="button">Annulla</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="confirmed.emit()" type="button">{{ actionLabel() }}</app-gigsaw-button></div>
           </div>
         </section>

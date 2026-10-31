@@ -62,8 +62,23 @@
 .magic-workspace h1 { margin: .25rem 0; font-size: 2rem; font-weight: 600; }
 .magic-workspace > header > p:last-child { color: var(--ui-color-medium); }
 .eyebrow { color: var(--ui-color-secondary); font-size: .7rem; letter-spacing: .15em; }
-.magic-grid { display: grid; grid-template-columns: minmax(320px, 40%) 1fr; gap: 1rem; }
-.constraint-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.magic-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.constraints-panel > summary { display: flex; align-items: center; gap: .75rem; cursor: pointer; list-style: none; }
+.constraints-panel > summary::-webkit-details-marker { display: none; }
+.constraints-panel > summary::after { content: '▾'; margin-left: auto; color: var(--ui-color-medium); transition: transform .15s; }
+.constraints-panel:not([open]) > summary::after { transform: rotate(-90deg); }
+.constraints-panel > summary h2 { margin: 0; }
+.constraints-panel[open] > summary { margin-bottom: .75rem; }
+.constraints-hint { color: var(--gigsaw-muted); font-size: .75rem; }
+.constraint-grid { display: grid; align-items: start; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.encore-picker { display: grid; align-content: start; gap: .35rem; margin: .55rem 0; min-width: 0; color: var(--ui-color-medium); font-size: .75rem; font-weight: 700; }
+.encore-head { display: flex; align-items: center; gap: .5rem; }
+.encore-empty { margin: 0; padding: .5rem; font-weight: 500; opacity: .7; }
+.encore-count { margin-left: auto; font-weight: 500; opacity: .8; }
+.encore-list { max-height: 11rem; overflow-y: auto; border: 1px solid var(--border); border-radius: .5rem; background: var(--panel-soft); padding: .25rem; }
+.encore-picker label.encore-option { display: flex; flex-direction: row; align-items: flex-start; gap: .6rem; margin: 0 !important; padding: .35rem .5rem; border-radius: .4rem; color: var(--ui-color-text, inherit); font-size: .85rem; font-weight: 500; cursor: pointer; }
+.encore-picker label.encore-option:hover { background: rgba(var(--ui-color-secondary-rgb), .1); }
+.encore-option span { min-width: 0; overflow-wrap: anywhere; }
 .collapse { margin: 1rem 0; border: 1px solid var(--border); background: var(--panel-soft); }
 .large { min-height: 350px; }
 .sticky-apply { position: sticky; bottom: 1rem; width: 100%; }
@@ -71,7 +86,6 @@
   .workspace-grid { grid-template-columns: 1fr 2fr; }
   .inspector { position: static; grid-column: 1 / -1; }
   .stats { display: none; }
-  .magic-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 700px) {
   .workspace-head { flex-wrap: wrap; padding: .5rem; }
@@ -96,3 +110,4 @@
   .save-hint { display: none; }
   .save-actions ::ng-deep app-gigsaw-button > button { width: 100%; }
 }
+.collapse-content label.flex, .constraint-grid label.flex { display: flex; flex-direction: row; align-items: flex-start; gap: .75rem; }

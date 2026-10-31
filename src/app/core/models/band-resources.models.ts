@@ -73,6 +73,7 @@ export interface Gig extends BandScopedEntity {
   date: string;
   venueId?: number | null;
   venue?: Venue | null;
+  setlists?: Array<{ id: number; title: string }>;
   notes?: string | null;
 }
 

@@ -15,4 +15,6 @@ export * from './gigsaw-select.component';
 export * from './gigsaw-steps.component';
 export * from './gigsaw-textarea.component';
 export * from './gigsaw-time-input.component';
+export * from './gigsaw-toast.component';
+export * from './gigsaw-toast.service';
 export * from './gigsaw-typeahead.component';

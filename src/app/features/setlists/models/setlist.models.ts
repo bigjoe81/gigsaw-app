@@ -77,4 +77,5 @@ export interface SetlistPdfOptions {
   includePerformedBy: boolean;
   includeKey: boolean;
   includeBpm: boolean;
+  singlePage?: boolean;
 }

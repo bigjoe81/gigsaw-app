@@ -1,7 +1,9 @@
 import { guidedCompletionUrl } from '../../guide/guided-navigation';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { NativeUiModule } from '../../../shared/ui/native-ui';
+import { NativeUiModule, ToastService } from '../../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
+import { GigsawBadgeComponent } from '../../../shared/ui/gigsaw/gigsaw-badge.component';
+import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw/gigsaw-list.component';
 import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -12,7 +14,13 @@ type ImportKind = 'document' | 'spreadsheet';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, GigsawFormControlsModule, ],
+  imports: [
+    NativeUiModule,
+    GigsawFormControlsModule,
+    GigsawBadgeComponent,
+    GigsawListComponent,
+    GigsawListItemComponent,
+  ],
   templateUrl: './song-import.page.html',
 })
 export class SongImportPage {
@@ -20,15 +28,16 @@ export class SongImportPage {
   readonly selectedRows = signal<Set<number>>(new Set());
   readonly analyzing = signal(false);
   readonly importing = signal(false);
-  readonly error = signal('');
-  readonly result = signal('');
   readonly normalizeTitles = signal(false);
   readonly importKind = signal<ImportKind>('document');
+  readonly durations = signal<Record<number, number>>({});
+  readonly searching = signal<Set<number>>(new Set());
 
   constructor(
     private readonly songsApi: SongService,
     private readonly bandContext: BandContextService,
     private readonly router: Router,
+    private readonly toast: ToastService,
   ) {
 
   }
@@ -37,7 +46,7 @@ export class SongImportPage {
     input.click();
   }
 
-  onFileSelected(event: Event): void {
+  async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (this.analyzing() || this.importing()) return;
     const file = input.files?.[0];
@@ -48,20 +57,19 @@ export class SongImportPage {
     const isDocument = /\.(pdf|docx)$/.test(name) || file.type === 'application/pdf';
     const isSpreadsheet = /\.(csv|txt|xls|xlsx)$/.test(name);
     if (!isDocument && !isSpreadsheet) {
-      this.error.set('Formato non supportato. Usa PDF, Word DOCX, Excel, CSV o TXT.');
+      await this.showToast('Formato non supportato. Usa PDF, Word DOCX, Excel, CSV o TXT.', 'error');
       return;
     }
 
     const bandId = this.bandContext.activeBandId;
     if (!bandId) {
-      this.error.set('Seleziona prima una band.');
+      await this.showToast('Seleziona prima una band.', 'error');
       return;
     }
 
     this.importKind.set(isDocument ? 'document' : 'spreadsheet');
-    this.error.set('');
-    this.result.set('');
     this.review.set(null);
+    this.durations.set({});
     this.analyzing.set(true);
 
     const request = isDocument
@@ -73,7 +81,9 @@ export class SongImportPage {
         this.review.set(review);
         this.selectedRows.set(new Set(review.rows.filter((row) => row.ready && !row.duplicate_existing).map((row) => row.row_number)));
       },
-      error: (error) => this.error.set(this.apiError(error, 'Non riesco ad analizzare il file.')),
+      error: async (error) => {
+        await this.showToast(this.apiError(error, 'Non riesco ad analizzare il file.'), 'error');
+      },
     });
   }
 
@@ -92,30 +102,37 @@ export class SongImportPage {
     const review = this.review();
     if (!review || !this.selectedRows().size || this.importing()) return;
 
-    this.error.set('');
     this.importing.set(true);
     const rows = review.rows.map((row) => ({
       row_number: row.row_number,
       selected: this.selectedRows().has(row.row_number),
       use_metadata: false,
-      input: { title: this.displayTitle(row) },
+      input: { title: this.displayTitle(row), performed_by: this.displayArtist(row), duration: this.durationOf(row) },
     }));
     const request = this.importKind() === 'document'
       ? this.songsApi.confirmDocumentImport(review.import_token, rows)
       : this.songsApi.confirmSpreadsheetImport(review.import_token, rows);
 
     request.pipe(finalize(() => this.importing.set(false))).subscribe({
-      next: (result) => {
+      next: async (result) => {
         if (!result.created_count) {
-          this.error.set('Nessun brano salvato. Verifica i dati delle righe selezionate prima di riprovare.');
+          await this.showToast('Nessun brano salvato. Verifica i dati delle righe selezionate prima di riprovare.', 'error');
           return;
         }
         if (result.skipped_count) {
-          this.result.set(`${result.created_count} brani importati, ${result.skipped_count} non salvati. Torna al repertorio per controllare i brani importati.`);
+          await this.showToast(
+            `${result.created_count} brani importati, ${result.skipped_count} non salvati. Torna al repertorio per controllare i brani importati.`,
+            'warning',
+            3500,
+          );
           this.selectedRows.set(new Set());
           return;
         }
-        this.result.set(`${result.created_count} ${result.created_count === 1 ? 'brano importato' : 'brani importati'}.`);
+        await this.showToast(
+          `${result.created_count} ${result.created_count === 1 ? 'brano importato' : 'brani importati'}.`,
+          'success',
+          4500,
+        );
         const bandId = this.bandContext.activeBandId;
         const destination = guidedCompletionUrl(this.router.url, bandId ?? undefined, 'importazione');
         setTimeout(() => {
@@ -123,8 +140,52 @@ export class SongImportPage {
           else void this.router.navigate(bandId ? ['/band', bandId, 'repertorio'] : ['/band']);
         }, 700);
       },
-      error: (error) => this.error.set(this.apiError(error, 'Importazione non riuscita.')),
+      error: async (error) => {
+        await this.showToast(this.apiError(error, 'Importazione non riuscita.'), 'error');
+      },
     });
+  }
+
+  durationOf(row: SongImportRow): number {
+    return this.durations()[row.row_number] ?? (Number(row.input.duration) || 0);
+  }
+
+  durationLabel(row: SongImportRow): string {
+    const seconds = this.durationOf(row);
+    return seconds > 0 ? `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}` : '';
+  }
+
+  setDuration(row: SongImportRow, value: string): void {
+    const parts = value.trim().split(':').map(Number);
+    const valid = value.trim() !== '' && parts.length <= 2 && parts.every((part) => Number.isFinite(part) && part >= 0);
+    const seconds = !valid ? 0 : parts.length === 2 ? parts[0] * 60 + parts[1] : parts[0];
+    this.durations.update((current) => ({ ...current, [row.row_number]: Math.round(seconds) }));
+  }
+
+  searchDuration(row: SongImportRow): void {
+    const title = this.displayTitle(row).trim();
+    if (!title || this.searching().has(row.row_number)) return;
+
+    this.searching.update((set) => new Set(set).add(row.row_number));
+    this.songsApi.searchMetadata(title, this.displayArtist(row))
+      .pipe(finalize(() => this.searching.update((set) => {
+        const next = new Set(set);
+        next.delete(row.row_number);
+        return next;
+      })))
+      .subscribe({
+        next: async (candidates) => {
+          const found = candidates.find((candidate) => (candidate.durationSeconds ?? 0) > 0);
+          if (!found) {
+            await this.showToast(`Nessuna durata trovata per “${title}”. Inseriscila a mano.`, 'warning');
+            return;
+          }
+          this.durations.update((current) => ({ ...current, [row.row_number]: Math.round(found.durationSeconds as number) }));
+        },
+        error: async (error) => {
+          await this.showToast(this.apiError(error, 'Ricerca metadati non riuscita.'), 'error');
+        },
+      });
   }
 
   displayTitle(row: SongImportRow): string {
@@ -133,8 +194,23 @@ export class SongImportPage {
     return title.toLocaleLowerCase('it').replace(/\p{L}/u, (letter) => letter.toLocaleUpperCase('it'));
   }
 
+  displayArtist(row: SongImportRow): string {
+    const artist = row.input.performed_by || '';
+    if (!this.normalizeTitles() || artist !== artist.toLocaleUpperCase('it') || artist === artist.toLocaleLowerCase('it')) return artist;
+    return artist.toLocaleLowerCase('it').replace(/(^|[\s'’.\-/&])(\p{L})/gu, (_, separator: string, letter: string) => separator + letter.toLocaleUpperCase('it'));
+  }
+
   private apiError(error: any, fallback: string): string {
     if (error?.status === 429) return error?.error?.message || 'Hai raggiunto il limite beta di importazioni con AI.';
     return error?.error?.message || error?.error?.error || fallback;
+  }
+
+  private async showToast(
+    message: string,
+    tone: 'success' | 'warning' | 'error',
+    duration = 5000,
+  ): Promise<void> {
+    const toast = await this.toast.create({ message, tone, duration });
+    await toast.present();
   }
 }

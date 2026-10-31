@@ -64,7 +64,7 @@ export class SetlistService {
     return this.withBand((bandId) =>
       this.http.get(`${API_BASE_URL}/bands/${bandId}/setlists/${id}/pdf`, {
         responseType: 'blob',
-        params: { format, ...(options ? { include_performed_by: options.includePerformedBy, include_key: options.includeKey, include_bpm: options.includeBpm } : {}) },
+        params: { format, ...(options ? { include_performed_by: options.includePerformedBy, include_key: options.includeKey, include_bpm: options.includeBpm, single_page: !!options.singlePage } : {}) },
       }),
     );
   }
