@@ -7,7 +7,7 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { SetlistPdfOptions } from '../models/setlist.models';
 import { SetlistService } from './setlist.service';
 
-export type SetlistPdfFormat = 'a4' | 'a3' | 'large-print' | 'a3-large-print';
+export type SetlistPdfFormat = 'a4' | 'a3' | 'large-print' | 'a3-large-print' | 'a4-landscape-large-print';
 
 @Injectable({ providedIn: 'root' })
 export class SetlistPdfService {
@@ -15,7 +15,7 @@ export class SetlistPdfService {
 
   async open(id: number, title?: string | null, format: SetlistPdfFormat = 'a4', options?: SetlistPdfOptions): Promise<void> {
     const blob = await this.fetchPdf(id, format, options);
-    const fileName = this.fileName(format === 'a3-large-print' ? `${title ?? 'scaletta'}-a3-alta-leggibilita` : format === 'large-print' ? `${title ?? 'scaletta'}-alta-leggibilita` : title);
+    const fileName = this.fileName(this.titleForFormat(title, format));
 
     if (Capacitor.isNativePlatform()) {
       const uri = await this.writeNativeFile(blob, fileName, Directory.Cache);
@@ -34,7 +34,7 @@ export class SetlistPdfService {
 
   async download(id: number, title?: string | null, format: SetlistPdfFormat = 'a4', options?: SetlistPdfOptions): Promise<string | void> {
     const blob = await this.fetchPdf(id, format, options);
-    const fileName = this.fileName(format === 'a3-large-print' ? `${title ?? 'scaletta'}-a3-alta-leggibilita` : format === 'large-print' ? `${title ?? 'scaletta'}-alta-leggibilita` : title);
+    const fileName = this.fileName(this.titleForFormat(title, format));
 
     if (Capacitor.isNativePlatform()) {
       return this.writeNativeFile(blob, fileName, Directory.Documents);
@@ -50,7 +50,7 @@ export class SetlistPdfService {
 
   async share(id: number, title?: string | null, format: SetlistPdfFormat = 'a4', options?: SetlistPdfOptions): Promise<void> {
     const blob = await this.fetchPdf(id, format, options);
-    const fileName = this.fileName(format === 'a3-large-print' ? `${title ?? 'scaletta'}-a3-alta-leggibilita` : format === 'large-print' ? `${title ?? 'scaletta'}-alta-leggibilita` : title);
+    const fileName = this.fileName(this.titleForFormat(title, format));
 
     if (Capacitor.isNativePlatform()) {
       const uri = await this.writeNativeFile(blob, fileName, Directory.Cache);
@@ -115,6 +115,13 @@ export class SetlistPdfService {
       };
       reader.readAsDataURL(blob);
     });
+  }
+
+  private titleForFormat(title: string | null | undefined, format: SetlistPdfFormat): string | null | undefined {
+    const suffix = format === 'a3-large-print' ? 'a3-alta-leggibilita'
+      : format === 'a4-landscape-large-print' ? 'a4-orizzontale-alta-leggibilita'
+      : format === 'large-print' ? 'alta-leggibilita' : null;
+    return suffix ? `${title ?? 'scaletta'}-${suffix}` : title;
   }
 
   private fileName(title?: string | null): string {

@@ -21,6 +21,7 @@ import { SetlistPdfFormat } from '../services/setlist-pdf.service';
             <label class="gigsaw-select-field"><span>Formato PDF</span><select class="select w-full"  aria-label="Formato PDF" [appSelectValue]="format()" (selectionChange)="formatChange.emit($event)" appSelect>
               <option value="a4">A4 · Standard</option>
               <option value="a3-large-print">A3 verticale · Alta leggibilità</option>
+              <option value="a4-landscape-large-print">A4 orizzontale · Alta leggibilità</option>
               <option value="large-print">A4 · Alta leggibilità · caratteri grandi</option>
             </select></label>
             <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="options().includePerformedBy" (checkedChange)="changeOption('includePerformedBy', $event)" /><span>Autore</span></label>
