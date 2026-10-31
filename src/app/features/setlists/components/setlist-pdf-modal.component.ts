@@ -27,7 +27,7 @@ import { SetlistPdfFormat } from '../services/setlist-pdf.service';
             <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="options().includePerformedBy" (checkedChange)="changeOption('includePerformedBy', $event)" /><span>Autore</span></label>
             <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="options().includeKey" (checkedChange)="changeOption('includeKey', $event)" /><span>Tonalità</span></label>
             <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="options().includeBpm" (checkedChange)="changeOption('includeBpm', $event)" /><span>BPM</span></label>
-            <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="!!options().singlePage" (checkedChange)="changeOption('singlePage', $event)" /><span>Tutto in un foglio solo</span></label>
+            <label class="flex items-center gap-3"><app-gigsaw-checkbox [checked]="!!options().singlePage" (checkedChange)="changeOption('singlePage', $event)" /><span>{{ format() === 'a4-landscape-large-print' ? 'Comprimi in 2 fogli' : 'Tutto in un foglio solo' }}</span></label>
             <div class="actions"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="closed.emit()" type="button">Annulla</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="confirmed.emit()" type="button">{{ actionLabel() }}</app-gigsaw-button></div>
           </div>
         </section>
