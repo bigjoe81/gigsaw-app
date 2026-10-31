@@ -29,9 +29,9 @@
     <div class="grid gap-4 p-4">
       <app-gigsaw-list>
         <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ui-color-medium)]">Titolo</p><h2 class="m-0 mt-1 text-base">{{ setlist.title }}</h2></div></app-gigsaw-list-item>
-        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ui-color-medium)]">Data</p><h2 class="m-0 mt-1 text-base">{{ setlist.date || '—' }}</h2></div></app-gigsaw-list-item>
-        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ui-color-medium)]">Gig</p><h2 class="m-0 mt-1 text-base">{{ setlist.gigId || '—' }}</h2></div></app-gigsaw-list-item>
-        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ui-color-medium)]">Venue</p><h2 class="m-0 mt-1 text-base">{{ setlist.venueId || '—' }}</h2></div></app-gigsaw-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ui-color-medium)]">Data</p><h2 class="m-0 mt-1 text-base">{{ formatDate(setlist.date) }}</h2></div></app-gigsaw-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ui-color-medium)]">Concerto</p><h2 class="m-0 mt-1 text-base">{{ setlist.gigTitle || '—' }}</h2></div></app-gigsaw-list-item>
+        <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ui-color-medium)]">Locale</p><h2 class="m-0 mt-1 text-base">{{ setlist.venueName || '—' }}@if (setlist.venueCity) { <span class="font-normal text-[var(--ui-color-medium)]"> · {{ setlist.venueCity }}</span> }</h2></div></app-gigsaw-list-item>
         <app-gigsaw-list-item><div class="list-col-grow"><p class="m-0 text-xs uppercase tracking-wide text-[var(--ui-color-medium)]">Note</p><h2 class="m-0 mt-1 text-base">{{ setlist.notes || '—' }}</h2></div></app-gigsaw-list-item>
       </app-gigsaw-list>
 

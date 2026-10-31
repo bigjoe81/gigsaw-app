@@ -133,6 +133,9 @@ export interface Setlist extends BandScopedEntity {
   encoreSongIds?: number[];
   bandId?: number;
   gigId?: number | null;
+  gigTitle?: string | null;
+  venueName?: string | null;
+  venueCity?: string | null;
   venueId?: number | null;
   templateId?: number | null;
   date?: string | null;

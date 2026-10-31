@@ -82,6 +82,12 @@ export class SetlistDetailPage implements OnInit {
     this.load();
   }
 
+  formatDate(value?: string | null): string {
+    if (!value) return '—';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
   load(): void {
     this.loading.set(true);
     this.loadError.set('');
