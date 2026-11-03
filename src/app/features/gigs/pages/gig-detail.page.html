@@ -34,6 +34,37 @@
           <div><p class="m-0 text-[var(--ui-color-medium)] text-[.76rem] font-extrabold tracking-[.08em] uppercase">Note organizzative</p><h2 class="mt-[7px] mb-0 text-base whitespace-pre-wrap">{{ currentGig.notes || 'Nessuna nota inserita.' }}</h2></div>
         </article>
       </section>
+      <section class="mt-[14px] rounded-[18px] border border-[var(--gigsaw-border)] bg-[#101d30] p-5" aria-labelledby="gig-setlists-heading">
+        <h2 id="gig-setlists-heading" class="mt-0 text-lg">Scalette del concerto</h2>
+        @if (setlistsLoading()) {
+          <p role="status">Caricamento scalette…</p>
+        }
+        @if (setlistsError()) {
+          <p role="alert">{{ setlistsError() }}</p>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" (click)="loadSetlists()" type="button" [disabled]="setlistsLoading()">Riprova</app-gigsaw-button>
+        }
+        @for (setlist of setlists(); track setlist.id) {
+          <article class="mt-4 border-t border-[var(--gigsaw-border)] pt-4">
+            <h3 class="mt-0 text-base">
+              <a [routerLink]="['/band', posterBandId, 'scalette', setlist.id]" class="text-[var(--ui-color-primary)]">{{ setlist.title }}</a>
+            </h3>
+            @if (setlist.detail; as detail) {
+              @for (section of setlistSections(detail); track $index) {
+                <h4 class="mb-2 text-sm text-[var(--ui-color-medium)]">{{ section.name }}</h4>
+                <ol class="m-0 list-decimal space-y-2 pl-6">
+                  @for (title of section.titles; track $index) {
+                    <li>{{ title }}</li>
+                  }
+                </ol>
+              } @empty {
+                <p class="text-[var(--ui-color-medium)]">Nessun brano inserito.</p>
+              }
+            }
+          </article>
+        } @empty {
+          <p class="mb-0 text-[var(--ui-color-medium)]">Nessuna scaletta associata al concerto.</p>
+        }
+      </section>
       <app-gig-posters [readOnly]="true" [bandId]="posterBandId" [gigId]="currentGig.id" [values]="posterValues" />
     }
   </main>
