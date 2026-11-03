@@ -62,7 +62,9 @@
             }
           </article>
         } @empty {
-          <p class="mb-0 text-[var(--ui-color-medium)]">Nessuna scaletta associata al concerto.</p>
+          @if (!setlistsLoading() && !setlistsError()) {
+            <p class="mb-0 text-[var(--ui-color-medium)]">Nessuna scaletta associata al concerto.</p>
+          }
         }
       </section>
       <app-gig-posters [readOnly]="true" [bandId]="posterBandId" [gigId]="currentGig.id" [values]="posterValues" />
