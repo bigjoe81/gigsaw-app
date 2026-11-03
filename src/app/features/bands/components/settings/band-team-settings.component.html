@@ -1,0 +1,59 @@
+<article class="card bg-base-200 border border-base-300 my-4">
+  <header class="px-6 pt-6">
+    <h2 class="card-title">Membri</h2>
+  </header>
+  <div class="card-body">
+    <app-gigsaw-list>
+      @for (member of band.members ?? []; track member.id) {
+        <app-gigsaw-list-item>
+          <div class="min-w-0 flex-1">
+            <h2>{{ member.name }}</h2>
+            <p>{{ roleLabel(member.role) }} · {{ member.status || 'ACTIVE' }}</p>
+            @if (!canEditInstruments(member)) {
+              <p>Strumenti: {{ member.instruments?.length ? member.instruments.join(', ') : 'non indicati' }}</p>
+            }
+          </div>
+          @if (isAdmin && canEditRole(member)) {
+            <select
+              class="select w-full min-w-0 w-full font-normal"
+              [appSelectValue]="member.role || 'BAND_MEMBER'"
+              (selectionChange)="changeRoleValue(member, $event)"
+              [attr.aria-label]="'Ruolo di ' + member.name"
+              appSelect
+            >
+              <option value="BAND_MEMBER">Membro band</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+          }
+        </app-gigsaw-list-item>
+        @if (canEditInstruments(member)) {
+          <app-gigsaw-list-item>
+            <app-gigsaw-input
+              controlClass="min-w-0 font-normal"
+              placeholder="Es. voce, chitarra, tastiere"
+              [value]="memberInstrumentsDraft(member)"
+              [maxLength]="500"
+              (valueChange)="updateMemberInstrumentsValue(member, $any($event))"
+              [aria-label]="'Strumenti di ' + member.name"
+            />
+            <app-gigsaw-button
+              tone="unstyled"
+              buttonClass="btn btn-primary btn-sm"
+              slot="end"
+              type="button"
+              (click)="saveMemberInstruments(member)"
+              [disabled]="savingMemberInstruments() !== null"
+            >
+              @if (savingMemberInstruments() === member.id) {
+                <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
+              } @else {
+                Salva
+              }
+            </app-gigsaw-button>
+          </app-gigsaw-list-item>
+          <small class="text-sm text-base-content/60 px-4">Separa più strumenti con una virgola.</small>
+        }
+      }
+    </app-gigsaw-list>
+  </div>
+</article>

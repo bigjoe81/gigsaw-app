@@ -8,7 +8,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { Song } from '../../../core/models/band-resources.models';
-import { SongService } from '../../songs/services/song.service';
+import { SongService } from '../../songs/api';
 import { SetlistTemplate } from '../models/setlist.models';
 import { SetlistService } from '../services/setlist.service';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../shared/ui/gigsaw';

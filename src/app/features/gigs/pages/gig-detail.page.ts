@@ -5,8 +5,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import { Gig, Setlist } from '../../../core/models/band-resources.models';
-import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
-import { SetlistService } from '../../setlists/services/setlist.service';
+import { GigPostersComponent, GigPosterValues } from '../../poster-templates/ui';
+import { SetlistService } from '../../setlists/api';
 import { GigService } from '../services/gig.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,

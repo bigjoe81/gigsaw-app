@@ -6,7 +6,7 @@ import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 import { RehearsalRoom, Venue } from '../../../core/models/band-resources.models';
-import { RehearsalRoomService } from '../../rehearsal-sessions/services/rehearsal-room.service';
+import { RehearsalRoomService } from '../../rehearsal-sessions/api';
 import {
   GigsawListComponent,
   GigsawListItemComponent,

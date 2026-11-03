@@ -3,13 +3,11 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { GigFormPage } from '../../features/gigs/pages/gig-form.page';
-import { GigService } from '../../features/gigs/services/gig.service';
+import { GigService } from '../../features/gigs/api';
 import { RehearsalSessionFormPage } from '../../features/rehearsal-sessions/pages/rehearsal-session-form.page';
-import { RehearsalSessionService } from '../../features/rehearsal-sessions/services/rehearsal-session.service';
-import { RehearsalRoomService } from '../../features/rehearsal-sessions/services/rehearsal-room.service';
-import { SongService } from '../../features/songs/services/song.service';
-import { VenueService } from '../../features/venues/services/venue.service';
-import { MapboxGeocodingService } from '../../features/venues/services/mapbox-geocoding.service';
+import { RehearsalSessionService, RehearsalRoomService } from '../../features/rehearsal-sessions/api';
+import { SongService } from '../../features/songs/api';
+import { VenueService, MapboxGeocodingService } from '../../features/venues/api';
 import { eventTitleDate } from './event-title';
 
 const route = (id: string | null = null) => ({ snapshot: { paramMap: { get: (key: string) => key === 'id' ? id : null } } }) as unknown as ActivatedRoute;

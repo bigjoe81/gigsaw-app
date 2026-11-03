@@ -1,4 +1,4 @@
-import { guidedCompletionUrl } from '../../guide/guided-navigation';
+import { guidedCompletionUrl } from '../../../core/navigation/guided-navigation';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
@@ -27,11 +27,9 @@ import {
 } from '../../../shared/ui/gigsaw';
 import { eventTitleDate, nextEventTitle } from '../../../shared/utils/event-title';
 import { FormPageHeaderComponent } from '../../../shared/ui/form-page-header.component';
-import { Venue } from '../../venues/models/venue.models';
-import { MapboxAddressSuggestion, MapboxGeocodingService } from '../../venues/services/mapbox-geocoding.service';
-import { VenueService } from '../../venues/services/venue.service';
+import { Venue, MapboxAddressSuggestion, MapboxGeocodingService, VenueService } from '../../venues/api';
 import { GigService } from '../services/gig.service';
-import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
+import { GigPostersComponent, GigPosterValues } from '../../poster-templates/ui';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,

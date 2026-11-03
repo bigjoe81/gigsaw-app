@@ -6,7 +6,7 @@ import { BandContextService } from '../../../core/services/band-context.service'
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { SongService } from '../../songs/services/song.service';
+import { SongService } from '../../songs/api';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 import { RehearsalSessionFormPage } from './rehearsal-session-form.page';

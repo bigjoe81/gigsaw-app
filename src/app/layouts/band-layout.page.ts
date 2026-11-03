@@ -5,8 +5,7 @@ import { Component, EnvironmentInjector, OnInit, inject, signal } from '@angular
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';
 import { BandContextService } from '../core/services/band-context.service';
-import { Band } from '../features/bands/models/band.models';
-import { BandService } from '../features/bands/services/band.service';
+import { Band, BandService } from '../features/bands/api';
 
 type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda' | 'live' | 'locandine' | 'band';
 

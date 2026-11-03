@@ -1,4 +1,4 @@
-import { guidedCompletionUrl } from '../../guide/guided-navigation';
+import { guidedCompletionUrl } from '../../../core/navigation/guided-navigation';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';

@@ -1,16 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
-import { Gig, RehearsalSession } from '../../core/models/band-resources.models';
-import { BandContextService } from '../../core/services/band-context.service';
-import { BandResourceApiService } from '../../core/services/band-resource-api.service';
-import { OverlayService, ToastService } from '../../shared/ui/native-ui';
-import { BandService } from '../bands/services/band.service';
-import { Band } from '../bands/models/band.models';
-import {
-  UpcomingBandEvent,
-  UpcomingEventsOnboardingModalComponent,
-} from './upcoming-events-onboarding-modal.component';
+import { Gig, RehearsalSession } from '../../../core/models/band-resources.models';
+import { BandContextService } from '../../../core/services/band-context.service';
+import { BandResourceApiService } from '../../../core/services/band-resource-api.service';
+import { OverlayService, ToastService } from '../../../shared/ui/native-ui';
+import { BandService, Band } from '../../bands/api';
+import { UpcomingEventsOnboardingModalComponent } from '../components/upcoming-events-onboarding-modal.component';
+import type { UpcomingBandEvent } from '../models/upcoming-band-event.models';
 
 interface BandEvents {
   band: Band;
@@ -28,28 +25,41 @@ export class UpcomingRehearsalPromptService {
   private readonly router = inject(Router);
 
   openUpcomingEvents(targetBandId?: number): void {
-    this.bands.listUserBands().pipe(
-      map((bands) => bands.filter((band) => Number.isInteger(band.id) && band.id > 0
-        && (targetBandId === undefined || band.id === targetBandId))),
-      switchMap((bands) => bands.length
-        ? forkJoin(bands.map((band) => forkJoin({
-          band: of(band),
-          rehearsals: this.resources.list<RehearsalSession>(band.id, 'rehearsal-sessions'),
-          gigs: this.resources.list<Gig>(band.id, 'gigs'),
-        })))
-        : of([])),
-      catchError((error: unknown) => {
-        console.error('Impossibile controllare le prove imminenti.', error);
-        void this.showLookupError();
-        return of(null);
-      }),
-    ).subscribe({
-      next: (results) => {
-        if (results === null) return;
-        const events = this.upcomingEvents(results);
-        void this.prompt(results, events);
-      },
-    });
+    this.bands
+      .listUserBands()
+      .pipe(
+        map((bands) =>
+          bands.filter(
+            (band) =>
+              Number.isInteger(band.id) && band.id > 0 && (targetBandId === undefined || band.id === targetBandId),
+          ),
+        ),
+        switchMap((bands) =>
+          bands.length
+            ? forkJoin(
+                bands.map((band) =>
+                  forkJoin({
+                    band: of(band),
+                    rehearsals: this.resources.list<RehearsalSession>(band.id, 'rehearsal-sessions'),
+                    gigs: this.resources.list<Gig>(band.id, 'gigs'),
+                  }),
+                ),
+              )
+            : of([]),
+        ),
+        catchError((error: unknown) => {
+          console.error('Impossibile controllare le prove imminenti.', error);
+          void this.showLookupError();
+          return of(null);
+        }),
+      )
+      .subscribe({
+        next: (results) => {
+          if (results === null) return;
+          const events = this.upcomingEvents(results);
+          void this.prompt(results, events);
+        },
+      });
   }
 
   nextEvent(bandId: number): Observable<UpcomingBandEvent | null> {
@@ -57,46 +67,51 @@ export class UpcomingRehearsalPromptService {
       rehearsals: this.resources.list<RehearsalSession>(bandId, 'rehearsal-sessions'),
       gigs: this.resources.list<Gig>(bandId, 'gigs'),
     }).pipe(
-      map(({ rehearsals, gigs }) => this.upcomingEvents([{ band: { id: bandId } as Band, rehearsals, gigs }])[0] ?? null),
+      map(
+        ({ rehearsals, gigs }) => this.upcomingEvents([{ band: { id: bandId } as Band, rehearsals, gigs }])[0] ?? null,
+      ),
       catchError(() => of(null)),
     );
   }
 
   prepareEvent(event: UpcomingBandEvent): void {
     this.bandContext.setCurrentBand(event.bandId);
-    void this.router.navigateByUrl(`/band/${event.bandId}/${event.type === 'rehearsal' ? 'prove' : 'concerti'}/${event.eventId}`);
+    void this.router.navigateByUrl(
+      `/band/${event.bandId}/${event.type === 'rehearsal' ? 'prove' : 'concerti'}/${event.eventId}`,
+    );
   }
 
   private upcomingEvents(bandEvents: BandEvents[]): UpcomingBandEvent[] {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    return bandEvents.flatMap(({ band, rehearsals, gigs }) => [
-      ...rehearsals
-        .filter((rehearsal) => !['cancelled', 'completed'].includes((rehearsal.status || '').toLowerCase()))
-        .map((rehearsal): UpcomingBandEvent => ({
-          id: `rehearsal:${band.id}:${rehearsal.id}`,
+    return bandEvents
+      .flatMap(({ band, rehearsals, gigs }) => [
+        ...rehearsals
+          .filter((rehearsal) => !['cancelled', 'completed'].includes((rehearsal.status || '').toLowerCase()))
+          .map((rehearsal): UpcomingBandEvent => ({
+            id: `rehearsal:${band.id}:${rehearsal.id}`,
+            bandId: band.id,
+            type: 'rehearsal',
+            eventId: rehearsal.id,
+            title: rehearsal.title || 'Prova',
+            date: rehearsal.date,
+            timestamp: this.timestamp(rehearsal.date, rehearsal.startTime),
+            time: rehearsal.startTime,
+            location: rehearsal.rehearsalRoom?.name ?? null,
+          })),
+        ...gigs.map((gig): UpcomingBandEvent => ({
+          id: `gig:${band.id}:${gig.id}`,
           bandId: band.id,
-          type: 'rehearsal',
-          eventId: rehearsal.id,
-          title: rehearsal.title || 'Prova',
-          date: rehearsal.date,
-          timestamp: this.timestamp(rehearsal.date, rehearsal.startTime),
-          time: rehearsal.startTime,
-          location: rehearsal.rehearsalRoom?.name ?? null,
+          type: 'gig',
+          eventId: gig.id,
+          title: gig.title || 'Concerto',
+          date: gig.date,
+          timestamp: this.timestamp(gig.date),
+          time: this.timeFromDate(gig.date),
+          location: gig.venue?.name ?? null,
         })),
-      ...gigs.map((gig): UpcomingBandEvent => ({
-        id: `gig:${band.id}:${gig.id}`,
-        bandId: band.id,
-        type: 'gig',
-        eventId: gig.id,
-        title: gig.title || 'Concerto',
-        date: gig.date,
-        timestamp: this.timestamp(gig.date),
-        time: this.timeFromDate(gig.date),
-        location: gig.venue?.name ?? null,
-      })),
-    ])
+      ])
       .filter((event) => this.isUpcoming(event, today, now.getTime()))
       .sort((first, second) => first.timestamp - second.timestamp);
   }

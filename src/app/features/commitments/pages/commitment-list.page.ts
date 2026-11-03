@@ -6,8 +6,8 @@ import { Router, RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
 import { Commitment, Gig, RehearsalSession } from '../../../core/models/band-resources.models';
 import { BandContextService } from '../../../core/services/band-context.service';
-import { GigService } from '../../gigs/services/gig.service';
-import { RehearsalSessionService } from '../../rehearsal-sessions/services/rehearsal-session.service';
+import { GigService } from '../../gigs/api';
+import { RehearsalSessionService } from '../../rehearsal-sessions/api';
 import { CommitmentService } from '../services/commitment.service';
 
 type CalendarSource = 'gig' | 'rehearsal' | 'commitment';

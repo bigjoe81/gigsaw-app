@@ -1,0 +1,171 @@
+<article class="card bg-base-200 border border-base-300 my-4">
+  <header class="px-6 pt-6">
+    <h2 class="card-title">Invita membri</h2>
+  </header>
+  <div class="card-body">
+    <small class="text-sm text-base-content/60"
+      >Condividi questo link: chi lo apre trova subito il pulsante “Partecipa”.</small
+    >
+    <label class="grid min-w-0 gap-2 text-sm font-semibold mt-4"
+      ><span>Link d’invito</span
+      ><app-gigsaw-input controlClass="min-w-0 font-normal" [value]="bandInviteLink" [readonly]="true"
+    /></label>
+    <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
+      <app-gigsaw-button
+        tone="unstyled"
+        buttonClass="btn btn-primary"
+        type="button"
+        (click)="copyBandInviteLink()"
+        [disabled]="!bandInviteLink"
+      >
+        <app-symbol name="copy-outline" /> Copia link
+      </app-gigsaw-button>
+      @if (canShareOnWhatsApp) {
+        <app-gigsaw-button
+          tone="unstyled"
+          buttonClass="btn btn-primary btn-success"
+          type="button"
+          (click)="shareBandInviteOnWhatsApp()"
+          [disabled]="!bandInviteLink"
+        >
+          <app-symbol name="logo-whatsapp" /> WhatsApp
+        </app-gigsaw-button>
+      }
+      <app-gigsaw-button tone="unstyled" buttonClass="btn btn-outline" type="button" (click)="scrollToPersonalInvite()">
+        <app-symbol name="mail-outline" /> Invito con email e ruolo
+      </app-gigsaw-button>
+    </div>
+  </div>
+</article>
+<article class="w-full min-w-0 px-[clamp(20px,5vw,72px)] py-8 max-[800px]:px-5" id="personal-invite-card">
+  <header class="pb-4">
+    <h2 class="card-title">Invito personalizzato</h2>
+  </header>
+  <div>
+    <form class="grid min-w-0 gap-4" [formGroup]="inviteForm" (ngSubmit)="invite()">
+      <label class="grid min-w-0 gap-2 text-sm font-semibold"
+        ><span>Nome</span><app-gigsaw-input controlClass="min-w-0 font-normal" formControlName="name"
+      /></label>
+      <label class="grid min-w-0 gap-2 text-sm font-semibold"
+        ><span>Email</span
+        ><app-gigsaw-input
+          controlClass="min-w-0 font-normal"
+          type="email"
+          formControlName="email"
+          [invalid]="inviteForm.controls.email.touched && inviteForm.controls.email.invalid"
+      /></label>
+      <label class="grid min-w-0 gap-2 text-sm font-semibold"
+        ><span>Ruolo</span
+        ><select class="select w-full min-w-0 w-full font-normal" formControlName="role">
+          <option value="BAND_MEMBER">Membro band</option>
+          <option value="ADMIN">Admin</option>
+        </select></label
+      >
+      <app-gigsaw-button
+        tone="unstyled"
+        buttonClass="btn btn-primary mt-4"
+        type="submit"
+        [disabled]="inviting || !band.joinCode"
+      >
+        @if (inviting) {
+          <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span>
+        } @else {
+          Prepara invito
+        }
+      </app-gigsaw-button>
+    </form>
+    <small class="text-sm text-base-content/60 mt-4"
+      >Creeremo un link diretto: chi lo apre dovrà premere “Partecipa”.</small
+    >
+    @if (inviteError) {
+      <small class="text-sm text-error mt-4">{{ inviteError }}</small>
+    }
+
+    @if (lastInvitation) {
+      <div
+        class="rounded-2xl border border-[var(--gigsaw-border)] bg-[color-mix(in_srgb,var(--ui-color-primary)_8%,transparent)] p-4 mt-5"
+      >
+        <strong class="block">Invito pronto per {{ lastInvitation.name }}</strong>
+        <span class="block mt-1 text-sm text-[var(--gigsaw-muted)]">Scegli come condividerlo.</span>
+        <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
+          @if (canShareOnWhatsApp) {
+            <app-gigsaw-button
+              tone="unstyled"
+              buttonClass="btn btn-primary btn-success"
+              type="button"
+              (click)="shareInvitationOnWhatsApp(lastInvitation)"
+            >
+              <app-symbol name="logo-whatsapp" /> WhatsApp
+            </app-gigsaw-button>
+          }
+          <app-gigsaw-button
+            tone="unstyled"
+            buttonClass="btn btn-primary"
+            type="button"
+            (click)="shareInvitationByEmail(lastInvitation)"
+          >
+            <app-symbol name="mail-outline" /> Invia email
+          </app-gigsaw-button>
+          <app-gigsaw-button
+            tone="unstyled"
+            buttonClass="btn btn-outline"
+            type="button"
+            (click)="copyInvitationLink(lastInvitation)"
+          >
+            <app-symbol name="copy-outline" /> Copia link
+          </app-gigsaw-button>
+        </div>
+      </div>
+    }
+  </div>
+</article>
+@if (band.invitations?.length) {
+  <article class="card bg-base-200 border border-base-300 my-4">
+    <header class="px-6 pt-6">
+      <h2 class="card-title">Inviti pendenti</h2>
+    </header>
+    <div class="card-body">
+      <app-gigsaw-list>
+        @for (invitation of band.invitations; track invitation.id) {
+          <app-gigsaw-list-item>
+            <div class="min-w-0 flex-1">
+              <h2>{{ invitation.name }}</h2>
+              <p>{{ invitation.email }} · {{ roleLabel(invitation.role) }}</p>
+            </div>
+            <div class="my-4 mb-2 flex flex-wrap gap-[10px]">
+              @if (canShareOnWhatsApp) {
+                <app-gigsaw-button
+                  tone="unstyled"
+                  buttonClass="btn btn-ghost btn-success btn-sm"
+                  type="button"
+                  aria-label="Condividi su WhatsApp"
+                  (click)="shareInvitationOnWhatsApp(invitation)"
+                >
+                  <app-symbol name="logo-whatsapp" />
+                </app-gigsaw-button>
+              }
+              <app-gigsaw-button
+                tone="unstyled"
+                buttonClass="btn btn-ghost btn-sm"
+                type="button"
+                aria-label="Invia email"
+                (click)="shareInvitationByEmail(invitation)"
+              >
+                <app-symbol name="mail-outline" />
+              </app-gigsaw-button>
+              <app-gigsaw-button
+                tone="unstyled"
+                buttonClass="btn btn-ghost btn-sm"
+                type="button"
+                aria-label="Copia link"
+                (click)="copyInvitationLink(invitation)"
+              >
+                <app-symbol name="copy-outline" />
+              </app-gigsaw-button>
+            </div>
+          </app-gigsaw-list-item>
+        }
+      </app-gigsaw-list>
+    </div>
+  </article>
+}

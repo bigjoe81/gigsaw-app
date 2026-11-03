@@ -9,10 +9,14 @@ export const GUIDED_COMPLETIONS = {
 export type GuidedCompletion = keyof typeof GUIDED_COMPLETIONS;
 
 export function parseGuidedCompletion(value: string | null): GuidedCompletion | null {
-  return value && Object.hasOwn(GUIDED_COMPLETIONS, value) ? value as GuidedCompletion : null;
+  return value && Object.hasOwn(GUIDED_COMPLETIONS, value) ? (value as GuidedCompletion) : null;
 }
 
-export function guidedCompletionUrl(currentUrl: string, bandId: number | undefined, completed: GuidedCompletion): string | null {
+export function guidedCompletionUrl(
+  currentUrl: string,
+  bandId: number | undefined,
+  completed: GuidedCompletion,
+): string | null {
   if (!bandId || !currentUrl) return null;
   const url = new URL(currentUrl, 'https://gigsaw.invalid');
   if (url.searchParams.get('guidato') !== '1') return null;

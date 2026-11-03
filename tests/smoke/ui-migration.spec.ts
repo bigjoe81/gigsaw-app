@@ -1,9 +1,12 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+
+const currentRelease: string = JSON.parse(readFileSync('src/assets/changelog.json', 'utf8')).current;
 
 const band = { id: 7, name: 'Demo Band', genres: [], members: [], joinCode: 'DEMO' };
 const song = { id: 2, title: 'Native Blues', performedBy: 'Demo Artist', status: 'active', key: 'G', bpm: 120 };
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('gigsaw:last-seen-changelog', '2026-10-08-band-flows'));
+  await page.addInitScript(release => localStorage.setItem('gigsaw:last-seen-changelog', release), currentRelease);
   await page.route('**/api/v1/**', async route => {
     const path = new URL(route.request().url()).pathname;
     const data = path.endsWith('/me') ? { id: 1, name: 'Demo', email: 'demo@example.test' }
@@ -60,23 +63,23 @@ test('mobile navigation opens and closes after choosing a route', async ({ page,
   test.skip(!isMobile, 'mobile drawer');
   await page.goto('/band/7/repertorio');
   await page.getByRole('button', { name: 'Apri navigazione' }).click();
-  const menu = page.locator('.mobile-menu'); await expect(menu).toBeVisible();
+  const menu = page.getByRole('complementary', { name: 'Menu band' }); await expect(menu).toBeVisible();
   await menu.getByText('Agenda', { exact: true }).click();
   await expect(page).toHaveURL(/impegni$/); await expect(menu).toBeHidden();
 });
 
 test('guided repertoire choices reach the native import form', async ({ page }) => {
   await page.goto('/band/7/inizia');
-  await page.getByRole('button', { name: /Costruire il repertorio/ }).click();
+  await page.getByRole('button', { name: /Lavora sul repertorio/ }).click();
   await page.getByRole('button', { name: /Sì, voglio importarla/ }).click();
   await expect(page).toHaveURL(/repertorio\/importa\?guidato=1/);
   await expect(page.getByRole('button', { name: 'Scegli file' })).toBeVisible();
   await expect(page.locator('input[type=file]')).toHaveAttribute('accept', /\.docx/);
 });
 
-test('scenario recalibration keeps the building choice and opens manual entry', async ({ page }) => {
+test('onboarding repertoire choice keeps the building flow and opens manual entry', async ({ page }) => {
   await page.goto('/inizia?bandId=7&percorso=1');
-  await page.getByRole('button', { name: /Stiamo iniziando/ }).click();
+  await page.getByRole('button', { name: /Costruire il repertorio/ }).click();
   await expect(page.getByRole('heading', { name: 'Avete già una lista di brani?' })).toBeVisible();
   await page.getByRole('button', { name: /No, partiamo dal primo/ }).click();
   await expect(page).toHaveURL(/repertorio\/nuovo\?guidato=1/);

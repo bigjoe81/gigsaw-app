@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, Observable } from 'rxjs';
 import { RehearsalRoom, Venue } from '../../../core/models/band-resources.models';
 import { GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent } from '../../../shared/ui/gigsaw';
-import { RehearsalRoomService } from '../../rehearsal-sessions/services/rehearsal-room.service';
+import { RehearsalRoomService } from '../../rehearsal-sessions/api';
 import { FormPageHeaderComponent } from '../../../shared/ui/form-page-header.component';
 import { VenueService } from '../services/venue.service';
 import { MapboxGeocodingService } from '../services/mapbox-geocoding.service';

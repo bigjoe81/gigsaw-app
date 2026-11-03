@@ -1,4 +1,4 @@
-import { guidedCompletionUrl } from '../../guide/guided-navigation';
+import { guidedCompletionUrl } from '../../../core/navigation/guided-navigation';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
@@ -21,7 +21,7 @@ import {
 } from '../../../shared/ui/gigsaw';
 import { eventTitleDate, nextEventTitle } from '../../../shared/utils/event-title';
 import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
-import { SongService } from '../../songs/services/song.service';
+import { SongService } from '../../songs/api';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 

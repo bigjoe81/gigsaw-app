@@ -3,8 +3,8 @@ import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RehearsalSession, Song } from '../../../core/models/band-resources.models';
-import { SongService } from '../../songs/services/song.service';
-import { SongTakesComponent } from '../../songs/components/song-takes.component';
+import { SongService } from '../../songs/api';
+import { SongTakesComponent } from '../../songs/ui';
 import { ResourceDetailPage } from '../../../shared/ui/resource-detail.page';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,

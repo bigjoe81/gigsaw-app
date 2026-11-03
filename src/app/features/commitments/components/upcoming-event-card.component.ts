@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { SymbolComponent } from '../../shared/ui/native-ui';
-import { GigsawButtonComponent } from '../../shared/ui/gigsaw';
-import type { UpcomingBandEvent } from './upcoming-events-onboarding-modal.component';
+import { SymbolComponent } from '../../../shared/ui/native-ui';
+import { GigsawButtonComponent } from '../../../shared/ui/gigsaw';
+import type { UpcomingBandEvent } from '../models/upcoming-band-event.models';
 
 @Component({
   selector: 'app-upcoming-event-card',
@@ -9,9 +9,13 @@ import type { UpcomingBandEvent } from './upcoming-events-onboarding-modal.compo
   imports: [SymbolComponent, GigsawButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <article class="flex min-w-0 flex-col justify-between gap-6 rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-5 sm:p-6">
+    <article
+      class="flex min-w-0 flex-col justify-between gap-6 rounded-2xl border border-solid border-[var(--gigsaw-border)] bg-[var(--gigsaw-input-background)] p-5 sm:p-6"
+    >
       <div>
-        <span class="inline-flex items-center gap-2 rounded-full bg-[var(--gigsaw-surface)] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[var(--ui-color-primary)]">
+        <span
+          class="inline-flex items-center gap-2 rounded-full bg-[var(--gigsaw-surface)] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[var(--ui-color-primary)]"
+        >
           <app-symbol [name]="event.type === 'rehearsal' ? 'mic-outline' : 'ticket-outline'" />
           {{ event.type === 'rehearsal' ? 'Prova' : 'Concerto' }}
         </span>
@@ -54,7 +58,9 @@ export class UpcomingEventCardComponent {
   showTitle(): boolean {
     const title = this.event.title.trim().toLocaleLowerCase('it-IT');
     const date = new Date(this.event.timestamp).toLocaleDateString('it-IT', {
-      day: 'numeric', month: 'long', year: 'numeric',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
     });
     return !!title && !['prova', 'concerto', `prove del ${date}`, `prova del ${date}`].includes(title);
   }

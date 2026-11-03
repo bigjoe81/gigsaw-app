@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
 import { GigService } from '../services/gig.service';
-import { SetlistService } from '../../setlists/services/setlist.service';
+import { SetlistService } from '../../setlists/api';
 import { Setlist } from '../../../core/models/band-resources.models';
 
 type GigFilter = 'upcoming' | 'past' | 'all';

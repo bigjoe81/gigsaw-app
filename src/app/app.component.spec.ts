@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { AuthService } from './core/auth/auth.service';
-import { UpcomingRehearsalPromptService } from './features/auth/upcoming-rehearsal-prompt.service';
+import { UpcomingRehearsalPromptService } from './features/commitments/api';
 
 @Component({ standalone: true, template: '' })
 class StartupRouteComponent {}
