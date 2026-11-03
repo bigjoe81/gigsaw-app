@@ -38,7 +38,7 @@ export class BandLayoutPage implements OnInit {
     { key: 'concerti', label: 'Concerti', icon: 'radio-outline', hint: 'Date e palco' },
     { key: 'locali', label: 'Locali', icon: 'location-outline', hint: 'Dove suoniamo' },
     { key: 'agenda', label: 'Agenda', icon: 'calendar-outline', hint: 'Prove, live e impegni' },
-    { key: 'live', label: 'Live', icon: 'list-outline', hint: 'Scalette e palco' },
+    { key: 'live', label: 'Scalette', icon: 'list-outline', hint: 'Scalette e palco' },
     { key: 'locandine', label: 'Modelli di locandina', icon: 'color-palette-outline', hint: 'Modelli e formati per i concerti' },
     { key: 'band', label: 'Band', icon: 'people-outline', hint: 'Persone e profilo' },
   ];
