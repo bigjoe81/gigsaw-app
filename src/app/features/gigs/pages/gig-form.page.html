@@ -85,7 +85,9 @@
         </label>
       </section>
 
-      <section class="form-group grid gap-5">
+      </details>
+
+      <section id="locandine" class="form-group grid gap-5">
       <div><h2 class="m-0 text-base">Locandina</h2><p class="mt-1 text-sm text-[var(--gigsaw-muted)]">Ingresso e materiale da condividere.</p></div>
       <label class="grid min-w-0 gap-[7px] text-sm font-bold">
         <span>Prezzo o ingresso per la locandina</span>
@@ -94,7 +96,6 @@
       <app-gig-posters [bandId]="bandId ? '' + bandId : ''" [gigId]="id" [values]="posterValues" />
       </section>
 
-      </details>
       @if (error()) { <small class="text-sm text-error block rounded-xl border border-[rgba(var(--ui-color-danger-rgb),.35)] bg-[rgba(var(--ui-color-danger-rgb),.08)] px-[15px] py-[13px]" role="alert">{{ error() }}</small> }
 
 
