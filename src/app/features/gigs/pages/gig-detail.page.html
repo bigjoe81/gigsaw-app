@@ -67,6 +67,10 @@
           }
         }
       </section>
+      <nav class="mt-6 flex flex-wrap gap-3" aria-label="Azioni locandine">
+        <a class="btn btn-primary" [routerLink]="['modifica']" fragment="locandine">Genera locandine</a>
+        <a class="btn btn-outline" [routerLink]="['/band', posterBandId, 'locandine']">Modelli di locandina</a>
+      </nav>
       <app-gig-posters [readOnly]="true" [bandId]="posterBandId" [gigId]="currentGig.id" [values]="posterValues" />
     }
   </main>

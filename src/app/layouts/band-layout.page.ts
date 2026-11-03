@@ -8,7 +8,7 @@ import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
 
-type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda' | 'live' | 'band';
+type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda' | 'live' | 'locandine' | 'band';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-band-layout',
@@ -39,6 +39,7 @@ export class BandLayoutPage implements OnInit {
     { key: 'locali', label: 'Locali', icon: 'location-outline', hint: 'Dove suoniamo' },
     { key: 'agenda', label: 'Agenda', icon: 'calendar-outline', hint: 'Prove, live e impegni' },
     { key: 'live', label: 'Live', icon: 'list-outline', hint: 'Scalette e palco' },
+    { key: 'locandine', label: 'Modelli di locandina', icon: 'color-palette-outline', hint: 'Modelli e formati per i concerti' },
     { key: 'band', label: 'Band', icon: 'people-outline', hint: 'Persone e profilo' },
   ];
 
@@ -83,6 +84,7 @@ export class BandLayoutPage implements OnInit {
       locali: 'luoghi',
       agenda: 'impegni',
       live: 'scalette',
+      locandine: 'locandine',
       band: 'impostazioni',
     };
 
