@@ -3,7 +3,7 @@ import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, finalize, forkJoin, of } from 'rxjs';
+import { catchError, finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import { Gig, Setlist } from '../../../core/models/band-resources.models';
 import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
 import { SetlistService } from '../../setlists/services/setlist.service';
@@ -46,18 +46,27 @@ export class GigDetailPage implements OnInit {
   }
 
   loadSetlists(): void {
-    const linked = this.gig()?.setlists ?? [];
-    this.setlists.set(linked);
+    if (this.setlistsLoading()) return;
     this.setlistsError.set('');
-    if (!linked.length) return;
     this.setlistsLoading.set(true);
-    forkJoin(linked.map(summary => this.setlistsApi.get(summary.id).pipe(
-      catchError(() => {
-        this.setlistsError.set('Alcune scalette non sono disponibili. Puoi riprovare o aprirle dal collegamento.');
-        return of(undefined);
+    this.setlistsApi.list().pipe(
+      switchMap(setlists => {
+        const linked = setlists.filter(setlist => Number(setlist.gigId) === this.id);
+        this.setlists.set(linked);
+        if (!linked.length) return of([]);
+        return forkJoin(linked.map(summary => this.setlistsApi.get(summary.id).pipe(
+          catchError(() => {
+            this.setlistsError.set('Alcune scalette non sono disponibili. Puoi riprovare o aprirle dal collegamento.');
+            return of(undefined);
+          }),
+        ))).pipe(
+          map(details => linked.map((summary, index) => ({ ...summary, detail: details[index] }))),
+        );
       }),
-    ))).pipe(finalize(() => this.setlistsLoading.set(false))).subscribe(details => {
-      this.setlists.set(linked.map((summary, index) => ({ ...summary, detail: details[index] })));
+      finalize(() => this.setlistsLoading.set(false)),
+    ).subscribe({
+      next: setlists => this.setlists.set(setlists),
+      error: () => this.setlistsError.set('Impossibile caricare le scalette del concerto. Riprova.'),
     });
   }
 
