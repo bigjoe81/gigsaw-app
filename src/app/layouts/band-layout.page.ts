@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { NativeUiModule } from '../shared/ui/native-ui';
 import { Component, EnvironmentInjector, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../core/auth/auth.service';
 import { BandContextService } from '../core/services/band-context.service';
 import { Band } from '../features/bands/models/band.models';
 import { BandService } from '../features/bands/services/band.service';
@@ -21,6 +22,7 @@ type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda
 })
 export class BandLayoutPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
+  private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly bandContext = inject(BandContextService);
   private readonly bandService = inject(BandService);
@@ -86,6 +88,11 @@ export class BandLayoutPage implements OnInit {
 
     return `/band/${bandId}/${routes[section]}`;
   }
+  logout(): void {
+    this.closeMobileMenu();
+    this.auth.logout().subscribe();
+  }
+
   closeMobileMenu(): void { this.menuCollapsed.set(false); }
   handleLayoutClick(event: MouseEvent): void {
     if (event.composedPath().some(target => target instanceof HTMLElement && target.hasAttribute('data-menu-toggle'))) {
