@@ -45,7 +45,7 @@
             <div class="card-body flex min-h-[220px] flex-col p-[22px]">
               <div class="flex items-start justify-between gap-3">
                 <span class="grid size-16 place-items-center overflow-hidden rounded-[10px] bg-[var(--ui-color-step-100)] text-[30px] text-[var(--ui-color-primary)]">
-                  @if (band.logo) { <img class="size-full object-cover" [src]="band.logo" [alt]="band.name" /> }
+                  @if (band.logo) { <img class="size-full object-contain" [src]="band.logo" [alt]="band.name" /> }
                   @else { <app-symbol aria-hidden="true" name="musical-notes"  /> }
                 </span>
                 <span class="badge text-base-content/60">{{ band.currentUserRole === 'ADMIN' ? 'Admin' : 'Musicista' }}</span>

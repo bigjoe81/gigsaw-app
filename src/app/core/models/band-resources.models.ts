@@ -73,6 +73,7 @@ export interface Gig extends BandScopedEntity {
   date: string;
   venueId?: number | null;
   venue?: Venue | null;
+  setlists?: Array<{ id: number; title: string }>;
   notes?: string | null;
 }
 
@@ -132,6 +133,9 @@ export interface Setlist extends BandScopedEntity {
   encoreSongIds?: number[];
   bandId?: number;
   gigId?: number | null;
+  gigTitle?: string | null;
+  venueName?: string | null;
+  venueCity?: string | null;
   venueId?: number | null;
   templateId?: number | null;
   date?: string | null;

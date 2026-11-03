@@ -43,6 +43,7 @@ export interface GigsawTypeaheadItem {
       overscroll-behavior: contain;
       border: 1px solid var(--gigsaw-border);
       border-radius: 8px;
+      background: var(--gigsaw-surface);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
   `,

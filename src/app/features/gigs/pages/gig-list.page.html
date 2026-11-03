@@ -50,6 +50,7 @@
               <h2 class="mb-[3px] mt-0 overflow-hidden text-ellipsis text-[1.08rem] leading-[1.3] whitespace-nowrap">{{ gig.title || venue(gig) }}</h2>
               <p class="m-0 flex items-center gap-[7px] text-[var(--ui-color-medium)] text-[.84rem] leading-[1.35]"><app-symbol class="shrink-0" name="location-outline"  />{{ venue(gig) }}</p>
               <p class="m-0 flex items-center gap-[7px] text-[var(--ui-color-medium)] text-[.84rem] leading-[1.35]"><app-symbol class="shrink-0" name="time-outline"  />{{ fullDate(gig) }}@if (time(gig); as gigTime) { · {{ gigTime }} }</p>
+              @if (gig.setlists?.length) { <p class="m-0 flex flex-wrap items-center gap-[7px] text-[var(--ui-color-success)] text-[.84rem] leading-[1.35]"><app-symbol class="shrink-0" name="list-outline" />Scaletta: @for (setlist of gig.setlists; track setlist.id) { <button type="button" class="link link-primary" (click)="openSetlist($event, setlist.id)">{{ setlist.title }}</button> }</p> }
             </div>
           </a>
         }
@@ -57,3 +58,25 @@
     }
   </main>
 </section>
+
+<app-dialog [isOpen]="!!viewedSetlist() || setlistLoading()" (closed)="closeSetlist()">
+  <ng-template>
+    <header class="page-header"><div class="navbar gap-3">
+      <h1 class="grow text-xl">{{ viewedSetlist()?.title || 'Scaletta' }}</h1>
+      <div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="closeSetlist()" type="button">Chiudi</app-gigsaw-button></div>
+    </div></header>
+    <section class="app-content" style="flex: 0 1 auto; min-height: 0; overflow-y: auto">
+      <div class="grid gap-4 p-6">
+        @if (setlistLoading()) { <span class="loading loading-spinner" role="status" aria-label="Caricamento"></span> }
+        @for (section of viewedSections(); track $index) {
+          <div>
+            <h2 class="m-0 mb-2 text-base font-bold">{{ section.name }}</h2>
+            <ol class="m-0 grid list-none gap-1 p-0">
+              @for (line of section.lines; track $index) { <li>{{ line }}</li> }
+            </ol>
+          </div>
+        }
+      </div>
+    </section>
+  </ng-template>
+</app-dialog>

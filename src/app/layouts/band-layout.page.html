@@ -43,6 +43,12 @@
         }
         <li class="mt-4"><a [routerLink]="sectionHref('home').replace('/panoramica', '/inizia')" (click)="closeMobileMenu()">Cosa vuoi fare?</a></li>
         <li><a routerLink="/band" (click)="closeMobileMenu()">Cambia band</a></li>
+        <li class="mt-4 border-t border-base-300 pt-3">
+          <button type="button" (click)="logout()">
+            <app-symbol name="log-out-outline" aria-hidden="true" />
+            Esci
+          </button>
+        </li>
       </ul>
     </aside>
   </div>

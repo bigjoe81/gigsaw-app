@@ -60,11 +60,11 @@ export class SetlistService {
     );
   }
 
-  pdf(id: number, format: 'a4' | 'a3' | 'large-print' | 'a3-large-print' = 'a4', options?: SetlistPdfOptions): Observable<Blob> {
+  pdf(id: number, format: 'a4' | 'a3' | 'large-print' | 'a3-large-print' | 'a4-landscape-large-print' = 'a4', options?: SetlistPdfOptions): Observable<Blob> {
     return this.withBand((bandId) =>
       this.http.get(`${API_BASE_URL}/bands/${bandId}/setlists/${id}/pdf`, {
         responseType: 'blob',
-        params: { format, ...(options ? { include_performed_by: options.includePerformedBy, include_key: options.includeKey, include_bpm: options.includeBpm } : {}) },
+        params: { format, ...(options ? { include_performed_by: options.includePerformedBy, include_key: options.includeKey, include_bpm: options.includeBpm, single_page: !!options.singlePage } : {}) },
       }),
     );
   }

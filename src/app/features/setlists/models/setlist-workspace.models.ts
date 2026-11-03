@@ -8,7 +8,7 @@ export interface SetlistItem {
   medleyId?: string; locked?: boolean;
 }
 export interface WorkspaceSet { id: string; name: string; targetSeconds?: number; encore?: boolean; items: SetlistItem[]; }
-export interface SetlistWorkspace { id: string; title: string; gigLabel?: string; sets: WorkspaceSet[]; updatedAt: string; }
+export interface SetlistWorkspace { id: string; title: string; gigLabel?: string; gigId?: number | null; sets: WorkspaceSet[]; updatedAt: string; }
 export interface MagicConstraints {
   totalSeconds: number; setCount: number; setSeconds: number; breakSeconds: number;
   minSongs?: number; maxSongs?: number; openingSongId?: number; closingSongId?: number;

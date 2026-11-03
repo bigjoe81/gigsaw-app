@@ -4,7 +4,20 @@ import { Component, input, output, signal } from '@angular/core';
   selector: 'app-gigsaw-file-input',
   standalone: true,
   imports: [NativeUiModule],
-  template: `<div class="ui-item flex items-center gap-3 py-3"><span class="ui-label">{{label() || 'Seleziona file'}}</span><app-gigsaw-button tone="outline" [buttonClass]="controlClass()" slot="end" [disabled]="disabled()" (click)="picker.click()" type="button">Sfoglia</app-gigsaw-button></div><input #picker hidden type="file" [accept]="accept()" [multiple]="multiple()" [disabled]="disabled()" (change)="onFilesSelected($event)" />@if(fileNames()){<small class="text-sm">{{fileNames()}}</small>}`,
+  template: `
+    <div class="ui-item grid min-w-0 gap-2 py-3">
+      <span class="ui-label">{{ label() || 'Seleziona file' }}</span>
+      <app-gigsaw-button
+        tone="outline"
+        [buttonClass]="controlClass()"
+        [disabled]="disabled()"
+        (click)="picker.click()"
+        type="button"
+      >Sfoglia</app-gigsaw-button>
+    </div>
+    <input #picker hidden type="file" [accept]="accept()" [multiple]="multiple()" [disabled]="disabled()" (change)="onFilesSelected($event)" />
+    @if (fileNames()) { <small class="text-sm">{{ fileNames() }}</small> }
+  `,
 })
 export class GigsawFileInputComponent {
   readonly label = input('');

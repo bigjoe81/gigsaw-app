@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { NativeUiModule } from '../shared/ui/native-ui';
 import { Component, EnvironmentInjector, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../core/auth/auth.service';
 import { BandContextService } from '../core/services/band-context.service';
 import { Band, BandService } from '../features/bands/api';
 
-type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda' | 'live' | 'band';
+type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda' | 'live' | 'locandine' | 'band';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   selector: 'app-band-layout',
@@ -20,6 +21,7 @@ type FlowSection = 'home' | 'musica' | 'prove' | 'concerti' | 'locali' | 'agenda
 })
 export class BandLayoutPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
+  private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly bandContext = inject(BandContextService);
   private readonly bandService = inject(BandService);
@@ -35,7 +37,8 @@ export class BandLayoutPage implements OnInit {
     { key: 'concerti', label: 'Concerti', icon: 'radio-outline', hint: 'Date e palco' },
     { key: 'locali', label: 'Locali', icon: 'location-outline', hint: 'Dove suoniamo' },
     { key: 'agenda', label: 'Agenda', icon: 'calendar-outline', hint: 'Prove, live e impegni' },
-    { key: 'live', label: 'Live', icon: 'list-outline', hint: 'Scalette e palco' },
+    { key: 'live', label: 'Scalette', icon: 'list-outline', hint: 'Scalette e palco' },
+    { key: 'locandine', label: 'Modelli di locandina', icon: 'color-palette-outline', hint: 'Modelli e formati per i concerti' },
     { key: 'band', label: 'Band', icon: 'people-outline', hint: 'Persone e profilo' },
   ];
 
@@ -80,11 +83,17 @@ export class BandLayoutPage implements OnInit {
       locali: 'luoghi',
       agenda: 'impegni',
       live: 'scalette',
+      locandine: 'locandine',
       band: 'impostazioni',
     };
 
     return `/band/${bandId}/${routes[section]}`;
   }
+  logout(): void {
+    this.closeMobileMenu();
+    this.auth.logout().subscribe();
+  }
+
   closeMobileMenu(): void { this.menuCollapsed.set(false); }
   handleLayoutClick(event: MouseEvent): void {
     if (event.composedPath().some(target => target instanceof HTMLElement && target.hasAttribute('data-menu-toggle'))) {

@@ -53,6 +53,13 @@ export interface SongTake {
   createdAt: string;
 }
 
+export interface SongImportConfirmRow {
+  row_number: number;
+  selected: boolean;
+  use_metadata: boolean;
+  input?: { title: string; performed_by?: string; duration?: number };
+}
+
 export interface SongImportConfirmResult {
   created_count: number;
   skipped_count: number;
@@ -75,15 +82,15 @@ export class SongService extends BandScopedCrudService<Song> {
     return this.reviewFile(`${API_BASE_URL}/songs/imports/spreadsheet/review`, file, bandId);
   }
 
-  confirmPdfImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean; input?: { title: string } }>): Observable<SongImportConfirmResult> {
+  confirmPdfImport(importToken: string, rows: SongImportConfirmRow[]): Observable<SongImportConfirmResult> {
     return this.confirmImport(`${API_BASE_URL}/songs/imports/pdf/confirm`, importToken, rows);
   }
 
-  confirmDocumentImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean; input?: { title: string } }>): Observable<SongImportConfirmResult> {
+  confirmDocumentImport(importToken: string, rows: SongImportConfirmRow[]): Observable<SongImportConfirmResult> {
     return this.confirmImport(`${API_BASE_URL}/songs/imports/document/confirm`, importToken, rows);
   }
 
-  confirmSpreadsheetImport(importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean; input?: { title: string } }>): Observable<SongImportConfirmResult> {
+  confirmSpreadsheetImport(importToken: string, rows: SongImportConfirmRow[]): Observable<SongImportConfirmResult> {
     return this.confirmImport(`${API_BASE_URL}/songs/imports/spreadsheet/confirm`, importToken, rows);
   }
 
@@ -154,7 +161,7 @@ export class SongService extends BandScopedCrudService<Song> {
     );
   }
 
-  private confirmImport(endpoint: string, importToken: string, rows: Array<{ row_number: number; selected: boolean; use_metadata: boolean; input?: { title: string } }>): Observable<SongImportConfirmResult> {
+  private confirmImport(endpoint: string, importToken: string, rows: SongImportConfirmRow[]): Observable<SongImportConfirmResult> {
     return this.http.post<ApiEnvelope<SongImportConfirmResult>>(endpoint, {
       import_token: importToken,
       rows,
