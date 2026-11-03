@@ -3,9 +3,10 @@ import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { DialogService, ToastService } from '../../../shared/ui/native-ui';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
-import { Gig } from '../../../core/models/band-resources.models';
+import { catchError, finalize, forkJoin, of } from 'rxjs';
+import { Gig, Setlist } from '../../../core/models/band-resources.models';
 import { GigPostersComponent, GigPosterValues } from '../../poster-templates/components/gig-posters.component';
+import { SetlistService } from '../../setlists/services/setlist.service';
 import { GigService } from '../services/gig.service';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
@@ -18,12 +19,16 @@ export class GigDetailPage implements OnInit {
   readonly gig = signal<Gig | undefined>(undefined);
   readonly loading = signal(true);
   readonly error = signal('');
+  readonly setlists = signal<Array<{ id: number; title: string; detail?: Setlist }>>([]);
+  readonly setlistsLoading = signal(false);
+  readonly setlistsError = signal('');
   private id!: number;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly gigsApi: GigService,
+    private readonly setlistsApi: SetlistService,
     private readonly alert: DialogService,
     private readonly toast: ToastService,
   ) {
@@ -35,9 +40,53 @@ export class GigDetailPage implements OnInit {
     this.gigsApi.get(this.id).pipe(
       finalize(() => this.loading.set(false)),
     ).subscribe({
-      next: (gig) => this.gig.set(gig),
+      next: (gig) => { this.gig.set(gig); this.loadSetlists(); },
       error: () => this.error.set('Impossibile caricare il concerto.'),
     });
+  }
+
+  loadSetlists(): void {
+    const linked = this.gig()?.setlists ?? [];
+    this.setlists.set(linked);
+    this.setlistsError.set('');
+    if (!linked.length) return;
+    this.setlistsLoading.set(true);
+    forkJoin(linked.map(summary => this.setlistsApi.get(summary.id).pipe(
+      catchError(() => {
+        this.setlistsError.set('Alcune scalette non sono disponibili. Puoi riprovare o aprirle dal collegamento.');
+        return of(undefined);
+      }),
+    ))).pipe(finalize(() => this.setlistsLoading.set(false))).subscribe(details => {
+      this.setlists.set(linked.map((summary, index) => ({ ...summary, detail: details[index] })));
+    });
+  }
+
+  setlistSections(setlist: Setlist): Array<{ name: string; titles: string[] }> {
+    const songs = setlist.songs ?? setlist.songEntries ?? [];
+    const title = (id: number) => songs.find(song => song.id === id)?.title ?? `Brano #${id}`;
+    if (setlist.items?.length) {
+      return setlist.items.map(section => ({
+        name: section.name,
+        titles: section.items.map(item => item.type === 'song'
+          ? (item.songId ? title(item.songId) : item.title)
+          : `${item.type === 'pause' ? 'Pausa' : item.type === 'speech' ? 'Parlato' : 'Nota palco'}: ${item.title}`),
+      }));
+    }
+    if (setlist.sections?.length) {
+      return setlist.sections.map(section => ({ name: section.name, titles: section.songIds.map(title) }));
+    }
+    const generation = setlist.generation;
+    const opening = generation?.openingSongIds ?? [];
+    const closing = generation?.closingSongIds ?? [];
+    const encore = setlist.encoreSongIds ?? generation?.encoreSongIds ?? [];
+    const reserved = new Set([...opening, ...closing, ...encore]);
+    const ids = setlist.songIds ?? songs.map(song => song.id);
+    return [
+      { name: 'Apertura', titles: opening.map(title) },
+      { name: 'Brani', titles: ids.filter(id => !reserved.has(id)).map(title) },
+      { name: 'Chiusura', titles: closing.map(title) },
+      { name: 'Bis', titles: encore.map(title) },
+    ].filter(section => section.titles.length);
   }
 
   date(value: string): string {
