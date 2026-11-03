@@ -15,7 +15,10 @@
     "version:major": "node scripts/version.mjs up major",
     "version:down": "node scripts/version.mjs down",
     "prebuild": "npm run architecture:check && npm run version:check",
-    "architecture:check": "node scripts/check-architecture.mjs"
+    "architecture:check": "node scripts/check-architecture.mjs",
+    "start:web": "ng serve app",
+    "build:web": "npm run build -- app",
+    "test:web": "ng test app"
   },
   "private": true,
   "dependencies": {

@@ -3,6 +3,12 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "paths": {
+      "@gigsaw/models": ["libs/models/src/index.ts"],
+      "@gigsaw/models/*": ["libs/models/src/*"],
+      "@gigsaw/domain": ["libs/domain/src/index.ts"],
+      "@gigsaw/domain/*": ["libs/domain/src/*"]
+    },
     "ignoreDeprecations": "6.0",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,

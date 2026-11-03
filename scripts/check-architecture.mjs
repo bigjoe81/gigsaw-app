@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 
-const app = path.resolve('src/app');
+const app = path.resolve('apps/web/src/app');
 const features = path.join(app, 'features');
 const violations = [];
 

@@ -1,0 +1,31 @@
+name: iOS build
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/ios-native
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: xcodebuild -version
+      - name: Model smoke checks
+        run: |
+          cat GigSawLive/Models.swift Tests/ModelSmoke.swift > "$RUNNER_TEMP/GigSawModels.swift"
+          xcrun swift "$RUNNER_TEMP/GigSawModels.swift"
+      - name: Build simulator app
+        run: >-
+          xcodebuild -project GigSawLive.xcodeproj -scheme GigSawLive
+          -configuration Debug -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
