@@ -17,6 +17,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-web:
+    name: Web production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+        env:
+          FONTAWESOME_NPM_TOKEN: ${{ secrets.FONTAWESOME_NPM_TOKEN }}
+      - run: npm run build:web
+      - run: npx tsc -p apps/web/tsconfig.spec.json --noEmit
+
   smoke:
     name: Playwright smoke (${{ matrix.project }})
     runs-on: ubuntu-latest
@@ -38,6 +54,8 @@ jobs:
 
       - name: Install app dependencies
         run: npm ci
+        env:
+          FONTAWESOME_NPM_TOKEN: ${{ secrets.FONTAWESOME_NPM_TOKEN }}
 
       - name: Check feature boundaries
         run: npm run architecture:check

@@ -39,4 +39,4 @@ Card, modal e servizio degli eventi imminenti appartengono a `features/commitmen
 - `npm run architecture:check`
 - `npm run build`
 - `npx tsc --noEmit -p tsconfig.spec.json`
-- `npx playwright test tests/smoke/band-settings.spec.ts` verifica salvataggio, errori, permessi, preset, inviti e conservazione delle bozze con API simulate. Imposta `PLAYWRIGHT_TEST_BASE_URL` per eseguirlo sul frontend da verificare.
+- `npx playwright test apps/web/tests/smoke/band-settings.spec.ts` verifica salvataggio, errori, permessi, preset, inviti e conservazione delle bozze con API simulate. Imposta `PLAYWRIGHT_TEST_BASE_URL` per eseguirlo sul frontend da verificare.

@@ -68,3 +68,23 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Multi-app builds and local credentials
+node_modules/
+.angular/
+www/
+out-tsc/
+DerivedData/
+build/
+.gradle/
+local.properties
+xcuserdata/
+*.xcuserstate
+*.ipa
+*.p12
+*.mobileprovision
+.env
+.env.*
+!.env.example
+playwright-report/
+test-results/

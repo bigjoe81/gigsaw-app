@@ -1,7 +1,7 @@
 # Versioni della webapp
 
 La versione corrente è in `package.json`, `package-lock.json` e nella release
-corrente di `src/assets/changelog.json`. Il changelog alimenta le novità in-app.
+corrente di `apps/web/src/assets/changelog.json`. Il changelog alimenta le novità in-app.
 Le vecchie voci prive di un numero rimangono identificate dalla data.
 
 Per creare una release, specifica titolo e una o più novità reali:

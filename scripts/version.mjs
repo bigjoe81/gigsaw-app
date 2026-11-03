@@ -20,7 +20,7 @@ function main() {
   const [command = 'check', part = 'patch', title, ...highlights] = process.argv.slice(2);
   const pkg = read('package.json');
   const lock = read('package-lock.json');
-  const changelog = read('src/assets/changelog.json');
+  const changelog = read('apps/web/src/assets/changelog.json');
   const current = changelog.releases.find((release) => release.id === changelog.current);
   if (!current) throw new Error('Release corrente assente dal changelog.');
   if (command === 'check') {
@@ -53,7 +53,7 @@ function main() {
   pkg.version = lock.version = lock.packages[''].version = version;
   write('package.json', pkg);
   write('package-lock.json', lock);
-  write('src/assets/changelog.json', changelog);
+  write('apps/web/src/assets/changelog.json', changelog);
   console.log(`Versione aggiornata: ${version}`);
 }
 

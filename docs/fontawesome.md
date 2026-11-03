@@ -2,7 +2,7 @@
 
 The application uses Font Awesome Pro Solid icons. Shared UI symbols should use
 `app-symbol`; its legacy names map to Solid icon definitions in
-`src/app/shared/ui/fontawesome-solid-icon-registry.ts`.
+`apps/web/src/app/shared/ui/fontawesome-solid-icon-registry.ts`.
 
 For component-specific icons, import only the definitions you need:
 

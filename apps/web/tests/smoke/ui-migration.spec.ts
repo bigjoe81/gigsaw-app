@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
-const currentRelease: string = JSON.parse(readFileSync('src/assets/changelog.json', 'utf8')).current;
+const currentRelease: string = JSON.parse(readFileSync('apps/web/src/assets/changelog.json', 'utf8')).current;
 
 const band = { id: 7, name: 'Demo Band', genres: [], members: [], joinCode: 'DEMO' };
 const song = { id: 2, title: 'Native Blues', performedBy: 'Demo Artist', status: 'active', key: 'G', bpm: 120 };
