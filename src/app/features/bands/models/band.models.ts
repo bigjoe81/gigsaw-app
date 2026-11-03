@@ -71,6 +71,7 @@ export interface BandInputChannel {
 }
 
 export interface Band {
+  canDeletePermanently?: boolean;
   id: number;
   name: string;
   joinCode?: string | null;

@@ -124,5 +124,17 @@
     @defer (when settingsSection() === 'team') {
       <app-band-team-settings [hidden]="settingsSection() !== 'team'" [band]="band" (reload)="load()" />
     }
+    @if (isAdmin && settingsSection() === 'overview') {
+      @if (band.canDeletePermanently) {
+        <section class="mx-5 my-6 rounded-xl border border-error/40 p-5 max-[760px]:mx-4" aria-labelledby="delete-band-heading">
+          <h2 id="delete-band-heading" class="mt-0 text-base">Elimina band</h2>
+          <p class="text-sm text-[var(--gigsaw-muted)]">Questa band è vuota. Puoi eliminarla definitivamente; il tuo account rimarrà attivo.</p>
+          <app-gigsaw-button tone="unstyled" buttonClass="btn btn-error" type="button" (click)="confirmDeleteBand()" [disabled]="deleting()">
+            {{ deleting() ? 'Eliminazione…' : 'Elimina band' }}
+          </app-gigsaw-button>
+        </section>
+      }
+      @if (deleteError()) { <p class="mx-5 text-error" role="alert">{{ deleteError() }}</p> }
+    }
   }
 </section>

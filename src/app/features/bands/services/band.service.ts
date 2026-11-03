@@ -23,6 +23,10 @@ export class BandService {
     );
   }
 
+  deleteEmpty(bandId: number): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/bands/${bandId}/empty`);
+  }
+
   create(payload: CreateBandRequest): Observable<Band> {
     return this.http.post<ApiEnvelope<Band>>(`${API_BASE_URL}/bands`, this.toFormData(payload)).pipe(
       map((response) => this.normalizeBand(this.unwrap(response))),
@@ -153,6 +157,7 @@ export class BandService {
   private normalizeBand(band: any): Band {
     return {
       id: band.id,
+      canDeletePermanently: band.canDeletePermanently === true || band.can_delete_permanently === true,
       name: band.name,
       joinCode: band.joinCode ?? band.join_code ?? null,
       currentUserRole: band.currentUserRole ?? band.current_user_role ?? null,

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize, timeout } from 'rxjs';
+import { DialogService } from '../../../shared/ui/native-ui';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { BandContextService } from '../../../core/services/band-context.service';
 import { Band } from '../models/band.models';
@@ -35,6 +36,9 @@ export class BandManagePage implements OnInit {
   private readonly router = inject(Router);
   private readonly bandContext = inject(BandContextService);
   private readonly bandService = inject(BandService);
+  private readonly dialogs = inject(DialogService);
+  readonly deleting = signal(false);
+  readonly deleteError = signal('');
 
   private readonly destroyRef = inject(DestroyRef);
   private bandId!: number;
@@ -159,6 +163,37 @@ export class BandManagePage implements OnInit {
           this.loadError.set(error.error?.message || 'Impossibile caricare le impostazioni della band. Riprova.');
         },
       });
+  }
+
+  async confirmDeleteBand(): Promise<void> {
+    if (!this.isAdmin || !this.band?.canDeletePermanently || this.deleting()) return;
+    const dialog = await this.dialogs.create({
+      header: 'Eliminare definitivamente la band?',
+      message: 'La band verrà cancellata definitivamente e non potrà essere recuperata. Il tuo account rimarrà attivo.',
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        { text: 'Elimina definitivamente', role: 'destructive', handler: () => this.deleteBand() },
+      ],
+    });
+    await dialog.present();
+  }
+
+  private deleteBand(): void {
+    if (this.deleting()) return;
+    this.deleting.set(true);
+    this.deleteError.set('');
+    this.bandService.deleteEmpty(this.bandId).pipe(
+      finalize(() => this.deleting.set(false)),
+    ).subscribe({
+      next: () => {
+        if (this.bandContext.getCurrentBand() === this.bandId) this.bandContext.clearActiveBand();
+        void this.router.navigateByUrl('/band');
+      },
+      error: (error: { error?: { message?: string } }) => {
+        this.deleteError.set(error.error?.message || 'Impossibile eliminare la band. Riprova.');
+        this.load();
+      },
+    });
   }
 
   private getBandId(): number | undefined {
