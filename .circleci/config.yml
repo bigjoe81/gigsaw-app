@@ -1,0 +1,133 @@
+version: 2.1
+
+# Opt-in: nessun deploy sui normali push. Run pipeline con mobile_deploy=true.
+parameters:
+  mobile_deploy:
+    type: boolean
+    default: false
+  mobile_platform:
+    type: enum
+    enum: [ios, android, both]
+    default: ios
+  mobile_destination:
+    type: enum
+    enum: [test, prod]
+    default: test
+  mobile_version:
+    type: string
+    default: ""
+  xcode_version:
+    type: string
+    default: "26.4.1"
+
+orbs:
+  node: circleci/node@5.0.3
+
+commands:
+  prepare-mobile:
+    steps:
+      - run:
+          name: Verifica parametri e prerequisiti Live
+          command: |
+            node scripts/mobile-preflight.cjs
+      - run:
+          name: Installa dipendenze condivise e Fastlane
+          command: |
+            npm ci
+            gem install bundler --no-document
+            bundle config set --local path vendor/bundle
+            bundle install --jobs 4 --retry 3
+  deploy-mobile:
+    parameters:
+      platform:
+        type: enum
+        enum: [ios, android]
+    steps:
+      - run:
+          name: Distribuisci Gigsaw Live
+          command: |
+            lane=beta
+            if [ "$MOBILE_DESTINATION" = prod ]; then lane=production; fi
+            bundle exec fastlane << parameters.platform >> "$lane"
+      - store_artifacts:
+          path: build/mobile
+          destination: gigsaw-live
+      - run:
+          name: Rimuovi credenziali temporanee
+          when: always
+          command: rm -rf /tmp/gigsaw-mobile-secrets
+
+jobs:
+  deploy-ios:
+    macos:
+      xcode: << pipeline.parameters.xcode_version >>
+    resource_class: m4pro.medium
+    environment:
+      APP_VERSION: << pipeline.parameters.mobile_version >>
+      MOBILE_DESTINATION: << pipeline.parameters.mobile_destination >>
+      FASTLANE_SKIP_UPDATE_CHECK: "true"
+      FASTLANE_HIDE_CHANGELOG: "true"
+    steps:
+      - checkout
+      - node/install:
+          node-version: "24"
+      - run:
+          name: Prepara Ruby
+          command: |
+            rbenv install -s 3.3.6
+            rbenv global 3.3.6
+            echo 'eval "$(rbenv init - bash)"' >> "$BASH_ENV"
+      - prepare-mobile
+      # Aggiungere a CircleCI una user SSH key con accesso al repository match.
+      - add_ssh_keys
+      - deploy-mobile:
+          platform: ios
+
+  deploy-android:
+    machine:
+      image: android:2026.10.1
+    resource_class: large
+    environment:
+      APP_VERSION: << pipeline.parameters.mobile_version >>
+      MOBILE_DESTINATION: << pipeline.parameters.mobile_destination >>
+      FASTLANE_SKIP_UPDATE_CHECK: "true"
+      FASTLANE_HIDE_CHANGELOG: "true"
+    steps:
+      - checkout
+      - node/install:
+          node-version: "24"
+      - run:
+          name: Prepara Ruby
+          command: |
+            sudo apt-get update -qq
+            sudo apt-get install -y ruby-full ruby-dev build-essential
+            echo 'export GEM_HOME="$HOME/.gems"' >> "$BASH_ENV"
+            echo 'export PATH="$HOME/.gems/bin:$PATH"' >> "$BASH_ENV"
+      - prepare-mobile
+      - run:
+          name: Prepara chiavi Google Play e firma Android
+          command: node scripts/mobile-secrets.cjs
+      - deploy-mobile:
+          platform: android
+
+workflows:
+  live-ios:
+    when:
+      and:
+        - << pipeline.parameters.mobile_deploy >>
+        - or:
+            - equal: [ios, << pipeline.parameters.mobile_platform >>]
+            - equal: [both, << pipeline.parameters.mobile_platform >>]
+    jobs:
+      - deploy-ios:
+          context: gigsaw-mobile
+  live-android:
+    when:
+      and:
+        - << pipeline.parameters.mobile_deploy >>
+        - or:
+            - equal: [android, << pipeline.parameters.mobile_platform >>]
+            - equal: [both, << pipeline.parameters.mobile_platform >>]
+    jobs:
+      - deploy-android:
+          context: gigsaw-mobile
