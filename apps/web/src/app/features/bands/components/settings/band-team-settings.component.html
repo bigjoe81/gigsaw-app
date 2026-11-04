@@ -25,6 +25,18 @@
               <option value="ADMIN">Admin</option>
             </select>
           }
+          @if (canRemoveMember(member)) {
+            <app-gigsaw-button
+              tone="unstyled"
+              buttonClass="btn btn-error btn-outline btn-sm"
+              type="button"
+              [attr.aria-label]="'Rimuovi ' + member.name + ' dalla band'"
+              [disabled]="removingMember() !== null"
+              (click)="confirmRemoveMember(member)"
+            >
+              {{ removingMember() === member.id ? 'Rimozione…' : 'Rimuovi' }}
+            </app-gigsaw-button>
+          }
         </app-gigsaw-list-item>
         @if (canEditInstruments(member)) {
           <app-gigsaw-list-item>
