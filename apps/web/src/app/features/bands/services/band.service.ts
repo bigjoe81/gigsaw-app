@@ -98,6 +98,10 @@ export class BandService {
     );
   }
 
+  removeMember(bandId: number, userId: number): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/bands/${bandId}/user/${userId}`);
+  }
+
   updateMemberRole(bandId: number, userId: number, role: string): Observable<void> {
     return this.http.put<void>(`${API_BASE_URL}/bands/${bandId}/user/${userId}/role`, { role });
   }

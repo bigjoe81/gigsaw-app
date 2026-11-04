@@ -13,7 +13,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { finalize } from 'rxjs';
-import { NativeUiModule, ToastService } from '../../../../shared/ui/native-ui';
+import { DialogService, NativeUiModule, ToastService } from '../../../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { GigsawListComponent, GigsawListItemComponent } from '../../../../shared/ui/gigsaw';
 import { Band, BandMember } from '../../models/band.models';
@@ -33,6 +33,8 @@ export class BandTeamSettingsComponent implements OnChanges {
   @Output() readonly reload = new EventEmitter<void>();
   private readonly bandService = inject(BandService);
   private readonly toast = inject(ToastService);
+  private readonly dialogs = inject(DialogService);
+  readonly removingMember = signal<number | null>(null);
   private readonly destroyRef = inject(DestroyRef);
   private get bandId(): number {
     return this.band.id;
@@ -71,6 +73,49 @@ export class BandTeamSettingsComponent implements OnChanges {
 
   canEditRole(member: BandMember): boolean {
     return member.id !== this.auth.currentUser()?.id;
+  }
+
+  canRemoveMember(member: BandMember): boolean {
+    return this.isAdmin && member.id !== this.auth.currentUser()?.id;
+  }
+
+  async confirmRemoveMember(member: BandMember): Promise<void> {
+    if (!this.canRemoveMember(member) || this.removingMember() !== null) return;
+    const bandId = this.bandId;
+    const dialog = await this.dialogs.create({
+      header: 'Rimuovere il membro?',
+      message: `${member.name} non farà più parte di ${this.band.name} e perderà l'accesso ai suoi contenuti. Il suo account rimarrà attivo.`,
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        { text: 'Rimuovi', role: 'destructive', handler: () => this.removeMember(member, bandId) },
+      ],
+    });
+    await dialog.present();
+  }
+
+  private removeMember(member: BandMember, bandId: number): void {
+    if (this.bandId !== bandId || !this.canRemoveMember(member) || this.removingMember() !== null) return;
+    this.removingMember.set(member.id);
+    this.bandService.removeMember(bandId, member.id).pipe(
+      finalize(() => this.removingMember.set(null)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: async () => {
+        if (this.bandId === bandId) {
+          this.band.members = (this.band.members ?? []).filter(item => item.id !== member.id);
+          this.memberInstrumentDrafts.delete(member.id);
+          this.reload.emit();
+        }
+        (await this.toast.create({ message: 'Membro rimosso dalla band.', duration: 1600, color: 'success' })).present();
+      },
+      error: async (error: { error?: { message?: string } }) => {
+        (await this.toast.create({
+          message: error.error?.message || 'Impossibile rimuovere il membro. Riprova.',
+          duration: 2200,
+          color: 'danger',
+        })).present();
+      },
+    });
   }
 
   private updateRole(member: BandMember, role: string): void {
