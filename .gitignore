@@ -88,3 +88,12 @@ xcuserdata/
 !.env.example
 playwright-report/
 test-results/
+
+# Mobile release tooling and credentials
+/.bundle/
+/vendor/bundle/
+*.jks
+*.keystore
+*.p8
+/fastlane/*.json
+
