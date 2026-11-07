@@ -4,11 +4,11 @@
   "author": "GigSaw",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "ng lint",
+    "start": "ng serve app",
+    "build": "ng build app",
+    "watch": "ng build app --watch --configuration development",
+    "test": "ng test app",
+    "lint": "ng lint app",
     "version:check": "node scripts/version.mjs check",
     "version:patch": "node scripts/version.mjs up patch",
     "version:minor": "node scripts/version.mjs up minor",
@@ -17,8 +17,11 @@
     "prebuild": "npm run architecture:check && npm run version:check",
     "architecture:check": "node scripts/check-architecture.mjs",
     "start:web": "ng serve app",
-    "build:web": "npm run build -- app",
-    "test:web": "ng test app"
+    "build:web": "npm run build --",
+    "test:web": "ng test app",
+    "start:live": "ng serve live",
+    "build:live": "npm run architecture:check && npm run version:check && ng build live",
+    "test:live": "ng test live"
   },
   "private": true,
   "dependencies": {
@@ -42,6 +45,7 @@
     "@fortawesome/angular-fontawesome": "^5.1.0",
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/pro-solid-svg-icons": "^7.3.1",
+    "@ionic/angular": "9.0.10",
     "@tailwindcss/postcss": "^4.3.3",
     "postcss": "^8.5.26",
     "rxjs": "7.8.2",

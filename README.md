@@ -5,7 +5,7 @@ Monorepo di Gigsaw Web e Gigsaw Live. Backend Laravel separato.
 | Percorso | Contenuto |
 | --- | --- |
 | `apps/web` | Gestionale Angular esistente |
-| `apps/live` | Spazio per Ionic + Angular; app ancora da generare |
+| `apps/live` | App Ionic + Angular Live |
 | `apps/ios-native` | Prototipo SwiftUI demo esistente |
 | `apps/android-native` | Spazio per la futura app Kotlin/Compose |
 | `libs/models` | Contratti TypeScript condivisi |
@@ -33,7 +33,7 @@ Il registry privato usa `FONTAWESOME_NPM_TOKEN`, da configurare nell'ambiente lo
 
 ## Live e app native
 
-Vedi `apps/live/README.md` per l'inizializzazione Ionic e `apps/ios-native/README.md` per Xcode. Live non è ancora un'app eseguibile. Il prototipo iOS usa dati demo, non le API reali.
+Vedi `apps/live/README.md` per avviare e compilare Live e `apps/ios-native/README.md` per Xcode. Live contiene una pagina iniziale, senza API o autenticazione; il prototipo iOS usa dati demo, non le API reali.
 
 Le future cartelle Capacitor `apps/live/ios` e `apps/live/android` sono distinte dalle app completamente native. Web e Live hanno build e release indipendenti; condividono contratti e logica dove appropriato. L'autenticazione e lo storage devono avere adattatori per piattaforma.
 

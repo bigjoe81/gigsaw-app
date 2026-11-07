@@ -135,6 +135,74 @@
           }
         }
       }
+    },
+    "live": {
+      "projectType": "application",
+      "root": "apps/live",
+      "sourceRoot": "apps/live/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": {
+              "base": "apps/live/www",
+              "browser": ""
+            },
+            "index": "apps/live/src/index.html",
+            "browser": "apps/live/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "apps/live/tsconfig.app.json",
+            "styles": ["apps/live/src/global.css"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "live:build:production"
+            },
+            "development": {
+              "buildTarget": "live:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "main": "apps/live/src/test.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "apps/live/tsconfig.spec.json",
+            "styles": ["apps/live/src/global.css"]
+          },
+          "configurations": {
+            "ci": {
+              "progress": false,
+              "watch": false
+            }
+          }
+        }
+      }
     }
   },
   "cli": {
