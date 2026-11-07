@@ -21,7 +21,10 @@
     "test:web": "ng test app",
     "start:live": "ng serve live",
     "build:live": "npm run architecture:check && npm run version:check && ng build live",
-    "test:live": "ng test live"
+    "test:live": "ng test live",
+    "test:live:e2e": "playwright test --config apps/live/playwright.config.ts",
+    "preview:live": "node apps/live/serve.mjs",
+    "cap:live": "cd apps/live && cap"
   },
   "private": true,
   "dependencies": {
@@ -51,7 +54,10 @@
     "rxjs": "7.8.2",
     "tailwindcss": "^4.3.3",
     "tslib": "2.8.1",
-    "zone.js": "0.16.2"
+    "zone.js": "0.16.2",
+    "@angular/service-worker": "22.1.1",
+    "@capacitor/ios": "8.5.0",
+    "@capacitor/android": "8.5.0"
   },
   "devDependencies": {
     "@angular-eslint/builder": "22.1.0",
@@ -84,5 +90,8 @@
     "prettier": "^3.9.10",
     "typescript": "6.0.3"
   },
-  "description": "GigSaw band workspace built with Angular, Tailwind CSS and DaisyUI"
+  "description": "GigSaw band workspace built with Angular, Tailwind CSS and DaisyUI",
+  "workspaces": [
+    "apps/live"
+  ]
 }

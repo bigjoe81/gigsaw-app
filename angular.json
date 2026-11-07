@@ -18,9 +18,7 @@
               "browser": ""
             },
             "index": "apps/web/src/index.html",
-            "polyfills": [
-              "apps/web/src/polyfills.ts"
-            ],
+            "polyfills": ["apps/web/src/polyfills.ts"],
             "tsConfig": "apps/web/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -99,9 +97,7 @@
           "builder": "@angular/build:karma",
           "options": {
             "main": "apps/web/src/test.ts",
-            "polyfills": [
-              "apps/web/src/polyfills.ts"
-            ],
+            "polyfills": ["apps/web/src/polyfills.ts"],
             "tsConfig": "apps/web/tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
@@ -153,24 +149,31 @@
             "browser": "apps/live/src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "apps/live/tsconfig.app.json",
-            "styles": ["apps/live/src/global.css"]
+            "styles": ["apps/live/src/global.css"],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "apps/live/public",
+                "output": "/"
+              }
+            ]
           },
           "configurations": {
             "production": {
+              "outputHashing": "all",
+              "serviceWorker": "apps/live/ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumError": "3mb"
                 }
-              ],
-              "outputHashing": "all"
+              ]
             },
             "development": {
               "optimization": false,
-              "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "extractLicenses": false
             }
           },
           "defaultConfiguration": "production"
@@ -206,9 +209,7 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@schematics/angular"
-    ],
+    "schematicCollections": ["@schematics/angular"],
     "analytics": "d4d6cf09-5758-4e8f-b0e2-78dfd4aa7aee"
   },
   "schematics": {

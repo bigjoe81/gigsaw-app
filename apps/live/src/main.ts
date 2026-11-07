@@ -1,15 +1,19 @@
-import { provideZoneChangeDetection } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter, RouteReuseStrategy } from '@angular/router';
-import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
+import { provideRouter } from '@angular/router';
+import { provideIonicAngular } from '@ionic/angular';
+import { provideServiceWorker } from '@angular/service-worker';
+import { isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
-
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection(),
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
+    provideIonicAngular({ mode: 'md' }),
     provideRouter(routes),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode() && !Capacitor.isNativePlatform(),
+      registrationStrategy: 'registerImmediately',
+    }),
   ],
-}).catch((error: unknown) => console.error(error));
+}).catch(console.error);

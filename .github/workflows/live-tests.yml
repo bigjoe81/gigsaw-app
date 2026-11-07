@@ -1,0 +1,30 @@
+name: Live hybrid app
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+        env:
+          FONTAWESOME_NPM_TOKEN: ${{ secrets.FONTAWESOME_NPM_TOKEN }}
+      - run: npm run build:live
+      - run: npx tsc -p apps/live/tsconfig.spec.json --noEmit
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:live:e2e
+      - run: npm run cap:live -- sync
+      - uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: live-test-results
+          path: test-results/

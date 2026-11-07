@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "../..",
-    "outDir": "./out-tsc/app",
+    "outDir": "../../out-tsc/live",
     "types": []
   },
   "files": ["src/main.ts"],
