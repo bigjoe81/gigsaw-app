@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Gigsaw Live</string>
+    <string name="title_activity_main">Gigsaw Live</string>
+    <string name="package_name">it.gigsaw.live</string>
+    <string name="custom_url_scheme">it.gigsaw.live</string>
+</resources>
