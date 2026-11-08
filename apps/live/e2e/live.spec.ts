@@ -4,17 +4,18 @@ test('stage traverses songs, pauses and intermezzi, persists position and font',
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: /Apri il concerto/ }).click();
+  await page.getByRole('link', { name: /Sono sul palco/ }).click();
+  await page.getByRole('link', { name: 'Apri modalità palco' }).click();
   await expect(
     page.getByRole('heading', { name: 'Benvenuti al crossroads' }),
   ).toBeVisible();
-  await page.getByRole('button', { name: 'Avanti →', exact: true }).click();
+  await page.getByRole('button', { name: 'Prossimo', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Straight to Jail' }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Ingrandisci testo' }).click();
-  await page.getByRole('button', { name: 'Avanti →', exact: true }).click();
-  await page.getByRole('button', { name: 'Avanti →', exact: true }).click();
+  await page.getByRole('button', { name: 'Prossimo', exact: true }).click();
+  await page.getByRole('button', { name: 'Prossimo', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Pausa', exact: true }),
   ).toBeVisible();
@@ -23,7 +24,15 @@ test('stage traverses songs, pauses and intermezzi, persists position and font',
     page.getByRole('heading', { name: 'Pausa', exact: true }),
   ).toBeVisible();
   await expect(page.locator('.part-content')).toHaveCSS('font-size', '28px');
-  await page.getByRole('button', { name: 'Concentrati', exact: true }).click();
+  if (
+    await page
+      .getByRole('button', { name: 'Concentrati', exact: true })
+      .isVisible()
+  ) {
+    await page
+      .getByRole('button', { name: 'Concentrati', exact: true })
+      .click();
+  }
   await expect(
     page.getByRole('complementary', { name: 'Scaletta' }),
   ).toBeHidden();
@@ -64,8 +73,12 @@ test('notes, personal parts and PDF bytes persist after reload', async ({
   );
   await expect(page.getByText('parte.pdf', { exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Torna sul palco' }).click();
-  await page.getByRole('button', { name: /2 Primo set/ }).click();
-  await expect(page.locator('.personal-note')).toContainText('Piano brillante');
+  await page.getByRole('link', { name: 'Scaletta', exact: true }).click();
+  await page.getByRole('button', { name: /02 Straight to Jail/ }).click();
+  await page.getByRole('link', { name: 'Apri modalità palco' }).click();
+  await expect(page.locator('.reader .personal-note')).toContainText(
+    'Piano brillante',
+  );
 });
 
 test('records actual audio with song markers, saves, reloads and plays', async ({
@@ -119,7 +132,8 @@ test('offline app shell and saved session survive a new page', async ({
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByText('Senza rete', { exact: true })).toBeVisible();
-  await page.getByRole('link', { name: /Apri il concerto/ }).click();
+  await page.getByRole('link', { name: /Sono sul palco/ }).click();
+  await page.getByRole('link', { name: 'Apri modalità palco' }).click();
   await expect(
     page.getByRole('heading', { name: 'Benvenuti al crossroads' }),
   ).toBeVisible();
@@ -186,4 +200,32 @@ test('failed note commit never reports success', async ({ page }) => {
   await expect(
     page.getByText('Salvato sul dispositivo.', { exact: true }),
   ).toBeHidden();
+});
+
+test('stage tabs switch personal content without advancing the setlist', async ({
+  page,
+}) => {
+  await page.goto('/materials');
+  await page.getByLabel('Elemento della scaletta').selectOption('jail');
+  await page
+    .getByLabel('La tua parte', { exact: true })
+    .fill('E7 | A7\nFinale insieme');
+  await page.getByRole('button', { name: 'Salva la mia parte' }).click();
+  await expect(page.getByRole('status')).toContainText('Salvato');
+  await page.goto('/setlist');
+  await page.getByRole('button', { name: /02 Straight to Jail/ }).click();
+  await page.getByRole('link', { name: 'Apri modalità palco' }).click();
+  const title = page.getByRole('heading', { name: 'Straight to Jail' });
+  await expect(title).toBeVisible();
+  await page.getByRole('tab', { name: 'Testo e accordi' }).click();
+  await expect(page.getByRole('tabpanel')).toContainText('E7 | A7');
+  await page.getByRole('tab', { name: 'Testo e accordi' }).press('ArrowRight');
+  await expect(
+    page.getByRole('tab', { name: 'Note', exact: true }),
+  ).toHaveAttribute('aria-selected', 'true');
+  await expect(title).toBeVisible();
+  await page.getByRole('link', { name: 'Esci dalla modalità palco' }).click();
+  await expect(
+    page.getByRole('link', { name: 'Apri modalità palco' }),
+  ).toBeVisible();
 });

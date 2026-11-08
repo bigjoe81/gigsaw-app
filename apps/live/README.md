@@ -18,6 +18,12 @@ La build viene emessa in `apps/live/www`, separata da `www` del Web. `test:live:
 
 `apps/live/package.json` è un membro del workspace npm, necessario al CLI Capacitor: installare sempre dalla radice, con un solo lockfile. Per le dipendenze Web Pro resta necessario `FONTAWESOME_NPM_TOKEN`, come nel progetto esistente.
 
+## Interfaccia Live
+
+Il concept approvato usa superfici antracite, testo chiaro, accenti lime per navigazione e azioni principali e corallo per la registrazione. Home compatta con i due ingressi, navigazione inferiore con stato attivo e scaletta dedicata in `/setlist` prima della lettura in `/stage`.
+
+Sul telefono la modalità palco nasconde la navigazione generale e mantiene i pulsanti precedente/prossimo separati dall’area di lettura scorrevole. Su tablet affianca scaletta e lettore; da 1100 px aggiunge note e collegamenti ai materiali. Testo e accordi personali e note sono in schede accessibili anche da tastiera; cambiare scheda non avanza il brano. I contenuti vuoti invitano ad aggiungere il proprio materiale. La band è indicata come demo, non come selettore funzionante, e la disponibilità offline dipende dal salvataggio effettivo.
+
 ## Funzioni utilizzabili
 
 - Sessione esplicitamente **demo**, band di esempio CBT. Tonalità, BPM e indicazioni sono fixture, non informazioni confermate della band. Il servizio sessione costituisce il punto di sostituzione futuro con dati API.
@@ -35,4 +41,4 @@ I dati appartengono all’origine e al dispositivo corrente: cancellare i dati d
 
 ## Collaudo
 
-`npm run build:live` e compilazione TypeScript delle specifiche verificati. Sono presenti test Playwright contro produzione per: navigazione palco e pause, persistenza di note/parti/PDF, audio reale e marker, permesso negato e shell/scaletta dopo reload offline e nuova pagina, su viewport desktop e telefono. In questo ambiente Chromium non si avvia per restrizioni di sistema sui socket, quindi i test di interfaccia non sono stati eseguiti con successo. La copertura desktop non sostituisce il collaudo hardware.
+`npm run build:live` e compilazione TypeScript delle specifiche verificati. Sono presenti test Playwright contro produzione per: navigazione palco e pause, persistenza di note/parti/PDF, audio reale e marker, permesso negato e shell/scaletta dopo reload offline e nuova pagina, su viewport desktop, tablet e telefono, incluse le schede del lettore. In questo ambiente Chromium non si avvia per restrizioni di sistema sui socket, quindi i test di interfaccia non sono stati eseguiti con successo. La copertura desktop non sostituisce il collaudo hardware.

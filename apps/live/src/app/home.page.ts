@@ -1,58 +1,59 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SessionService } from './session.service';
+import { IconComponent } from './icon.component';
 @Component({
   standalone: true,
-  imports: [RouterLink],
-  template: ` <main class="page home">
-    <p class="eyebrow">IL TUO SPAZIO, QUANDO SUONI</p>
-    <h1>Ci siamo.<br />Si suona.</h1>
-    <p class="lead">La prova e il palco, a portata di mano.</p>
-    <section class="session-card">
-      <div>
-        <span class="eyebrow">BAND DEMO</span>
-        <h2>{{ s.session().band }}</h2>
-        <p>{{ s.session().title }}</p>
-      </div>
-      <span class="band-symbol" aria-hidden="true">CBT</span>
-    </section>
+  imports: [RouterLink, IconComponent],
+  template: `<main class="page home">
+    <div class="band-selector">
+      <live-icon name="people" /><span>{{ s.session().band }}</span
+      ><span class="demo-badge">DEMO</span>
+    </div>
+    <div class="home-greeting">
+      <p class="muted">Il tuo spazio, quando suoni.</p>
+      <h1>Pronto a suonare?</h1>
+    </div>
     <div class="mode-grid">
       <a class="mode-card rehearsal" routerLink="/rehearsal"
-        ><span class="mode-icon" aria-hidden="true">●</span>
-        <p class="eyebrow">CATTURA LE IDEE</p>
-        <h2>Sono in prova</h2>
-        <p>Registra, segna i brani, ritrova le take.</p>
-        <span class="mode-action"
-          >Inizia la prova <span aria-hidden="true">↗</span></span
-        ></a
-      >
-      <a class="mode-card stage" routerLink="/stage"
-        ><span class="mode-icon" aria-hidden="true">↗</span>
-        <p class="eyebrow">CONCENTRATI SULLA MUSICA</p>
-        <h2>Sono sul palco</h2>
-        <p>La scaletta, la tua parte, il prossimo brano.</p>
-        <span class="mode-action"
-          >Apri il concerto <span aria-hidden="true">↗</span></span
-        ></a
-      >
+        ><live-icon name="mic" />
+        <div>
+          <h2>Sono in prova</h2>
+          <p>Registra, segna i brani, prendi note</p>
+        </div>
+        <live-icon name="right"
+      /></a>
+      <a class="mode-card stage" routerLink="/setlist"
+        ><live-icon name="stage" />
+        <div>
+          <h2>Sono sul palco</h2>
+          <p>Segui la scaletta, brano per brano</p>
+        </div>
+        <live-icon name="right"
+      /></a>
     </div>
-    <section class="panel offline-panel">
+    <section class="panel event-card">
+      <live-icon name="calendar" />
       <div>
-        <h2>
-          {{
-            s.cached() ? 'Scaletta salvata qui' : 'Preparati prima di partire'
+        <p class="eyebrow">LA TUA SESSIONE DEMO</p>
+        <h2>{{ s.session().title }}</h2>
+        <p class="muted">{{ s.session().location }}</p>
+      </div>
+      <a class="button secondary" routerLink="/setlist">Apri scaletta</a>
+    </section>
+    <section class="offline-panel">
+      <div>
+        <h2 class="offline-title">
+          <live-icon [name]="s.cached() ? 'check' : 'folder'" />{{
+            s.cached() ? 'Scaletta salvata qui' : 'Porta la musica con te'
           }}
         </h2>
-        <p>
+        <p class="muted">
           {{
             s.cached()
-              ? 'Scaletta demo e note disponibili su questo dispositivo.'
-              : 'Salva la scaletta demo per ritrovarla anche senza rete.'
+              ? 'Scaletta e note disponibili su questo dispositivo.'
+              : 'Salva la scaletta prima di andare sul palco.'
           }}
-        </p>
-        <p class="muted">
-          I PDF importati e le take sono locali. Nessuna sincronizzazione con la
-          band.
         </p>
       </div>
       <button
@@ -73,9 +74,9 @@ import { SessionService } from './session.service';
       <p role="status" class="notice">{{ message }}</p>
     }
     <aside class="demo-explainer">
-      Stai esplorando una sessione demo. Registrazioni, note e PDF che aggiungi
-      vengono salvati davvero su questo dispositivo. Accesso Gigsaw e dati della
-      tua band saranno collegati in una fase successiva.
+      Stai esplorando una sessione demo. Registrazioni, note e PDF vengono
+      salvati su questo dispositivo. Accesso e dati della band non sono ancora
+      collegati.
     </aside>
   </main>`,
 })
