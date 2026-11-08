@@ -1,3 +1,4 @@
+import { WorkspaceTopbarComponent } from '../../../shared/ui/workspace-topbar.component';
 import { BandFlowService } from '../../../core/services/band-flow.service';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
@@ -36,11 +37,11 @@ interface OperationalEvent {
   ready: boolean;
 }
 
-@Component({ changeDetection: ChangeDetectionStrategy.Default,
+@Component({
+  host: { class: 'backstage-page' },
+  changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule,
-    RouterLink,
-    ],
+  imports: [WorkspaceTopbarComponent, NativeUiModule, RouterLink],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
 })
@@ -57,7 +58,10 @@ export class DashboardPage {
 
   private readonly bandFlow = inject(BandFlowService);
   readonly flow = signal<'building' | 'importing' | 'active'>('active');
-  readonly calibrationQueryParams = computed(() => ({ bandId: this.bandContext.getCurrentBand(), percorso: 1 }));
+  readonly calibrationQueryParams = computed(() => ({
+    bandId: this.bandContext.getCurrentBand(),
+    percorso: 1,
+  }));
   readonly loading = signal(true);
   readonly loadError = signal('');
   readonly band = signal<Band | null>(null);
@@ -65,29 +69,47 @@ export class DashboardPage {
   readonly upcoming = signal<OperationalEvent[]>([]);
   readonly repertoireTotal = signal(0);
   readonly readySongs = signal(0);
+  readonly heroImageFailed = signal(false);
+  readonly heroImage = computed(() =>
+    this.heroImageFailed()
+      ? 'assets/backstage-stage.webp'
+      : this.band()?.cover || 'assets/backstage-stage.webp',
+  );
+  readonly readyPercentage = computed(() =>
+    this.repertoireTotal()
+      ? Math.round((this.readySongs() / this.repertoireTotal()) * 100)
+      : 0,
+  );
 
   readonly nextEvent = computed(() => this.upcoming()[0] ?? null);
   readonly laterEvents = computed(() => this.upcoming().slice(1));
   readonly pendingPreparationCount = computed(() =>
-    this.upcoming().reduce((total, event) => total + event.preparation.length, 0),
+    this.upcoming().reduce(
+      (total, event) => total + event.preparation.length,
+      0,
+    ),
   );
   readonly canInviteToSoloBand = computed(() => {
     const band = this.band();
-    return band?.currentUserRole === 'ADMIN'
-      && (band.membersCount ?? band.members?.length) === 1
-      && Boolean(band.joinCode?.trim());
+    return (
+      band?.currentUserRole === 'ADMIN' &&
+      (band.membersCount ?? band.members?.length) === 1 &&
+      Boolean(band.joinCode?.trim())
+    );
   });
 
   readonly libraryActions = [
-    { icon: 'musical-notes-outline', label: 'Repertorio', route: ['repertorio'] },
+    {
+      icon: 'musical-notes-outline',
+      label: 'Repertorio',
+      route: ['repertorio'],
+    },
     { icon: 'list-outline', label: 'Scalette', route: ['scalette'] },
     { icon: 'mic-outline', label: 'Prove', route: ['prove'] },
     { icon: 'ticket-outline', label: 'Concerti', route: ['concerti'] },
   ];
 
-  constructor() {
-
-  }
+  constructor() {}
 
   ngOnInit(): void {
     this.loadDashboard();
@@ -103,7 +125,9 @@ export class DashboardPage {
   }
 
   private loadDashboard(): void {
-    const bandId = Number(this.route.snapshot.paramMap.get('bandId')) || this.bandContext.getCurrentBand();
+    const bandId =
+      Number(this.route.snapshot.paramMap.get('bandId')) ||
+      this.bandContext.getCurrentBand();
     if (!bandId) {
       this.loadError.set('Nessuna band attiva selezionata.');
       this.loading.set(false);
@@ -115,26 +139,61 @@ export class DashboardPage {
     this.loadError.set('');
 
     forkJoin({
-      band: this.bands.get(bandId).pipe(timeout(15_000), catchError(() => of(null))),
-      songs: this.songs.list().pipe(timeout(15_000), catchError(() => of([] as Song[]))),
-      gigs: this.gigs.list().pipe(timeout(15_000), catchError(() => of([] as Gig[]))),
-      rehearsals: this.rehearsals.list().pipe(timeout(15_000), catchError(() => of([] as RehearsalSession[]))),
-      commitments: this.commitments.list().pipe(timeout(15_000), catchError(() => of([] as Commitment[]))),
-      setlists: this.setlists.list().pipe(timeout(15_000), catchError(() => of([] as Setlist[]))),
-    }).pipe(
-      finalize(() => this.loading.set(false)),
-    ).subscribe(({ band, songs, gigs, rehearsals, commitments, setlists }) => {
-      if (!band) this.loadError.set('Alcuni dati della band non sono disponibili.');
-      this.flow.set(this.bandFlow.infer({ songs: songs.length, gigs: gigs.filter(gig => !gig.bandId || gig.bandId === bandId).length, rehearsals: rehearsals.filter(rehearsal => !rehearsal.bandId || rehearsal.bandId === bandId).length }, this.bandFlow.get(bandId)));
-      this.populateDashboard(
-        band,
-        songs,
-        gigs.filter((gig) => !gig.bandId || gig.bandId === bandId),
-        rehearsals.filter((rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId),
-        commitments.filter((commitment) => !commitment.bandId || commitment.bandId === bandId),
-        setlists,
-      );
-    });
+      band: this.bands.get(bandId).pipe(
+        timeout(15_000),
+        catchError(() => of(null)),
+      ),
+      songs: this.songs.list().pipe(
+        timeout(15_000),
+        catchError(() => of([] as Song[])),
+      ),
+      gigs: this.gigs.list().pipe(
+        timeout(15_000),
+        catchError(() => of([] as Gig[])),
+      ),
+      rehearsals: this.rehearsals.list().pipe(
+        timeout(15_000),
+        catchError(() => of([] as RehearsalSession[])),
+      ),
+      commitments: this.commitments.list().pipe(
+        timeout(15_000),
+        catchError(() => of([] as Commitment[])),
+      ),
+      setlists: this.setlists.list().pipe(
+        timeout(15_000),
+        catchError(() => of([] as Setlist[])),
+      ),
+    })
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe(({ band, songs, gigs, rehearsals, commitments, setlists }) => {
+        if (!band)
+          this.loadError.set('Alcuni dati della band non sono disponibili.');
+        this.flow.set(
+          this.bandFlow.infer(
+            {
+              songs: songs.length,
+              gigs: gigs.filter((gig) => !gig.bandId || gig.bandId === bandId)
+                .length,
+              rehearsals: rehearsals.filter(
+                (rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId,
+              ).length,
+            },
+            this.bandFlow.get(bandId),
+          ),
+        );
+        this.populateDashboard(
+          band,
+          songs,
+          gigs.filter((gig) => !gig.bandId || gig.bandId === bandId),
+          rehearsals.filter(
+            (rehearsal) => !rehearsal.bandId || rehearsal.bandId === bandId,
+          ),
+          commitments.filter(
+            (commitment) => !commitment.bandId || commitment.bandId === bandId,
+          ),
+          setlists,
+        );
+      });
   }
 
   private populateDashboard(
@@ -148,7 +207,9 @@ export class DashboardPage {
     this.band.set(band);
     this.bandName.set(band?.name || 'La tua band');
     this.repertoireTotal.set(songs.length);
-    this.readySongs.set(songs.filter((song) => song.status === 'active').length);
+    this.readySongs.set(
+      songs.filter((song) => song.status === 'active').length,
+    );
 
     const now = Date.now();
     const today = this.startOfToday();
@@ -161,13 +222,21 @@ export class DashboardPage {
           value: this.toGigEvent(gig, setlists),
         })),
       ...rehearsals
-        .filter((rehearsal) => rehearsal.status !== 'cancelled' && this.dateValue(rehearsal.date) >= today)
+        .filter(
+          (rehearsal) =>
+            rehearsal.status !== 'cancelled' &&
+            this.dateValue(rehearsal.date) >= today,
+        )
         .map((rehearsal) => ({
           timestamp: this.eventTimestamp(rehearsal.date, rehearsal.startTime),
           value: this.toRehearsalEvent(rehearsal, songs),
         })),
       ...commitments
-        .filter((commitment) => commitment.status !== 'cancelled' && this.dateValue(commitment.date) >= today)
+        .filter(
+          (commitment) =>
+            commitment.status !== 'cancelled' &&
+            this.dateValue(commitment.date) >= today,
+        )
         .map((commitment) => ({
           timestamp: this.eventTimestamp(commitment.date, commitment.startTime),
           value: this.toCommitmentEvent(commitment),
@@ -190,7 +259,8 @@ export class DashboardPage {
       preparation.push('Prepara la scaletta');
     } else {
       const songCount = this.setlistSongCount(setlist);
-      if (songCount > 0) preparation.push(`Controlla la scaletta · ${songCount} brani`);
+      if (songCount > 0)
+        preparation.push(`Controlla la scaletta · ${songCount} brani`);
     }
 
     if (!gig.venue?.name) preparation.push('Aggiungi il luogo del concerto');
@@ -211,20 +281,28 @@ export class DashboardPage {
     };
   }
 
-  private toRehearsalEvent(rehearsal: RehearsalSession, songs: Song[]): OperationalEvent {
+  private toRehearsalEvent(
+    rehearsal: RehearsalSession,
+    songs: Song[],
+  ): OperationalEvent {
     const rehearsalSongs = rehearsal.songs?.length
       ? rehearsal.songs
       : songs.filter((song) => rehearsal.songIds?.includes(song.id));
     const preparation: string[] = [];
 
     if (rehearsalSongs.length > 0) {
-      const notReady = rehearsalSongs.filter((song) => song.status !== 'active').length;
-      preparation.push(`${rehearsalSongs.length} brani da ripassare${notReady ? ` · ${notReady} non pronti` : ''}`);
+      const notReady = rehearsalSongs.filter(
+        (song) => song.status !== 'active',
+      ).length;
+      preparation.push(
+        `${rehearsalSongs.length} brani da ripassare${notReady ? ` · ${notReady} non pronti` : ''}`,
+      );
     } else {
       preparation.push('Scegli i brani da provare');
     }
 
-    if (rehearsal.notes?.trim()) preparation.push('Rileggi le note della prova');
+    if (rehearsal.notes?.trim())
+      preparation.push('Rileggi le note della prova');
 
     return {
       id: `rehearsal:${rehearsal.id}`,
@@ -243,7 +321,8 @@ export class DashboardPage {
 
   private toCommitmentEvent(commitment: Commitment): OperationalEvent {
     const preparation: string[] = [];
-    if (commitment.notes?.trim()) preparation.push('Rileggi le note dell’impegno');
+    if (commitment.notes?.trim())
+      preparation.push('Rileggi le note dell’impegno');
 
     return {
       id: `commitment:${commitment.id}`,
@@ -266,7 +345,8 @@ export class DashboardPage {
     if (setlist.songIds?.length) return setlist.songIds.length;
     if (setlist.items?.length) {
       return setlist.items.reduce(
-        (total, section) => total + section.items.filter((item) => item.type === 'song').length,
+        (total, section) =>
+          total + section.items.filter((item) => item.type === 'song').length,
         0,
       );
     }
@@ -306,7 +386,10 @@ export class DashboardPage {
     const date = new Date(value);
     if (!Number.isFinite(date.getTime())) return undefined;
     if (date.getHours() === 0 && date.getMinutes() === 0) return undefined;
-    return date.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('it-IT', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 
   private eventTimestamp(dateValue: string, timeValue?: string | null): number {
@@ -319,9 +402,11 @@ export class DashboardPage {
   }
 
   private isSameDay(a: Date, b: Date): boolean {
-    return a.getFullYear() === b.getFullYear()
-      && a.getMonth() === b.getMonth()
-      && a.getDate() === b.getDate();
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
   }
 
   private startOfToday(): number {

@@ -1,4 +1,229 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  min-height: 0;
+}
+.repertoire-count {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--gigsaw-border);
+}
+.repertoire-count strong {
+  font-size: 1.25rem;
+}
+.repertoire-count span {
+  border-left: 1px solid var(--gigsaw-border);
+  padding-left: 24px;
+  color: var(--gigsaw-muted);
+  font-size: 0.85rem;
+}
+.repertoire-filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.workspace-search {
+  flex: 1;
+  min-width: 220px;
+}
+.repertoire-filters .select {
+  width: auto;
+  min-height: 44px;
+}
+.repertoire-tools {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 20px 0 24px;
+  flex-wrap: wrap;
+}
+.metadata-action {
+  color: var(--gigsaw-accent);
+}
+.selection-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--page-accent);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.selection-bar .btn-error {
+  margin-left: auto;
+}
+.song-table-wrap {
+  border: 1px solid var(--gigsaw-border);
+  border-radius: var(--workspace-radius);
+  overflow: hidden;
+  background: var(--workspace-panel);
+}
+.song-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.song-table th {
+  text-align: left;
+  color: var(--gigsaw-muted);
+  font-weight: 500;
+  padding: 16px;
+}
+.song-table td {
+  padding: 18px 16px;
+  border-top: 1px solid var(--gigsaw-border);
+}
+.song-table .check-cell {
+  width: 48px;
+  padding-right: 4px;
+}
+.song-table tbody tr:hover,
+.selected-row {
+  background: color-mix(in srgb, var(--gigsaw-secondary) 5%, transparent);
+}
+.song-title-cell {
+  min-width: 220px;
+}
+.song-title-cell > div {
+  display: inline-grid;
+  vertical-align: middle;
+  gap: 4px;
+  max-width: calc(100% - 44px);
+}
+.song-title {
+  text-align: left;
+  cursor: pointer;
+  font-weight: 650;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.song-title:hover {
+  color: var(--gigsaw-secondary);
+}
+.song-note {
+  display: inline-block;
+  margin-right: 16px;
+  color: var(--gigsaw-secondary);
+  font-size: 1.35rem;
+  vertical-align: middle;
+}
+.song-title-cell small {
+  color: var(--gigsaw-muted);
+  font-size: 0.75rem;
+}
+.song-title-cell .missing-label {
+  color: var(--gigsaw-warning);
+}
+.key-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--gigsaw-border);
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.table-footer {
+  padding: 18px 24px;
+  border-top: 1px solid var(--gigsaw-border);
+  color: var(--gigsaw-muted);
+  font-size: 0.8rem;
+}
+@media (max-width: 1100px) {
+  .song-table th,
+  .song-table td {
+    padding-inline: 10px;
+  }
+  .song-note {
+    display: none;
+  }
+  .song-title-cell > div {
+    max-width: 100%;
+  }
+}
+@media (max-width: 700px) {
+  .repertoire-count {
+    gap: 12px;
+    align-items: start;
+  }
+  .repertoire-count span {
+    padding-left: 12px;
+  }
+  .repertoire-filters .select,
+  .workspace-search {
+    width: 100%;
+  }
+  .song-table thead {
+    display: none;
+  }
+  .song-table tbody {
+    display: block;
+  }
+  .song-table tr {
+    display: grid;
+    grid-template-columns: 36px repeat(3, minmax(0, 1fr)) 40px;
+    padding: 16px 12px;
+    gap: 10px 8px;
+    border-top: 1px solid var(--gigsaw-border);
+  }
+  .song-table tr:first-child {
+    border-top: 0;
+  }
+  .song-table td {
+    display: block;
+    padding: 0;
+    border: 0;
+    font-size: 0.8rem;
+  }
+  .song-table .check-cell {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 4px 0;
+    width: auto;
+  }
+  .song-title-cell {
+    grid-column: 2/5;
+    min-width: 0;
+  }
+  .song-table td[data-label] {
+    grid-row: 2;
+  }
+  .song-table td[data-label="Tonalità"] {
+    grid-column: 2;
+  }
+  .song-table td[data-label="BPM"] {
+    grid-column: 3;
+  }
+  .song-table td[data-label="Durata"] {
+    grid-column: 4;
+  }
+  .song-table td[data-label="Stato"] {
+    grid-column: 2/5;
+    grid-row: 3;
+  }
+  .song-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--gigsaw-muted);
+    font-size: 0.65rem;
+    margin-bottom: 6px;
+  }
+  .song-table td[data-label="Stato"]::before {
+    display: none;
+  }
+  .song-open {
+    grid-column: 5;
+    grid-row: 1;
+  }
+  .song-title {
+    font-size: 0.95rem;
+  }
+  .key-pill {
+    padding: 0;
+    border: 0;
+  }
 }

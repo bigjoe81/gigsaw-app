@@ -3,89 +3,157 @@
   width: 100%;
   height: 100%;
 }
-
 .app-shell {
   width: 100%;
   height: 100%;
-  background: var(--gigsaw-background);
+  background: var(--gigsaw-bg);
 }
-
+.route-content {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.workspace-sidebar {
+  width: var(--workspace-sidebar);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 24px 12px 12px;
+  border-right: 1px solid var(--gigsaw-border);
+  background: var(--gigsaw-bg);
+}
 .brand-link {
   display: inline-flex;
-  align-items: center;
+  padding: 0 14px;
 }
-
 .brand-logo {
-  display: block;
-  width: 132px;
-  max-width: 100%;
+  width: 150px;
   height: auto;
+  filter: hue-rotate(235deg);
 }
-
 .band-chip {
   display: flex;
-  min-width: 0;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--gigsaw-border);
+  border-radius: 12px;
+  color: var(--gigsaw-text);
+  text-decoration: none;
+  min-width: 0;
 }
-
-.band-chip__avatar {
+.band-chip strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.band-chip__avatar,
+.user-avatar {
   display: grid;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
   place-items: center;
-  border-radius: 10px;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   object-fit: contain;
 }
-
-.band-chip__initials {
-  color: var(--ui-color-primary-contrast);
-  background: var(--ui-color-primary);
-  font-size: .72rem;
-  font-weight: 900;
-  letter-spacing: .05em;
+.band-chip__initials,
+.user-avatar {
+  background: color-mix(
+    in srgb,
+    var(--gigsaw-primary) 50%,
+    var(--gigsaw-surface)
+  );
+  color: var(--gigsaw-text);
+  font-size: 0.75rem;
 }
-
-.band-chip__copy {
+.menu {
+  width: 100%;
+  padding: 0;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+.menu li > a {
+  min-height: 44px;
+  gap: 14px;
+  padding: 12px 14px;
+  border-left: 3px solid transparent;
+  border-radius: 8px;
+}
+.menu li > a app-symbol {
+  font-size: 1.2rem;
+}
+.menu li > a.menu-active {
+  border-left-color: var(--gigsaw-primary);
+  background: color-mix(in srgb, var(--gigsaw-primary) 20%, transparent);
+  color: var(--gigsaw-text);
+  font-weight: 650;
+}
+.menu li > a.repertoire-nav.menu-active {
+  border-left-color: var(--gigsaw-secondary);
+  background: color-mix(in srgb, var(--gigsaw-secondary) 12%, transparent);
+}
+.sidebar-settings {
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gigsaw-border);
+}
+.sidebar-bottom {
+  margin-top: auto;
   display: grid;
-  min-width: 0;
+  gap: 16px;
+  font-size: 0.8rem;
 }
-
-.band-chip__copy strong,
-.band-chip__copy span {
+.sidebar-bottom > a {
+  padding-inline: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gigsaw-muted);
+  text-decoration: none;
+}
+.sidebar-bottom > a:hover {
+  color: var(--gigsaw-text);
+}
+.sidebar-user {
+  border-top: 1px solid var(--gigsaw-border);
+  padding-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-user > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.band-chip__copy strong {
-  color: var(--gigsaw-text);
-  font-size: .88rem;
+.sidebar-user button {
+  cursor: pointer;
+  padding: 8px;
 }
-
-.band-chip__copy span {
-  color: var(--gigsaw-muted);
-  font-size: .68rem;
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--gigsaw-secondary);
+  outline-offset: 2px;
 }
-
-.route-content { min-width: 0; min-height: 0; overflow: auto; }
-
-.menu li > a { gap: 16px; padding-block: 12px; padding-inline: 16px; }
-.menu li > a app-symbol { font-size: 1.25rem; }
-.menu li > a.menu-active { border-left: 4px solid var(--ui-color-primary); border-top-left-radius: 0; border-bottom-left-radius: 0; }
-
-/* The sidebar is always visible on large screens, so the page-level toggles are redundant. */
 @media (min-width: 1024px) {
-  :host ::ng-deep [data-menu-toggle] { display: none; }
-}
-
-/* La barra azioni dei form resta nell'area contenuto, senza coprire la sidebar */
-@media (min-width: 1024px) {
+  :host ::ng-deep [data-menu-toggle] {
+    display: none;
+  }
   :host ::ng-deep .floating-action-toolbar,
   :host ::ng-deep .form-action-bar,
   :host ::ng-deep form > footer {
-    left: calc(20rem + clamp(20px, 5vw, 72px)) !important;
+    left: calc(var(--workspace-sidebar) + clamp(20px, 5vw, 72px)) !important;
     max-width: none !important;
+  }
+  :host ::ng-deep .backstage-page .workspace-form-actions {
+    left: auto !important;
   }
 }

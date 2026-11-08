@@ -4,10 +4,17 @@ import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize, forkJoin, of, Subscription, switchMap, throwError } from 'rxjs';
+import {
+  finalize,
+  forkJoin,
+  of,
+  Subscription,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import {
   RehearsalRoom,
   RehearsalSession,
@@ -16,23 +23,41 @@ import {
 } from '../../../core/models/band-resources.models';
 import {
   GigsawButtonComponent,
-  GigsawLoadingComponent,
   GigsawMessageComponent,
 } from '../../../shared/ui/gigsaw';
-import { eventTitleDate, nextEventTitle } from '../../../shared/utils/event-title';
-import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
+import {
+  eventTitleDate,
+  nextEventTitle,
+} from '../../../shared/utils/event-title';
+import {
+  FormPageHeaderComponent,
+  FormPageHeaderSection,
+} from '../../../shared/ui/form-page-header.component';
 import { SongService } from '../../songs/api';
 import { RehearsalRoomService } from '../services/rehearsal-room.service';
 import { RehearsalSessionService } from '../services/rehearsal-session.service';
 
-@Component({ changeDetection: ChangeDetectionStrategy.Default,
+@Component({
+  host: { class: 'backstage-page' },
+  changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, RouterLink, GigsawButtonComponent, GigsawLoadingComponent, GigsawMessageComponent, FormPageHeaderComponent, ],
+  imports: [
+    NativeUiModule,
+    GigsawFormControlsModule,
+    ReactiveFormsModule,
+    RouterLink,
+    GigsawButtonComponent,
+    GigsawMessageComponent,
+    FormPageHeaderComponent,
+  ],
   templateUrl: './rehearsal-session-form.page.html',
   styleUrls: ['./rehearsal-session-form.page.scss'],
 })
 export class RehearsalSessionFormPage implements OnInit, OnDestroy {
-  readonly rehearsalSections: FormPageHeaderSection[] = [{ id: 1, label: 'Dettagli' }, { id: 2, label: 'Brani da provare' }];
+  readonly rehearsalSections: FormPageHeaderSection[] = [
+    { id: 1, label: 'Quando e dove' },
+    { id: 2, label: 'Brani da provare' },
+  ];
   readonly form = this.fb.nonNullable.group({
     title: ['', Validators.maxLength(255)],
     date: [this.today(), Validators.required],
@@ -48,6 +73,43 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
   readonly error = signal('');
   readonly step = signal(1);
   readonly songs = signal<Song[]>([]);
+  readonly songQuery = signal('');
+  readonly onlySelected = signal(false);
+  readonly filteredSongs = computed(() => {
+    const query = this.songQuery().trim().toLocaleLowerCase('it');
+    return this.songs().filter(
+      (song) =>
+        (!this.onlySelected() || this.selectedSongIds().includes(song.id)) &&
+        (!query ||
+          `${song.title} ${song.performedBy || ''}`
+            .toLocaleLowerCase('it')
+            .includes(query)),
+    );
+  });
+  readonly selectedSongs = computed(() =>
+    this.songs().filter((song) => this.selectedSongIds().includes(song.id)),
+  );
+  summaryDate(): string {
+    const value = this.form.controls.date.value;
+    if (!value) return 'Data da scegliere';
+    const date = new Date(`${String(value).slice(0, 10)}T12:00:00`);
+    return Number.isFinite(date.getTime())
+      ? date.toLocaleDateString('it-IT', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        })
+      : 'Data da scegliere';
+  }
+  summaryStatus(): string {
+    return {
+      scheduled: 'Da confermare',
+      confirmed: 'Confermata',
+      completed: 'Completata',
+      cancelled: 'Annullata',
+    }[this.form.controls.status.value];
+  }
+
   readonly rehearsalRooms = signal<RehearsalRoom[]>([]);
   readonly selectedSongIds = signal<number[]>([]);
   readonly roomModalOpen = signal(false);
@@ -83,7 +145,11 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
     const date = eventTitleDate(this.form.controls.date.value);
     const suggestion = date ? `Prove del ${date}` : '';
     const title = this.form.controls.title;
-    const next = nextEventTitle(title.value, this.lastSuggestedTitle, suggestion);
+    const next = nextEventTitle(
+      title.value,
+      this.lastSuggestedTitle,
+      suggestion,
+    );
     this.lastSuggestedTitle = suggestion;
     if (next !== title.value) title.setValue(next, { emitEvent: false });
   }
@@ -92,10 +158,16 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
     this.bandId = this.getBandId();
     this.id = Number(this.route.snapshot.paramMap.get('id')) || undefined;
     this.editing.set(!!this.id);
-    this.titleSubscriptions.add(this.form.controls.date.valueChanges.subscribe(() => this.updateSuggestedTitle()));
-    this.titleSubscriptions.add(this.form.controls.title.valueChanges.subscribe((title) => {
-      if (!title.trim()) this.updateSuggestedTitle();
-    }));
+    this.titleSubscriptions.add(
+      this.form.controls.date.valueChanges.subscribe(() =>
+        this.updateSuggestedTitle(),
+      ),
+    );
+    this.titleSubscriptions.add(
+      this.form.controls.title.valueChanges.subscribe((title) => {
+        if (!title.trim()) this.updateSuggestedTitle();
+      }),
+    );
     this.updateSuggestedTitle();
     this.load();
   }
@@ -109,32 +181,52 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
       rooms: this.rehearsalRoomsApi.list(),
       songs: this.songService.list(),
       session: this.id ? this.rehearsalSessions.get(this.id) : of(undefined),
-    }).pipe(
-      finalize(() => this.loading.set(false)),
-    ).subscribe({
-      next: ({ rooms, songs, session }) => {
-        this.rehearsalRooms.set(rooms);
-        this.songs.set(songs.filter((song) => song.status !== 'archived').map((song) => ({ ...song, id: Number(song.id) })));
-        if (session) {
-          const roomId = session.rehearsalRoomId ?? session.rehearsalRoom?.id;
-          const availableRoom = rooms.find((room) => Number(room.id) === Number(roomId));
-          this.form.patchValue({
-            title: session.title ?? '',
-            date: this.normalizeDate(session.date),
-            startTime: this.normalizeTime(session.startTime),
-            endTime: this.normalizeTime(session.endTime),
-            status: session.status ?? 'confirmed',
-            rehearsalRoomId: availableRoom ? String(availableRoom.id) : '',
-            notes: session.notes ?? '',
-          });
-          this.selectedSongIds.set((session.songIds ?? session.songs?.map((song) => song.id) ?? []).map(Number));
-          if (!availableRoom) this.error.set('La sala associata alla prova non è più disponibile. Seleziona una sala prove valida prima di salvare.');
-        }
-      },
-      error: (error: unknown) => {
-        this.error.set(this.apiErrorMessage(error, 'Impossibile caricare i dati della prova.'));
-      },
-    });
+    })
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: ({ rooms, songs, session }) => {
+          this.rehearsalRooms.set(rooms);
+          this.songs.set(
+            songs
+              .filter((song) => song.status !== 'archived')
+              .map((song) => ({ ...song, id: Number(song.id) })),
+          );
+          if (session) {
+            const roomId = session.rehearsalRoomId ?? session.rehearsalRoom?.id;
+            const availableRoom = rooms.find(
+              (room) => Number(room.id) === Number(roomId),
+            );
+            this.form.patchValue({
+              title: session.title ?? '',
+              date: this.normalizeDate(session.date),
+              startTime: this.normalizeTime(session.startTime),
+              endTime: this.normalizeTime(session.endTime),
+              status: session.status ?? 'confirmed',
+              rehearsalRoomId: availableRoom ? String(availableRoom.id) : '',
+              notes: session.notes ?? '',
+            });
+            this.selectedSongIds.set(
+              (
+                session.songIds ??
+                session.songs?.map((song) => song.id) ??
+                []
+              ).map(Number),
+            );
+            if (!availableRoom)
+              this.error.set(
+                'La sala associata alla prova non è più disponibile. Seleziona una sala prove valida prima di salvare.',
+              );
+          }
+        },
+        error: (error: unknown) => {
+          this.error.set(
+            this.apiErrorMessage(
+              error,
+              'Impossibile caricare i dati della prova.',
+            ),
+          );
+        },
+      });
   }
 
   onHeaderSectionChange(section: number): void {
@@ -151,8 +243,14 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
     this.form.controls.title.markAsTouched();
     this.form.controls.date.markAsTouched();
     this.form.controls.rehearsalRoomId.markAsTouched();
-    if (this.form.controls.title.invalid || this.form.controls.date.invalid || this.form.controls.rehearsalRoomId.invalid) {
-      this.error.set('Controlla il titolo (massimo 255 caratteri) e completa data e sala prove prima di continuare.');
+    if (
+      this.form.controls.title.invalid ||
+      this.form.controls.date.invalid ||
+      this.form.controls.rehearsalRoomId.invalid
+    ) {
+      this.error.set(
+        'Controlla il titolo (massimo 255 caratteri) e completa data e sala prove prima di continuare.',
+      );
       return;
     }
     if (!this.timeRangeValid()) return;
@@ -162,9 +260,11 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
 
   toggleSong(songId: number, checked: boolean): void {
     songId = Number(songId);
-    this.selectedSongIds.update((selectedIds) => checked
-      ? Array.from(new Set([...selectedIds.map(Number), songId]))
-      : selectedIds.map(Number).filter((id) => id !== songId));
+    this.selectedSongIds.update((selectedIds) =>
+      checked
+        ? Array.from(new Set([...selectedIds.map(Number), songId]))
+        : selectedIds.map(Number).filter((id) => id !== songId),
+    );
   }
 
   openRoomModal(): void {
@@ -185,23 +285,26 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
     this.creatingRoom.set(true);
     this.roomModalError.set('');
     const values = this.roomForm.getRawValue();
-    this.rehearsalRoomsApi.create({
-      name: values.name.trim(),
-      address: values.address.trim() || null,
-      city: values.city.trim() || null,
-    }).pipe(
-      finalize(() => this.creatingRoom.set(false)),
-    ).subscribe({
-      next: (room) => {
-        this.rehearsalRooms.update((rooms) => [...rooms, room]);
-        this.form.controls.rehearsalRoomId.setValue(String(room.id));
-        this.form.controls.rehearsalRoomId.markAsTouched();
-        this.roomModalOpen.set(false);
-      },
-      error: (error: unknown) => {
-        this.roomModalError.set(this.apiErrorMessage(error, 'Impossibile creare la sala prove.'));
-      },
-    });
+    this.rehearsalRoomsApi
+      .create({
+        name: values.name.trim(),
+        address: values.address.trim() || null,
+        city: values.city.trim() || null,
+      })
+      .pipe(finalize(() => this.creatingRoom.set(false)))
+      .subscribe({
+        next: (room) => {
+          this.rehearsalRooms.update((rooms) => [...rooms, room]);
+          this.form.controls.rehearsalRoomId.setValue(String(room.id));
+          this.form.controls.rehearsalRoomId.markAsTouched();
+          this.roomModalOpen.set(false);
+        },
+        error: (error: unknown) => {
+          this.roomModalError.set(
+            this.apiErrorMessage(error, 'Impossibile creare la sala prove.'),
+          );
+        },
+      });
   }
 
   save(): void {
@@ -209,7 +312,8 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
     if (!this.roomValid()) return;
     if (this.form.invalid || this.saving() || !this.timeRangeValid()) {
       this.form.markAllAsTouched();
-      if (!this.error()) this.error.set('Completa i campi obbligatori prima di salvare.');
+      if (!this.error())
+        this.error.set('Completa i campi obbligatori prima di salvare.');
       return;
     }
 
@@ -229,33 +333,67 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
       ? this.rehearsalSessions.update(this.id!, payload)
       : this.rehearsalSessions.create(payload);
 
-    request.pipe(
-      switchMap((saved) => this.rehearsalSessions.get(saved.id)),
-      switchMap((saved) => {
-        const expected = new Set(payload.songIds);
-        const actual = new Set((saved.songIds ?? saved.songs?.map((song) => song.id) ?? []).map(Number));
-        return expected.size === actual.size && [...expected].every((id) => actual.has(id))
-          ? of(saved)
-          : throwError(() => new Error('Il server non ha salvato la selezione dei brani. Riprova il salvataggio.'));
-      }),
-      finalize(() => this.saving.set(false)),
-    ).subscribe({
-      next: async () => {
-        (await this.toast.create({ message: 'Prova salvata.', duration: 1800, color: 'success' })).present();
-        void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'prova') ?? (this.bandId ? `/band/${this.bandId}/prove` : '/band'));
-      },
-      error: (error: unknown) => {
-        if (error instanceof HttpErrorResponse && error.status === 422 && error.error?.errors?.rehearsal_room_id) {
-          this.form.controls.rehearsalRoomId.setValue('');
-          this.form.controls.rehearsalRoomId.markAsTouched();
-          this.error.set('La sala selezionata non è più disponibile. Seleziona una sala prove valida e salva di nuovo. I brani selezionati sono stati mantenuti.');
-          this.step.set(1);
-          this.rehearsalRoomsApi.list().subscribe({ next: (rooms) => this.rehearsalRooms.set(rooms), error: () => {} });
-          return;
-        }
-        this.error.set(this.apiErrorMessage(error, 'Salvataggio non riuscito.'));
-      },
-    });
+    request
+      .pipe(
+        switchMap((saved) => this.rehearsalSessions.get(saved.id)),
+        switchMap((saved) => {
+          const expected = new Set(payload.songIds);
+          const actual = new Set(
+            (saved.songIds ?? saved.songs?.map((song) => song.id) ?? []).map(
+              Number,
+            ),
+          );
+          return expected.size === actual.size &&
+            [...expected].every((id) => actual.has(id))
+            ? of(saved)
+            : throwError(
+                () =>
+                  new Error(
+                    'Il server non ha salvato la selezione dei brani. Riprova il salvataggio.',
+                  ),
+              );
+        }),
+        finalize(() => this.saving.set(false)),
+      )
+      .subscribe({
+        next: async () => {
+          (
+            await this.toast.create({
+              message: 'Prova salvata.',
+              duration: 1800,
+              color: 'success',
+            })
+          ).present();
+          void this.router.navigateByUrl(
+            guidedCompletionUrl(this.router.url, this.bandId, 'prova') ??
+              (this.bandId ? `/band/${this.bandId}/prove` : '/band'),
+          );
+        },
+        error: (error: unknown) => {
+          if (
+            error instanceof HttpErrorResponse &&
+            error.status === 422 &&
+            error.error?.errors?.rehearsal_room_id
+          ) {
+            this.form.controls.rehearsalRoomId.setValue('');
+            this.form.controls.rehearsalRoomId.markAsTouched();
+            this.error.set(
+              'La sala selezionata non è più disponibile. Seleziona una sala prove valida e salva di nuovo. I brani selezionati sono stati mantenuti.',
+            );
+            this.step.set(1);
+            this.rehearsalRoomsApi
+              .list()
+              .subscribe({
+                next: (rooms) => this.rehearsalRooms.set(rooms),
+                error: () => {},
+              });
+            return;
+          }
+          this.error.set(
+            this.apiErrorMessage(error, 'Salvataggio non riuscito.'),
+          );
+        },
+      });
   }
 
   roomLabel(room: RehearsalRoom): string {
@@ -264,13 +402,19 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
 
   selectedRoomLabel(): string {
     const roomId = this.form.controls.rehearsalRoomId.value;
-    const room = this.rehearsalRooms().find((candidate) => candidate.id.toString() === roomId);
+    const room = this.rehearsalRooms().find(
+      (candidate) => candidate.id.toString() === roomId,
+    );
     return room ? this.roomLabel(room) : 'Sala non disponibile';
   }
 
   private roomValid(): boolean {
     const roomId = Number(this.form.controls.rehearsalRoomId.value);
-    if (roomId > 0 && this.rehearsalRooms().some((room) => Number(room.id) === roomId)) return true;
+    if (
+      roomId > 0 &&
+      this.rehearsalRooms().some((room) => Number(room.id) === roomId)
+    )
+      return true;
     this.form.controls.rehearsalRoomId.markAsTouched();
     this.error.set('Seleziona una sala prove valida prima di salvare.');
     this.step.set(1);
@@ -280,7 +424,9 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
   private timeRangeValid(): boolean {
     const { startTime, endTime } = this.form.getRawValue();
     if (startTime && endTime && endTime <= startTime) {
-      this.error.set('L’orario di fine deve essere successivo all’orario di inizio.');
+      this.error.set(
+        'L’orario di fine deve essere successivo all’orario di inizio.',
+      );
       return false;
     }
     return true;
@@ -305,9 +451,12 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
 
   private apiErrorMessage(error: unknown, fallback: string): string {
     if (error instanceof HttpErrorResponse) {
-      const validationErrors = error.error?.errors as Record<string, string[]> | undefined;
+      const validationErrors = error.error?.errors as
+        Record<string, string[]> | undefined;
       const firstValidationError = validationErrors
-        ? Object.values(validationErrors).find((messages) => messages.length)?.[0]
+        ? Object.values(validationErrors).find(
+            (messages) => messages.length,
+          )?.[0]
         : undefined;
       return firstValidationError || error.error?.message || fallback;
     }
@@ -315,7 +464,12 @@ export class RehearsalSessionFormPage implements OnInit, OnDestroy {
   }
 
   private getBandId(): number | undefined {
-    const segments = [this.route.snapshot, this.route.parent?.snapshot, this.route.parent?.parent?.snapshot, this.route.parent?.parent?.parent?.snapshot];
+    const segments = [
+      this.route.snapshot,
+      this.route.parent?.snapshot,
+      this.route.parent?.parent?.snapshot,
+      this.route.parent?.parent?.parent?.snapshot,
+    ];
     for (const snapshot of segments) {
       const value = Number(snapshot?.paramMap.get('bandId'));
       if (Number.isInteger(value) && value > 0) return value;

@@ -1,55 +1,84 @@
-<div class="drawer lg:drawer-open app-shell" (click)="handleLayoutClick($event)">
-  <input id="band-drawer" type="checkbox" class="drawer-toggle" [checked]="menuCollapsed()" (change)="menuCollapsed.set($any($event.target).checked)" />
-
-  <div class="drawer-content route-content">
-    <router-outlet />
-  </div>
-
+<div
+  class="drawer lg:drawer-open app-shell"
+  (click)="handleLayoutClick($event)"
+>
+  <input
+    id="band-drawer"
+    type="checkbox"
+    class="drawer-toggle"
+    [checked]="menuCollapsed()"
+    (change)="menuCollapsed.set($any($event.target).checked)"
+  />
+  <div class="drawer-content route-content"><router-outlet /></div>
   <div class="drawer-side z-40">
-    <label for="band-drawer" aria-label="Chiudi menu" class="drawer-overlay"></label>
-    <aside class="menu bg-base-200 min-h-full w-80 p-4 flex-nowrap" aria-label="Menu band">
-      <a routerLink="/band" class="brand-link mb-4 px-2" aria-label="GigSaw - cambia band" (click)="closeMobileMenu()">
-        <img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo" />
-      </a>
-
+    <label
+      for="band-drawer"
+      aria-label="Chiudi menu"
+      class="drawer-overlay"
+    ></label>
+    <aside class="workspace-sidebar" aria-label="Menu band">
+      <a
+        routerLink="/band"
+        class="brand-link"
+        aria-label="GigSaw - cambia band"
+        (click)="closeMobileMenu()"
+        ><img src="assets/logo-hor.png" alt="GigSaw" class="brand-logo"
+      /></a>
       @if (currentBand(); as band) {
-        <div class="band-chip mb-4 px-2" [attr.title]="band.name">
-          @if (band.logo) {
-            <img class="band-chip__avatar" [src]="band.logo" [alt]="'Logo ' + band.name" />
-          } @else {
-            <span class="band-chip__avatar band-chip__initials" aria-hidden="true">{{ bandInitials(band.name) }}</span>
-          }
-          <div class="band-chip__copy">
-            <strong>{{ band.name }}</strong>
-            <span>La tua band. Organizzata.</span>
-          </div>
-        </div>
+      <a
+        routerLink="/band"
+        class="band-chip"
+        (click)="closeMobileMenu()"
+        aria-label="Cambia band"
+      >
+        @if (band.logo) {
+        <img
+          class="band-chip__avatar"
+          [src]="band.logo"
+          [alt]="'Logo ' + band.name"
+        />
+        } @else {
+        <span class="band-chip__avatar band-chip__initials" aria-hidden="true"
+          >{{ bandInitials(band.name) }}</span
+        >
+        } <strong>{{ band.name }}</strong
+        ><app-symbol name="chevron-down-outline" />
+      </a>
       }
-
-      <ul class="menu menu-lg w-full gap-1 p-0" aria-label="Navigazione principale">
-        @for (section of sections; track section.key) {
-          <li>
+      <nav aria-label="Navigazione principale">
+        <ul class="menu">
+          @for (section of sections; track section.key) {
+          <li [class.sidebar-settings]="section.key === 'band'">
             <a
               [routerLink]="sectionHref(section.key)"
               queryParamsHandling="preserve"
               routerLinkActive="menu-active"
-              [routerLinkActiveOptions]="{ exact: false }"
+              [class.repertoire-nav]="section.key === 'musica'"
               (click)="closeMobileMenu()"
+              ><app-symbol [name]="section.icon" aria-hidden="true" />{{
+              section.label }}</a
             >
-              <app-symbol [name]="section.icon" aria-hidden="true" />
-              {{ section.label }}
-            </a>
           </li>
-        }
-        <li class="mt-4"><a [routerLink]="sectionHref('home').replace('/panoramica', '/inizia')" (click)="closeMobileMenu()">Cosa vuoi fare?</a></li>
-        <li><a routerLink="/band" (click)="closeMobileMenu()">Cambia band</a></li>
-        <li class="mt-4 border-t border-base-300 pt-3">
-          <button type="button" (click)="logout()">
-            <app-symbol name="log-out-outline" aria-hidden="true" />
-            Esci
+          }
+        </ul>
+      </nav>
+      <div class="sidebar-bottom">
+        <a
+          [routerLink]="sectionHref('home').replace('/panoramica', '/inizia')"
+          (click)="closeMobileMenu()"
+          >Cosa vuoi fare?</a
+        >
+        <a routerLink="/band" (click)="closeMobileMenu()"
+          ><app-symbol name="arrow-back-outline" /> Cambia band</a
+        >
+        <div class="sidebar-user">
+          <span class="user-avatar">{{ userInitials }}</span
+          ><span>{{ userName }}</span
+          ><button type="button" (click)="logout()" aria-label="Esci">
+            <app-symbol name="log-out-outline" />
           </button>
-        </li>
-      </ul>
+        </div>
+      </div>
     </aside>
   </div>
 </div>
