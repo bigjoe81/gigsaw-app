@@ -4,28 +4,69 @@ import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { GigsawFormControlsModule } from '../../../shared/ui/gigsaw/gigsaw-form-controls.module';
 import { ToastService } from '../../../shared/ui/native-ui';
 
-import { Component, computed, HostListener, OnDestroy, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import { Song, SongStatus } from '../../../core/models/band-resources.models';
-import { FormPageHeaderComponent, FormPageHeaderSection } from '../../../shared/ui/form-page-header.component';
+import {
+  FormPageHeaderComponent,
+  FormPageHeaderSection,
+} from '../../../shared/ui/form-page-header.component';
 import { MAX_UPLOAD_BYTES, SongService } from '../services/song.service';
-import { SongMetadataCandidate, SongMetadataDetail } from '../models/song.models';
+import {
+  SongMetadataCandidate,
+  SongMetadataDetail,
+} from '../models/song.models';
 
-@Component({ changeDetection: ChangeDetectionStrategy.Default,
+@Component({
+  host: { class: 'backstage-page repertoire-page' },
+  changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, GigsawFormControlsModule, ReactiveFormsModule, FormPageHeaderComponent, ],
+  imports: [
+    NativeUiModule,
+    GigsawFormControlsModule,
+    ReactiveFormsModule,
+    FormPageHeaderComponent,
+  ],
   templateUrl: './song-form.page.html',
   styleUrls: ['./song-form.page.scss'],
 })
 export class SongFormPage implements OnInit, OnDestroy {
   readonly referenceFile = signal<File | null>(null);
   readonly existingReference = signal('');
-  readonly songSections: FormPageHeaderSection[] = [{ id: 1, label: 'Cerca' }, { id: 2, label: 'Dettagli' }, { id: 3, label: 'Organizza' }];
-  form = this.fb.nonNullable.group({ title: ['', Validators.required], album: '', performedBy: '', musicBy: '', lyricsBy: '', key: ['', Validators.required], bpm: '', duration: ['', Validators.required], linkGroup: '', tagsText: '', status: 'draft' as SongStatus, notes: '', referenceUrl: '' });
-  magicForm = this.fb.nonNullable.group({ title: ['', [Validators.required, Validators.minLength(2)]], artist: '' });
+  readonly songSections: FormPageHeaderSection[] = [
+    { id: 1, label: 'Cerca brano' },
+    { id: 2, label: 'Dettagli musicali' },
+    { id: 3, label: 'Organizzazione' },
+  ];
+  form = this.fb.nonNullable.group({
+    title: ['', Validators.required],
+    album: '',
+    performedBy: '',
+    musicBy: '',
+    lyricsBy: '',
+    key: ['', Validators.required],
+    bpm: '',
+    duration: ['', Validators.required],
+    linkGroup: '',
+    tagsText: '',
+    status: 'draft' as SongStatus,
+    notes: '',
+    referenceUrl: '',
+  });
+  magicForm = this.fb.nonNullable.group({
+    title: ['', [Validators.required, Validators.minLength(2)]],
+    artist: '',
+  });
   existingLinkGroups: string[] = [];
   existingTags: string[] = [];
   creatingLinkGroup = false;
@@ -41,9 +82,13 @@ export class SongFormPage implements OnInit, OnDestroy {
     const metadata = this.selectedMetadata();
     if (metadata?.provider !== 'spotify') return null;
     const source = `${metadata.externalId || ''} ${metadata.externalUrl || ''}`;
-    const trackId = source.match(/(?:spotify:track:|open\.spotify\.com\/track\/)?([A-Za-z0-9]{22})(?:\b|\?)/)?.[1];
+    const trackId = source.match(
+      /(?:spotify:track:|open\.spotify\.com\/track\/)?([A-Za-z0-9]{22})(?:\b|\?)/,
+    )?.[1];
     if (!trackId) return null;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(`https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`,
+    );
   });
   readonly error = signal('');
   readonly magicError = signal('');
@@ -54,9 +99,14 @@ export class SongFormPage implements OnInit, OnDestroy {
   private id?: number;
   private bandId?: number;
 
-  constructor(private readonly fb: FormBuilder, private readonly songs: SongService, private readonly route: ActivatedRoute, private readonly router: Router, private readonly toast: ToastService, private readonly sanitizer: DomSanitizer) {
-
-  }
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly songs: SongService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly toast: ToastService,
+    private readonly sanitizer: DomSanitizer,
+  ) {}
 
   ngOnInit(): void {
     this.bandId = this.getBandId();
@@ -68,20 +118,51 @@ export class SongFormPage implements OnInit, OnDestroy {
       song: this.id ? this.songs.get(this.id) : of(undefined),
     }).subscribe({
       next: ({ songs, song }) => {
-        this.existingLinkGroups = Array.from(new Set(songs.map((item) => item.linkGroup).filter((group): group is string => !!group))).sort();
-        this.existingTags = Array.from(new Set(
-          songs
-            .reduce<string[]>((tags, item) => tags.concat(item.tags ?? []), [])
-            .map((tag) => tag.trim())
-            .filter((tag) => !!tag),
-        )).sort();
+        this.existingLinkGroups = Array.from(
+          new Set(
+            songs
+              .map((item) => item.linkGroup)
+              .filter((group): group is string => !!group),
+          ),
+        ).sort();
+        this.existingTags = Array.from(
+          new Set(
+            songs
+              .reduce<string[]>(
+                (tags, item) => tags.concat(item.tags ?? []),
+                [],
+              )
+              .map((tag) => tag.trim())
+              .filter((tag) => !!tag),
+          ),
+        ).sort();
         if (song) {
-          this.existingReference.set(song.attachments?.find((item) => item.kind === 'reference')?.name ?? '');
-          this.form.patchValue({ title: song.title, album: song.album ?? '', performedBy: song.performedBy ?? '', musicBy: song.musicBy ?? '', lyricsBy: song.lyricsBy ?? '', key: song.key ?? '', bpm: song.bpm != null ? String(song.bpm) : '', duration: this.formatDuration(song.duration), linkGroup: song.linkGroup ?? '', tagsText: (song.tags ?? []).join(', '), status: song.status ?? 'draft', notes: song.notes ?? '', referenceUrl: song.referenceUrl ?? '' });
+          this.existingReference.set(
+            song.attachments?.find((item) => item.kind === 'reference')?.name ??
+              '',
+          );
+          this.form.patchValue({
+            title: song.title,
+            album: song.album ?? '',
+            performedBy: song.performedBy ?? '',
+            musicBy: song.musicBy ?? '',
+            lyricsBy: song.lyricsBy ?? '',
+            key: song.key ?? '',
+            bpm: song.bpm != null ? String(song.bpm) : '',
+            duration: this.formatDuration(song.duration),
+            linkGroup: song.linkGroup ?? '',
+            tagsText: (song.tags ?? []).join(', '),
+            status: song.status ?? 'draft',
+            notes: song.notes ?? '',
+            referenceUrl: song.referenceUrl ?? '',
+          });
         }
         this.loading.set(false);
       },
-      error: () => { this.error.set('Impossibile caricare il brano.'); this.loading.set(false); },
+      error: () => {
+        this.error.set('Impossibile caricare il brano.');
+        this.loading.set(false);
+      },
     });
   }
 
@@ -91,7 +172,13 @@ export class SongFormPage implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   onTapTempoKeydown(event: KeyboardEvent): void {
-    if (this.step() !== 2 || event.code !== 'Space' || event.repeat || this.isTypingTarget(event)) return;
+    if (
+      this.step() !== 2 ||
+      event.code !== 'Space' ||
+      event.repeat ||
+      this.isTypingTarget(event)
+    )
+      return;
     event.preventDefault();
     this.tapTempo();
   }
@@ -106,8 +193,12 @@ export class SongFormPage implements OnInit, OnDestroy {
     this.tapCount.set(this.tapTimestamps.length);
 
     if (this.tapTimestamps.length >= 2) {
-      const intervals = this.tapTimestamps.slice(1).map((tap, index) => tap - this.tapTimestamps[index]);
-      const averageInterval = intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length;
+      const intervals = this.tapTimestamps
+        .slice(1)
+        .map((tap, index) => tap - this.tapTimestamps[index]);
+      const averageInterval =
+        intervals.reduce((sum, interval) => sum + interval, 0) /
+        intervals.length;
       const bpm = Math.round(60000 / averageInterval);
       if (bpm >= 20 && bpm <= 300) {
         this.tappedBpm.set(bpm);
@@ -127,9 +218,16 @@ export class SongFormPage implements OnInit, OnDestroy {
   }
 
   private isTypingTarget(event: KeyboardEvent): boolean {
-    return event.composedPath().some((target) => target instanceof HTMLElement && (
-      target.isContentEditable || target.matches('input, textarea, select, button, .input, .textarea, .select')
-    ));
+    return event
+      .composedPath()
+      .some(
+        (target) =>
+          target instanceof HTMLElement &&
+          (target.isContentEditable ||
+            target.matches(
+              'input, textarea, select, button, .input, .textarea, .select',
+            )),
+      );
   }
 
   completeMetadataFromForm(): void {
@@ -147,44 +245,66 @@ export class SongFormPage implements OnInit, OnDestroy {
     }
 
     this.magicLoading.set(true);
-    this.songs.searchMetadata(title, artist).pipe(
-      finalize(() => this.magicLoading.set(false)),
-    ).subscribe({
-      next: (results) => {
-        this.metadataResults.set(results);
-        if (!results.length) {
-          this.magicError.set('Nessun risultato trovato.');
-        }
-      },
-      error: (error: { error?: { message?: string }; message?: string; status?: number }) => {
-        const fallback = error.status === 0
-          ? 'Backend non raggiungibile. Controlla che l’API sia avviata.'
-          : 'Ricerca metadati non disponibile.';
-        this.magicError.set(error.error?.message || error.message || fallback);
-      },
-    });
+    this.songs
+      .searchMetadata(title, artist)
+      .pipe(finalize(() => this.magicLoading.set(false)))
+      .subscribe({
+        next: (results) => {
+          this.metadataResults.set(results);
+          if (!results.length) {
+            this.magicError.set('Nessun risultato trovato.');
+          }
+        },
+        error: (error: {
+          error?: { message?: string };
+          message?: string;
+          status?: number;
+        }) => {
+          const fallback =
+            error.status === 0
+              ? 'Backend non raggiungibile. Controlla che l’API sia avviata.'
+              : 'Ricerca metadati non disponibile.';
+          this.magicError.set(
+            error.error?.message || error.message || fallback,
+          );
+        },
+      });
   }
 
   searchMagicSong(): void {
-    if (this.magicForm.invalid || this.magicLoading()) { this.magicForm.markAllAsTouched(); return; }
+    if (this.magicForm.invalid || this.magicLoading()) {
+      this.magicForm.markAllAsTouched();
+      return;
+    }
     const values = this.magicForm.getRawValue();
     this.magicLoading.set(true);
     this.magicError.set('');
     this.metadataResults.set([]);
-    this.songs.searchMetadata(values.title, values.artist).pipe(
-      finalize(() => this.magicLoading.set(false)),
-    ).subscribe({
-      next: (results) => {
-        this.metadataResults.set(results);
-        if (!results.length) this.magicError.set('Nessun risultato trovato. Puoi continuare manualmente.');
-      },
-      error: (error: { error?: { message?: string }; message?: string; status?: number }) => {
-        const fallback = error.status === 0
-          ? 'Backend non raggiungibile. Controlla che l’API sia avviata.'
-          : 'Ricerca metadati non disponibile. Puoi continuare manualmente.';
-        this.magicError.set(error.error?.message || error.message || fallback);
-      },
-    });
+    this.songs
+      .searchMetadata(values.title, values.artist)
+      .pipe(finalize(() => this.magicLoading.set(false)))
+      .subscribe({
+        next: (results) => {
+          this.metadataResults.set(results);
+          if (!results.length)
+            this.magicError.set(
+              'Nessun risultato trovato. Puoi continuare manualmente.',
+            );
+        },
+        error: (error: {
+          error?: { message?: string };
+          message?: string;
+          status?: number;
+        }) => {
+          const fallback =
+            error.status === 0
+              ? 'Backend non raggiungibile. Controlla che l’API sia avviata.'
+              : 'Ricerca metadati non disponibile. Puoi continuare manualmente.';
+          this.magicError.set(
+            error.error?.message || error.message || fallback,
+          );
+        },
+      });
   }
 
   chooseMetadata(candidate: SongMetadataCandidate): void {
@@ -197,20 +317,27 @@ export class SongFormPage implements OnInit, OnDestroy {
       return;
     }
     this.detailLoading.set(true);
-    this.songs.metadataDetail(candidate.recordingMbid).pipe(
-      finalize(() => this.detailLoading.set(false)),
-    ).subscribe({
-      next: (detail) => {
-        // Preserve the Spotify source when the extra MusicBrainz detail call
-        // does not carry the original provider identifiers.
-        const selected = candidate.provider === 'spotify'
-          ? { ...candidate, ...detail, provider: candidate.provider, externalId: candidate.externalId }
-          : { ...candidate, ...detail };
-        this.selectedMetadata.set(selected);
-        this.applyMetadata(selected);
-      },
-      error: () => undefined,
-    });
+    this.songs
+      .metadataDetail(candidate.recordingMbid)
+      .pipe(finalize(() => this.detailLoading.set(false)))
+      .subscribe({
+        next: (detail) => {
+          // Preserve the Spotify source when the extra MusicBrainz detail call
+          // does not carry the original provider identifiers.
+          const selected =
+            candidate.provider === 'spotify'
+              ? {
+                  ...candidate,
+                  ...detail,
+                  provider: candidate.provider,
+                  externalId: candidate.externalId,
+                }
+              : { ...candidate, ...detail };
+          this.selectedMetadata.set(selected);
+          this.applyMetadata(selected);
+        },
+        error: () => undefined,
+      });
   }
 
   continueManually(): void {
@@ -220,7 +347,10 @@ export class SongFormPage implements OnInit, OnDestroy {
   }
 
   goToStep(nextStep: number): void {
-    if (nextStep === 3 && (this.form.controls.title.invalid || this.form.controls.duration.invalid)) {
+    if (
+      nextStep === 3 &&
+      (this.form.controls.title.invalid || this.form.controls.duration.invalid)
+    ) {
       this.form.controls.title.markAsTouched();
       this.form.controls.duration.markAsTouched();
       return;
@@ -229,10 +359,16 @@ export class SongFormPage implements OnInit, OnDestroy {
   }
 
   save(addAnother = false): void {
-    if (this.form.invalid || this.saving()) { this.form.markAllAsTouched(); this.step.set(2); return; }
+    if (this.form.invalid || this.saving()) {
+      this.form.markAllAsTouched();
+      this.step.set(2);
+      return;
+    }
     this.saving.set(true);
     this.error.set('');
-    const durationSeconds = this.parseDuration(this.form.getRawValue().duration);
+    const durationSeconds = this.parseDuration(
+      this.form.getRawValue().duration,
+    );
     if (durationSeconds === null) {
       this.error.set('Inserisci una durata valida nel formato mm:ss.');
       this.saving.set(false);
@@ -256,21 +392,34 @@ export class SongFormPage implements OnInit, OnDestroy {
       tags: this.parseTags(values.tagsText),
     };
     const file = this.referenceFile();
-    const saved$ = this.editing ? this.songs.update(this.id!, payload) : this.songs.create(payload);
+    const saved$ = this.editing
+      ? this.songs.update(this.id!, payload)
+      : this.songs.create(payload);
     const request = saved$.pipe(
       switchMap((saved) => {
         const songId = this.id ?? (saved as Song | undefined)?.id;
-        return file && songId ? this.songs.uploadReference(songId, file).pipe(map(() => saved)) : of(saved);
+        return file && songId
+          ? this.songs.uploadReference(songId, file).pipe(map(() => saved))
+          : of(saved);
       }),
     );
     request.subscribe({
       next: async () => {
-        (await this.toast.create({ message: 'Brano salvato.', duration: 1800, color: 'success' })).present();
+        (
+          await this.toast.create({
+            message: 'Brano salvato.',
+            duration: 1800,
+            color: 'success',
+          })
+        ).present();
         if (addAnother && !this.editing) {
           this.prepareNextSong();
           return;
         }
-        void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'repertorio') ?? (this.bandId ? `/band/${this.bandId}/repertorio` : '/band'));
+        void this.router.navigateByUrl(
+          guidedCompletionUrl(this.router.url, this.bandId, 'repertorio') ??
+            (this.bandId ? `/band/${this.bandId}/repertorio` : '/band'),
+        );
       },
       error: (error: Error) => {
         this.error.set(error.message || 'Salvataggio non riuscito.');
@@ -285,7 +434,9 @@ export class SongFormPage implements OnInit, OnDestroy {
     if (file && file.size > MAX_UPLOAD_BYTES) {
       input.value = '';
       this.referenceFile.set(null);
-      this.error.set(`Il file è troppo grande (${(file.size / 1048576).toFixed(1)} MB). Il limite è 50 MB.`);
+      this.error.set(
+        `Il file è troppo grande (${(file.size / 1048576).toFixed(1)} MB). Il limite è 50 MB.`,
+      );
       return;
     }
     this.error.set('');
@@ -296,8 +447,19 @@ export class SongFormPage implements OnInit, OnDestroy {
     this.referenceFile.set(null);
     this.existingReference.set('');
     this.form.reset({
-      title: '', album: '', performedBy: '', musicBy: '', lyricsBy: '', key: '', bpm: '', duration: '',
-      linkGroup: '', tagsText: '', status: 'draft', notes: '', referenceUrl: '',
+      title: '',
+      album: '',
+      performedBy: '',
+      musicBy: '',
+      lyricsBy: '',
+      key: '',
+      bpm: '',
+      duration: '',
+      linkGroup: '',
+      tagsText: '',
+      status: 'draft',
+      notes: '',
+      referenceUrl: '',
     });
     this.magicForm.reset({ title: '', artist: '' });
     this.metadataResults.set([]);
@@ -310,10 +472,20 @@ export class SongFormPage implements OnInit, OnDestroy {
     this.step.set(1);
   }
 
-  private applyMetadata(metadata: SongMetadataCandidate | SongMetadataDetail): void {
+  private applyMetadata(
+    metadata: SongMetadataCandidate | SongMetadataDetail,
+  ): void {
     const detail = metadata as SongMetadataDetail;
-    const musicCredits = (detail.credits ?? []).filter((credit) => ['composer', 'writer'].includes(credit.role.toLowerCase())).map((credit) => credit.name);
-    const lyricCredits = (detail.credits ?? []).filter((credit) => ['lyricist', 'writer'].includes(credit.role.toLowerCase())).map((credit) => credit.name);
+    const musicCredits = (detail.credits ?? [])
+      .filter((credit) =>
+        ['composer', 'writer'].includes(credit.role.toLowerCase()),
+      )
+      .map((credit) => credit.name);
+    const lyricCredits = (detail.credits ?? [])
+      .filter((credit) =>
+        ['lyricist', 'writer'].includes(credit.role.toLowerCase()),
+      )
+      .map((credit) => credit.name);
     this.form.patchValue({
       title: metadata.title,
       performedBy: metadata.artist ?? '',
@@ -349,7 +521,7 @@ export class SongFormPage implements OnInit, OnDestroy {
       return null;
     }
 
-    return (minutes * 60) + seconds;
+    return minutes * 60 + seconds;
   }
 
   private formatDuration(value?: number | null): string {
@@ -382,16 +554,23 @@ export class SongFormPage implements OnInit, OnDestroy {
   }
 
   private parseTags(value: string): string[] {
-    return Array.from(new Set(
-      value
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-    ));
+    return Array.from(
+      new Set(
+        value
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+      ),
+    );
   }
 
   private getBandId(): number | undefined {
-    const segments = [this.route.snapshot, this.route.parent?.snapshot, this.route.parent?.parent?.snapshot, this.route.parent?.parent?.parent?.snapshot];
+    const segments = [
+      this.route.snapshot,
+      this.route.parent?.snapshot,
+      this.route.parent?.parent?.snapshot,
+      this.route.parent?.parent?.parent?.snapshot,
+    ];
     for (const snapshot of segments) {
       const value = Number(snapshot?.paramMap.get('bandId'));
       if (Number.isInteger(value) && value > 0) {
