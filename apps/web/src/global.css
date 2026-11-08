@@ -1,14 +1,22 @@
 @import 'tailwindcss';
+@import '../../../shared/theme/gigsaw-tokens.css';
 @plugin 'daisyui' { themes: false; }
 @plugin 'daisyui/theme' {
-  name: 'gigsaw'; default: true; prefersdark: true; color-scheme: dark;
-  --color-base-100: #0D1117; --color-base-200: #11161D; --color-base-300: #252D38; --color-base-content: #E5EDF7;
-  --color-primary: #F97316; --color-primary-content: #07111F; --color-secondary: #60A5FA; --color-secondary-content: #07111F;
-  --color-accent: #DB2777; --color-accent-content: #fff; --color-neutral: #1E293B; --color-neutral-content: #E5EDF7;
-  --color-info: #60A5FA; --color-info-content: #07111F; --color-success: #32C67A; --color-success-content: #07111F;
-  --color-warning: #F5B942; --color-warning-content: #1F2937; --color-error: #E74C5B; --color-error-content: #fff;
-  --radius-selector: .75rem; --radius-field: .75rem; --radius-box: 1rem; --size-selector: .25rem; --size-field: .25rem; --border: 1px; --depth: 0; --noise: 0;
+ name:'gigsaw'; default:true; prefersdark:true; color-scheme:dark;
+ --color-base-100:var(--gigsaw-bg); --color-base-200:var(--gigsaw-surface);
+ --color-base-300:var(--gigsaw-surface-raised); --color-base-content:var(--gigsaw-text);
+ --color-primary:var(--gigsaw-primary); --color-primary-content:var(--gigsaw-on-color);
+ --color-secondary:var(--gigsaw-secondary); --color-secondary-content:var(--gigsaw-on-color);
+ --color-accent:var(--gigsaw-accent); --color-accent-content:var(--gigsaw-on-color);
+ --color-neutral:var(--gigsaw-surface-raised); --color-neutral-content:var(--gigsaw-text);
+ --color-info:var(--gigsaw-secondary); --color-info-content:var(--gigsaw-on-color);
+ --color-success:var(--gigsaw-success); --color-success-content:var(--gigsaw-on-color);
+ --color-warning:var(--gigsaw-warning); --color-warning-content:var(--gigsaw-on-color);
+ --color-error:var(--gigsaw-danger); --color-error-content:var(--gigsaw-on-color);
+ --radius-selector:1rem; --radius-field:.625rem; --radius-box:.875rem;
+ --size-selector:.25rem; --size-field:.25rem; --border:1px; --depth:1; --noise:0;
 }
+
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--color-base-100); color: var(--color-base-content); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 app-root { display: flex; height: 100dvh; min-height: 0; flex-direction: column; }
 router-outlet { display: none; }
@@ -41,7 +49,7 @@ app-dialog .modal-box:has(.app-content) { display: flex; flex-direction: column;
   position: fixed !important; z-index: 100; bottom: max(16px, env(safe-area-inset-bottom, 0px)) !important;
   left: clamp(20px, 5vw, 72px) !important; right: clamp(20px, 5vw, 72px) !important; width: auto !important;
   margin: 0 !important; padding: 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 16px;
-  background: rgba(27,32,40,.92) !important; backdrop-filter: blur(14px); box-shadow: 0 8px 28px rgba(0,0,0,.2);
+  background: color-mix(in srgb,var(--gigsaw-surface) 92%,transparent) !important; backdrop-filter: blur(14px); box-shadow: 0 8px 28px rgba(0,0,0,.2);
 }
 .modal-box form > footer.room-modal-actions {
   position: relative !important; inset: auto !important; z-index: auto !important;
