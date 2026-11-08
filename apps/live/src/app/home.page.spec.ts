@@ -27,7 +27,7 @@ describe('Live home', () => {
     ) as HTMLAnchorElement[];
     expect(links.map((link) => link.getAttribute('href'))).toEqual([
       '/rehearsal',
-      '/stage',
+      '/setlist',
     ]);
     expect(fixture.nativeElement.textContent).toContain('sessione demo');
   });

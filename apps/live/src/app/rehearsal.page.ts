@@ -1,22 +1,42 @@
 import { downloadBlob } from './device-files';
 import { Component, OnDestroy, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { IconComponent } from './icon.component';
 import { FormsModule } from '@angular/forms';
 import { SessionService } from './session.service';
 import { RecorderService, time } from './recorder.service';
 import type { LiveTake } from '@gigsaw/models';
 @Component({
   standalone: true,
-  imports: [FormsModule],
-  template: ` <main class="page">
-    <p class="eyebrow">IN PROVA · SESSIONE DEMO</p>
-    <h1>Ogni idea, al suo posto.</h1>
-    <p class="lead">{{ s.session().band }}</p>
+  imports: [FormsModule, RouterLink, IconComponent],
+  template: ` <main class="page rehearsal-page">
+    <div class="page-heading">
+      <div>
+        <a class="back-link" routerLink="/"
+          ><live-icon name="left" />In prova</a
+        >
+        <p class="muted small">{{ s.session().band }} · Demo</p>
+      </div>
+      @if (r.active()) {
+        <span class="rec-badge"><span class="rec-dot"></span>REC</span>
+      }
+    </div>
     <div class="rehearsal-layout">
       <section class="panel recorder">
+        <h1 class="rehearsal-song-title">{{ selected.title }}</h1>
         <span class="eyebrow">{{
           r.active() ? 'STAI REGISTRANDO' : 'PRONTO QUANDO VUOI'
         }}</span>
         <div class="timer" aria-live="off">{{ time(r.elapsed()) }}</div>
+        <div
+          class="recording-indicator"
+          [class.is-recording]="!!r.active()"
+          aria-hidden="true"
+        >
+          @for (bar of bars; track $index) {
+            <i [style.height.px]="bar"></i>
+          }
+        </div>
         <label for="rehearsal-song">Brano su cui state lavorando</label
         ><select
           id="rehearsal-song"
@@ -38,7 +58,11 @@ import type { LiveTake } from '@gigsaw/models';
           @if (r.active()) {
             <button class="danger" (click)="r.stop()" [disabled]="r.busy()">
               ■ STOP e salva</button
-            ><button class="secondary" (click)="mark()" [disabled]="r.busy()">
+            ><button
+              class="secondary marker-button"
+              (click)="mark()"
+              [disabled]="r.busy()"
+            >
               ＋ Nuovo brano
             </button>
           } @else {
@@ -163,6 +187,11 @@ export class RehearsalPage implements OnDestroy {
   readonly s = inject(SessionService);
   readonly r = inject(RecorderService);
   readonly time = time;
+  readonly bars = Array.from(
+    { length: 49 },
+    (_, i) =>
+      8 + Math.round(Math.abs(Math.sin(i * 1.7) * Math.sin(i * 0.23)) * 60),
+  );
   readonly songs = this.s.session().entries.filter((e) => e.type === 'song');
   entryId = this.songs[0].id;
   drafts: Record<string, string> = {};
