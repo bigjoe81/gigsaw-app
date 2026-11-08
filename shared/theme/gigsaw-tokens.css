@@ -1,0 +1,15 @@
+/* Canonical Gigsaw Electric palette shared by Web and Live. */
+:root {
+  color-scheme: dark;
+  --gigsaw-primary:#BC4DFF; --gigsaw-primary-rgb:188,77,255;
+  --gigsaw-primary-shade:#A544E0; --gigsaw-primary-tint:#C35FFF;
+  --gigsaw-secondary:#00DFF5; --gigsaw-secondary-rgb:0,223,245;
+  --gigsaw-secondary-shade:#00C4D8; --gigsaw-secondary-tint:#1AE2F6;
+  --gigsaw-tertiary:#8B75D7; --gigsaw-accent:#DBA5FF;
+  --gigsaw-bg:#10101B; --gigsaw-surface:#1B1B2A;
+  --gigsaw-surface-raised:#252438; --gigsaw-border:#343349;
+  --gigsaw-text:#F5F3FF; --gigsaw-muted:#AAA5BC;
+  --gigsaw-success:#40E0B0; --gigsaw-warning:#FFD166;
+  --gigsaw-danger:#FF6489; --gigsaw-recording:#FF5470;
+  --gigsaw-on-color:#10101B;
+}
