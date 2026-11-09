@@ -1,10 +1,46 @@
-<header class="page-header"><div class="navbar gap-3"><div class="flex items-center gap-2" slot="start"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost btn-square" defaultHref="../"  type="button" appBack><app-symbol name="arrow-back-outline" /></app-gigsaw-button></div><h1 class="grow text-xl">Workspace scaletta</h1><div class="flex items-center gap-2" slot="end"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="undo()" [disabled]="!undoStack.length" type="button">Annulla</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="redo()" [disabled]="!redoStack.length" type="button">Ripeti</app-gigsaw-button></div></div></header>
-<section class="app-content">
+<app-workspace-topbar section="Scalette" [detail]="mode === 'magic' ? 'Magic Set' : 'Editor scaletta'" />
+<section class="app-content backstage-page">
+<main class="workspace-main">
 @if(loading()){<div class="grid min-h-[55vh] place-items-center content-center gap-3 p-8 text-center text-[var(--ui-color-medium)]"><span></span><p class="m-0">Carico repertorio e ultima bozza…</p></div>}@else if(loadError()){<div class="grid min-h-[55vh] place-items-center content-center gap-3 p-8 text-center text-[var(--ui-color-medium)]"><h2 class="m-0 text-[var(--gigsaw-text)]">Workspace non disponibile</h2><p class="m-0">{{loadError()}}</p><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary [--background:var(--ui-color-primary)] [--color:var(--ui-color-primary-contrast)]" (click)="loadWorkspace()" type="button">Riprova</app-gigsaw-button></div>}@else{
-<header class="workspace-head"><div><app-gigsaw-input controlClass="w-full input-ghost title-input"  aria-label="Nome scaletta" [(ngModel)]="workspace.title" (ngModelChange)="touch()" /><p><select class="select select-bordered select-xs" aria-label="Concerto associato" [ngModel]="workspace.gigId ?? null" (ngModelChange)="selectGig($event)"><option [ngValue]="null">Nessun concerto associato</option>@for(gig of gigs; track gig.id){<option [ngValue]="gig.id">{{gigOptionLabel(gig)}}</option>}</select> · <span class="text-[var(--ui-color-success)]">{{savingToServer() ? 'Salvataggio sul server…' : savedToServer() ? 'Salvata sul server' : 'Bozza locale · premi Salva scaletta per aggiornare il PDF'}}</span></p></div><div class="stats"><span><b>{{format(duration)}}</b> durata</span><span><b>{{mainSetCount(workspace)}}</b> set</span><span><b>{{songCount}}</b> brani</span><span class="text-[var(--ui-color-warning)]"><b>{{issues.length}}</b> controlli</span></div><div class="join mode"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn join-item" [style.--background]="mode==='manual' ? 'var(--ui-color-primary)' : null" [style.--color]="mode==='manual' ? 'var(--ui-color-primary-contrast)' : null" (click)="mode='manual'" type="button">Manuale</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn join-item" [style.--background]="mode==='magic' ? 'var(--ui-color-secondary)' : null" [style.--color]="mode==='magic' ? 'var(--ui-color-secondary-contrast)' : null" (click)="mode='magic'" type="button"><app-symbol name="sparkles-outline" /> Magic Set</app-gigsaw-button></div></header>
+<header class="workspace-heading">
+  <div><h1>{{ mode === 'magic' ? 'Magic Set' : 'Scaletta del concerto' }}</h1>
+    <p>{{ mode === 'magic' ? 'Genera una proposta dal repertorio della band.' : 'Organizza i brani, le pause e i bis.' }}</p></div>
+  <div class="workspace-actions">
+    <button class="btn btn-outline" type="button" (click)="mode = 'manual'" [attr.aria-pressed]="mode === 'manual'">Manuale</button>
+    <button class="btn btn-primary" type="button" (click)="mode = 'magic'" [attr.aria-pressed]="mode === 'magic'"><app-symbol name="sparkles-outline" /> Magic Set</button>
+  </div>
+</header>
+<section class="workspace-panel border-primary mb-5" aria-label="Concerto associato">
+  <div class="workspace-actions justify-between">
+    <div><h2>Concerto associato <span class="text-error">*</span></h2>
+      @if (selectedGig; as gig) { <p>{{ gigOptionLabel(gig) }} @if (gig.venue?.name) { · {{ gig.venue.name }} }</p> }
+      @else { <p class="workspace-muted">Seleziona il concerto a cui appartiene la scaletta.</p> }
+    </div>
+    <select class="select select-bordered" aria-label="Concerto associato" required [disabled]="gigsLoading() || savingToServer()" [ngModel]="workspace.gigId ?? null" (ngModelChange)="selectGig($event)">
+      <option [ngValue]="null">{{ gigsLoading() ? 'Caricamento concerti…' : 'Scegli concerto' }}</option>
+      @for (gig of gigs; track gig.id) { <option [ngValue]="gig.id">{{ gigOptionLabel(gig) }}</option> }
+    </select>
+  </div>
+  @if (gigError()) { <p class="workspace-error" role="alert">{{ gigError() }} <button class="btn btn-sm" type="button" (click)="loadWorkspace()">Riprova</button></p> }
+</section>
+@if (mode === 'manual') {
+  <section class="workspace-panel mb-5">
+    <label class="grid gap-2">Titolo della scaletta
+      <app-gigsaw-input controlClass="w-full" aria-label="Titolo della scaletta" [(ngModel)]="workspace.title" (ngModelChange)="touch()" />
+    </label>
+    <div class="workspace-actions mt-3">
+      <span>{{ songCount }} brani · {{ mainSetCount(workspace) }} set · {{ format(duration) }}</span>
+      <button class="btn btn-outline btn-sm" type="button" (click)="mode = 'magic'; proposal = undefined; loadTemplates()">Usa un modello</button>
+      <button class="btn btn-ghost btn-sm" type="button" (click)="undo()" [disabled]="!undoStack.length">Annulla modifica</button>
+      <button class="btn btn-ghost btn-sm" type="button" (click)="redo()" [disabled]="!redoStack.length">Ripeti modifica</button>
+    </div>
+  </section>
+}
 @if(snapshot){<div class="mx-3 flex items-center gap-3 rounded-xl border border-[var(--gigsaw-border)] bg-[var(--panel-soft)] p-3 text-[var(--gigsaw-text)]"><span>È disponibile la versione precedente all'applicazione Magic Set.</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary text-sm" (click)="compare=!compare" type="button">{{compare?'Chiudi confronto':'Confronta'}}</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary text-sm" (click)="restore()" type="button">Torna alla versione precedente</app-gigsaw-button></div>}
 @if(compare&&snapshot){<section class="mx-3 my-3 grid grid-cols-2 gap-4 rounded-[14px] border border-[var(--border)] bg-[var(--panel-soft)] p-4"><div><h3>Prima</h3><p>{{mainSetCount(snapshot.workspace)}} set · {{snapshot.workspace.sets[0].items.length}} elementi nel primo set</p></div><div><h3>Versione corrente</h3><p>{{workspace.sets.length}} set · {{songCount}} brani</p></div></section>}
+@if (mode === 'manual') {
 <nav class="hidden max-[700px]:sticky max-[700px]:top-0 max-[700px]:z-[8] max-[700px]:flex max-[700px]:gap-[.4rem] max-[700px]:border-b max-[700px]:border-[var(--border)] max-[700px]:bg-[var(--panel)] max-[700px]:p-2 [&_.btn]:flex-1 [&_.btn]:rounded-[9px] [&_.btn]:bg-[var(--panel-soft)] [&_.btn]:text-[var(--gigsaw-text)]"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="mobileTab='repertoire'" type="button">Repertorio</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="mobileTab='setlist'" type="button">Scaletta</app-gigsaw-button><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" (click)="mobileTab='inspector'" type="button">Controlli</app-gigsaw-button></nav>
+}
 @if(mode==='manual'){
 <div class="workspace-grid">
 <aside class="panel repertoire" [class.mobile-hidden]="mobileTab!=='repertoire'"><h2>Repertorio</h2><app-gigsaw-input controlClass="w-full"  placeholder="Cerca titolo, artista, tonalità o tag…" [(ngModel)]="search" /><div class="song-catalog">@if(repertoireLoading()){<div class="catalog-state"><span class="loading loading-spinner loading-md"></span><span>Carico il repertorio…</span></div>}@else if(repertoireError()){<div class="catalog-state load-error"><span>{{repertoireError()}}</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn btn-sm btn-primary" (click)="loadWorkspace()" type="button">Riprova</app-gigsaw-button></div>}@else{@for(song of filteredSongs;track song.id){<article class="catalog-card"><div><b>{{song.title}}</b><small>{{song.performedBy}} · {{song.key||'—'}} · {{song.bpm||'—'}} BPM · {{format(song.duration||0)}}</small>@if(song.notes){<small class="text-warning">{{song.notes}}</small>}</div><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn btn-sm btn-primary" (click)="addSong(song)" type="button">Aggiungi</app-gigsaw-button></article>}@empty{<div class="empty">Nessun brano trovato.</div>}}</div></aside>
@@ -18,24 +54,110 @@
   </label>
 }@else{<div class="empty">Seleziona un elemento per modificarlo.</div>}<h2>Controlli</h2>@for(issue of issues;track issue.id){<a class="issue" [class.error]="issue.severity==='error'" [class.warning]="issue.severity==='warning'" (click)="mobileTab='setlist'"><b>{{issue.severity}}</b> {{issue.message}}</a>}@empty{<div class="alert alert-success">Nessun problema rilevato.</div>}</aside></div>
 }@else{
-<section class="magic-workspace"><header><p class="eyebrow">GENERATORE LOCALE DETERMINISTICO</p><h1>Progetta il tuo Magic Set</h1><p>Configura i vincoli, genera una proposta e rifiniscila prima di applicarla. Nessuna AI reale viene chiamata.</p></header><div class="magic-grid"><details class="magic-config constraints-panel" [open]="!proposal"><summary><h2>1. Vincoli principali</h2><span class="constraints-hint">{{ proposal ? 'Modifica i vincoli e genera una nuova variante' : '' }}</span></summary><div class="constraint-grid"><label>Numero set<app-gigsaw-input controlClass="w-full input-bordered"  type="number" [(ngModel)]="constraints.setCount" (ngModelChange)="proposal = undefined" /></label><label>Minuti per set<app-gigsaw-input controlClass="w-full input-bordered"  type="number" [ngModel]="constraints.setSeconds/60" (ngModelChange)="constraints.setSeconds=$event*60; proposal = undefined" /></label><label>Pausa (min)<app-gigsaw-input controlClass="w-full input-bordered"  type="number" [ngModel]="constraints.breakSeconds/60" (ngModelChange)="constraints.breakSeconds=$event*60; proposal = undefined" /></label><label>Massimo brani<app-gigsaw-input controlClass="w-full input-bordered"  type="number" [(ngModel)]="constraints.maxSongs" (ngModelChange)="proposal = undefined" /></label></div><section class="constraint-grid" aria-label="Posizioni e finali">
-<label>Primo brano<select class="select w-full" aria-label="Primo brano" [(ngModel)]="constraints.openingSongId" (ngModelChange)="proposal = undefined"><option [ngValue]="undefined">Automatico</option>@for(song of songs; track song.id){<option [ngValue]="song.id">{{song.title}}</option>}</select></label>
-<label>Ultimo brano<select class="select w-full" aria-label="Ultimo brano" [(ngModel)]="constraints.closingSongId" (ngModelChange)="proposal = undefined"><option [ngValue]="undefined">Automatico</option>@for(song of songs; track song.id){<option [ngValue]="song.id">{{song.title}}</option>}</select></label>
-<div class="encore-picker"><div class="encore-head"><span>Bis</span><span class="encore-count">{{ constraints.encoreSongIds.length }} selezionati</span>@if(constraints.encoreSongIds.length){<button type="button" class="link link-primary" (click)="clearEncoreSongs('encoreSongIds')">Azzera</button>}</div><input type="search" class="input input-bordered input-sm w-full" placeholder="Cerca brano o artista…" aria-label="Cerca tra i brani" [ngModel]="encoreFilter['encoreSongIds']" (ngModelChange)="encoreFilter['encoreSongIds']=$event" [ngModelOptions]="{standalone: true}" /><div class="encore-list" role="group" aria-label="Brani del bis">@for(song of filteredEncoreSongs('encoreSongIds'); track song.id){<label class="encore-option"><app-gigsaw-checkbox controlClass="checkbox checkbox-primary checkbox-sm" [checked]="constraints.encoreSongIds.includes(song.id)" (checkedChange)="toggleEncoreSong('encoreSongIds', song.id, $event)" /><span>{{song.title}}</span></label>}@empty{<p class="encore-empty">Nessun brano trovato.</p>}</div></div>
-<div class="encore-picker"><div class="encore-head"><span>We want more</span><span class="encore-count">{{ (constraints.weWantMoreSongIds ?? []).length }} selezionati</span>@if((constraints.weWantMoreSongIds ?? []).length){<button type="button" class="link link-primary" (click)="clearEncoreSongs('weWantMoreSongIds')">Azzera</button>}</div><input type="search" class="input input-bordered input-sm w-full" placeholder="Cerca brano o artista…" aria-label="Cerca tra i brani" [ngModel]="encoreFilter['weWantMoreSongIds']" (ngModelChange)="encoreFilter['weWantMoreSongIds']=$event" [ngModelOptions]="{standalone: true}" /><div class="encore-list" role="group" aria-label="Brani We want more">@for(song of filteredEncoreSongs('weWantMoreSongIds'); track song.id){<label class="encore-option"><app-gigsaw-checkbox controlClass="checkbox checkbox-primary checkbox-sm" [checked]="(constraints.weWantMoreSongIds ?? []).includes(song.id)" (checkedChange)="toggleEncoreSong('weWantMoreSongIds', song.id, $event)" /><span>{{song.title}}</span></label>}@empty{<p class="encore-empty">Nessun brano trovato.</p>}</div></div>
-</section><p class="hint">Primo e ultimo brano si riferiscono ai set principali. Seguono il Bis e poi We want more. Selezionando un brano di un medley, viene incluso l’intero gruppo, senza interruzioni.</p><details class="collapse collapse-arrow"><summary class="collapse-title">Vincoli avanzati</summary><div class="collapse-content"><label><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="checkbox checkbox-primary toggle"  [(ngModel)]="constraints.balanceSingers" (ngModelChange)="proposal = undefined" /><span>Distribuisci cantanti</span></label></label><label><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="checkbox checkbox-primary toggle"  [(ngModel)]="constraints.alternateGenres" (ngModelChange)="proposal = undefined" /><span>Alterna generi/atmosfere</span></label></label><label><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="checkbox checkbox-primary toggle"  [(ngModel)]="constraints.separateSameKeys" (ngModelChange)="proposal = undefined" /><span>Distanzia tonalità simili</span></label></label><label><label class="flex items-center gap-3"><app-gigsaw-checkbox controlClass="checkbox checkbox-primary toggle"  [(ngModel)]="constraints.preferLiveReady" (ngModelChange)="proposal = undefined" /><span>Priorità ai brani live ready</span></label></label><label>Massimo brani poco provati<app-gigsaw-input controlClass="w-full input-bordered"  type="number" [(ngModel)]="constraints.maxDraftSongs" (ngModelChange)="proposal = undefined" /></label><p class="hint">I vincoli di posizione e i medley sono verificati prima di applicare la proposta.</p></div></details><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn btn-secondary btn-lg" (click)="generate()" type="button"><app-symbol name="sparkles-outline" /> {{proposal?'Nuova variante':'Genera proposta'}}</app-gigsaw-button></details><div class="proposal"><h2>2. Anteprima e rifinitura</h2>@if(proposal){<div class="proposal-status"><span class="badge badge-success">{{proposal.respected.length}} rispettati</span><span class="badge badge-warning">{{proposal.unmet.length}} non rispettabili</span><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn btn-sm" (click)="compare=!compare" type="button">Confronta con corrente</app-gigsaw-button></div>@for(set of proposal.sets;track set.id;let si=$index){<section class="set-panel"><header><h3>{{set.name}}</h3><b>{{format(setDuration(set))}}</b><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn btn-xs" (click)="regenerateSet(si)" type="button">Rigenera solo questo set</app-gigsaw-button></header>@for(item of set.items;track item.id){<article class="set-item"><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn btn-xs" (click)="item.locked=!item.locked" type="button">@if(item.locked){<app-symbol name="lock" />}{{item.locked?'Bloccato':'Blocca'}}</app-gigsaw-button><div class="item-main"><b>{{item.title}}</b><small>{{format(item.durationSeconds)}} · {{item.concertKey||'—'}} @if(item.medleyId){ · Medley@if(item.segue){ · senza pausa}}</small></div></article>}</section>}<div class="explanations"><h3>Perché questa proposta</h3>@for(reason of proposal.reasons;track reason){<p>• {{reason}}</p>}@for(unmet of proposal.unmet;track unmet){<p class="text-warning"><app-symbol name="triangle-exclamation" /> {{unmet}}</p>}</div><app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn btn-primary btn-lg sticky-apply" [disabled]="!!proposal.blockingErrors?.length" (click)="applyProposal()" type="button">Applica alla scaletta</app-gigsaw-button>}@else{<div class="empty large">La proposta comparirà qui. Puoi bloccare brani, rigenerare un set e confrontarla senza perdere la scaletta manuale.</div>}</div></div></section>}
+<div class="workspace-form-layout">
+  <section class="workspace-panel">
+    @if (repertoireLoading()) { <p role="status">Caricamento repertorio…</p> }
+    @if (repertoireError()) { <p class="workspace-error" role="alert">{{ repertoireError() }} <button class="btn btn-sm" type="button" (click)="loadWorkspace()">Riprova</button></p> }
+    @if (!proposal) {
+      <div class="workspace-actions justify-between mb-4">
+        <h2>Parametri della scaletta</h2>
+        <button type="button" class="btn btn-outline btn-sm" (click)="loadTemplates()" [disabled]="templatesLoading()">Usa un modello</button>
+      </div>
+      @if (templatesOpen()) {
+        <label class="grid gap-2 mb-4">Modello di scaletta
+          <select class="select w-full" (change)="useTemplate(+$any($event.target).value)">
+            <option value="">Scegli un modello</option>
+            @for (template of templates(); track template.id) { <option [value]="template.id">{{ template.name }}</option> }
+          </select>
+        </label>
+        @if (!templatesLoading() && !templates().length && !templateError()) { <p class="workspace-muted mb-4">Nessun modello disponibile.</p> }
+      }
+      @if (templateError()) { <p class="workspace-error" role="alert">{{ templateError() }}</p> }
+      <div class="workspace-fields">
+        <label>Durata musica (min)
+          <input class="input w-full" type="number" min="1" [ngModel]="constraints.totalSeconds / 60" (ngModelChange)="constraints.totalSeconds = $event * 60">
+        </label>
+        <label>Numero di set
+          <input class="input w-full" type="number" min="1" max="20" [(ngModel)]="constraints.setCount">
+        </label>
+        <label class="wide">Andamento
+          <select class="select w-full" [(ngModel)]="constraints.energyCurve">
+            <option value="rising">In crescendo</option><option value="wave">Alternato</option><option value="balanced">Costante</option>
+          </select>
+        </label>
+        <label>Brano iniziale
+          <select class="select w-full" [(ngModel)]="constraints.openingSongId">
+            <option [ngValue]="undefined">Automatico</option>
+            @for (song of songs; track song.id) { <option [ngValue]="song.id">{{ song.title }}</option> }
+          </select>
+        </label>
+        <label>Brano finale
+          <select class="select w-full" [(ngModel)]="constraints.closingSongId">
+            <option [ngValue]="undefined">Automatico</option>
+            @for (song of songs; track song.id) { <option [ngValue]="song.id">{{ song.title }}</option> }
+          </select>
+        </label>
+        <app-gigsaw-multi-select label="Bis" [options]="songOptions" [value]="constraints.encoreSongIds" [ordered]="true" (valueChange)="setSongChoices('encoreSongIds', $event)" />
+        <app-gigsaw-multi-select label="We want more" [options]="songOptions" [value]="constraints.weWantMoreSongIds ?? []" [ordered]="true" (valueChange)="setSongChoices('weWantMoreSongIds', $event)" />
+        <app-gigsaw-multi-select class="wide" label="Brani da escludere" [options]="songOptions" [value]="constraints.excludedSongIds" (valueChange)="setSongChoices('excludedSongIds', $event)" />
+        <details class="wide">
+          <summary>Parametri avanzati</summary>
+          <div class="workspace-fields mt-3">
+            <label>Pausa (min)<input class="input w-full" type="number" min="0" [ngModel]="constraints.breakSeconds / 60" (ngModelChange)="constraints.breakSeconds = $event * 60"></label>
+            <label>Massimo brani<input class="input w-full" type="number" min="1" [(ngModel)]="constraints.maxSongs"></label>
+          </div>
+        </details>
+      </div>
+      <div class="workspace-actions mt-5 justify-end"><button class="btn btn-primary" type="button" [disabled]="!selectedGig || repertoireLoading() || !!repertoireError() || !validMusicDuration" (click)="generate()">Genera scaletta</button></div>
+    } @else {
+      <div class="workspace-actions justify-between"><h2>Scaletta generata</h2><span class="badge badge-warning badge-soft">Anteprima</span></div>
+      @for (set of proposal.sets; track set.id; let index = $index) {
+        <section class="set-panel">
+          <header><h3>{{ set.name }}</h3><b>{{ format(setDuration(set)) }}</b><button class="btn btn-ghost btn-xs" type="button" (click)="regenerateSet(index)">Rigenera set</button></header>
+          @for (item of set.items; track item.id; let itemIndex = $index) {
+            <div class="set-item"><div class="item-main"><strong>{{ item.title }}</strong><small>{{ format(item.durationSeconds) }} @if (item.medleyId) { · Medley }</small></div>
+              <button class="btn btn-ghost btn-xs" type="button" [disabled]="!canMoveProposalItem(set, itemIndex, -1)" [attr.aria-label]="'Sposta su ' + item.title" (click)="moveProposalItem(set, itemIndex, -1)">↑</button>
+              <button class="btn btn-ghost btn-xs" type="button" [disabled]="!canMoveProposalItem(set, itemIndex, 1)" [attr.aria-label]="'Sposta giù ' + item.title" (click)="moveProposalItem(set, itemIndex, 1)">↓</button>
+              <button type="button" class="btn btn-outline btn-xs" [attr.aria-pressed]="!!item.locked" (click)="item.locked = !item.locked">{{ item.locked ? 'Bloccato' : 'Blocca' }}</button>
+            </div>
+          }
+        </section>
+      }
+      @for (message of proposal.unmet; track message) { <p class="workspace-notice" role="status">{{ message }}</p> }
+      <div class="workspace-actions mt-5">
+        <button class="btn btn-outline" type="button" (click)="proposal = undefined">Modifica parametri</button>
+        <button class="btn btn-outline" type="button" [disabled]="!selectedGig" (click)="generate()">Rigenera</button>
+        <button class="btn btn-primary" type="button" [disabled]="!selectedGig || !!proposal.blockingErrors?.length" (click)="applyProposal()">Usa questa scaletta →</button>
+      </div>
+    }
+  </section>
+  <aside class="workspace-panel self-start">
+    <h2>Riepilogo</h2>
+    @if (proposal) { <p><strong>{{ proposalSongCount }} brani</strong> · {{ format(proposalMusicSeconds) }} di musica nei set</p> }
+    <p>Obiettivo {{ format(constraints.totalSeconds) }} · {{ constraints.setCount }} set</p>
+    <dl class="grid gap-2 mt-4">
+      <div><dt class="workspace-muted">Brano iniziale</dt><dd>{{ songTitle(constraints.openingSongId) }}</dd></div>
+      <div><dt class="workspace-muted">Brano finale</dt><dd>{{ songTitle(constraints.closingSongId) }}</dd></div>
+      <div><dt class="workspace-muted">Bis</dt><dd>{{ constraints.encoreSongIds.length }} brani</dd></div>
+      <div><dt class="workspace-muted">We want more</dt><dd>{{ constraints.weWantMoreSongIds?.length ?? 0 }} brani</dd></div>
+    </dl>
+    <p class="workspace-muted mt-4">La proposta passa all’editor prima del salvataggio.</p>
+  </aside>
+</div>
 }
+}
+</main>
 </section>
 
-@if (!loading() && !loadError()) {
+@if (!loading() && !loadError() && mode === 'manual') {
   <footer class="page-footer save-footer">
     <div class="navbar gap-3">
       @if (serverSaveError()) { <p role="alert" class="m-0 px-5 py-2 text-sm text-[var(--ui-color-danger)]">{{ serverSaveError() }}</p> }
       <div class="save-actions">
-        <span class="save-hint">{{ mode === 'magic' && proposal ? 'Applica la proposta e salva la scaletta.' : savedToServer() ? 'Scaletta salvata: il PDF usa questa versione.' : 'Salva sul server per includere set e bis nel PDF.' }}</span>
-        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-primary" type="button" [disabled]="savingToServer() || (mode === 'magic' && !!proposal?.blockingErrors?.length)" (click)="saveCurrentSetlist()">
+        <span class="save-hint">{{ savedToServer() ? 'Scaletta salvata: il PDF usa questa versione.' : 'Salva sul server per includere set e bis nel PDF.' }}</span>
+        <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary btn-primary" type="button" [disabled]="savingToServer() || !selectedGig" (click)="saveCurrentSetlist()">
           @if (savingToServer()) { <span class="loading loading-spinner" slot="start"  role="status" aria-label="Caricamento"></span> }
-          {{ savingToServer() ? 'Salvataggio…' : mode === 'magic' && proposal ? 'Applica e salva scaletta' : 'Salva scaletta' }}
+          {{ savingToServer() ? 'Salvataggio…' : 'Salva scaletta' }}
         </app-gigsaw-button>
       </div>
     </div>

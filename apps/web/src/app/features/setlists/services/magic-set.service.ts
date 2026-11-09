@@ -51,12 +51,16 @@ export class MagicSetService {
       if (!byId.has(id)) errors.push(`Brano richiesto #${id} non disponibile.`);
     });
     const blocks = groups.map(ids => ids.map(id => byId.get(id)!));
+    const previousIds = new Set(previous?.sets.flatMap(set => set.items.map(item => item.song?.id)) ?? []);
     blocks.sort((a, b) => Number(b.some(s => required.has(s.id))) - Number(a.some(s => required.has(s.id)))
+      || Number(a.some(s => previousIds.has(s.id))) - Number(b.some(s => previousIds.has(s.id)))
       || Math.max(...b.map(s => s.bpm ?? 100)) - Math.max(...a.map(s => s.bpm ?? 100))
       || a[0].id - b[0].id);
     const max = c.maxSongs == null ? Infinity : Number(c.maxSongs);
     if (!(max > 0) || (!Number.isInteger(max) && max !== Infinity)) errors.push('Il massimo brani deve essere un intero positivo.');
     let used = 0;
+    let musicSeconds = 0;
+    const itemBlocks = new Map<WorkspaceSet, SetlistItem[][]>();
     let openingBlock: SetlistItem[] | undefined;
     let closingBlock: SetlistItem[] | undefined;
     for (const block of blocks) {
@@ -75,6 +79,9 @@ export class MagicSetService {
       ids.forEach(id => { const lock = locked.get(id); if (lock) targets.add(lock.set); });
       if (targets.size > 1) errors.push(`«${block[0].title}»: lo stesso brano o medley è assegnato a sezioni incompatibili.`);
       const target = [...targets][0] ?? [...mainSets].sort((a, b) => this.duration(a) - this.duration(b))[0];
+      const blockSeconds = block.reduce((total, song) => total + (song.duration ?? 240), 0);
+      if (!mandatory && c.totalSeconds > 0 && musicSeconds > 0
+        && Math.abs(musicSeconds + blockSeconds - c.totalSeconds) > Math.abs(musicSeconds - c.totalSeconds)) continue;
       // Preserve repertoire order inside a medley, except explicitly pinned endpoints.
       const ordered = [...block];
       const opening = ordered.find(s => s.id === c.openingSongId);
@@ -87,9 +94,36 @@ export class MagicSetService {
         medleyId, segue: !!medleyId && index < ordered.length - 1,
       }));
       target.items.push(...items);
+      const targetBlocks = itemBlocks.get(target) ?? [];
+      targetBlocks.push(items);
+      itemBlocks.set(target, targetBlocks);
+      if (!target.encore) musicSeconds += items.reduce((sum, item) => sum + item.durationSeconds, 0);
       if (opening && target === mainSets[0]) openingBlock = items;
       if (closing && target === mainSets[mainSets.length - 1]) closingBlock = items;
       used += items.length;
+    }
+    for (const [set, groups] of itemBlocks) {
+      if (groups.some(group => group.some(item => item.locked))) continue;
+      if (set.encore) {
+        const order = set === bisSet ? encore : more;
+        const rank = (group: SetlistItem[]) => Math.min(...group.map(item => {
+          const index = order.indexOf(item.song!.id);
+          return index < 0 ? Infinity : index;
+        }));
+        groups.sort((a, b) => rank(a) - rank(b));
+      } else if (c.energyCurve !== 'balanced') {
+        const tempo = (group: SetlistItem[]) => group.reduce((sum, item) => sum + (item.song?.bpm ?? 100), 0) / group.length;
+        groups.sort((a, b) => tempo(a) - tempo(b));
+        if (c.energyCurve === 'wave') {
+          const alternating: SetlistItem[][] = [];
+          while (groups.length) {
+            alternating.push(groups.shift()!);
+            if (groups.length) alternating.push(groups.pop()!);
+          }
+          groups.push(...alternating);
+        }
+      }
+      set.items = groups.flat();
     }
     if (openingBlock) mainSets[0].items = [...openingBlock, ...mainSets[0].items.filter(i => !openingBlock!.includes(i))];
     if (closingBlock) {
@@ -102,6 +136,7 @@ export class MagicSetService {
     if (c.openingSongId != null && mainItems[0]?.song?.id !== c.openingSongId) errors.push('Il primo brano è incompatibile con gli altri vincoli.');
     if (c.closingSongId != null && mainItems[mainItems.length - 1]?.song?.id !== c.closingSongId) errors.push('L’ultimo brano è incompatibile con gli altri vincoli.');
     if (used > max) errors.push(`I brani richiesti e i medley richiedono ${used} brani, oltre il massimo di ${max}.`);
+    if (mainSets.some(set => !set.items.length)) unmet.push('Il repertorio selezionato non riempie tutti i set principali.');
     if (!used) errors.push('Nessun brano disponibile con questi vincoli.');
     mainSets.forEach(set => {
       if (c.setSeconds > 0 && Math.abs(this.duration(set) - c.setSeconds) > 300) unmet.push(`${set.name}: durata ${Math.round(this.duration(set) / 60)} min, obiettivo ${Math.round(c.setSeconds / 60)} min.`);

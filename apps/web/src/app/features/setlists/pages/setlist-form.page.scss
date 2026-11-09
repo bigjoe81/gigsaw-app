@@ -1,4 +1,4 @@
-:host { --panel: #101d30; --panel-soft: #14243a; --border: var(--gigsaw-border); display: flex; flex-direction: column; min-height: 0; height: 100%; }
+:host { --panel: var(--gigsaw-surface); --panel-soft: var(--gigsaw-surface-raised); --border: var(--gigsaw-border); display: flex; flex-direction: column; min-height: 0; height: 100%; }
 .page-header, .page-footer { flex-shrink: 0; }
 .app-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background); color: var(--gigsaw-text); }
 .empty { display: grid; min-height: 55vh; place-items: center; align-content: center; gap: 12px; padding: 2rem; color: var(--ui-color-medium); text-align: center; }
@@ -8,7 +8,7 @@
 .stats { display: flex; gap: 1rem; }
 .stats span { display: grid; color: var(--ui-color-medium); font-size: .7rem; }
 .stats b { color: var(--gigsaw-text); font-size: 1.1rem; }
-.workspace-grid { display: grid; grid-template-columns: minmax(250px, 24%) minmax(420px, 1fr) minmax(270px, 25%); align-items: start; gap: .75rem; max-width: 1600px; margin: 0 auto; padding: .75rem; }
+.workspace-grid { display: grid; grid-template-columns: minmax(0, 24%) minmax(0, 1fr) minmax(0, 25%); align-items: start; gap: .75rem; max-width: 1600px; margin: 0 auto; padding: .75rem; }
 .panel, .set-panel, .magic-config, .proposal { padding: 1rem; border: 1px solid var(--border); border-radius: 16px; background: var(--panel); }
 .panel { position: sticky; top: 6rem; overflow: auto; max-height: calc(100vh - 8rem); }
 .panel h2, .magic-workspace h2 { margin: .3rem 0 .8rem; font-size: 1rem; font-weight: 600; }

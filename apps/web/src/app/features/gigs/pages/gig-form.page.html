@@ -1,23 +1,30 @@
 <app-form-page-header
     class="refined-form-header"
-    eyebrow="Calendario live"
+    eyebrow="Concerti"
+    [backstage]="true"
     [title]="editing() ? 'Modifica concerto' : 'Nuovo concerto'"
     subtitle="Data, venue e dettagli operativi: tutto ciò che serve alla band per arrivare pronta sul palco."
     backHref="../"
   />
-<section class="app-content">
-  <main class="min-h-full w-full bg-[var(--gigsaw-background)]">
-    <section class="form-container w-full min-w-0 px-[clamp(20px,5vw,72px)] py-12 max-[800px]:px-5 max-[800px]:py-8">
-      <form id="gig-form" [formGroup]="form" (ngSubmit)="save()" class="w-full pb-28 text-[var(--gigsaw-text)]">
+<section class="app-content backstage-page">
+  <main class="workspace-main">
+    <section class="workspace-form-layout">
+      <form id="gig-form" [formGroup]="form" (ngSubmit)="save()" class="workspace-panel w-full min-w-0 pb-28">
         @if (loading()) {
           <div class="flex min-h-[220px] items-center justify-center gap-2.5 text-[var(--ui-color-medium)]"><span class="loading loading-spinner"  role="status" aria-label="Caricamento"></span><span>Caricamento…</span></div>
         } @else {
       <section class="form-group grid gap-5 pb-[30px]">
         <div class="flex items-start gap-3">
           <app-symbol class="shrink-0 rounded-[10px] bg-[rgba(var(--ui-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ui-color-primary)]" name="calendar-outline"  />
-          <div><h2 class="m-0 text-base">Quando si suona</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Titolo, data e orario del live.</p></div>
+          <div><h2 class="m-0 text-base">Dettagli del concerto</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Titolo, data e orario del live.</p></div>
         </div>
 
+        <label class="grid min-w-0 gap-[7px] text-sm font-bold">
+          <span>Titolo</span>
+          <app-gigsaw-input formControlName="title" aria-label="Titolo" placeholder="Automatico da luogo e data" [invalid]="form.controls.title.touched && form.controls.title.invalid" controlClass="font-normal" />
+          <small class="font-normal text-[var(--gigsaw-muted)]">{{ editing() ? 'Puoi personalizzare il titolo del concerto.' : 'Si compila da luogo e data. Puoi personalizzarlo.' }}</small>
+          @if (form.controls.title.touched && form.controls.title.invalid) { <small class="text-[var(--ui-color-danger)]">Inserisci un titolo.</small> }
+        </label>
         <div class="grid grid-cols-2 gap-3.5 max-[680px]:grid-cols-1">
           <label class="grid min-w-0 gap-[7px] text-sm font-bold">
             <span>Data <strong class="text-[var(--ui-color-danger)]">*</strong></span>
@@ -34,7 +41,7 @@
       <section class="form-group grid gap-5 border-t border-[var(--gigsaw-border)] py-[30px]">
         <div class="flex items-start gap-3">
           <app-symbol class="shrink-0 rounded-[10px] bg-[rgba(var(--ui-color-primary-rgb),.12)] p-[9px] text-xl text-[var(--ui-color-primary)]" name="location-outline"  />
-          <div><h2 class="m-0 text-base">Dove si suona</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Cerca nell’anagrafica o seleziona un nuovo indirizzo.</p></div>
+          <div><h2 class="m-0 text-base">Locale</h2><p class="mt-0.5 text-sm text-[var(--ui-color-medium)]">Cerca nell’anagrafica o seleziona un nuovo indirizzo.</p></div>
         </div>
 
         <app-gigsaw-typeahead
@@ -71,12 +78,7 @@
 
       <details class="my-5 rounded-xl border border-[var(--gigsaw-border)] p-5"><summary class="cursor-pointer font-bold">Aggiungi dettagli</summary>
       <section class="form-group grid gap-5 border-t border-[var(--gigsaw-border)] pt-[30px] pb-[30px]">
-        <label class="grid min-w-0 gap-[7px] text-sm font-bold">
-          <span>Titolo</span>
-          <app-gigsaw-input formControlName="title" aria-label="Titolo" placeholder="Automatico da luogo e data" [invalid]="form.controls.title.touched && form.controls.title.invalid" controlClass="font-normal" />
-          <small class="font-normal text-[var(--gigsaw-muted)]">{{ editing() ? 'Puoi personalizzare il titolo del concerto.' : 'Si compila da luogo e data. Puoi personalizzarlo.' }}</small>
-          @if (form.controls.title.touched && form.controls.title.invalid) { <small class="text-[var(--ui-color-danger)]">Inserisci un titolo.</small> }
-        </label>
+
 
 
         <label class="grid min-w-0 gap-[7px] text-sm font-bold">
@@ -101,16 +103,34 @@
 
         }
       </form>
+      @if (!loading()) {
+        <aside class="workspace-form-aside">
+          <section class="workspace-panel">
+            <h2>Il concerto in breve</h2>
+            <h3>{{ form.controls.title.value || 'Nuovo concerto' }}</h3>
+            <p>{{ form.controls.date.value || 'Data da definire' }} {{ form.controls.time.value }}</p>
+            <p>{{ selectedVenue()?.name || pendingVenue()?.fullAddress || 'Locale da scegliere' }}</p>
+          </section>
+          <section class="workspace-panel border-primary">
+            <h2>Scaletta del concerto</h2>
+            @if (!editing()) { <p>Puoi salvare il concerto e creare subito la sua scaletta.</p> }
+            @else { <p>Apri il concerto per consultare le scalette associate.</p> }
+          </section>
+        </aside>
+      }
     </section>
   </main>
   @if (!loading()) {
     <div slot="fixed" class="floating-action-toolbar overflow-hidden" role="toolbar" aria-label="Azioni del form">
-      <div class="flex items-center justify-between gap-2.5 p-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2.5 p-2.5">
         <app-gigsaw-button tone="unstyled" buttonClass="btn btn-ghost" type="button" [routerLink]="['../']" [disabled]="saving()">Annulla</app-gigsaw-button>
         <app-gigsaw-button tone="unstyled" buttonClass="btn btn-primary" type="submit" form="gig-form" [disabled]="saving()">
           @if (saving()) { <span class="loading loading-spinner" slot="start"  role="status" aria-label="Caricamento"></span> }
-          {{ editing() ? 'Salva modifiche' : 'Crea concerto' }}
+          {{ editing() ? 'Salva modifiche' : 'Salva concerto' }}
         </app-gigsaw-button>
+        @if (!editing()) {
+          <button class="btn btn-primary" type="button" [disabled]="saving()" (click)="save(true)">Salva e crea scaletta →</button>
+        }
       </div>
     </div>
   }

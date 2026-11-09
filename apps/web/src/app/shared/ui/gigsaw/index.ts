@@ -10,6 +10,7 @@ export * from './gigsaw-icon.component';
 export * from './gigsaw-list.component';
 export * from './gigsaw-loading.component';
 export * from './gigsaw-message.component';
+export * from './gigsaw-multi-select.component';
 export * from './gigsaw-otp-input.component';
 export * from './gigsaw-select.component';
 export * from './gigsaw-steps.component';

@@ -1,3 +1,6 @@
+import { SetlistTemplate } from '../models/setlist.models';
+import { WorkspaceTopbarComponent } from '../../../shared/ui/workspace-topbar.component';
+import { GigsawMultiSelectComponent } from '../../../shared/ui/gigsaw/gigsaw-multi-select.component';
 import { guidedCompletionUrl } from '../../../core/navigation/guided-navigation';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
@@ -19,12 +22,12 @@ import { cloneWorkspace, LocalSetlistRepository, moveItemBefore, setDuration, Se
 import { SetlistValidationService } from '../services/setlist-validation.service';
 import { SetlistService } from '../services/setlist.service';
 
-@Component({ changeDetection: ChangeDetectionStrategy.Default, standalone: true, imports: [NativeUiModule, GigsawFormControlsModule, CommonModule, FormsModule, ], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
+@Component({ changeDetection: ChangeDetectionStrategy.Default, standalone: true, imports: [NativeUiModule, WorkspaceTopbarComponent, GigsawMultiSelectComponent, GigsawFormControlsModule, CommonModule, FormsModule, ], templateUrl: './setlist-form.page.html', styleUrls: ['./setlist-form.page.scss'] })
 export class SetlistFormPage implements OnInit, OnDestroy {
   readonly savingToServer = signal(false);
   readonly savedToServer = signal(false);
   readonly serverSaveError = signal('');
-  gigs: Gig[] = []; private setlistDate: string | null = null;
+  gigs: Gig[] = []; gigError = signal(''); gigsLoading = signal(false); private setlistDate: string | null = null;
   mode: 'manual' | 'magic' = 'manual'; mobileTab: 'repertoire' | 'setlist' | 'inspector' = 'setlist'; readonly loading = signal(true); readonly repertoireLoading = signal(true); readonly loadError = signal(''); readonly repertoireError = signal(''); saveState: 'dirty' | 'saving' | 'saved' = 'saved';
   songs: Song[] = []; search = ''; selected?: SetlistItem; proposal?: MagicProposal; snapshot?: SetlistSnapshot; compare = false;
   private readonly workspaceState = signal<SetlistWorkspace>({ id: 'new', title: 'Nuova scaletta', sets: [{ id: uid('set'), name: 'Set 1', targetSeconds: 2700, items: [] }], updatedAt: new Date().toISOString() });
@@ -35,8 +38,10 @@ export class SetlistFormPage implements OnInit, OnDestroy {
   private songsApi = inject(SongService); private gigsApi = inject(GigService); private dialogs = inject(DialogService); private api = inject(SetlistService); private route = inject(ActivatedRoute); private router = inject(Router); private toast = inject(ToastService); private repository = inject(LocalSetlistRepository); private magic = inject(MagicSetService); private history = inject(SetlistHistoryService); validator = inject(SetlistValidationService);
   ngOnInit() {
     this.routeId = this.route.snapshot.paramMap.get('id') ?? 'new';
-    this.workspace.id = this.routeId;
-    const draft = this.repository.load(this.routeId);
+    const gigId = Number(this.route.snapshot.queryParamMap.get('gigId'));
+    const draftId = this.routeId === 'new' && gigId > 0 ? `new-gig-${gigId}` : this.routeId;
+    this.workspace.id = draftId;
+    const draft = this.repository.load(draftId);
     this.hasDraft = Boolean(draft);
     if (draft) this.workspace = draft;
     this.loadWorkspace();
@@ -56,7 +61,22 @@ export class SetlistFormPage implements OnInit, OnDestroy {
     if (this.routeId === 'new') {
       this.loading.set(false);
       this.loadRepertoire();
-      this.gigsApi.list().subscribe({ next: gigs => this.gigs = gigs, error: () => undefined });
+      this.gigsLoading.set(true);
+      this.gigError.set('');
+      this.sub.add(this.gigsApi.list().pipe(timeout(15000), finalize(() => this.gigsLoading.set(false))).subscribe({
+        next: gigs => {
+          this.gigs = gigs;
+          const id = Number(this.route.snapshot.queryParamMap.get('gigId'));
+          const gig = gigs.find(item => item.id === id);
+          if (id && !gig) this.gigError.set('Il concerto richiesto non è disponibile per questa band.');
+          if (gig && this.workspace.gigId !== gig.id) {
+            const title = !this.hasDraft ? this.suggestedTitle(gig) : this.workspace.title;
+            this.workspace = { ...this.workspace, gigId: gig.id, gigLabel: gig.title, title };
+            this.touch();
+          }
+        },
+        error: () => this.gigError.set('Impossibile caricare i concerti.'),
+      }));
       return;
     }
 
@@ -133,6 +153,7 @@ export class SetlistFormPage implements OnInit, OnDestroy {
   async selectGig(value: number | null) {
     const gig = this.gigs.find(g => g.id === value);
     this.workspace = { ...this.workspace, gigId: gig?.id ?? null, gigLabel: gig?.title };
+    this.proposal = undefined;
     this.savedToServer.set(false); this.saveState = 'dirty'; this.changes.next();
     if (!gig) return;
     const suggested = this.suggestedTitle(gig);
@@ -151,7 +172,9 @@ export class SetlistFormPage implements OnInit, OnDestroy {
     const date = gig.date ? new Date(gig.date).toLocaleDateString('it-IT') : '';
     return [gig.venue?.name || gig.title, date].filter(Boolean).join(' - ');
   }
-  gigOptionLabel(gig: Gig): string { return `${gig.title} · ${new Date(gig.date).toLocaleDateString('it-IT')}`; }
+  gigOptionLabel(gig: Gig): string { const date = new Date(`${gig.date.slice(0, 10)}T00:00:00`);
+    const time = gig.date.match(/[T\s](\d{2}:\d{2})/)?.[1];
+    return [gig.title, date.toLocaleDateString('it-IT'), time].filter(Boolean).join(' · '); }
   touch() { this.workspace = { ...this.workspace }; this.savedToServer.set(false); this.serverSaveError.set(''); this.saveState='dirty'; this.changes.next(); }
   mutate(fn: () => void) { this.savedToServer.set(false); this.serverSaveError.set(''); this.undoStack.push(cloneWorkspace(this.workspace)); this.redoStack=[]; fn(); this.workspace = { ...this.workspace, updatedAt: new Date().toISOString() }; if (this.selected) this.selected = this.workspace.sets.reduce<SetlistItem[]>((all, set) => all.concat(set.items), []).find(item => item.id === this.selected!.id); this.saveState='dirty'; this.changes.next(); }
   addSong(song: Song, set = this.workspace.sets[0]) { this.mutate(() => set.items.push(this.songItem(song))); }
@@ -175,22 +198,70 @@ export class SetlistFormPage implements OnInit, OnDestroy {
   moveTo(item: SetlistItem, target: WorkspaceSet) { this.mutate(() => this.workspace = moveItemBefore(this.workspace, item.id, target.id)); }
   duplicate(item: SetlistItem, set: WorkspaceSet) { this.mutate(() => set.items.splice(set.items.indexOf(item)+1,0,{...structuredClone(item),id:uid(item.type)})); }
   split(set:WorkspaceSet,item:SetlistItem){if(item.medleyId)this.mutate(()=>Object.assign(set,splitMedley(set,item.medleyId!)));}
-  generate() { this.proposal=this.magic.generate(this.songs,this.constraints,'',this.proposal); }
-  encoreFilter: Record<'encoreSongIds' | 'weWantMoreSongIds', string> = { encoreSongIds: '', weWantMoreSongIds: '' };
-  filteredEncoreSongs(kind: 'encoreSongIds' | 'weWantMoreSongIds') {
-    const norm = (value?: string | null) => (value ?? '').toLocaleLowerCase('it').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const query = norm(this.encoreFilter[kind]).trim();
-    if (!query) return this.songs;
-    return this.songs.filter((song) => norm(`${song.title} ${song.performedBy ?? ''}`).includes(query));
+  readonly templates = signal<SetlistTemplate[]>([]);
+  readonly templatesOpen = signal(false);
+  readonly templatesLoading = signal(false);
+  readonly templateError = signal('');
+  get validMusicDuration(): boolean {
+    return Number.isFinite(this.constraints.totalSeconds) && this.constraints.totalSeconds > 0;
   }
-  toggleEncoreSong(kind: 'encoreSongIds' | 'weWantMoreSongIds', songId: number, checked: boolean) {
-    const other = kind === 'encoreSongIds' ? 'weWantMoreSongIds' : 'encoreSongIds';
-    const current: number[] = this.constraints[kind] ?? [];
-    this.constraints[kind] = checked ? [...current.filter((id) => id !== songId), songId] : current.filter((id) => id !== songId);
-    if (checked) this.constraints[other] = (this.constraints[other] ?? []).filter((id: number) => id !== songId);
+  loadTemplates(): void {
+    this.templatesOpen.set(true);
+    this.templateError.set('');
+    this.templatesLoading.set(true);
+    this.sub.add(this.api.listTemplates().pipe(timeout(15000), finalize(() => this.templatesLoading.set(false))).subscribe({
+      next: templates => this.templates.set(templates),
+      error: () => this.templateError.set('Impossibile caricare i modelli di scaletta.'),
+    }));
+  }
+  useTemplate(id: number): void {
+    const template = this.templates().find(item => item.id === id);
+    if (!template) return;
+    const setCount = template.setCount ?? this.constraints.setCount;
+    const breakSeconds = template.breakDurationSeconds ?? this.constraints.breakSeconds;
+    const setTargets = template.setTargets ?? [];
+    const musicSeconds = setTargets.reduce((sum, seconds) => sum + seconds, 0)
+      || (template.totalShowDurationSeconds ?? 0) - Math.max(0, setCount - 1) * breakSeconds;
+    this.constraints = {
+      ...this.constraints, setCount, breakSeconds,
+      totalSeconds: musicSeconds > 0 ? musicSeconds : this.constraints.totalSeconds,
+      maxSongs: template.targetSongCount ?? undefined,
+      openingSongId: template.openingSongIds?.[0],
+      closingSongId: template.closingSongIds?.[0],
+      encoreSongIds: [...(template.encoreSongIds ?? [])],
+    };
     this.proposal = undefined;
   }
-  clearEncoreSongs(kind: 'encoreSongIds' | 'weWantMoreSongIds') { this.constraints[kind] = []; this.proposal = undefined; }
+  get selectedGig(): Gig | undefined { return this.gigs.find(gig => gig.id === this.workspace.gigId); }
+  get songOptions() { return this.songs.map(song => ({ id: song.id, label: song.title, detail: song.performedBy })); }
+  get proposalMusicSeconds(): number {
+    return this.proposal?.sets.filter(set => !set.encore).reduce((sum, set) => sum + setDuration(set, 'song'), 0) ?? 0;
+  }
+  get proposalSongCount(): number {
+    return this.proposal?.sets.reduce((sum, set) => sum + set.items.filter(item => item.type === 'song').length, 0) ?? 0;
+  }
+  songTitle(id: number | undefined): string { return this.songs.find(song => song.id === id)?.title ?? 'Automatico'; }
+  setSongChoices(kind: 'encoreSongIds' | 'weWantMoreSongIds' | 'excludedSongIds', ids: (number | string)[]): void {
+    this.constraints[kind] = ids.map(Number);
+    this.proposal = undefined;
+  }
+  generate(): void {
+    if (!this.selectedGig || !this.validMusicDuration || this.repertoireLoading() || this.repertoireError()) return;
+    this.constraints.setSeconds = Math.round(this.constraints.totalSeconds / Math.max(1, this.constraints.setCount || 1));
+    this.proposal = this.magic.generate(this.songs, this.constraints, '', this.proposal);
+  }
+  canMoveProposalItem(set: WorkspaceSet, index: number, direction: number): boolean {
+    const current = set.items[index];
+    const neighbor = set.items[index + direction];
+    const movable = (item: SetlistItem | undefined) => item && !item.locked && !item.medleyId
+      && item.song?.id !== this.constraints.openingSongId && item.song?.id !== this.constraints.closingSongId;
+    return Boolean(movable(current) && movable(neighbor));
+  }
+  moveProposalItem(set: WorkspaceSet, index: number, direction: number): void {
+    if (!this.canMoveProposalItem(set, index, direction)) return;
+    const destination = index + direction;
+    [set.items[index], set.items[destination]] = [set.items[destination], set.items[index]];
+  }
   regenerateSet(index: number) {
     if (!this.proposal) return;
     const previous = structuredClone(this.proposal);
@@ -200,20 +271,20 @@ export class SetlistFormPage implements OnInit, OnDestroy {
     next.sets.forEach(set => set.items.forEach(item => item.locked = originalLocks.has(item.id)));
     this.proposal = next;
   }
-  applyProposal(){if(!this.proposal || this.proposal.blockingErrors?.length)return; const applied=this.history.apply(this.workspace,this.proposal); this.snapshot=applied.snapshot; this.mutate(()=>this.workspace=applied.workspace); this.mode='manual';}
+  applyProposal(){if(!this.selectedGig || !this.proposal || this.proposal.blockingErrors?.length)return; const applied=this.history.apply(this.workspace,this.proposal); this.snapshot=applied.snapshot; this.mutate(()=>this.workspace=applied.workspace); this.mode='manual';}
   restore(){if(this.snapshot)this.mutate(()=>this.workspace=this.history.restore(this.snapshot!));}
   undo(){this.savedToServer.set(false); const prior=this.undoStack.pop();if(prior){this.redoStack.push(cloneWorkspace(this.workspace));this.workspace=prior;this.changes.next();}}
   redo(){this.savedToServer.set(false); const next=this.redoStack.pop();if(next){this.undoStack.push(cloneWorkspace(this.workspace));this.workspace=next;this.changes.next();}}
   saveCurrentSetlist() {
     if (this.savingToServer()) return;
-    if (this.mode === 'magic' && this.proposal) {
-      if (this.proposal.blockingErrors?.length) return;
-      this.applyProposal();
-    }
-    this.saveNow();
+    if (this.mode === 'manual') this.saveNow();
   }
   saveNow(){
     if (this.savingToServer()) return;
+    if (!this.selectedGig) {
+      this.serverSaveError.set('Seleziona un concerto prima di salvare la scaletta.');
+      return;
+    }
     this.savingToServer.set(true);
     this.serverSaveError.set('');
     this.repository.save(this.workspace);
@@ -251,8 +322,8 @@ export class SetlistFormPage implements OnInit, OnDestroy {
       next: async (setlist) => {
         const previousId = this.routeId;
         this.routeId = String(setlist.id);
+        this.repository.remove(this.workspace.id);
         this.workspace.id = this.routeId;
-        this.repository.remove(previousId);
         this.repository.save(this.workspace);
         this.saveState = 'saved';
         this.savedToServer.set(true);
