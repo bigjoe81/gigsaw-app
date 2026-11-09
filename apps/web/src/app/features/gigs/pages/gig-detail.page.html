@@ -65,6 +65,10 @@
           @if (!setlistsLoading() && !setlistsError()) {
             <p class="mb-0 text-[var(--ui-color-medium)]">Nessuna scaletta associata al concerto.</p>
           }
+          @if (!setlistsLoading() && !setlistsError()) {
+            <a class="btn btn-primary" [routerLink]="['/band', posterBandId, 'scalette', 'nuova']"
+              [queryParams]="{ gigId: currentGig.id }">Crea scaletta</a>
+          }
         }
       </section>
       <nav class="mt-6 flex flex-wrap gap-3" aria-label="Azioni locandine">

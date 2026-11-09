@@ -1,2 +1,2 @@
-:host { display: block; height: 100%; }
-.app-content { --background: var(--gigsaw-background); }
+:host { display: flex; flex-direction: column; min-height: 0; height: 100%; }
+.app-content { flex: 1 1 0; min-height: 0; --background: var(--gigsaw-background); }

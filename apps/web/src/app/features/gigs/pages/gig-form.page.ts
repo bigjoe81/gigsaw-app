@@ -142,7 +142,7 @@ export class GigFormPage implements OnInit, OnDestroy {
     });
   }
 
-  save(): void {
+  save(createSetlist = false): void {
     this.error.set('');
     if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
@@ -178,6 +178,10 @@ export class GigFormPage implements OnInit, OnDestroy {
           return;
         }
         (await this.toast.create({ message: 'Concerto salvato.', duration: 1800, color: 'success' })).present();
+        if (createSetlist && this.bandId) {
+          void this.router.navigate(['/band', this.bandId, 'scalette', 'nuova'], { queryParams: { gigId: gig.id } });
+          return;
+        }
         void this.router.navigateByUrl(guidedCompletionUrl(this.router.url, this.bandId, 'concerto') ?? (this.bandId ? `/band/${this.bandId}/concerti` : '/band'));
       },
       error: (error: unknown) => {

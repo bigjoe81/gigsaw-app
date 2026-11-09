@@ -87,4 +87,18 @@ describe('MagicSetService constraints', () => {
     expect(p.blockingErrors!.some(e => e.includes('numero di set'))).toBeTrue();
     expect(p.blockingErrors!.some(e => e.includes('#99'))).toBeTrue();
   });
+
+  it('uses the requested music duration and preserves the two ordered encore groups', () => {
+    const p = service.generate(
+      Array.from({ length: 10 }, (_, index) => song(index + 1)),
+      constraints({ totalSeconds: 540, setCount: 1, setSeconds: 540, openingSongId: 1, closingSongId: 2,
+        encoreSongIds: [3, 4], weWantMoreSongIds: [5, 6], energyCurve: 'rising' }), '',
+    );
+    expect(p.blockingErrors).toEqual([]);
+    expect(p.sets[0].items.length).toBe(3);
+    expect(p.sets[0].items[0].song?.id).toBe(1);
+    expect(p.sets[0].items[2].song?.id).toBe(2);
+    expect(p.sets[1].items.map(item => item.song?.id)).toEqual([3, 4]);
+    expect(p.sets[2].items.map(item => item.song?.id)).toEqual([5, 6]);
+  });
 });

@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { NativeUiModule } from '../../../shared/ui/native-ui';
 import { Component, OnInit, computed, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { WorkspaceTopbarComponent } from '../../../shared/ui/workspace-topbar.component';
+import { workspaceRows } from '../../../shared/ui/workspace-table';
 import { RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { catchError, finalize, forkJoin, of, timeout } from 'rxjs';
 import { Gig } from '../../../core/models/band-resources.models';
 import { GigService } from '../services/gig.service';
 import { SetlistService } from '../../setlists/api';
@@ -13,7 +14,7 @@ type GigFilter = 'upcoming' | 'past' | 'all';
 
 @Component({ changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
-  imports: [NativeUiModule, NgClass, RouterLink, ],
+  imports: [NativeUiModule, WorkspaceTopbarComponent, RouterLink, ],
   templateUrl: './gig-list.page.html',
   styleUrl: './gig-list.page.scss',
 })
@@ -27,19 +28,14 @@ export class GigListPage implements OnInit {
     if (filter === 'all') return this.gigs();
     return this.gigs().filter((gig) => filter === 'upcoming' ? this.isUpcoming(gig) : !this.isUpcoming(gig));
   });
+  readonly search = signal('');
+  readonly rows = workspaceRows(this.visibleGigs, this.search,
+    gig => [gig.title, this.venue(gig), this.fullDate(gig)].join(' '),
+    gig => gig.date, computed(() => this.filter() === 'past'));
+  readonly nextGig = computed(() => this.gigs().find(gig => this.isUpcoming(gig)));
   readonly upcomingCount = computed(() => this.gigs().filter((gig) => this.isUpcoming(gig)).length);
 
-  readonly viewedSetlist = signal<Setlist | null>(null);
-  readonly setlistLoading = signal(false);
-  readonly viewedSections = computed(() => {
-    const setlist = this.viewedSetlist();
-    if (!setlist) return [];
-    const titles = new Map((setlist.songs ?? []).map((song) => [song.id, song.title]));
-    const sections = setlist.items?.length
-      ? setlist.items.map((section) => ({ name: section.name, entries: section.items.map((item) => item.type === 'song' ? (item.title || titles.get(item.songId ?? 0) || '') : (item.title || item.type)) }))
-      : (setlist.sections ?? []).map((section) => ({ name: section.name, entries: section.songIds.map((id) => titles.get(id) ?? '') }));
-    return sections.map((section) => ({ name: section.name, lines: section.entries.filter(Boolean).map((entry, index) => `${index + 1}. ${entry}`) }));
-  });
+  readonly setlistsUnavailable = signal(false);
 
   constructor(private readonly gigsApi: GigService, private readonly setlistsApi: SetlistService) {
 
@@ -52,14 +48,31 @@ export class GigListPage implements OnInit {
   load(event?: CustomEvent): void {
     this.loading.set(!event);
     this.error.set('');
-    this.gigsApi.list().pipe(
+    this.setlistsUnavailable.set(false);
+    forkJoin({
+      gigs: this.gigsApi.list().pipe(timeout(15000)),
+      setlists: this.setlistsApi.list().pipe(timeout(10000), catchError(() => {
+        this.setlistsUnavailable.set(true);
+        return of([] as Setlist[]);
+      })),
+    }).pipe(
       finalize(() => {
         this.loading.set(false);
         event?.detail.complete();
       }),
     ).subscribe({
-      next: (gigs) => {
-        this.gigs.set([...gigs].sort((left, right) => this.timestamp(left.date) - this.timestamp(right.date)));
+      next: ({ gigs, setlists }) => {
+        const byGig = new Map<number, Array<{ id: number; title: string }>>();
+        for (const list of setlists) {
+          if (!list.gigId) continue;
+          const id = Number(list.gigId);
+          const links = byGig.get(id) ?? [];
+          links.push({ id: list.id, title: list.title });
+          byGig.set(id, links);
+        }
+        this.gigs.set(gigs.map(gig => ({
+          ...gig, setlists: [...new Map([...(gig.setlists ?? []), ...(byGig.get(gig.id) ?? [])].map(list => [list.id, list])).values()],
+        })).sort((left, right) => this.timestamp(left.date) - this.timestamp(right.date)));
       },
       error: (error: Error) => {
         this.error.set(error.message || 'Impossibile caricare i concerti.');
@@ -71,16 +84,6 @@ export class GigListPage implements OnInit {
     this.filter.set(filter);
   }
 
-  openSetlist(event: Event, id: number): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.setlistLoading.set(true);
-    this.setlistsApi.get(id).pipe(finalize(() => this.setlistLoading.set(false))).subscribe({
-      next: (setlist) => this.viewedSetlist.set(setlist),
-      error: (error: Error) => this.error.set(error.message || 'Impossibile caricare la scaletta.'),
-    });
-  }
-  closeSetlist(): void { this.viewedSetlist.set(null); this.setlistLoading.set(false); }
   isUpcoming(gig: Gig): boolean {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -88,15 +91,18 @@ export class GigListPage implements OnInit {
   }
 
   day(gig: Gig): string {
-    return new Intl.DateTimeFormat('it-IT', { day: '2-digit' }).format(this.dateValue(gig.date));
+    const date = this.dateValue(gig.date);
+    return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('it-IT', { day: '2-digit' }).format(date) : '—';
   }
 
   month(gig: Gig): string {
-    return new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(this.dateValue(gig.date)).replace('.', '');
+    const date = this.dateValue(gig.date);
+    return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(date).replace('.', '') : '';
   }
 
   fullDate(gig: Gig): string {
-    return new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(this.dateValue(gig.date));
+    const date = this.dateValue(gig.date);
+    return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date) : 'Data da definire';
   }
 
   time(gig: Gig): string | null {
