@@ -1,0 +1,138 @@
+require "json"
+require "shellwords"
+require "fileutils"
+
+ROOT = File.expand_path("..", __dir__)
+LIVE = File.expand_path(ENV.fetch("LIVE_APP_DIR", "apps/live"), ROOT)
+IOS = File.expand_path(ENV.fetch("IOS_PROJECT_DIR", "#{LIVE}/ios/App"), ROOT)
+ANDROID = File.expand_path(ENV.fetch("ANDROID_PROJECT_DIR", "#{LIVE}/android"), ROOT)
+OUTPUT = File.join(ROOT, "build", "mobile")
+
+def required(name)
+  value = ENV[name]
+  UI.user_error!("Variabile obbligatoria mancante: #{name}") if value.to_s.strip.empty?
+  value
+end
+
+def release_values(options)
+  version = options[:version] || required("APP_VERSION")
+  number = options[:build_number] || ENV["BUILD_NUMBER"] || ENV["CIRCLE_BUILD_NUM"]
+  UI.user_error!("APP_VERSION deve essere X.Y.Z") unless version.to_s.match?(/\A\d+\.\d+\.\d+\z/)
+  UI.user_error!("BUILD_NUMBER deve essere un intero positivo e crescente") unless number.to_s.match?(/\A[1-9]\d*\z/)
+  UI.user_error!("BUILD_NUMBER supera il limite Android") if number.to_i > 2_100_000_000
+  [version.to_s, number.to_s]
+end
+
+def prepare_live(platform)
+  return if ENV["LIVE_NATIVE"] == "true"
+  angular = JSON.parse(File.read(File.join(ROOT, "angular.json")))
+  project = ENV.fetch("LIVE_ANGULAR_PROJECT", "live")
+  UI.user_error!("Manca il progetto Angular '#{project}': inizializzare Ionic in apps/live prima del deploy") unless angular.fetch("projects", {}).key?(project)
+  config = Dir.glob(File.join(LIVE, "capacitor.config.{ts,js,json}")).first
+  UI.user_error!("Manca capacitor.config in #{LIVE}") unless config
+  UI.user_error!("Manca node_modules: eseguire npm ci dalla radice") unless File.directory?(File.join(ROOT, "node_modules"))
+  Dir.chdir(ROOT) do
+    sh(File.join(ROOT, "node_modules/.bin/ng"), "build", project, "--configuration", ENV.fetch("LIVE_ANGULAR_CONFIGURATION", "production"))
+  end
+  # La CLI condivisa resta alla radice; Capacitor risolve la config dalla cartella Live.
+  Dir.chdir(LIVE) { sh(File.join(ROOT, "node_modules/.bin/cap"), "sync", platform) }
+end
+
+platform :ios do
+  private_lane :package_live do |options|
+    version, number = release_values(options)
+    prepare_live("ios")
+    project = File.join(IOS, ENV.fetch("IOS_PROJECT_NAME", "App.xcodeproj"))
+    UI.user_error!("Progetto iOS mancante: #{project}; generare e versionare Capacitor iOS") unless File.directory?(project)
+    bundle = required("IOS_BUNDLE_ID")
+    team = required("APPLE_TEAM_ID")
+    setup_ci(provider: "circleci") if ENV["CIRCLECI"] == "true"
+    key = app_store_connect_api_key(
+      key_id: required("ASC_KEY_ID"), issuer_id: required("ASC_ISSUER_ID"),
+      key_content: required("ASC_KEY_CONTENT_BASE64"), is_key_content_base64: true
+    )
+    match(type: "appstore", readonly: true, api_key: key,
+          app_identifier: bundle, team_id: team, git_url: required("MATCH_GIT_URL"))
+    update_code_signing_settings(
+      use_automatic_signing: false, path: project, team_id: team,
+      targets: [ENV.fetch("IOS_TARGET", "App")], build_configurations: ["Release"],
+      code_sign_identity: "Apple Distribution", profile_name: "match AppStore #{bundle}"
+    )
+    # Capacitor usa normalmente Info.plist con versione letterale, non agvtool.
+    plist = File.join(IOS, ENV.fetch("IOS_INFO_PLIST", "App/Info.plist"))
+    set_info_plist_value(path: plist, key: "CFBundleShortVersionString", value: version)
+    set_info_plist_value(path: plist, key: "CFBundleVersion", value: number)
+    workspace = File.join(IOS, ENV.fetch("IOS_WORKSPACE_NAME", "App.xcworkspace"))
+    args = { scheme: ENV.fetch("IOS_SCHEME", "App"), configuration: "Release", clean: true,
+             export_method: "app-store", output_directory: File.join(OUTPUT, "ios"),
+             output_name: "GigsawLive.ipa", buildlog_path: File.join(OUTPUT, "logs"),
+             export_options: { provisioningProfiles: { bundle => "match AppStore #{bundle}" } } }
+    # Supporta sia Capacitor con CocoaPods sia progetti senza workspace (SPM).
+    args[File.directory?(workspace) ? :workspace : :project] = File.directory?(workspace) ? workspace : project
+    build_app(**args)
+    { api_key: key, ipa: lane_context[SharedValues::IPA_OUTPUT_PATH], version: version }
+  end
+
+  desc "Compila e carica su TestFlight per tester interni"
+  lane :beta do |options|
+    result = package_live(options)
+    upload_to_testflight(api_key: result[:api_key], ipa: result[:ipa],
+                         app_identifier: required("IOS_BUNDLE_ID"),
+                         distribute_external: false, skip_waiting_for_build_processing: true)
+  end
+
+  desc "Compila e carica la versione App Store; invio in review opzionale"
+  lane :production do |options|
+    result = package_live(options)
+    upload_to_app_store(api_key: result[:api_key], ipa: result[:ipa],
+                        app_identifier: required("IOS_BUNDLE_ID"), app_version: result[:version],
+                        skip_metadata: true, skip_screenshots: true,
+                        submit_for_review: ENV["IOS_SUBMIT_FOR_REVIEW"] == "true",
+                        automatic_release: ENV["IOS_AUTOMATIC_RELEASE"] == "true",
+                        force: true)
+  end
+end
+
+platform :android do
+  private_lane :package_live do |options|
+    version, number = release_values(options)
+    prepare_live("android")
+    UI.user_error!("Progetto Android mancante: #{ANDROID}/gradlew; generare e versionare Capacitor Android") unless File.file?(File.join(ANDROID, "gradlew"))
+    keystore = File.expand_path(required("ANDROID_KEYSTORE_PATH"), ROOT)
+    UI.user_error!("Keystore non trovato") unless File.file?(keystore)
+    gradle(tasks: ["clean", "bundleRelease"], project_dir: ANDROID,
+           print_command: false, print_command_output: false,
+           properties: {
+             "android.injected.version.code" => number,
+             "android.injected.version.name" => version,
+             "android.injected.signing.store.file" => keystore,
+             "android.injected.signing.store.password" => required("ANDROID_KEYSTORE_PASSWORD"),
+             "android.injected.signing.key.alias" => required("ANDROID_KEY_ALIAS"),
+             "android.injected.signing.key.password" => required("ANDROID_KEY_PASSWORD")
+           })
+    aab = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+    UI.user_error!("AAB non generato; controllare task/flavor Gradle") unless aab && File.file?(aab)
+    FileUtils.mkdir_p(File.join(OUTPUT, "android"))
+    FileUtils.cp(aab, File.join(OUTPUT, "android", "GigsawLive.aab"))
+    aab
+  end
+
+  private_lane :publish_live do |options|
+    aab = package_live(options)
+    upload_to_play_store(package_name: required("ANDROID_PACKAGE_NAME"),
+                         json_key: File.expand_path(required("GOOGLE_PLAY_JSON_KEY_PATH"), ROOT),
+                         aab: aab, track: options[:track], release_status: "completed",
+                         skip_upload_metadata: true, skip_upload_images: true,
+                         skip_upload_screenshots: true, skip_upload_changelogs: true)
+  end
+
+  desc "Compila AAB firmato e pubblica sul track internal di Google Play"
+  lane :beta do |options|
+    publish_live(options.merge(track: "internal"))
+  end
+
+  desc "Compila AAB firmato e pubblica sul track production di Google Play"
+  lane :production do |options|
+    publish_live(options.merge(track: "production"))
+  end
+end
